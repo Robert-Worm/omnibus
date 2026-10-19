@@ -1,6 +1,6 @@
 # Voortgang van de inhoud
 
-Welke bronnen al in de Omnibus-database zitten, welke in bewerking zijn en welke nog open staan. Wil je helpen? Kies een open rapport, meld het in de [voortgangsdiscussie](../../../discussions) en volg [eigen documenten toevoegen](own-content.md).
+Welke bronnen al in de Omnibus-database zitten, welke in bewerking zijn en welke nog open staan. Wil je helpen? Kies een open rapport, meld het in de [voortgangsdiscussie](https://github.com/Robert-Worm/omnibus/discussions/2) en volg [eigen documenten toevoegen](own-content.md).
 
 *Stand: 19 oktober 2026.*
 

@@ -122,7 +122,7 @@ De lokale werkstroom is af en werkt. Er is nog geen online versie en geen downlo
 <a id="meedoen"></a>
 ## Meedoen
 
-**Help de database vullen.** Van de 542 ADR-rapporten op de werklijst zijn er 23 verwerkt. Kies een open rapport in de [voortgangslijst](docs/voortgang.md), meld het in de [voortgangsdiscussie](../../discussions) en verwerk het met de [rapportskill](skills/README.md).
+**Help de database vullen.** Van de 542 ADR-rapporten op de werklijst zijn er 23 verwerkt. Kies een open rapport in de [voortgangslijst](docs/voortgang.md), meld het in de [voortgangsdiscussie](https://github.com/Robert-Worm/omnibus/discussions/2) en verwerk het met de [rapportskill](skills/README.md).
 
 Andere nuttige bijdragen zijn duidelijkere uitleg, reproduceerbare foutmeldingen, verbeteringen in toegankelijkheid, gerichte tests en betere reviewmethoden. Je hoeft geen grote nieuwe functie voor te stellen om te helpen.
 
