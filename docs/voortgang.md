@@ -54,11 +54,14 @@ De volledige lijst, met een link naar elk rapport op de Rijksmap, staat in [voor
 | --- | --- | --- | --- |
 | [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | 2025-10-15 | Financiën | `FGFIN25` |
 
-## Wetten en kaders in de database
+## Wetten en regelgeving
 
+- [x] Wet weerbaarheid kritieke entiteiten (`WWKE`)
 - [x] Besluit BVA-stelsel Rijksdienst 2021 (`BVA2021`)
 - [x] Besluit CIO-stelsel Rijksdienst 2026 (`CIO2026`)
-- [x] Wet weerbaarheid kritieke entiteiten (`WWKE`)
+
+## Normenkaders
+
 - [x] Topical Requirement Cybersecurity (IIA) (`TR-CYBER`)
 - [x] Topical Requirement Third Party (IIA) (`TR-THIRD`)
 - [x] Topical Requirement Organizational Behavior (IIA) (`TR-BEHAV`)
