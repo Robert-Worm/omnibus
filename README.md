@@ -14,6 +14,7 @@
   <a href="docs/contributor-setup.md"><img alt="Node 24.17" src="https://img.shields.io/badge/node-24.17-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="agent-tools/README.md"><img alt="Lokale AI-koppeling: MCP" src="https://img.shields.io/badge/AI--koppeling-MCP-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="skills/README.md"><img alt="6 AI-skills" src="https://img.shields.io/badge/AI--skills-6-01689b?style=flat-square&labelColor=15233b"></a>
+  <a href="https://github.com/Robert-Worm/omnibus/releases/latest"><img alt="Database: 27 rapporten" src="https://img.shields.io/badge/database-27%20rapporten-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="#status"><img alt="Status: lokaal werkend" src="https://img.shields.io/badge/status-lokaal%20werkend-01689b?style=flat-square&labelColor=15233b"></a>
 </p>
 
@@ -53,7 +54,9 @@ Een optionele **lokale AI-koppeling** laat een eigen AI-client de catalogus door
 
 Deze repository bevat de applicatie, de SQLite-koppeling, de lokale AI-tools, zes herbruikbare AI-skills, documentatie en tests met fictieve data.
 
-**De bronverzameling en de voorbereide database zitten er niet in.** Je kunt de code installeren en de tests meteen draaien. Om de applicatie in de browser te gebruiken, heb je daarnaast een apart voorbereide database nodig. Een route als "clone, upload een pdf en publiceer" bestaat nog niet; lees eerst [wat er kan met eigen documenten](docs/own-content.md).
+**De database staat los van de code, bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).** Het is één zip van ongeveer 10 MB met 27 rapporten van de Auditdienst Rijk, 7 wetten en kaders en 14 onderzoeksmodellen. Wat er precies in zit en wat er nog komt, staat in de [voortgangslijst](docs/voortgang.md). De tests werken ook zonder database.
+
+Een route als "clone, upload een pdf en publiceer" bestaat nog niet. Nieuwe rapporten gaan via de skills en een inhoudelijke review; lees [wat er kan met eigen documenten](docs/own-content.md).
 
 Brondocumenten, onderzoeksprojecten, inloggegevens en exports blijven buiten Git. Browseropslag is geen back-up: download een projectbestand als je je werk wilt bewaren of overzetten.
 
@@ -72,9 +75,9 @@ npm test
 De tests gebruiken fictieve data; sommige openen tijdelijk een lokale server. Er is geen account, cloudopslag of privécollectie nodig. Voor gerichte controles en problemen oplossen: zie de [setuphandleiding](docs/contributor-setup.md).
 
 <a id="lokaal-bouwen-en-starten"></a>
-### Met een voorbereide database: de applicatie starten
+### Met de database: de applicatie starten
 
-Je hebt een geautoriseerde runtimedatabase nodig, met de bijbehorende bronrelease- en publicatiehashes. Volg de [databasesetup](docs/contributor-setup.md#een-database-ontvangen) om het lokale instellingenbestand te maken. Daarna:
+Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) en pak de zip uit in `local-data/runtime/`. Daar staan dan `catalogue.sqlite` en `local-build.json`, met de vastgelegde hashes. Daarna:
 
 ```text
 npm run data:check-runtime -- --settings local-data/runtime/local-build.json
@@ -117,12 +120,12 @@ Tests staan meestal naast de code die ze controleren.
 <a id="status"></a>
 ## Status
 
-De lokale werkstroom is af en werkt. Er is nog geen online versie en geen downloadbare release: die komt pas als er een geteste installatieroute is met duidelijke databasevereisten. Accounts en betalingen horen bewust niet bij de applicatie. Wat er nog komt, staat in de [routekaart](docs/routekaart.md).
+De lokale werkstroom is af en werkt, en de database is te downloaden. Er is nog geen online versie. Accounts en betalingen horen bewust niet bij de applicatie. Wat er nog komt, staat in de [routekaart](docs/routekaart.md).
 
 <a id="meedoen"></a>
 ## Meedoen
 
-**Help de database vullen.** Van de 542 ADR-rapporten op de werklijst zijn er 23 verwerkt. Kies een open rapport in de [voortgangslijst](docs/voortgang.md), meld het in de [voortgangsdiscussie](https://github.com/Robert-Worm/omnibus/discussions/2) en verwerk het met de [rapportskill](skills/README.md).
+**Help de database vullen.** Van de 542 ADR-rapporten op de werklijst zijn er 27 verwerkt. Kies een open rapport in de [voortgangslijst](docs/voortgang.md), meld het in de [voortgangsdiscussie](https://github.com/Robert-Worm/omnibus/discussions/2) en verwerk het met de [rapportskill](skills/README.md).
 
 Andere nuttige bijdragen zijn duidelijkere uitleg, reproduceerbare foutmeldingen, verbeteringen in toegankelijkheid, gerichte tests en betere reviewmethoden. Je hoeft geen grote nieuwe functie voor te stellen om te helpen.
 

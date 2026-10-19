@@ -1,6 +1,6 @@
 # Database en alleen-lezen dienst
 
-Deze map koppelt Omnibus aan een apart voorbereide SQLite-database. De browser laadt catalogusregels, bouwstenen en bronpassages op het moment dat ze nodig zijn. De database en de originele brondocumenten zitten niet in Git.
+Deze map koppelt Omnibus aan een apart voorbereide SQLite-database. De browser laadt catalogusregels, bouwstenen en bronpassages op het moment dat ze nodig zijn. De database zit niet in Git maar staat bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest); de originele brondocumenten blijven privé.
 
 ## Begin hier
 

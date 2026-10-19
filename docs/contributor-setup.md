@@ -52,8 +52,14 @@ npm-cache en tijdelijke bestanden onder `work/` (die map staat in `.gitignore`).
 
 ## Een database ontvangen
 
-Vraag de inhoudsbeheerder via het afgesproken private kanaal om een voorbereide
-runtime-database en twee vastgelegde hashes:
+De openbare database staat bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) als `omnibus-database-*.zip`.
+Pak die uit in `local-data/runtime/`: de zip bevat `catalogue.sqlite`,
+`local-build.json` met de juiste hashes, en controlegetallen. Ga daarna door
+met de controle hieronder.
+
+Werk je met een andere publicatie, vraag de inhoudsbeheerder dan via het
+afgesproken private kanaal om een voorbereide runtime-database en twee
+vastgelegde hashes:
 
 - `release`: de bronrelease;
 - `publication`: de exacte runtimepublicatie voor de applicatie.
