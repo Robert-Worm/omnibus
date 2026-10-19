@@ -21,6 +21,7 @@ Begin bij het [projectoverzicht](../README.md). De interface en alle handleiding
 ## De applicatie beheren
 
 - [Routekaart](routekaart.md): wat er is, wat bewust buiten scope valt en wat er nog komt.
+- [Voortgang](voortgang.md): welke rapporten, wetten en kaders al in de database zitten en welke nog open staan.
 - [Acceptatiecontracten](acceptatiecontracten.md): de afspraken waaraan de applicatie moet blijven voldoen.
 - [Runtimepakket](runtime-pakket.md) en [storingen, back-up en herstel](runtime-herstel.md).
 - [Hostingvoorbereiding](../hosting/release-delivery/README.md).

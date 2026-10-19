@@ -122,7 +122,9 @@ De lokale werkstroom is af en werkt. Er is nog geen online versie en geen downlo
 <a id="meedoen"></a>
 ## Meedoen
 
-Nuttige bijdragen zijn duidelijkere uitleg, reproduceerbare foutmeldingen, verbeteringen in toegankelijkheid, gerichte tests en betere reviewmethoden. Je hoeft geen grote nieuwe functie voor te stellen om te helpen.
+**Help de database vullen.** Van de 542 ADR-rapporten op de werklijst zijn er 23 verwerkt. Kies een open rapport in de [voortgangslijst](docs/voortgang.md), meld het in de [voortgangsdiscussie](../../discussions) en verwerk het met de [rapportskill](skills/README.md).
+
+Andere nuttige bijdragen zijn duidelijkere uitleg, reproduceerbare foutmeldingen, verbeteringen in toegankelijkheid, gerichte tests en betere reviewmethoden. Je hoeft geen grote nieuwe functie voor te stellen om te helpen.
 
 Lees eerst [CONTRIBUTING.md](CONTRIBUTING.md). Bespreek grotere wijzigingen vooraf in een issue, en gebruik fictieve voorbeelden in plaats van vertrouwelijke rapporten of projecten. Vragen en ideeën kunnen in [Discussions](../../discussions). Beveiligingsproblemen meld je vertrouwelijk via [SECURITY.md](SECURITY.md).
 
