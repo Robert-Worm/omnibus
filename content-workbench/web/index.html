@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Content Workbench · Omnibus</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/client.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">Rijksmap <span>Project Omnibus</span></div>
+      <span class="local">Lokale inhoudsvoorbereiding</span>
+    </header>
+    <main>
+      <div class="heading">
+        <div>
+          <p class="eyebrow">INHOUD BEHEREN</p>
+          <h1>Content Workbench</h1>
+          <p class="intro">
+            Kies de volgende bron. Volg de verwerking. Houd de onderbouwing bij elkaar.
+          </p>
+        </div>
+        <button id="refresh" type="button">Vernieuwen</button>
+      </div>
+      <div id="notice" role="status" aria-live="polite"></div>
+      <section class="summary" aria-label="Overzicht">
+        <div>
+          <span>Bronrecords in register</span
+          ><button class="count-link" id="source-count" aria-label="Toon alle bronrecords">
+            —
+          </button>
+        </div>
+        <div>
+          <span>In deze selectie</span
+          ><button
+            class="count-link"
+            id="filtered-count"
+            aria-label="Toon bronnen in deze selectie"
+          >
+            —
+          </button>
+        </div>
+        <div>
+          <span>Actieve publicatie · laatste controle</span
+          ><button
+            class="count-link small"
+            id="publication-count"
+            aria-label="Toon alle actieve rapporten"
+          >
+            Nog niet gekoppeld</button
+          ><span id="evidence-time">Werkstatus is geen inhoudelijke vrijgave.</span>
+        </div>
+      </section>
+      <nav id="evidence-counts" class="evidence-counts" aria-label="Documenten met bewijs"></nav>
+      <section class="surface" aria-label="Bronnen en verwerking">
+        <div class="tabs">
+          <button id="table-tab" aria-pressed="true">Bronnenlijst</button
+          ><button id="board-tab" aria-pressed="false">Werkstroom</button><span id="updated"></span>
+        </div>
+        <form id="filters" class="filters">
+          <label class="search"
+            >Zoek bron, ministerie of risico<input
+              id="q"
+              type="search"
+              placeholder="Bijvoorbeeld informatiebeveiliging"
+              maxlength="200"
+          /></label>
+          <label
+            >Collectie<select id="collection">
+              <option value="">Alle collecties</option>
+            </select></label
+          >
+          <label
+            >Prioriteit<select id="priority">
+              <option value="">Alle prioriteiten</option>
+            </select></label
+          >
+          <label
+            >Afhandeling<select id="disposition">
+              <option value="">Alle bronnen</option>
+            </select></label
+          >
+          <label
+            >Gekoppeld bewijs<select id="evidence-filter">
+              <option value="">Alle bronnen</option>
+            </select></label
+          >
+        </form>
+        <nav id="stages" class="stages" aria-label="Verwerkingsstap"></nav>
+        <p class="scope-note">
+          Actieve rapporten staan bij ‘Actief in Omnibus’ op basis van de laatste
+          publicatiecontrole. Handmatig vastgelegd herstel en lopend werk blijven zichtbaar. Een
+          werkstap publiceert niets.
+        </p>
+        <div id="results" aria-live="polite"></div>
+        <div id="pagination" class="pagination">
+          <button id="prev">Vorige</button><span id="page-label"></span
+          ><button id="next">Volgende</button>
+        </div>
+      </section>
+      <details class="imports">
+        <summary>Bewijscontrole en nog te koppelen bronnen</summary>
+        <p>
+          Momentopname van gecontroleerde pakketten en publicaties. Dit wijzigt geen werkstatus,
+          verleent geen nieuwe goedkeuring en start geen publicatie. Alleen de expliciet aangewezen
+          lokale publicatie heet actief; een kandidaat blijft apart.
+        </p>
+        <div id="evidence-overview"></div>
+      </details>
+      <details class="imports">
+        <summary>Herkomst en importcontrole</summary>
+        <p>
+          Originele exports blijven ongewijzigd. Dezelfde URL met een andere titel of datum blijft
+          een apart bronrecord. Een herhaalde import wist geen voortgang. Eerdere verwerking in
+          Omnibus wordt waar bevestigd apart getoond. ‘Te beoordelen’ betekent dat nog geen
+          werkstatus of actieve publicatie is gekoppeld, niet dat de bron nooit is verwerkt.
+        </p>
+        <div id="imports"></div>
+      </details>
+    </main>
+    <dialog id="catalogue-inventory" aria-labelledby="inventory-title">
+      <header class="detail-head">
+        <h2 id="inventory-title"></h2>
+        <button id="close-inventory">Sluiten</button>
+      </header>
+      <div class="detail-body">
+        <p class="muted">
+          Aanwezig in de gecontroleerde publicatie. Dit bewijst geen nieuwe inhoudelijke review,
+          juridische toepasselijkheid of selecteerbaarheid. Een verwerkingsbord voor deze
+          bronsoorten volgt later.
+        </p>
+        <ul id="inventory-list"></ul>
+      </div>
+    </dialog>
+    <dialog id="detail" aria-labelledby="detail-title">
+      <header class="detail-head">
+        <div>
+          <p class="eyebrow">BRONDOSSIER</p>
+          <h2 id="detail-title"></h2>
+        </div>
+        <button id="close" aria-label="Sluit brondossier">Sluiten</button>
+      </header>
+      <div class="detail-body">
+        <p id="detail-meta"></p>
+        <a id="source-link" target="_blank" rel="noopener noreferrer">Open bronwebsite ↗</a>
+        <p id="source-summary"></p>
+        <p id="related"></p>
+        <details>
+          <summary>Gekoppeld bewijs</summary>
+          <div id="source-evidence"></div>
+        </details>
+        <section>
+          <h3>Volgende stap vastleggen</h3>
+          <p class="muted">
+            Je registreert voortgang; hiermee start je geen AI-opdracht en publiceer je niets.
+          </p>
+          <form id="progress">
+            <div class="form-grid">
+              <label>Verwerkingsstap<select id="edit-stage"></select></label
+              ><label>Afhandeling<select id="edit-disposition"></select></label
+              ><label>Prioriteit<select id="edit-priority"></select></label>
+            </div>
+            <label
+              >Reden of volgende actie<textarea
+                id="note"
+                required
+                maxlength="2000"
+                rows="3"
+                placeholder="Wat is gedaan, wat moet nog gebeuren en waarom? Noodzakelijk bij iedere wijziging."
+              ></textarea>
+            </label>
+            <label
+              >Dossierverwijzing<input
+                id="reference"
+                maxlength="2000"
+                placeholder="Pakket-ID, reviewdossier of chatverwijzing (verplicht vanaf review)"
+            /></label>
+            <p id="save-message" role="status"></p>
+            <button type="submit" class="primary" id="save">Voortgang bewaren</button>
+          </form>
+        </section>
+        <section>
+          <h3>Verwerkingshistorie</h3>
+          <ol id="history" class="history"></ol>
+        </section>
+        <details>
+          <summary>Oorspronkelijke gegevens en herkomst</summary>
+          <div id="origins"></div>
+        </details>
+      </div>
+    </dialog>
+  </body>
+</html>

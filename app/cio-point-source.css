@@ -1,0 +1,78 @@
+.cio-point-source{min-width:0;color:#293c50;font-size:.86rem;line-height:1.65}
+.cio-point-source h3,.cio-point-source h4{font-weight:650;line-height:1.45;margin:0 0 .5rem}
+.cio-point-source h3{font-size:1rem}.cio-point-source h4{font-size:.86rem}
+.cio-point-source p{margin:.4rem 0 .8rem;overflow-wrap:anywhere;white-space:normal}
+.cio-source-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.7rem;flex-wrap:wrap;margin-bottom:.7rem}
+.cio-source-toolbar nav{display:flex;gap:.35rem;flex-wrap:wrap}
+.cio-source-toolbar a{font-size:.76rem;color:#356082;text-decoration:underline}
+.cio-source-toolbar button[aria-pressed=true]{background:#e6edf6;color:#284965}
+.cio-source-links{display:flex;gap:.45rem;flex-wrap:nowrap;padding:0 0 .65rem;border-bottom:1px solid #dce3ec;overflow-x:auto;scrollbar-width:thin}
+.cio-source-links button{border:1px solid #d9e1eb;border-radius:.45rem;padding:.45rem .65rem;max-width:100%;text-align:left;background:#fff;cursor:pointer;flex-shrink:0}
+.cio-source-links button strong,.cio-source-links button span{display:block}
+.cio-source-links button strong{font-size:.78rem;font-weight:600}
+.cio-source-links button span{font-size:.7rem;color:#627287;white-space:nowrap}
+.cio-source-links button[aria-pressed=true]{border-color:#6f91b0;background:#eaf2fa;box-shadow:inset 0 -2px #6f91b0}
+.cio-point-source :is(button,a):focus-visible{outline:3px solid #5884b1;outline-offset:3px}
+.cio-point-source .criterion-source-layout{margin-top:1rem}
+.cio-point-source .criterion-source-panels{grid-template-columns:minmax(260px,.8fr) minmax(0,1.45fr);gap:1.25rem;align-items:start}
+.cio-point-source .comparison-criterion,.cio-point-source .comparison-source{min-width:0;padding:.6rem}
+.cio-point-source .comparison-source{max-height:60vh;overflow:auto;scrollbar-gutter:stable}
+.cio-source-explanation>header{background:#f4f0f8;border-top:3px solid #aa8bbd;padding:.9rem;border-radius:.4rem}
+.cio-point-source .cio-source-kicker{font-size:.72rem;color:#65748a;margin:0 0 .5rem}
+.cio-source-reason{border-left:3px solid #839bb4;padding:.3rem 0 .3rem .9rem;margin:1rem 0}
+.cio-source-text{padding-top:.85rem;border-top:1px solid #e2e8ee;margin-top:.85rem}
+.cio-source-text .cio-source-text{border:0;padding-top:.25rem;margin-top:.35rem}
+.cio-source-text ul{list-style:disc;padding-left:1.2rem;margin:.35rem 0 .6rem}
+.cio-source-text li{margin:.35rem 0}
+.cio-source-actors{margin:.65rem 0}.cio-source-actors>div{margin:.45rem 0}.cio-source-actors dt{font-weight:600}.cio-source-actors dd{font-size:.78rem;color:#596c80}.cio-source-actors dd p{color:#293c50;margin:.2rem 0}
+.cio-source-caution{border-left:3px solid #bea15c;background:#fff9ec;padding:.7rem .85rem;margin:.85rem 0;font-size:.79rem}
+.cio-source-record-heading{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:1px solid #dce3ec;margin-bottom:.4rem;overflow-x:auto;position:sticky;top:0;background:#fff;z-index:2}
+.cio-point-source .cio-source-record-heading h3{font-size:.85rem;white-space:nowrap;margin:0}
+.cio-source-record-heading>span{font-size:.7rem;color:#627287;white-space:nowrap}
+.cio-source-record-heading nav{display:flex;flex-wrap:nowrap;gap:.35rem}
+.cio-source-record-heading nav button{font-size:.74rem}
+.cio-source-document .report-card{padding:.6rem 0;margin:0;background:transparent;border:0;box-shadow:none}
+.cio-source-document .report-card h1{font-size:.9rem;line-height:1.4}
+.cio-source-document .reader-report-id{display:none}
+.cio-source-document .report-card p{font-size:.72rem;margin:.2rem 0}
+.cio-source-document .report-navigation{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.cio-source-document .report-navigation input{width:4rem}
+.cio-source-document .report-navigation button{font-size:.73rem;padding:.4rem .55rem}
+.cio-source-document .report-reading{font-size:.88rem;line-height:1.8;padding:1.1rem}
+.cio-source-document .report-reading h2{font-size:1rem}
+.cio-source-document .report-page-text{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+.cio-source-status{font-size:.72rem;color:#68788b;border-top:1px solid #e0e6ed;margin-top:1rem;padding-top:.7rem}
+@media(min-width:1024px){.cio-point-source .comparison-criterion,.cio-point-source .comparison-source{max-height:68vh;overflow:auto;scrollbar-gutter:stable}}
+@media(max-width:1023px){.cio-point-source .criterion-source-panels{grid-template-columns:1fr}.cio-source-document .report-reading{padding:.8rem}.cio-source-toolbar{align-items:flex-start}}
+/* The reading panel starts flush with its opaque sticky article header. */
+.cio-point-source .criterion-source-panels>.comparison-source{padding:0;border:1px solid #dce3ec;border-radius:5px;background:#fff}
+.cio-point-source .cio-source-record-heading{top:0;margin:0;padding:.55rem .7rem;background:#fff;z-index:5;min-height:44px;box-shadow:0 1px 0 #dce3ec}
+.cio-source-document>.report-library,.cio-source-document>.source-reader-content{padding-inline:.65rem}
+.cio-source-toolbar>span{font-size:.74rem;color:#65748a}
+.cio-source-explanation>header{background:transparent;border:0;border-radius:0;padding:0 0 .7rem;border-bottom:1px solid #dce3ec}
+.cio-source-explanation>header>p:not(.cio-source-kicker){font-size:.8rem;line-height:1.55;color:#52677d;margin:.25rem 0 0}
+.cio-source-explanation .cio-source-reason{border:0;padding:0;margin:.9rem 0 1.15rem}
+.cio-source-explanation .cio-source-reason>h4{font-size:.94rem;color:#233f59;margin-bottom:.4rem}
+.cio-source-explanation .cio-source-reason>p:not(.cio-source-kicker){font-size:.84rem;line-height:1.65}
+.cio-source-explanation>.cio-source-text{font-size:.77rem;line-height:1.55;color:#53677b}
+.cio-source-explanation>.cio-source-text>h4{font-size:.8rem;color:#314c64}
+.cio-source-explanation .cio-source-kicker{font-size:.67rem;color:#718296}
+/* Read the norm first, then its substantive support; general context stays separate. */
+.cio-point-source .criterion-source-panels{grid-template-columns:minmax(320px,1fr) minmax(0,1.3fr);gap:1rem}
+.cio-point-source .comparison-criterion{padding:0 .5rem 0 0}
+.cio-point-source .cio-source-links{display:block;padding:0;border:0;overflow:visible}
+.cio-source-links>section{margin:1rem 0 1.25rem}
+.cio-point-source .cio-source-links>section>h4{font-size:14px;margin:0 0 .5rem;color:#304c65}
+.cio-point-source .cio-source-link-card{border:1px solid #dce3ec;border-radius:5px;padding:.65rem .75rem;margin:.55rem 0;background:#fff}
+.cio-point-source .cio-source-link-card.is-active{border-color:#809fbb;box-shadow:inset 3px 0 #809fbb}
+.cio-point-source .cio-source-links button{display:grid;grid-template-columns:minmax(0,1fr) 18px;gap:4px;width:100%;max-width:none;padding:0;border:0;border-radius:0;background:transparent;text-align:left;box-shadow:none;color:#2f5373}
+.cio-point-source .cio-source-links button[aria-pressed=true]{background:transparent;border:0;box-shadow:none}
+.cio-point-source .cio-source-links button strong{font-size:13px;line-height:1.5}.cio-point-source .cio-source-links button span{grid-column:1 / -1;white-space:normal;font-size:12px;line-height:1.5;color:#63768b}
+.cio-point-source .cio-source-link-card p{font-size:13px;line-height:1.6;margin:.6rem 0}.cio-point-source .cio-link-contribution>strong{display:block;font-weight:600}.cio-point-source .cio-source-link-card>small{font-size:12px;color:#63768b}
+.cio-point-source [data-source-group=context]{padding:.75rem;background:#f1f4f7;border:1px solid #dce3ec;border-radius:6px}.cio-point-source [data-source-group=context] .cio-source-link-card{background:#fff}
+.cio-point-source .cio-source-explanation>h3{font-size:14px;margin:.1rem 0 .5rem}
+.cio-point-source :is(.cio-source-composition,.cio-source-text p,.cio-source-text li,.cio-source-actors dt,.cio-source-actors dd,.cio-source-caution p){font-size:13px;line-height:1.6}
+.cio-point-source :is(.cio-source-text h4,.cio-source-record-heading h3){font-size:14px}
+.cio-point-source :is(.cio-source-toolbar,.cio-source-toolbar a,.cio-source-toolbar>span,.cio-source-kicker,.cio-source-status,.cio-source-status p,.cio-source-record-heading>span,.cio-source-record-heading nav button){font-size:12px;line-height:1.5}
+.cio-point-source .cio-norm-summary>p{font-size:13px}.cio-point-source .cio-norm-heading h3{font-size:14px;margin:0}
+@media(max-width:1023px){.cio-point-source .criterion-source-panels{grid-template-columns:1fr}}

@@ -1,0 +1,157 @@
+/* All four steps use the same compact page header as the open viewers.
+   Compactness here changes spacing, not the content or controls below it. */
+.framework-app #main-workspace { padding-top:1rem; }
+.framework-app #main-workspace .investigation-steps a { min-height:2.75rem; padding:.5rem .85rem; }
+.framework-app #main-workspace .workflow-page-heading { min-height:0; margin:0; padding:1.5rem 0 1.75rem; gap:1rem; }
+.framework-app #main-workspace .workflow-page-heading p { margin:.5rem 0 0; font:400 .875rem/1.5 var(--font-ui); }
+.viewer-heading-actions { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
+/* The same next-step action must not change size between a page heading,
+   the law viewer and the theme/process viewer's extra action wrapper. */
+.framework-app #main-workspace :is(.workflow-next,.law-view-actions>button,.report-view-actions>button) {
+ display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+ height:auto; min-height:2.25rem; padding:.4375rem .75rem;
+ font:500 .875rem/1.25rem var(--font-ui); border-radius:6px;
+ white-space:normal; text-align:center; max-width:100%;
+}
+.framework-app #main-workspace :is(.workflow-next,.law-view-actions>button,.report-view-actions>button)>svg { width:1rem; height:1rem; flex-shrink:0; }
+
+/* One section-introduction scale across exploring, collecting and building.
+   These are section headings, not the larger page title or normative text. */
+.framework-app #main-workspace :is(.directory-heading,.workflow-section-intro) {
+ padding:0; margin:0 0 1rem; gap:1rem;
+}
+.framework-app #main-workspace :is(.directory-heading,.workflow-section-intro,.composer-top) h2 {
+ font:600 1.15rem/1.3 var(--font-heading); color:var(--primary); margin:0 0 .5rem;
+}
+.framework-app #main-workspace :is(.directory-heading,.workflow-section-intro,.composer-top) p {
+ font:400 .875rem/1.6 var(--font-ui); color:var(--rm-muted); margin:0; max-width:80ch;
+}
+.framework-app #main-workspace .directory-heading+.directory-axis { margin-top:0; }
+.framework-app #main-workspace .question-entry { padding:0; }
+.framework-app #main-workspace .composer-top { padding:1rem; gap:1rem; }
+.framework-app #main-workspace .composer-main { padding:1rem; }
+.framework-app #main-workspace .workflow-surface { padding:1.25rem; }
+.framework-app #main-workspace[data-viewer=true] .open-item-workspace { padding:.25rem .5rem; margin:0 0 .5rem; }
+.framework-app #main-workspace[data-viewer=true] .law-browser { padding:0; }
+.framework-app #main-workspace[data-viewer=true] .law-view-actions { margin:0 0 .6rem; gap:.5rem; min-height:2.25rem; }
+.framework-app #main-workspace[data-viewer=true] .law-overview-tabs button { padding:.35rem .7rem; }
+.framework-app #main-workspace[data-viewer=true] .law-browse-filters { padding:.5rem; gap:.65rem; }
+
+/* Uniform disclosure in CIO, WWKE and theme/process context panels.
+   Never clamp normative wording or source quotations; no inner scrollbars. */
+.audit-detail.bd-pilot-detail .compact-context-text>p { font-size:13px; line-height:1.5; white-space:pre-wrap; overflow-wrap:anywhere; margin:.4rem 0 0; }
+.audit-detail.bd-pilot-detail .compact-context-text[data-expanded=false]>p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; line-clamp:4; max-height:6em; overflow:hidden; }
+.audit-detail.bd-pilot-detail .compact-context-text[data-expanded=true]>p { display:block; max-height:none; overflow:visible; }
+.context-read-more { display:inline-flex; align-items:center; min-height:28px; padding:.2rem 0; margin-top:.2rem; color:var(--primary); font-size:.75rem; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.context-read-more:focus-visible { outline:2px solid var(--ring); outline-offset:3px; border-radius:2px; }
+.law-detail .law-focused-body .law-context-grid { gap:.75rem; align-items:stretch; margin-bottom:.65rem; }
+.law-detail .law-flow .law-context-card { padding:.6rem .7rem; }
+.law-detail .law-flow .law-context-card:not(:last-child)::after { right:-.6rem; }
+.law-detail .law-context-card .law-context-reason { font-size:.68rem; }
+.law-detail .law-focused-body .law-parent-criterion { margin-bottom:.6rem; }
+.bd-pilot-detail .bd-context-card { padding:.75rem .85rem; margin-bottom:.65rem; }
+.bd-pilot-detail .bd-context-card .bd-card-heading { margin-bottom:.3rem; }
+/* Shared shell; source-specific tabs and evidence remain intact. */
+html [data-slot=sheet-content].audit-detail.bd-pilot-detail,
+html [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { width:min(94vw,1240px); }
+.audit-detail.bd-pilot-detail .bd-header { padding:1rem 1.25rem; }
+.audit-detail.bd-pilot-detail .bd-heading-row [data-slot=sheet-title] { font-size:1.125rem; line-height:1.4; }
+.audit-detail.bd-pilot-detail :is(.bd-panel-nav,.law-main-tabs) { padding:.6rem 1.25rem; }
+.audit-detail.bd-pilot-detail :is(.bd-pilot-body,.law-detail-body.law-focused-body) { padding:1rem 1.25rem; }
+.audit-detail.bd-pilot-detail :is(.bd-context,.bd-testing) { max-width:none; }
+.audit-detail.bd-pilot-detail .bd-context { gap:.75rem; margin-bottom:.65rem; }
+.audit-detail.bd-pilot-detail .law-focused-body .law-parent-criterion p { max-height:none; overflow:visible; }
+.audit-detail.bd-pilot-detail :is(.bd-card-heading h3,.law-context-card h3,.law-parent-criterion h3) { font-size:14px; line-height:1.4; }
+.audit-detail.bd-pilot-detail :is(.bd-criterion>p,.law-focused-body .law-parent-criterion>p,.law-choice-card>p) { font-size:14px; line-height:1.55; }
+.framework-app .model-library-layout[hidden] { display:none!important; }
+.framework-app .matrix-workspace .compact-table .row-title button.matrix-point-chip[data-slot=button] {
+ display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+ height:auto; min-height:2.5rem; padding:.25rem .4rem; gap:.1rem;
+ font-size:12px; line-height:1.35; white-space:normal; text-align:left; max-width:100%;
+}
+.framework-app .matrix-workspace .matrix-point-chip .matrix-count-label { font-size:11px; color:var(--rm-muted); }
+.framework-app .matrix-workspace .matrix-point-chip>span:first-child { text-decoration:underline; text-underline-offset:2px; }
+.framework-app #goal-use { min-height:4.5rem; }
+/* A single panel identity, independent of the surrounding model/export shell.
+   Keep input, matrix and evidence typography out of these presentation rules. */
+.framework-app #main-workspace { --workflow-panel-radius:.7rem; --workflow-panel-padding:1.25rem; }
+.framework-app #main-workspace .law-about { font:400 .875rem/1.65 var(--font-ui); gap:1.5rem; }
+.framework-app #main-workspace .law-about :is(.law-about-intro,.law-about-card) { padding:var(--workflow-panel-padding); border-radius:var(--workflow-panel-radius); }
+.framework-app #main-workspace .law-about .law-about-intro h2 { font:600 1.4rem/1.4 var(--font-heading); letter-spacing:normal; margin:0; color:var(--primary); }
+.framework-app #main-workspace .law-about :is(.law-about-card,.law-about-specifications)>h3 { font:600 1.05rem/1.45 var(--font-ui); letter-spacing:normal; color:var(--primary); }
+.framework-app #main-workspace .law-about p { font-family:var(--font-ui); }
+.framework-app #main-workspace :is(.creator-card,.research-question,.research-bank,.research-start) { border-color:var(--border); border-radius:var(--workflow-panel-radius); }
+.framework-app #main-workspace :is(.creator-card,.research-question,.research-bank) { padding:var(--workflow-panel-padding); }
+.framework-app #main-workspace .creator-card>h2 { font:600 1.15rem/1.3 var(--font-heading); margin:0 0 1rem; color:var(--primary); }
+.framework-app #main-workspace .creator-card>.creator-help { font:400 .875rem/1.6 var(--font-ui); color:var(--rm-muted); }
+
+/* Decision surfaces share the landing page's identity; working panels stay denser.
+   These rules deliberately exclude source passages and workbook preview cells. */
+.framework-app #main-workspace { --workflow-choice-radius:.875rem; --workflow-section-gap:1.5rem; --workflow-card:#fff; }
+html[data-appearance=dark] .framework-app #main-workspace { --workflow-card:#172330; }
+.framework-app #main-workspace :is(.entry-card,.workflow-choice,.directory-axis>button,.goal-builder [role=radiogroup] label) { border-radius:var(--workflow-choice-radius); }
+.framework-app #main-workspace :is(.entry-card.is-current,.workflow-choice[aria-pressed=true],.directory-axis>button[aria-pressed=true],.goal-builder [role=radiogroup] label.is-selected) {
+ border-color:var(--primary); background:color-mix(in srgb,var(--primary) 5%,var(--workflow-card)); box-shadow:inset 0 3px 0 var(--primary);
+}
+.framework-app #main-workspace .entry-shared-result { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.65rem 1.25rem; padding:1rem 1.25rem; border-radius:var(--workflow-panel-radius); background:var(--rm-surface); }
+.framework-app #main-workspace .entry-shared-result strong { font:600 .875rem/1.5 var(--font-ui); color:var(--foreground); }
+.framework-app #main-workspace .entry-shared-result p { font:400 .875rem/1.6 var(--font-ui); color:var(--rm-muted); margin:.25rem auto 0; max-width:100ch; }
+.framework-app #main-workspace :is(.question-entry,.export-creator)>.entry-shared-result { margin:1.25rem 0 var(--workflow-section-gap); }
+.framework-app #main-workspace .question-entry>.entry-shared-result:last-child { margin-bottom:0; }
+.framework-app #main-workspace .workflow-outcome-action { flex-shrink:0; }
+.framework-app #main-workspace .question-entry-cards .entry-card-footer { gap:.75rem; margin-top:0; }
+.framework-app #main-workspace .question-entry-cards .entry-card-footer small { min-height:0; }
+.framework-app #main-workspace .question-entry-cards .entry-choice-note { font:400 .8125rem/1.5 var(--font-ui); color:var(--rm-muted); margin:-.5rem 0 1rem; }
+.framework-app #main-workspace .creator-presets { margin:0; gap:1rem; }
+.framework-app #main-workspace .creator-presets .workflow-choice { justify-content:flex-start; gap:.65rem; padding:1.25rem; min-width:0; }
+.framework-app #main-workspace .workflow-choice-top { display:flex; align-items:center; justify-content:space-between; width:100%; }
+.framework-app #main-workspace .workflow-choice .discovery-icon { width:36px; height:36px; border-radius:.625rem; color:var(--primary); background:color-mix(in srgb,var(--primary) 8%,var(--workflow-card)); }
+.framework-app #main-workspace .workflow-choice .discovery-icon>svg { width:21px; height:21px; }
+.framework-app #main-workspace .workflow-choice .preset-heading { font:600 1.15rem/1.3 var(--font-heading); color:var(--primary); }
+.framework-app #main-workspace .workflow-choice>span:last-child { font:400 .875rem/1.55 var(--font-ui); color:var(--rm-muted); }
+.framework-app #main-workspace .workflow-choice:focus-visible { outline:2px solid var(--rm-accent); outline-offset:3px; }
+.framework-app #main-workspace .creator-testing-aspects { padding:1rem; margin:0 0 var(--workflow-section-gap); border-color:var(--border); border-radius:var(--workflow-panel-radius); }
+.framework-app #main-workspace .creator-testing-aspects legend { font:600 1.15rem/1.3 var(--font-heading); color:var(--primary); margin:0; }
+.framework-app #main-workspace .creator-testing-aspects>div { padding-top:.25rem; }
+.framework-app #main-workspace .creator-testing-aspects label { font:400 .875rem/1.5 var(--font-ui); border-color:var(--border); border-radius:.5rem; }
+.framework-app #main-workspace .creator-testing-aspects label[data-selected=true] { border-color:var(--primary); background:color-mix(in srgb,var(--primary) 5%,var(--workflow-card)); }
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label { display:flex; align-items:flex-start; margin:0; padding:.75rem; }
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label [role=checkbox] { flex-shrink:0; margin-top:.2rem; }
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label>span:last-child { min-width:0; overflow-wrap:anywhere; hyphens:auto; }
+.framework-app #main-workspace .creator-card .creator-testing-aspects { margin-top:1.5rem; }
+.framework-app #main-workspace .goal-builder .research-direction-picker legend { font:600 1.15rem/1.3 var(--font-heading); color:var(--primary); margin-bottom:1rem; }
+.framework-app #main-workspace .creator-terminology-options { margin-top:.75rem; font:400 .875rem/1.5 var(--font-ui); }
+.framework-app #main-workspace .creator-terminology-options summary { cursor:pointer; color:var(--primary); padding:.25rem 0; }
+.framework-app #main-workspace .creator-terminology-options[open] summary { margin-bottom:.75rem; }
+.framework-app #main-workspace .creator-terminology-options>label { max-width:36rem; }
+.framework-app #main-workspace .creator-preview-heading h2 { font:600 1.15rem/1.3 var(--font-heading); margin:0; }
+.framework-app #main-workspace .creator-preview>h3 { color:var(--foreground); }
+.framework-app #main-workspace .creator-preview-tabs { gap:0 .35rem; border-bottom:1px solid var(--border); padding:0; margin:1rem 0; }
+.framework-app #main-workspace .creator-preview-tabs li { display:flex; padding:0; background:transparent; }
+.framework-app #main-workspace :is(.creator-preview-tabs,.law-overview-tabs) button { background:transparent; box-shadow:none; border:0; border-bottom:2px solid transparent; border-radius:0; color:var(--rm-muted); font:400 .8125rem/1.5 var(--font-ui); min-height:36px; padding:.4rem .7rem; height:auto; white-space:normal; }
+.framework-app #main-workspace :is(.creator-preview-tabs,.law-overview-tabs) button[aria-pressed=true] { background:transparent; border-color:var(--primary); color:var(--primary); font-weight:600; }
+.framework-app #main-workspace :is(.creator-preview-tabs,.law-overview-tabs) button:hover { color:var(--primary); background:var(--rm-surface); }
+.framework-app #main-workspace .creator-empty-state { margin:1rem 0; padding:1.25rem; border:1px solid var(--border); border-radius:var(--workflow-panel-radius); background:var(--rm-surface); font:400 .875rem/1.6 var(--font-ui); }
+.framework-app #main-workspace .creator-empty-state h3 { margin:0 0 .5rem; font:600 1rem/1.4 var(--font-ui); }
+.framework-app #main-workspace .creator-empty-state p { margin:0 0 .75rem; }
+.framework-app #main-workspace .workflow-working-panel { padding:var(--workflow-panel-padding); border:1px solid transparent; min-width:0; }
+.framework-app #main-workspace .workflow-working-heading { display:flex; align-items:center; min-height:2rem; height:auto; padding:0; margin:0 0 1rem; gap:.5rem; flex-wrap:wrap; }
+.framework-app #main-workspace .workflow-working-heading :is(h2,h3) { margin:0; font:600 1.15rem/1.4 var(--font-heading); color:var(--primary); white-space:normal; }
+.framework-app #main-workspace .model-question-browser { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.framework-app #main-workspace .model-question-browser .law-viewer-heading h2 { font:600 1.05rem/1.4 var(--font-heading); margin:0; }
+.framework-app #main-workspace .model-question-browser .law-viewer-heading output { font:400 .75rem/1.5 var(--font-ui); color:var(--rm-muted); }
+.framework-app #main-workspace .model-question-filters { margin:1rem 0; }
+html[data-appearance=dark] .framework-app #main-workspace :is(.workflow-next,.law-view-actions>button,.report-view-actions>button) { background:#265c89; color:#fff; border-color:#265c89; }
+@media(max-width:1100px) {
+ .framework-app #main-workspace .workflow-page-heading { flex-wrap:wrap; }
+ .viewer-heading-actions { width:100%; justify-content:space-between; }
+}
+@media(max-width:700px) {
+ .framework-app #main-workspace { --workflow-panel-padding:1rem; }
+ .framework-app #main-workspace .workflow-surface { padding:1rem .75rem; }
+ .framework-app #main-workspace .workflow-page-heading { padding:1.25rem 0 1.5rem; }
+ .framework-app #main-workspace .workflow-working-panel { padding:0; border:0; }
+ .framework-app #main-workspace .creator-presets { grid-template-columns:minmax(0,1fr); }
+ .viewer-heading-actions { flex-wrap:wrap; }
+ .framework-app #main-workspace[data-viewer=true] .open-item-workspace { row-gap:.25rem; }
+}

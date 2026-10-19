@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus: inhoudelijke auditkwaliteit"
+  short_description: "Beoordeel brontrouw, helderheid en toetsbaarheid op 1–10"
+  default_prompt: "Gebruik $omnibus-review-audit-quality voor deze bouwstenen. Beoordeel de volledige keten vanuit senior-auditorperspectieven op brontrouw, begrijpelijkheid en uitvoerbaarheid, geef onderbouwde cijfers en concrete verbeteringen, en wijzig de tool nog niet."

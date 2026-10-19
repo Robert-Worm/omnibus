@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus · wet of kader toevoegen"
+  short_description: "Wetten en kaders met broncontrole en de vaste viewer"
+  default_prompt: "Gebruik $omnibus-add-framework voor het gekozen kader, met behoud van bronbetekenis en de bestaande CIO-viewer."

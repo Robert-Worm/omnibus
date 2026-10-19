@@ -1,0 +1,81 @@
+/* Phone refinements.
+ *
+ * Every rule in this file sits inside a max-width query, so the desktop layout
+ * is untouched by construction rather than by inspection. Nothing here changes
+ * colour, typeface, border, radius or shadow: the Rijksmap tokens and the card
+ * idiom stay exactly as they are. Only spacing, wrapping and flow are adjusted,
+ * because the layout was designed at desktop width and simply scaled down.
+ *
+ * Measured on a 375 x 812 viewport before these rules:
+ *   brand bar          227px  (28% of the screen height, before any content)
+ *   workflow steps     143px  with unequal rows
+ *   collection tabs    135px  wrapped onto three ragged rows
+ *   body text began     91px  into a 375px screen, from four nested paddings
+ */
+@media (max-width: 560px) {
+  /* 1. Header. Two separate faults. The button that landed alone on the last
+     row stretched to the full width, and the action groups carry max-width:100%
+     from the desktop layout, so a group whose buttons do not fit has them spill
+     out of its own box and collide with the next group -- which is what cut
+     "Delen" in half.
+     Project actions are not navigation: hiding half of them behind a sideways
+     swipe is worse than showing them all. So they wrap, every button keeps its
+     natural width, and slightly smaller labels fit all six onto two rows.
+     The group separators are a desktop refinement and would land at the start
+     of a wrapped row, so they go. */
+  .framework-app .brand-bar { padding: 10px 12px; }
+  .framework-app .brand-bar .project-actions { flex-wrap: wrap; gap: .4rem; }
+  .framework-app .brand-bar .project-actions .project-action-group {
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    max-width: none;
+    gap: .4rem;
+  }
+  .framework-app .brand-bar .project-actions .project-action-group + .project-action-group {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+  .framework-app .brand-bar .project-actions button {
+    flex: 0 0 auto;
+    font-size: .8125rem;
+    padding: 0 .5rem;
+    gap: .3rem;
+  }
+
+  /* 2. Stack whole steps on phones so every label, including a count badge,
+     stays on one line. All four steps keep the same width and height. */
+  .framework-app .investigation-steps { grid-template-columns:minmax(0,1fr); grid-auto-rows: 1fr; }
+  .framework-app .investigation-steps a {
+    font-size: .875rem;
+    padding: 8px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* All three navigation groups stay visible without sideways scrolling. */
+  .framework-app .collection-navigation .collection-grouped-nav { margin-inline:0; }
+  .framework-app .collection-grouped-nav .collection-nav-links a { padding:.375rem .25rem; min-height:44px; }
+  .framework-app .collection-grouped-nav .collection-nav-links a:has(.collection-open-count) { flex-direction:column; gap:.25rem; }
+
+  /* 4. Secondary actions are right-aligned beside their heading on desktop.
+     At phone width that leaves a button stranded on its own line, so let it
+     take the full width of the card instead. */
+  .framework-app .workspace-local-actions { justify-content: stretch; }
+  .framework-app .workspace-local-actions > button { flex: 1 1 auto; }
+
+  /* 5. The provenance label is an inline span with 12px padding and a rounded
+     background. On one line that is a pill; wrapped onto three lines the
+     background and the corners break apart mid-sentence. Inline-block keeps
+     one pill around the wrapped text, with the same colours and radius. */
+  .framework-app .source-status { display: inline-block; }
+
+  /* 6. Nested padding. main (16) + .workflow-surface (24) + the inner section
+     (16) + the control itself (14) pushed text 91px into a 375px screen. Each
+     level is reduced, not removed: the cards keep their border and radius. */
+  .framework-app main { padding-left: 12px; padding-right: 12px; }
+  .framework-app .workflow-surface { padding: 1rem .75rem; }
+  .framework-app .workflow-surface .goal-builder,
+  .framework-app .workflow-surface .creator-card,
+  .framework-app .workflow-surface .foundation-catalogue,
+  .framework-app .workflow-surface .export-creator { padding-left: .75rem; padding-right: .75rem; }
+}

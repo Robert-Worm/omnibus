@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus: thema's en overlap cureren"
+  short_description: "Deel grote thema's op en beoordeel dubbele toetsinhoud"
+  default_prompt: "Gebruik $omnibus-curate-themes om de huidige thema's en processen te beoordelen rond een richtwaarde van 100 bouwstenen. Lever een onderbouwde indeling en voorkeursselectie met volledige puntdekking; behoud rapportinhoud en bestaande onderzoeken en wijzig de actieve tool nog niet."

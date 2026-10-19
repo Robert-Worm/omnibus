@@ -1,0 +1,11 @@
+# Filled locally by prepare-image-context.mjs; never build from the source checkout.
+FROM @NODE_IMAGE@
+WORKDIR /app/omnibus-runtime
+COPY --chown=0:0 runtime/ ./
+RUN chmod -R a=rX /app/omnibus-runtime
+USER 1000:1000
+# Only package bytes and an in-memory SQLite smoke check; no mounted data needed.
+RUN ["node", "--input-type=module", "-e", "import { DatabaseSync } from 'node:sqlite'; import { verifyRuntimePackage } from './local-data/runtime-package.mjs'; if (Number(process.versions.node.split('.')[0]) !== 24) throw Error('Node 24 required'); const db = new DatabaseSync(':memory:'); db.close(); verifyRuntimePackage(process.cwd());"]
+# Missing explicit settings fail closed. Sevalla's process override must use the full command.
+ENTRYPOINT ["node", "scripts/start-runtime-package.mjs"]
+CMD []

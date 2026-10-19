@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus · rapport toevoegen"
+  short_description: "Rapporten bronvast analyseren en gecontroleerd toevoegen"
+  default_prompt: "Gebruik $omnibus-add-report voor het gekozen rapport en lever een controleerbaar pakket met de bestaande Omnibus-werkwijze."

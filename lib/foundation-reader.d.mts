@@ -1,0 +1,34 @@
+import type { SourcePage } from './source-reader-document.mjs';
+export type FoundationReference = {
+  title?: string;
+  sourceId?: string;
+  foundationId?: string;
+  sourceControlId?: string;
+  sourceHash?: string;
+  location?: string;
+  sourceUrl?: string;
+  sourceDocumentHashes?: string;
+};
+export type FoundationDocument = {
+  id: string;
+  sourceId: string;
+  title: string;
+  role: string;
+  source_sha256: string;
+  pdf_hash?: string;
+  source_file_hash?: string;
+  format?: string;
+  localPdf?: string;
+  pages: (SourcePage & {label?: string})[];
+};
+export type FoundationPassage = {start: number; end: number; page: number; label: string; quote: string; primary?: boolean};
+export const foundationDocuments: FoundationDocument[];
+export function isSpreadsheetSource(document?: FoundationDocument): boolean;
+export function foundationDocumentHash(document: FoundationDocument): string | undefined;
+export function foundationLocationLabel(document: FoundationDocument, fragment: number): string;
+export function foundationPassages(document: FoundationDocument, reference?: FoundationReference): FoundationPassage[];
+export function foundationPassageTarget(document: FoundationDocument, reference?: FoundationReference): FoundationPassage | undefined;
+export function documentsForFoundation(reference?: FoundationReference): FoundationDocument[];
+export function foundationReaderPages(document: FoundationDocument, reference?: FoundationReference): number[];
+declare const data: unknown;
+export default data;

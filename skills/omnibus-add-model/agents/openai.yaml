@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus · model en vragen toevoegen"
+  short_description: "Modellen en interviewvragen met aparte kwaliteitsreview"
+  default_prompt: "Gebruik $omnibus-add-model om het gekozen model en alle vraagvarianten bronvast en op interviewkwaliteit te beoordelen."

@@ -1,0 +1,18 @@
+.report-about-list{display:grid;gap:.75rem;margin-top:1rem}
+.report-about-list article{display:flex;align-items:center;justify-content:space-between;gap:1rem;border:1px solid #dce5ed;border-radius:.5rem;padding:1rem;background:#fff}
+.report-about-list article>div{min-width:0}.report-about-list h4{margin:.3rem 0;overflow-wrap:anywhere}.report-about-list small{color:#60778d}
+.report-about-selector{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.report-about-selector [aria-pressed=true]{background:#e9f1f8;border-color:#174778;color:#174778}
+.report-about-context{padding:1rem;background:#fff;border:1px solid #dce5ed;border-radius:.5rem}
+.report-about-context h5{font-size:.9rem;margin:1rem 0 .4rem}.report-about-context li{margin:.5rem 0}.report-about-context ul{list-style:disc;padding-left:1.25rem}
+.report-view-actions{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}.report-norm-browser{padding:0!important}
+.report-about-topics{list-style:disc;padding-left:1.2rem}.report-about-topics li{margin:.4rem 0}
+.report-usage-notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1rem 0}
+.report-usage-notes>section{padding:1rem;border:1px solid var(--border);border-left:3px solid #bd9144;border-radius:.5rem;background:var(--about-hold);min-width:0}
+.report-usage-notes h5{margin:0;font-size:.9rem;font-weight:600}.report-usage-action strong{display:block;font-size:.8rem;margin-bottom:.2rem}
+.report-usage-notes details,.report-source-accountability{border-top:1px solid var(--border);padding-top:.65rem;margin-top:.8rem}
+.report-source-accountability{margin-bottom:1rem}.report-framework-about summary{cursor:pointer;font-size:.8125rem;color:var(--rm-accent)}
+.report-framework-about .law-about-primary-links:empty{display:none}
+.report-framework-about .report-about-context,.report-framework-about .report-about-list article{background:var(--about-surface);border-color:var(--border)}
+@media(max-width:1100px){.report-usage-notes{grid-template-columns:1fr}}
+@media(max-width:700px){.report-about-list article{align-items:start;flex-direction:column}}

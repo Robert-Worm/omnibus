@@ -1,0 +1,159 @@
+/* Shared reading rhythm and field colours for report and framework matrices. */
+.matrix-workspace .compact-table th[data-field] {
+  border-top: 3px solid #a6b6c6;
+  background: #f0f4f8;
+  padding-block: 9px;
+}
+.matrix-workspace .compact-table th[data-field=objective] {
+  background: #eff4fb;
+  border-top-color: #91a8c3;
+}
+.matrix-workspace .compact-table th[data-field=risk] {
+  background: #fff8eb;
+  border-top-color: #cba45a;
+}
+.matrix-workspace .compact-table th[data-field=controlObjective] {
+  background: #f3effa;
+  border-top-color: #a391bd;
+}
+.matrix-workspace .compact-table th[data-field=control] {
+  background: #eef6f8;
+  border-top-color: #85aeb9;
+}
+.matrix-workspace .compact-table th[data-field=criterion] {
+  background: #edf6f3;
+  border-top-color: #8eafa6;
+}
+.matrix-workspace .compact-table th[data-field=procedure] {
+  background: #f4f6eb;
+  border-top-color: #a2af77;
+}
+.matrix-workspace .compact-table tr {
+  height: auto;
+}
+.matrix-workspace .compact-table td {
+  padding-block: 12px;
+}
+.matrix-workspace .compact-table .cell-preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  line-height: 1.45;
+  max-height: 7.25em;
+  white-space: pre-line;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.matrix-workspace[data-text-density=compact] .compact-table .cell-preview {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  max-height: 2.9em;
+}
+.matrix-workspace[data-text-density=compact] .compact-table td {
+  padding-block: 6px;
+}
+.matrix-workspace[data-text-density=full] .compact-table .cell-preview {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  max-height: none;
+  overflow: visible;
+}
+.matrix-text-density {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.matrix-text-density select {
+  height: 32px;
+  padding: 3px 8px;
+  border: 1px solid #cad6e4;
+  border-radius: 4px;
+  color: #344e68;
+  background: white;
+  font: inherit;
+}
+/* A stacked group grows with its rows; horizontal scrolling stays available. */
+.matrix-workspace.matrix-embedded .compact-table [data-slot=table-container] {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  scrollbar-gutter: auto;
+}
+.matrix-workspace.matrix-embedded .compact-table {
+  border-radius: 0 0 6px 6px;
+}
+.matrix-workspace .combined-identity-table th:nth-child(2) {
+  width: auto;
+}
+.matrix-identity-title {
+  margin-top: 8px;
+}
+.matrix-workspace .compact-table .row-title .matrix-point-chip[data-slot=button]{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;width:auto;min-width:0;height:23px;margin:0 0 0 auto;padding:2px 5px;border:1px solid #d9e3ed;border-radius:5px;font-size:11px;line-height:1;background:#edf3f8;white-space:nowrap}
+.matrix-workspace .compact-table .matrix-identity-title .compact-title>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;max-height:5.6em;overflow:hidden;white-space:normal;line-height:1.4}
+.matrix-workspace .matrix-item-context{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;margin:.3rem 0 0;color:#61768b;font-size:11.5px;line-height:1.45;max-height:2.9em;white-space:normal}
+/* Keep selection in a fixed gutter and align title, ID and context. */
+.matrix-workspace .combined-identity-table .row-title{align-items:center;gap:8px;min-height:21px}
+.matrix-workspace .combined-identity-table .row-title>[data-slot=checkbox]{margin:0;width:14px;height:14px;min-width:14px;min-height:14px;flex:0 0 14px;border-radius:3px}
+.matrix-workspace .combined-identity-table [data-slot=checkbox-indicator] svg{width:11px;height:11px}
+.matrix-workspace .combined-identity-table .matrix-identity-title{display:block;margin:3px 0 0 22px;min-width:0}
+.matrix-workspace .combined-identity-table .matrix-identity-title .compact-title{display:block;width:100%;font-size:inherit;line-height:1.4;overflow-wrap:normal;word-break:normal}
+.matrix-workspace .combined-identity-table .matrix-identity-title .compact-title>span{-webkit-line-clamp:3;line-clamp:3;max-height:4.2em;overflow-wrap:normal;word-break:normal}
+.matrix-workspace .combined-identity-table .row-title .matrix-point-chip[data-slot=button]{height:20px;min-height:20px;padding:1px 4px;border-color:transparent;background:transparent;color:#61768b;font-size:10px}
+.matrix-workspace .combined-identity-table .row-title .matrix-point-chip:hover{background:#e5edf5;color:#244b70}
+.matrix-workspace .combined-identity-table .row-title .norm-id{font-size:10.5px;line-height:1.4}
+.matrix-workspace .combined-identity-table td{vertical-align:top}
+.matrix-workspace .combined-identity-table .full-text-preview{gap:4px}
+.matrix-workspace .combined-identity-table .preview-eye{width:24px;min-width:24px;height:24px;padding:3px}
+.matrix-workspace .combined-identity-table .cell-preview{white-space:normal}
+/* Separate compact identifiers from descriptive subject text. */
+.matrix-workspace .matrix-explained-table :is(th,td){vertical-align:top}
+.matrix-workspace .matrix-explained-table .row-title{align-items:center;gap:6px;min-height:22px;flex-wrap:nowrap}
+.matrix-workspace .matrix-explained-table .row-title>[data-slot=checkbox]{width:14px;height:14px;min-width:14px;min-height:14px;flex:0 0 14px;margin:0;border-radius:3px}
+.matrix-workspace .matrix-explained-table [data-slot=checkbox-indicator] svg{width:11px;height:11px}
+.matrix-workspace .matrix-explained-table .row-title .norm-id{font-size:10.5px;line-height:1.4;white-space:nowrap}
+.matrix-workspace .matrix-explained-table .row-title button.norm-id[data-slot=button]{font-size:10.5px;line-height:1.4;min-width:0;white-space:nowrap}
+.matrix-workspace .matrix-explained-table .row-title .matrix-point-chip[data-slot=button]{height:22px;min-height:22px;padding:1px 3px;font-size:10.5px;gap:3px;background:transparent;border-color:transparent}
+.matrix-workspace .matrix-explained-table td:nth-child(2) .compact-title{display:block;width:100%;font-size:inherit;font-weight:600;line-height:1.4;padding:0;text-align:left;white-space:normal}
+.matrix-workspace .matrix-explained-table .compact-title>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;max-height:7em;overflow:hidden;overflow-wrap:normal;word-break:normal}
+.matrix-subject-explanation{display:flex;align-items:flex-start;gap:4px;margin-top:4px;min-width:0}
+.matrix-workspace .matrix-subject-explanation .matrix-item-context{flex:1;min-width:0;margin:0;-webkit-line-clamp:5;line-clamp:5;max-height:7em;font-size:inherit;line-height:1.4}
+.matrix-workspace[data-text-density=compact] .matrix-subject-explanation .matrix-item-context{-webkit-line-clamp:3;line-clamp:3;max-height:4.2em}
+.matrix-workspace[data-text-density=full] .matrix-subject-explanation .matrix-item-context{display:block;-webkit-line-clamp:unset;line-clamp:unset;max-height:none;overflow:visible;white-space:pre-line}
+.matrix-workspace .matrix-explained-table .matrix-subject-info{display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;min-width:24px;min-height:24px;margin-top:-2px;padding:3px;background:transparent;color:#607a94;border:0;border-radius:4px;cursor:pointer}
+.matrix-subject-info:hover,.matrix-subject-info:focus-visible{background:#e7eff7;outline:2px solid #8aaac5;outline-offset:1px}
+.matrix-subject-popup[data-slot=tooltip-content]{display:block;max-width:min(460px,90vw);max-height:50vh;overflow:auto;white-space:pre-wrap;font-size:13px;line-height:1.55;padding:12px}
+.matrix-workspace .matrix-explained-table .full-text-preview{gap:4px}
+.matrix-workspace .matrix-explained-table .preview-eye{flex:0 0 24px;width:24px;min-width:24px;height:24px;padding:3px}
+.matrix-workspace .matrix-explained-table .cell-preview{white-space:normal}
+.matrix-workspace .matrix-explained-table .row-title{display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:6px;row-gap:3px;align-items:center}
+.matrix-workspace .matrix-explained-table .row-title .matrix-point-chip[data-slot=button]{grid-column:2;justify-self:start;margin:0;padding:0 2px;height:20px;min-height:20px}
+.matrix-workspace .compact-table.matrix-explained-table .row-title :is(.norm-id,button.norm-id[data-slot=button],button.matrix-point-chip[data-slot=button]){font-family:inherit;font-size:11px;font-weight:400;line-height:1.45;color:#385570}
+.matrix-workspace .compact-table.matrix-explained-table .row-title button.matrix-point-chip[data-slot=button]{padding:0;gap:4px;text-decoration:none;border-radius:2px}
+.matrix-workspace .matrix-count-label{font:inherit;color:inherit}
+.matrix-workspace .matrix-explained-table .matrix-point-chip:hover{color:#173d65;text-decoration:underline}
+/* Individual opaque header cells avoid collapsed-border seams during scrolling. */
+.matrix-workspace .compact-table table{border-collapse:separate;border-spacing:0}
+.matrix-workspace .compact-table thead{position:static}
+.matrix-workspace .compact-table thead th{position:sticky;top:0;z-index:3;box-shadow:inset 0 -1px #cad6e4}
+.matrix-workspace .compact-table thead th:first-child{left:0;z-index:4}
+.matrix-group-stack{display:grid;gap:1rem;margin-top:.7rem}
+.matrix-browse-group{min-width:0;border:1px solid #d7e2eb;border-radius:.6rem;overflow:hidden}
+.matrix-browse-group>header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem .85rem;background:#f2f6fa}
+.matrix-browse-group>header h3{font-size:.9rem;font-weight:600;line-height:1.45}.matrix-browse-group>header>span{font-size:.7rem;white-space:nowrap;color:#657a8d}
+.matrix-group-filter{display:flex;align-items:center;gap:.6rem;font-size:.8rem;max-width:100%}.matrix-group-filter select{border:1px solid #cad6e4;border-radius:5px;padding:.4rem .6rem;background:white;max-width:min(70vw,600px);font:inherit}
+.matrix-grouped .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{height:auto;max-height:min(42vh,360px);overflow:auto;scrollbar-gutter:stable}
+.matrix-grouped .compact-table :is(th,td){font-size:.78rem;line-height:1.4;padding:7px 10px}
+.matrix-grouped .compact-table :is(button,.full-text-trigger,.cell-preview){font-size:inherit;line-height:1.4}
+.matrix-grouped .matrix-workspace[data-text-density=compact] .compact-table .cell-preview{-webkit-line-clamp:3;line-clamp:3;line-height:1.4;max-height:4.2em}
+.matrix-grouped .matrix-workspace[data-text-density=comfortable] .compact-table .cell-preview{-webkit-line-clamp:5;line-clamp:5;line-height:1.4;max-height:7em}
+.matrix-grouped .basis-tag{font-size:.64rem;padding:0 3px;margin-bottom:3px}
+@media(max-width:700px){.matrix-browse-group>header{align-items:start;flex-direction:column;gap:.25rem}.matrix-group-filter{flex-wrap:wrap}.matrix-grouped .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{max-height:330px}}
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=objective] { background: #25394d; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=risk] { background: #3c3425; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=controlObjective] { background: #352e45; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=control] { background: #243c43; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=criterion] { background: #263e37; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=procedure] { background: #363d28; }

@@ -1,0 +1,14 @@
+import type { Draft, Framework } from './framework-types.js';
+import type { ResearchSuggestion } from './research-flow.mjs';
+export type Theme = NonNullable<Framework['themes']>[number];
+export type ThemeWorkspace = {openIds: string[]; activeId: string | null};
+export function themeReference(id: string): string;
+export function themeCatalogue(framework: Framework): Theme[];
+export function restoreWorkspace(value: unknown, themes: Theme[]): ThemeWorkspace;
+export function openTheme(workspace: ThemeWorkspace, id: string, themes: Theme[]): ThemeWorkspace;
+export function closeTheme(workspace: ThemeWorkspace, id: string, themes: Theme[]): ThemeWorkspace;
+export function workspaceReportIds(workspace: ThemeWorkspace, themes: Theme[]): string[];
+export function selectedThemes(draft: Draft, themes: Theme[]): Theme[];
+export function centralSuggestions(draft: Draft, themeIds: string[], framework?: Framework): (ResearchSuggestion & {themeId: string; groups: string[]; adopted: boolean})[];
+export function scopedSubSuggestions(draft: Draft, questionId: string, targetId?: string | null): ResearchSuggestion[];
+export function applySubQuestionWording(draft: Draft, questionId: string, key: string): Draft;

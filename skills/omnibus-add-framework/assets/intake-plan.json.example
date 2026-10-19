@@ -1,0 +1,22 @@
+{
+  "format": "omnibus-intake-plan",
+  "schemaVersion": 1,
+  "package": { "id": "voorbeeld-kader", "kind": "framework", "version": "concept-1", "title": "Voorbeeldplan — vervang door de gekozen kadereditie" },
+  "contract": "framework-cio-0.1+addendum-01",
+  "files": [
+    { "id": "contract", "path": "payload/CONTRACT.txt", "roles": ["contract"] },
+    { "id": "addendum", "path": "payload/CONTRACT-ADDENDUM-01.txt", "roles": ["contract"] },
+    { "id": "source", "path": "payload/source.pdf", "roles": ["source"] },
+    { "id": "source-text", "path": "payload/source-text.json", "roles": ["source-text"] },
+    { "id": "source-bank", "path": "payload/source-bank.json", "roles": ["source-bank"] },
+    { "id": "catalogue", "path": "payload/catalogue.json", "roles": ["catalogue"] },
+    { "id": "source-links", "path": "payload/source-links.json", "roles": ["source-links"] },
+    { "id": "context", "path": "payload/context.json", "roles": ["context", "limitations"] },
+    { "id": "migration", "path": "payload/migration.json", "roles": ["migration"] },
+    { "id": "review-basis", "path": "payload/review-basis.json", "roles": ["review-basis"] },
+    { "id": "source-review", "path": "payload/source-review.json", "roles": ["review"] },
+    { "id": "framework-review", "path": "payload/framework-review.json", "roles": ["review"] },
+    { "id": "practical-review", "path": "payload/practical-review.json", "roles": ["review"] },
+    { "id": "receipt", "path": "payload/receipt.json", "roles": ["receipt"] }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "format": "omnibus-intake-plan",
+  "schemaVersion": 1,
+  "package": { "id": "voorbeeld-rapport", "kind": "report", "version": "concept-1", "title": "Voorbeeldplan — vervang door de gekozen rapporteditie" },
+  "contract": "report-kit-1.1",
+  "files": [
+    { "id": "contract", "path": "payload/OUTPUT-CONTRACT.md", "roles": ["contract"] },
+    { "id": "source", "path": "payload/source.pdf", "roles": ["source"] },
+    { "id": "source-text", "path": "payload/source-text.json", "roles": ["source-text"] },
+    { "id": "source-bank", "path": "payload/RECONCILED-SOURCE.json", "roles": ["source-bank"] },
+    { "id": "viewer", "path": "payload/APP-FINAL.json", "roles": ["viewer-content"] },
+    { "id": "catalogue", "path": "payload/CATALOGUE.json", "roles": ["catalogue"] },
+    { "id": "source-links", "path": "payload/APP-SOURCE-LINKS.json", "roles": ["source-links"] },
+    { "id": "context", "path": "payload/context.json", "roles": ["context", "limitations"] },
+    { "id": "review-basis", "path": "payload/review-basis.json", "roles": ["review-basis"] },
+    { "id": "source-review", "path": "payload/source-review.json", "roles": ["review"] },
+    { "id": "practical-review", "path": "payload/practical-review.json", "roles": ["review"] },
+    { "id": "receipt", "path": "payload/receipt.json", "roles": ["receipt"] }
+  ]
+}

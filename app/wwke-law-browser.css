@@ -1,0 +1,51 @@
+/* Layout, typography, matrix, detail cards and About use the shared CIO styles.
+   Only WWKE source evidence and the mandatory scope-assessment form extend them. */
+.wwke-browser,.wwke-source,.wwke-saved{min-width:0}
+.wwke-browser .law-group-description{font-size:.8rem;margin:.35rem 0;color:var(--rm-muted);max-width:none}
+.wwke-browser .law-group-location{margin-top:.4rem}
+.wwke-about-scope,.wwke-browser .law-about-quality{scroll-margin-top:1rem}
+.wwke-about-boundary{border-left:3px solid #bd9144;background:var(--about-hold);padding:1rem 1.2rem;margin:1rem 0 1.4rem}
+.wwke-about-sector-buttons{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0}
+.wwke-browser .wwke-about-sector-buttons button{font-size:13px;line-height:1.4;padding:.45rem .75rem;border:1px solid var(--rm-control-border);border-radius:.4rem;background:var(--about-surface);color:var(--about-text);cursor:pointer;max-width:100%;text-align:left}
+.wwke-browser .wwke-about-sector-buttons button[aria-pressed=true]{background:var(--rm-selected);border-color:var(--rm-accent);box-shadow:inset 0 -2px var(--rm-accent);font-weight:600}
+.wwke-about-sector-description{border:1px solid var(--border);border-radius:.55rem;padding:1rem 1.2rem;background:var(--rm-surface)}
+.wwke-about-source-links{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap}
+.wwke-browser .law-about button.wwke-about-source-link{font-size:12px;color:var(--rm-accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:normal;text-align:left}
+.wwke-about-scope:focus-visible,.wwke-browser .law-about-quality:focus-visible,.wwke-browser .law-about button:focus-visible{outline:2px solid var(--rm-accent);outline-offset:3px}
+.law-browse-boundary{font-size:.75rem;color:var(--rm-muted);margin:.5rem 0 1rem;max-width:none}
+.wwke-meta{color:var(--muted-foreground);font-size:.85rem;overflow-wrap:anywhere}
+.wwke-source>label,.wwke-form-grid label,.wwke-scope-body>label{display:grid;gap:.4rem;font-size:.9rem}
+.wwke-source select,.wwke-scope-dialog select,.wwke-scope-dialog textarea{width:100%;min-width:0;max-width:100%;border:1px solid var(--border);border-radius:.4rem;background:var(--background);padding:.6rem;color:var(--foreground);font:inherit}
+.wwke-role-choices label,.wwke-confirm,.wwke-reviewed-points label{display:flex;gap:.6rem;align-items:flex-start}
+.wwke-text p,.wwke-source p{max-width:none;white-space:pre-line;line-height:1.6}
+.wwke-status{font-size:.72rem;color:var(--muted-foreground);font-weight:600;margin-bottom:.6rem}
+.wwke-status.hold,.wwke-warning{color:var(--foreground);background:color-mix(in srgb,#d29227 12%,var(--background));border-left:3px solid #c38d2c;padding:.6rem .8rem}
+.wwke-source-columns{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.5rem;margin-top:1rem}
+.wwke-source h3,.wwke-source h4{font-size:1rem;font-weight:600;margin:.8rem 0}
+.wwke-source blockquote{white-space:pre-wrap;border-left:3px solid var(--primary);background:var(--muted);padding:1rem;margin:1rem 0;font-size:.92rem}
+.wwke-source-quotes{min-width:0}
+.wwke-page{white-space:pre-wrap!important;font-family:inherit;background:var(--background);padding:1rem;border:1px solid var(--border)}
+.wwke-page mark{background:#fff0a8;color:#18263a}
+.wwke-text ul{padding-left:1.3rem;list-style:disc}
+.wwke-text li{margin:.6rem 0}
+.wwke-source details,.wwke-detail .law-application details{padding:.7rem 0}
+.wwke-source summary,.wwke-detail summary{cursor:pointer}
+.wwke-scope-dialog[data-slot=dialog-content]{max-width:min(900px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);display:flex;flex-direction:column}
+.wwke-scope-body{overflow-y:auto;min-height:0;padding:.2rem .5rem .8rem}
+.wwke-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.wwke-scope-body fieldset{margin:1rem 0;border:1px solid var(--border);padding:1rem}
+.wwke-role-choices{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.6rem}
+.wwke-scope-body>label{margin:1rem 0}
+.wwke-scope-body textarea{min-height:6rem}
+.wwke-reviewed-points{margin:1rem 0}
+.wwke-reviewed-points article{border:1px solid var(--border);border-radius:.4rem;padding:.8rem;margin-top:.6rem}
+.wwke-reviewed-points details{margin-top:.6rem}
+.wwke-reviewed-points p{white-space:pre-line}
+.wwke-scope-body .wwke-confirm{display:flex;line-height:1.5}
+.wwke-scope-dialog [data-slot=dialog-footer]{flex:none;margin-top:.3rem;align-items:center}
+.wwke-scope-dialog [data-slot=dialog-footer]>span{margin-right:auto}
+.wwke-scope-dialog{z-index:70!important}
+.wwke-saved dl>div{margin:.8rem 0}
+.wwke-saved dt{font-weight:600}
+@media(max-width:1100px){.wwke-source-columns{grid-template-columns:1fr}}
+@media(max-width:650px){.wwke-form-grid,.wwke-role-choices{grid-template-columns:1fr}.wwke-scope-dialog[data-slot=dialog-content]{padding:.8rem}.wwke-scope-dialog [data-slot=dialog-footer]{margin:0;flex-direction:column;align-items:stretch}.wwke-detail .bd-footer{flex-wrap:wrap}.wwke-source>label{max-width:100%}}

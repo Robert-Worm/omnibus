@@ -1,0 +1,232 @@
+/* One header shape for every Verzamel tab.
+ *
+ * The six tabs had grown six different headers: some opened with a right-aligned
+ * action above an empty half-row, some with a left-aligned toggle, one with a
+ * small search label and one with the search and a filter select side by side.
+ * The order is now the same everywhere:
+ *
+ *   row 1   small label (left)              primary action (right)
+ *   row 2   search field
+ *   row 3   filters
+ *
+ * Colours, typeface, borders and radii are unchanged; this only fixes the
+ * order, the alignment and the empty space beside a lone right-hand action.
+ */
+.framework-app .collection-header {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* The label fills the space that a lone right-aligned action used to leave
+   blank, so the row carries meaning instead of padding. */
+.framework-app .collection-header-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.125rem;
+}
+.framework-app .collection-header-top > :first-child { min-width: 0; }
+
+.framework-app .collection-search-label {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--rm-muted);
+  margin: 0;
+  display: block;
+}
+.framework-app .collection-header-hint {
+  font-size: .875rem;
+  color: var(--rm-muted);
+  margin: 0;
+  max-width: 48rem;
+}
+
+/* Right-hand actions stay together and never stretch. */
+.framework-app .collection-header-action {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+/* One search width across the tabs, rather than one per tab. */
+.framework-app .collection-search { width: 100%; max-width: 34rem; }
+
+.framework-app .catalogue-search-tools,
+.framework-app .catalogue-search-suggestions { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+.framework-app .catalogue-search-suggestions > span { font-size:var(--text-label); color:var(--muted-foreground); }
+.framework-app .foundation-catalogue > .criterion-search-results { border-top:1px solid var(--border); padding-top:1.25rem; margin-top:1.5rem; }
+.framework-app .criterion-search-source > .source-scope-note { padding:.75rem 1rem; margin:0; max-width:none; box-sizing:border-box; overflow-wrap:anywhere; }
+
+/* Filters always sit under the search, never beside it.
+ *
+ * Chips, checkboxes and select fields are different heights, so putting them in
+ * one wrapping row left a ragged line with a select stranded on the end and its
+ * partner alone underneath. Each kind now gets its own band: the chip group
+ * takes a full row, the labelled fields line up beside each other with their
+ * labels above, and toggles sit on the control baseline. */
+.framework-app .collection-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  /* The row gap has to beat the .25rem between a caption and its own field, or
+     the caption reads as if it belongs to the chips above it. */
+  gap: 1rem;
+}
+
+/* A chip group is a single control, so it claims its own row. */
+.framework-app .collection-filters .collection-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .375rem;
+  flex: 1 0 100%;
+}
+
+/* The chosen chip is filled, the same in every tab. Modellen sits inside
+   .export-creator, which colours every pressed button pale blue; that rule is
+   older and broader, so the band states its own colour here. Dark mode keeps
+   the shared pressed-state treatment from appearance.css. */
+html:not([data-appearance="dark"]) .framework-app .collection-filter-group > button[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* One labelled field: caption above the control, consistent width.
+   The fields share one width rather than each taking the width of its longest
+   option, so the row lines up instead of stepping. */
+.framework-app .collection-filter {
+  flex: 0 0 18rem;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* Some fields inherit centring from their old wrapper class, which put the
+     caption in the middle of the control. Captions always sit hard left. */
+  align-items: flex-start;
+  gap: .25rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--rm-muted);
+  margin: 0;
+  min-width: 0;
+}
+/* The frame, height and padding used to come from the old wrapper classes
+   (.foundation-workbench-toolbar select, .library-scope select). Renaming the
+   wrapper dropped them and left bare 19px-tall native selects, so the field
+   carries its own frame now — matching the search input beside it: same
+   height, border, radius and background. */
+.framework-app .collection-filter > select {
+  min-width: 0;
+  width: 100%;
+  height: 2.5rem;
+  padding: 4px 10px;
+  border: 1px solid var(--rm-control-border, #a9bacb);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--foreground);
+  font: 400 .875rem/1.4 var(--font-ui);
+}
+.framework-app .collection-filter > select:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 1px;
+}
+
+/* A toggle has no caption above it, so it is centred on the control line of
+   the fields beside it rather than sitting on their bottom edge. */
+.framework-app .collection-filters > .creator-check {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .875rem;
+  color: var(--rm-muted);
+  margin: 0 0 .6rem;
+}
+
+@media (max-width: 560px) {
+  /* The action drops under the label rather than squeezing it. */
+  .framework-app .collection-header-top { flex-direction: column; align-items: stretch; gap: .5rem; min-height: 0; }
+  .framework-app .collection-header-action { margin-left: 0; }
+  .framework-app .collection-header-action > button { flex: 1 1 auto; }
+  .framework-app .collection-search { max-width: none; }
+  .framework-app .collection-filter { flex: 1 0 100%; }
+  .framework-app .collection-filter > select { min-width: 0; width: 100%; }
+  .framework-app .collection-filters > .creator-check { flex: 1 0 100%; margin-bottom: 0; }
+}
+
+/* The Risicoverkenning directory is the visual baseline for Verzamelen too.
+   A short route list keeps the same column width rather than stretching cards.
+   Scope these tokens to catalogues, never to the opened model/report viewers. */
+.framework-app :is(.catalogue-family,.directory-children) .catalogue-card-actions[data-layout=buttons] {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:.5rem;
+}
+.framework-app .catalogue-explorer .directory-child-body h4,
+.framework-app .catalogue-explorer .directory-child-body h4 button {
+  font:400 .9375rem/1.5 var(--font-ui); white-space:normal; text-align:left;
+}
+.framework-app .catalogue-explorer {
+  --card: #fff;
+  --muted: var(--rm-surface);
+  --muted-foreground: var(--rm-muted);
+}
+html[data-appearance=dark] .framework-app .catalogue-explorer { --card:#172330; }
+.framework-app .catalogue-explorer > .directory-heading h2 {
+  font-size:1.15rem; margin:0 0 .5rem; line-height:1.3;
+}
+.framework-app .catalogue-explorer > .directory-heading .directory-lead {
+  font-size:.875rem; line-height:1.6; color:var(--rm-muted); margin:0;
+}
+.framework-app .catalogue-explorer > .directory-axis {
+  /* Reserve readable tile widths, including when only one or two are shown. */
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,15.5rem),1fr)); gap:.65rem; margin:1rem 0;
+}
+.framework-app .catalogue-explorer > .directory-axis > button {
+  align-items:flex-start; min-width:0; min-height:5.6rem; padding:.85rem;
+  gap:.6rem; background:var(--card); color:var(--foreground);
+  border:1px solid var(--border); border-radius:9px; line-height:1.5;
+}
+.framework-app .catalogue-explorer > .directory-axis > button strong {
+  font-size:.875rem; font-weight:600;
+}
+.framework-app .catalogue-explorer > .directory-axis > button > span { min-width:0; }
+.framework-app .catalogue-explorer > .directory-axis > button small {
+  font-size:.75rem; line-height:1.5; color:var(--rm-muted); margin-top:.2rem;
+}
+.framework-app .catalogue-explorer > .directory-axis > button[aria-pressed=true] {
+  background:color-mix(in srgb,var(--primary) 6%,var(--card));
+  border-color:var(--primary); color:var(--foreground);
+  box-shadow:inset 3px 0 0 var(--primary);
+}
+.framework-app .catalogue-explorer > .directory-axis > button:hover {
+  border-color:var(--primary); background:color-mix(in srgb,var(--primary) 4%,var(--card));
+}
+.framework-app .catalogue-explorer .directory-family-card {
+  min-height:12.75rem; padding:1.2rem; gap:.65rem;
+}
+.framework-app .catalogue-explorer .directory-family-card > strong {
+  font-size:.9375rem; line-height:1.45;
+}
+.framework-app .catalogue-explorer .directory-family-card > span {
+  font-size:.8125rem; line-height:1.6; color:var(--rm-muted);
+}
+.framework-app .catalogue-explorer .directory-family-card > small {
+  font-size:.75rem; line-height:1.5; color:var(--primary);
+}
+.framework-app .catalogue-explorer > .directory-search-row {
+  margin:1rem 0 1.15rem;
+}
+.framework-app .catalogue-explorer .directory-search {
+  max-width:620px; font:400 .8125rem/1.5 var(--font-ui); color:var(--foreground);
+}
+.framework-app .catalogue-explorer > .directory-note {
+  font-size:.75rem; line-height:1.6; color:var(--rm-muted);
+}
+.framework-app .models-workspace[data-mode=catalogue] > .directory-note,
+.framework-app .foundation-catalogue > .directory-note { max-width:none; }
+@media(max-width:580px) {
+  .framework-app .catalogue-explorer .directory-family-card { padding:1rem; }
+}

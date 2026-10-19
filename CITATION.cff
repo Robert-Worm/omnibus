@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Gebruik je Omnibus in onderzoek of publicaties? Vermeld de bron dan graag zo."
+title: "Omnibus: van brondocument naar toetsingskader"
+abstract: >-
+  Lokale applicatie voor auditors en onderzoekers om rapporten, wetten, kaders en
+  modellen te verkennen, normen en toetspunten te kiezen, ze te koppelen aan
+  onderzoeksvragen en het toetsingskader naar Excel te exporteren. Met een lokale
+  AI-koppeling (MCP) en zes herbruikbare AI-skills.
+type: software
+authors:
+  - family-names: Worm
+    given-names: Robert
+url: "https://github.com/Robert-Worm/omnibus"
+repository-code: "https://github.com/Robert-Worm/omnibus"
+license: PolyForm-Noncommercial-1.0.0
+keywords:
+  - audit
+  - toetsingskader
+  - internal audit
+  - risk management
+  - MCP
+  - AI skills

@@ -1,0 +1,268 @@
+/* Shared reading rhythm. No change to source text or exported workbook typography. */
+.framework-app .research-start > p,
+.framework-app .criterion-summary,
+.framework-app .model-catalogue-row p,
+.framework-app .cev-dimension-definition,
+.framework-app .cev-probe,
+.framework-app .model-question-text,
+.framework-app .sub-suggestions section > p,
+.framework-app .subquestion-option > span > span {
+  font-size: var(--text-body);
+  line-height: 1.55;
+}
+.framework-app .model-catalogue-row small,
+.framework-app .research-item small,
+.framework-app .criterion-reference,
+.framework-app .sub-proposal-origin {
+  font-size: var(--text-meta);
+  line-height: 1.5;
+}
+.framework-app .cev-dimensions > button,
+.framework-app .model-catalogue-row div button,
+.framework-app .source-title {
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+.framework-app input:not([type=checkbox]):not([type=radio]),
+.framework-app textarea,
+.framework-app .workflow-surface input:not([type=checkbox]):not([type=radio]),
+.framework-app .workflow-surface textarea,
+[data-slot=sheet-content] input:not([type=checkbox]):not([type=radio]),
+[data-slot=sheet-content] textarea {
+  font-family: var(--font-ui);
+  font-size: var(--text-label);
+  line-height: 1.5;
+  min-height: 2.5rem;
+}
+.framework-app input::placeholder,
+.framework-app textarea::placeholder { font:inherit; }
+.framework-app .report-choice-panel > a { font:400 var(--text-label)/1.5 var(--font-ui); }
+.framework-app .goal-fields[hidden] { display:none; }
+.framework-app .criterion-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  margin: .5rem 0;
+}
+.framework-app .criterion-source-link {
+  display: inline-block;
+  font-size: var(--text-label);
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  padding: .25rem 0;
+}
+.framework-app .research-start > h2 { margin-bottom: .5rem; }
+.framework-app .research-start .proposal-section-title {
+  display: block;
+  margin: 1rem 0 .5rem;
+  font-size: var(--text-body);
+}
+.framework-app .central-help,
+.framework-app .subquestion-picker {
+  margin: 1rem 0;
+  border: 1px solid var(--border);
+  background: #f5f8fc;
+  border-radius: .375rem;
+  padding: .75rem 1rem;
+  min-width: 0;
+}
+.framework-app :is(.central-help,.subquestion-picker) > summary {
+  cursor: pointer;
+  color: #234f80;
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.framework-app .central-help .central-proposals { max-height: 22rem; overflow: auto; }
+.framework-app .central-help .goal-question-direction { margin: .75rem 0; }
+.framework-app .subquestion-options { display: grid; gap: .75rem; margin-top: .75rem; max-height: 28rem; overflow-y: auto; padding-right: .25rem; }
+.framework-app .subquestion-option {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0,1fr);
+  align-items: start;
+  gap: .75rem;
+  padding: .875rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: .25rem;
+  cursor: pointer;
+}
+.framework-app .subquestion-option [role=checkbox] { margin-top: .2rem; }
+.framework-app .subquestion-option > span { display: grid; gap: .375rem; overflow-wrap: anywhere; }
+.framework-app .sub-proposal-origin { display: block; color: #50647d; font-weight: 400; }
+.framework-app .proposal-scope-note {
+  display: block;
+  margin: .5rem 0;
+  padding-left: .625rem;
+  border-left: 3px solid #c29a50;
+  color: #624b20;
+  font-size: var(--text-label) !important;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.framework-app .model-question-adoption { margin: 1rem 0; padding: .75rem 0; }
+.framework-app .model-question-adoption [role=radiogroup] { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; }
+.framework-app .model-question-adoption label { display: flex; align-items: center; gap: .5rem; }
+.framework-app .use-goal-subject { height: auto; white-space: normal; text-align: left; justify-content: start; line-height: 1.5; }
+.report-reading, .report-page-text { font-size: var(--text-body); line-height: 1.65; }
+.reader-layout-notice { font: 400 var(--text-label)/1.5 var(--font-ui); color: #50647d; margin: .75rem 0; padding: .75rem; background: #edf3f9; }
+.report-reading .reader-verbatim { padding: .5rem .75rem; margin: .25rem 0; border-left: 2px solid #bed0e2; }
+.report-reading .reader-verbatim pre { font-size: var(--text-body); line-height: 1.55; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.framework-app .start-actions { flex-wrap: wrap; gap: .75rem; }
+.framework-app :is(.source-plan-destination,.bulk-link-panel > label) { display: grid; gap: .5rem; margin-block: .75rem; font-size: .875rem; }
+.framework-app :is(.source-plan-destination,.bulk-link-panel) select { width:100%; min-width:0; max-width:100%; padding:.55rem; border:1px solid #bdcddd; border-radius:4px; background:white; color:inherit; }
+.framework-app .remaining-link-choice { align-items:start; margin-block:.75rem; }
+.framework-app .remaining-link-choice small { display:block; font-weight:normal; color:#52677c; margin-top:.25rem; }
+.framework-app .bulk-link-panel { background:#f3f7fb; border:1px solid #d4e0eb; border-radius:6px; padding:.75rem; margin-bottom:.75rem; }
+.framework-app .bulk-link-panel summary { cursor:pointer; font-size:.875rem; font-weight:600; }
+.framework-app .bulk-link-items { display:grid; gap:.6rem; max-height:18rem; overflow-y:auto; margin-block:.5rem .75rem; }
+.framework-app .bulk-link-items label { display:flex; align-items:start; gap:.5rem; font-size:.875rem; overflow-wrap:anywhere; }
+.framework-app .bulk-target-preview { display:block; font-size:.875rem; line-height:1.5; overflow-wrap:anywhere; margin:0; }
+.framework-app .question-bulk-link { margin: .75rem 0; }
+.question-bulk-body > p { margin: .65rem 0; font-size:.875rem; line-height:1.5; }
+.question-bulk-body .bulk-link-items small { display:block; font-size:.8125rem; color:var(--rm-muted); margin-top:.15rem; }
+.question-bulk-body > button { white-space:normal; height:auto; min-height:2rem; text-align:left; }
+.framework-app .pilot-corpus-note { font-size:.8125rem; line-height:1.5; color:var(--rm-muted); margin:.65rem 0 0; max-width:66rem; }
+.framework-app .research-first-question .research-bank { align-self: start; position: static; margin-top: 0; }
+.framework-app .export-preview-navigation { display:grid; gap:.65rem; margin:1rem 0; min-width:0; }
+.framework-app .export-preview-navigation label { display:grid; gap:.4rem; font-size:var(--text-label); min-width:0; }
+.framework-app .export-preview-navigation select { width:100%; min-width:0; max-width:100%; padding:.6rem; border:1px solid var(--border); border-radius:4px; color:inherit; background:var(--rm-surface); }
+.framework-app .export-preview-navigation > div { display:flex; align-items:center; justify-content:space-between; gap:.5rem; font-size:var(--text-label); }
+.framework-app .cev-question-detail { margin:.6rem 0; }
+.framework-app .cev-question-detail > summary { cursor:pointer; color:var(--rm-muted); font-size:var(--text-label); padding:.2rem 0; }
+.framework-app .question-read-toggle { display:flex; align-items:center; gap:.5rem; margin:.6rem 0 1rem; font-size:var(--text-label); }
+.framework-app .building-block-context { color:var(--rm-muted); font-size:var(--text-meta); line-height:1.5; }
+.framework-app .building-block-question { font-size:var(--text-label); line-height:1.6; white-space:pre-wrap; margin:.6rem 0 0; }
+.framework-app .process-group-context { display:grid; gap:.5rem; padding:.8rem 1rem; margin:1rem 0; border-left:3px solid var(--border); background:var(--rm-surface); font-size:var(--text-label); }
+.framework-app .process-group-context > div { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem 1rem; }
+.framework-app .process-group-context button { white-space:normal; height:auto; min-height:2.125rem; text-align:left; }
+.framework-app .process-group-context small { color:var(--rm-muted); }
+.framework-app .goal-builder .research-direction-picker [data-slot="radio-group"] { grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)); }
+.framework-app :is(.source-title,.cev-dimensions > button,.model-catalogue-row div button) { font-size: var(--text-body) !important; }
+@media (max-width: 650px) {
+  .framework-app :is(.central-help,.subquestion-picker) { padding: .75rem; }
+  .framework-app .subquestion-option { padding: .75rem; gap: .5rem; }
+}
+/* Search results share the existing restrained source/card styling. */
+.criterion-search-results { margin: 1.5rem 0; }
+.criterion-search-source { margin: 1rem 0; border: 1px solid var(--border); border-radius: .5rem; overflow: hidden; }
+.criterion-search-source > h3 { padding: .8rem 1rem; margin: 0; background: var(--muted); }
+.criterion-search-source article { display: flex; align-items: start; gap: 1rem; padding: 1rem; border-top: 1px solid var(--border); }
+.criterion-search-source article > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.criterion-search-source h4 { margin: .3rem 0; font-size: var(--text-body); }
+.criterion-search-source p { margin: .4rem 0; }
+@media(max-width:700px) { .criterion-search-source article { flex-direction: column; } }
+.bulk-link-group { min-width: 0; margin: .75rem 0; padding: .75rem; border: 1px solid var(--border); border-radius: .4rem; }
+.bulk-link-group legend { max-width: 100%; padding: 0 .3rem; font-weight: 600; overflow-wrap: anywhere; }
+.bulk-link-group legend small,.attached-block-group summary small,.bank-group-heading small { display: block; color: var(--muted-foreground); font-weight: normal; }
+.bulk-link-group > button { margin: .4rem 0; }
+.attached-block-group { padding: .6rem; margin: .7rem 0; border: 1px solid var(--border); border-radius: .4rem; }
+.attached-block-group summary { cursor: pointer; overflow-wrap: anywhere; font-weight: 600; padding: .25rem; }
+.attached-block-group details > .norm-card { margin-top: .5rem; }
+.bank-group-heading { margin: 1rem 0 .5rem; overflow-wrap: anywhere; }
+.attached-block-group .group-summary-copy { display: inline-block; vertical-align: top; max-width: calc(100% - 1.5rem); }
+.framework-app .research-bank .research-item { display: grid; grid-template-columns: 16px minmax(0,1fr); align-items: start; }
+.framework-app .research-bank .research-item-label { grid-column: 2; min-width: 0; }
+.framework-app .research-bank .research-item > [data-slot="button"] { grid-column: 2; justify-self: end; }
+html[data-appearance=dark] .framework-app .creator-testing-aspects label:not([data-selected=true]) { background: var(--rm-surface); color: var(--foreground); }
+.criterion-search-source article > .criterion-result-actions { flex: 0 0 auto; display: flex; flex-direction: column; gap: .5rem; align-items: stretch; }
+.group-drag-handle { cursor: grab; user-select: none; -webkit-user-select: none; padding: .4rem; border: 1px dashed var(--border); border-radius: .35rem; }
+.group-drag-handle:active { cursor: grabbing; }
+.group-drag-handle > span { display: flex; align-items: center; gap: .3rem; font-size: .85rem; margin-top: .3rem; }
+.attached-block-group > .group-drag-handle { display: flex; align-items: center; gap: .3rem; margin-bottom: .4rem; font-size: .85rem; }
+.source-plan-starter { margin: .6rem 0 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--muted); }
+.source-plan-starter label { display: block; font-weight: 600; }
+.source-plan-starter select { width: 100%; max-width: 100%; white-space: normal; padding: .6rem; border: 1px solid var(--border); background: var(--background); border-radius: .3rem; }
+.source-plan-starter > small { display: block; margin-top: .5rem; }
+
+/* Export review text uses the same compact scale as the adjacent selection summary. */
+.framework-app .creator-review { font:400 var(--text-label)/1.5 var(--font-ui); }
+.framework-app .creator-review > ul { list-style:none; padding:0; margin:.65rem 0; }
+.framework-app .creator-review li { font-size:inherit; line-height:inherit; overflow-wrap:anywhere; }
+.framework-app .creator-review li + li { margin-top:.75rem; }
+.framework-app .creator-review li > strong { font-size:inherit; font-weight:600; }
+.framework-app .creator-review-status { display:block; margin-top:.2rem; color:var(--rm-muted); font-size:inherit; }
+.framework-app .creator-review > a { font-size:inherit; text-underline-offset:.15em; }
+.report-source-status { padding:1rem; font:400 var(--text-label)/1.5 var(--font-ui); color:var(--foreground); }
+
+/* Model choice guidance uses the same reading and control sizes as the catalogue. */
+.framework-app .models-workspace .model-library-toolbar { margin:0 0 1rem; align-items:end; gap:.75rem 1rem; }
+.framework-app .models-workspace .model-library-toolbar label { display:grid; gap:.4rem; width:min(100%,42rem); min-width:0; font:400 var(--text-label)/1.4 var(--font-ui); }
+.framework-app .models-workspace .model-library-toolbar input { width:100%; max-width:none; height:2.5rem; font:400 var(--text-label)/1.4 var(--font-ui); }
+.framework-app .models-workspace .model-library-toolbar input::placeholder { font:inherit; }
+.framework-app .model-introduction { min-width:0; max-width:95ch; }
+.framework-app .model-introduction p { margin:.35rem 0 0; font:400 var(--text-label)/1.5 var(--font-ui); color:var(--foreground); }
+.framework-app .model-introduction strong { font-weight:600; }
+.framework-app .model-introduction .model-attribution,
+.framework-app .model-introduction .model-boundary { font:400 var(--text-label)/1.5 var(--font-ui); color:var(--rm-muted); }
+.framework-app .model-introduction .model-boundary { margin-top:.75rem; }
+.framework-app .models-workspace .model-catalogue { grid-template-columns:minmax(0,1fr); gap:.65rem; }
+.framework-app .models-workspace .model-catalogue-row { grid-template-columns:20px minmax(0,1fr) auto; gap:.75rem; padding:1rem; }
+.framework-app .model-catalogue-actions { display:flex; flex-direction:column; align-items:flex-end; gap:.4rem; }
+.framework-app .model-catalogue-actions .model-selection-count { margin:0; padding:0; background:transparent; font:400 var(--text-label)/1.5 var(--font-ui); color:var(--rm-muted); }
+.framework-app .model-choice-details { margin-top:.4rem; font:400 var(--text-label)/1.5 var(--font-ui); }
+.framework-app .model-choice-details summary,
+.framework-app .model-catalogue-help summary { cursor:pointer; color:var(--rm-accent); }
+.framework-app .model-choice-details[open] { padding-bottom:.25rem; }
+.framework-app .model-result-count,
+.framework-app .model-catalogue-help { font:400 var(--text-label)/1.5 var(--font-ui); color:var(--rm-muted); padding:.5rem 0; }
+.framework-app .model-catalogue-help p { max-width:75ch; margin:.5rem 0 0; }
+/* Open models: a quiet introduction, paired setup controls and a roomier variable list. */
+.framework-app .cev-workbench { container:model-workbench / inline-size; }
+.framework-app .cev-workbench .cev-heading { align-items:start; gap:1rem; flex-wrap:wrap; }
+.framework-app .cev-workbench .cev-heading > div:first-child { flex:1 1 26rem; min-width:0; }
+.framework-app .models-workspace .cev-heading-actions { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.model-information-actions { display:flex; gap:.375rem; }
+.framework-app .models-workspace .cev-heading-actions button { height:2rem; min-height:2rem; }
+.framework-app .model-information-trigger { width:2rem; padding:0; }
+.model-information-dialog { width:min(38rem,calc(100vw - 2rem)); max-width:38rem; max-height:calc(100dvh - 3rem); overflow-y:auto; padding:1.25rem; font:400 .875rem/1.55 var(--font-ui); color:var(--foreground); background:var(--card,white); }
+.model-information-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.model-information-heading [data-slot=dialog-title] { font:600 1.125rem/1.4 var(--font-ui); color:var(--primary); }
+.model-information-dialog [data-slot=dialog-description] { font:inherit; color:var(--rm-muted); }
+.model-information-body { display:grid; gap:1rem; min-width:0; overflow-wrap:anywhere; }
+.model-information-body p { margin:0; }
+.model-information-body strong { display:block; margin-bottom:.25rem; font-weight:600; }
+.model-information-body ul { padding-left:1.25rem; list-style:disc; }
+.model-information-body li + li { margin-top:.5rem; }
+.model-information-body a { color:var(--rm-accent); text-decoration:underline; }
+.framework-app .cev-setup { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); align-items:start; gap:1.25rem; background:var(--rm-surface); border:1px solid var(--border); border-radius:.75rem; padding:1rem; margin-top:1rem; }
+.framework-app .cev-setup .cev-context { margin:0; gap:.5rem; }
+.framework-app .cev-setup .cev-level-summary { display:flex; flex-wrap:wrap; gap:.5rem; padding:0; margin:0; background:transparent; }
+.framework-app .cev-setup .cev-level-summary > strong { flex:0 0 100%; }
+.framework-app .cev-setup .cev-level-summary > button { flex:1 0 auto; white-space:nowrap; }
+.framework-app .cev-setup :is(label,strong,input,button) { font-size:.875rem; line-height:1.5; }
+.framework-app .cev-setup :is(label,strong) { font-weight:600; }
+.framework-app .cev-setup input { height:2.625rem; }
+.framework-app .cev-setup button { white-space:normal; height:auto; min-height:2.625rem; }
+.framework-app .cev-setup .use-goal-subject { text-align:left; overflow-wrap:anywhere; }
+.framework-app .cev-workbench .cev-selection { background:transparent; border-bottom:1px solid var(--border); gap:.5rem .75rem; padding:.75rem 0; margin:.5rem 0 1rem; }
+.framework-app .cev-workbench .cev-selection > strong { margin-right:auto; font-weight:500; }
+.framework-app .cev-workbench .cev-panels { grid-template-columns:minmax(18rem,1fr) minmax(0,1.9fr); gap:1.5rem; }
+.framework-app .cev-workbench .cev-dimensions { padding:.75rem; background:var(--rm-surface); border:1px solid var(--border); border-radius:.75rem; }
+.framework-app .cev-workbench .cev-dimensions > button { font-size:.875rem !important; line-height:1.5; }
+.framework-app .cev-workbench :is(.cev-dimension-definition,.cev-dimension-number,.cev-count,.cev-dimensions-caption,.cev-wording,.cev-note,.cev-question-kind,.cev-questions > header p,.cev-selection,.cev-options,.cev-filters button,.cev-question-actions button,.cev-question-detail) { font-size:.875rem; line-height:1.55; }
+.framework-app .cev-workbench .cev-questions > header h3 { font:600 1rem/1.5 var(--font-ui); }
+.framework-app .cev-question-heading { display:flex; align-items:start; gap:.5rem; }
+.framework-app .cev-question-heading > label { flex:1; min-width:0; }
+.framework-app .cev-question-heading .cev-remove-question { flex:none; width:2rem; height:2rem; margin:-.25rem -.25rem 0 0; padding:0; color:var(--rm-muted); }
+@container model-workbench (max-width:900px) {
+  .framework-app .cev-setup { grid-template-columns:minmax(0,1fr); gap:.875rem; }
+}
+@container model-workbench (max-width:760px) {
+  .framework-app .cev-workbench .cev-panels { grid-template-columns:minmax(0,1fr); }
+  .framework-app .cev-workbench .cev-dimensions { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .framework-app .cev-workbench .cev-dimension-definition { display:none; }
+  .framework-app .cev-workbench .cev-mobile-definition { display:block; }
+}
+@container model-workbench (max-width:440px) {
+  .framework-app .cev-workbench .cev-dimensions { grid-template-columns:minmax(0,1fr); }
+  .framework-app .cev-setup { padding:.75rem; }
+  .framework-app .cev-setup .cev-level-summary { flex-direction:column; }
+  .framework-app .cev-setup .cev-level-summary > strong { flex-basis:auto; }
+}
+@media(max-width:600px) {
+  .framework-app .models-workspace .model-catalogue-row { grid-template-columns:20px minmax(0,1fr); }
+  .framework-app .model-catalogue-actions { grid-column:2; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+}

@@ -1,0 +1,3 @@
+# Preserve baseline bytes: source/review hashes may depend on exact line endings.
+# Do not introduce automatic newline conversion during this Git-only setup.
+* -text

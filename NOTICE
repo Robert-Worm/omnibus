@@ -1,0 +1,16 @@
+Project Omnibus
+Copyright 2026 Robert Worm and contributors.
+
+De eigen code, documentatie en skills van Omnibus vallen onder de
+PolyForm Noncommercial License 1.0.0 (zie LICENSE): vrij te gebruiken,
+aan te passen en te delen, niet voor commercieel gebruik.
+Deze notitie wijzigt de licentievoorwaarden niet en verleent geen rechten op bronverzamelingen.
+
+Licenties van derden
+- De shadcn-stylesheet behoudt zijn MIT-licentie in app/vendor/shadcn-LICENSE.txt.
+- Ingebedde lettertypen behouden hun vermeldingen en SIL Open Font License-tekst in app/rijksmap-fonts.css.
+- npm-afhankelijkheden behouden hun eigen licenties; package-lock.json legt de versies vast.
+  De opdracht release:sbom maakt een overzicht van afhankelijkheden, geen juridische goedkeuring.
+
+Bronrapporten, wetten, kaders, modelpublicaties en onderzoeksdata vallen niet
+onder deze notitie. Die worden apart van de coderepository beheerd.

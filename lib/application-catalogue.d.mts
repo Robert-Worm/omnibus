@@ -1,0 +1,13 @@
+import type {Framework} from './framework-types';
+import type {Theme} from '../app/workspace-catalogues';
+type NavigationView=Theme & {axis:'themes'|'processes';categoryId:string;description:string};
+export const corpus:{framework:Framework;source:{id:string;source_sha256:string;pages:{page:number;text:string}[]}}[];
+export let baseFramework:Framework;
+export let previousFrameworks:Framework[];
+export const legacyThemes:Theme[];
+export const discoveryViews:NavigationView[];
+export const themes:Theme[];
+export const reportViews:Theme[];
+export const workspaces:Theme[];
+export const catalogueRouting:{reports:Record<string,string>;workspaces:Record<string,string[]>};
+export function projectCatalogueKeys(value:unknown):string[];

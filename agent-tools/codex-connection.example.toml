@@ -1,0 +1,8 @@
+# Example only: this file is NOT installed automatically.
+# Merge this section into the chosen client's MCP configuration after review.
+[mcp_servers.omnibus]
+command = "C:/Program Files/nodejs/node.exe"
+args = ["C:/replace-with-your-checkout/agent-tools/server.mjs"]
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+default_tools_approval_mode = "writes"

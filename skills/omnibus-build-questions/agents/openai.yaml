@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus: onderzoeksvragen"
+  short_description: "Ontwerp onderbouwde onderzoeks- en interviewvragen"
+  default_prompt: "Gebruik $omnibus-build-questions om passende centrale vragen, deelvragen en interviewvragen te ontwerpen. Bepaal eerst het onderzoeksobject en de begrippen, controleer de brondekking en lever een vraagpakket zonder de tool te wijzigen."
