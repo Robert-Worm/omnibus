@@ -43,6 +43,8 @@ De koppeling gebruikt **MCP** (Model Context Protocol), een standaard waarmee AI
 
    De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste paden voor jouw computer zien.
 
+   ![Het venster AI koppelen: drie stappen om Omnibus in je AI-app te koppelen, met een knop om de instelling te kopiëren](../images/ai-koppelen.png)
+
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 
 ## Let op

@@ -33,7 +33,14 @@ Kies hoe je begint:
 
 Beide routes komen uit bij hetzelfde kader. Je kunt later van route wisselen.
 
-![Het startscherm met de twee routes](../images/omnibus-overview.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/omnibus-overview-donker.png">
+  <img src="../images/omnibus-overview.png" alt="Het startscherm met de twee routes: vanuit een vraag of vanuit signalen">
+</picture>
+
+Na je keuze geef je de onderzoeksrichting en het onderwerp op:
+
+![Stap 1: de onderzoeksrichting Diagnostisch is gekozen en het onderwerp ingevuld](../images/stap-1-onderzoeksrichting.png)
 
 ### 2. Verzamel
 
@@ -46,7 +53,10 @@ Blader door de bronnen en kies wat je nodig hebt:
 
 Bij elke norm zie je de samenhang tussen doel, risico, beheersdoelstelling en beheersmaatregel. Je kiest losse toetspunten, een hele norm of een hele groep.
 
-![Normen uit een rapport, met doel, risico en beheersing naast elkaar](../images/stap-2-verzamel.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/stap-2-verzamel-donker.png">
+  <img src="../images/stap-2-verzamel.png" alt="Stap 2: normen uit het Besluit CIO-stelsel, met doel, risico, beheersdoelstelling en beheersmaatregel naast elkaar; zes toetspunten zijn gekozen">
+</picture>
 
 Twijfel je over een norm? Open de bron. Je leest dan de oorspronkelijke tekst, met de passage gemarkeerd.
 
@@ -57,7 +67,7 @@ Schrijf je centrale onderzoeksvraag en deelvragen. Koppel de gekozen bouwstenen 
 - **Zelf formuleren:** je schrijft de vragen, met voorbeelden als hulp.
 - **Vanuit je selectie:** Omnibus doet een voorstel op basis van wat je hebt gekozen. Jij past het aan.
 
-![Twee manieren om je vragen op te bouwen](../images/stap-3-bouw-je-kader.png)
+![Stap 3: een centrale onderzoeksvraag met zes gekoppelde bouwstenen](../images/stap-3-bouw-je-kader.png)
 
 ### 4. Exporteer
 
@@ -71,7 +81,7 @@ Kies een werkvorm voor je Excel-bestand:
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde.
 
-![De exportstap met drie werkvormen](../images/stap-4-exporteer.png)
+![Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen](../images/stap-4-exporteer.png)
 
 ## Je werk bewaren en delen
 

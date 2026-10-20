@@ -63,7 +63,12 @@ De eerste opdracht controleert of de database compleet en ongewijzigd is. Je zie
 npm start -- --settings local-data/runtime/local-build.json --port 4319
 ```
 
-Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
+Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`. Je ziet dan het startscherm:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/omnibus-overview-donker.png">
+  <img src="../images/omnibus-overview.png" alt="Het startscherm van Omnibus na een geslaagde installatie">
+</picture>
 
 ## Goed om te weten
 

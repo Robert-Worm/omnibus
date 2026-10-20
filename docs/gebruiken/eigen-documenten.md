@@ -28,6 +28,10 @@ flowchart LR
 3. **Controleer het resultaat.** De skill laat bij elke norm de bronpassage zien en markeert twijfels.
 4. **Je hebt nu een pakket** met normen, toetspunten en bronverwijzingen.
 
+Zo ziet een verwerkte bron er straks uit in Omnibus: links de norm en het toetspunt, rechts de oorspronkelijke tekst met de passage gemarkeerd.
+
+![Een verwerkte bron in Omnibus: links norm, toetspunt en beperkingen, rechts het rapport met de onderbouwende passage geel gemarkeerd](../images/bronpassage.png)
+
 Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bijdragen/bron-verwerken.md). De beheerder controleert het en neemt het op in de volgende database.
 
 ## Let op

@@ -39,7 +39,10 @@ Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *t
 
 Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapporten, uit wetten en uit normenkaders. Jij kiest wat past bij jouw onderzoek. Bij elke norm kun je de oorspronkelijke bron lezen, zodat je altijd weet waar hij vandaan komt.
 
-![Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen](docs/images/omnibus-overview.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-overview-donker.png">
+  <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
+</picture>
 
 <a id="zo-werkt-het"></a>
 ## Zo werkt het
@@ -56,6 +59,8 @@ flowchart LR
 2. **Verzamel.** Blader door rapporten, wetten, kaders en onderzoeksmodellen. Kies losse toetspunten, een norm of een hele groep.
 3. **Bouw je kader.** Schrijf je onderzoeksvragen en koppel de gekozen normen eraan.
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
+
+![Rondleiding van 25 seconden: een onderzoeksrichting kiezen, normen uit het CIO-stelsel selecteren, een centrale vraag met zes bouwstenen maken en het kader als Excel exporteren](docs/images/rondleiding.gif)
 
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 
