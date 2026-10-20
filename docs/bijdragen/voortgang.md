@@ -6,8 +6,8 @@
 
 | | In database | In bewerking | Ingeleverd | Open |
 | --- | ---: | ---: | ---: | ---: |
-| **Aanbevolen rapporten** (ADR, advies) | 27 | 0 | 0 | 515 |
-| **Alle rapporten op de Rijksmap** | 27 | 0 | 0 | 9089 |
+| **Aanbevolen rapporten** (ADR, advies) | 27 | 1 | 0 | 514 |
+| **Alle rapporten op de Rijksmap** | 27 | 1 | 0 | 9088 |
 | **Wetten en kaders** | 7 | 0 | 0 | 32 |
 | **Onderzoeksmodellen** | 14 | | | |
 
@@ -15,7 +15,9 @@ Database van 2026-10-19.
 
 ## Nu in bewerking
 
-Nog niemand. Wees de eerste: kies hieronder een bron.
+| Bron | Door | Sinds | Status |
+| --- | --- | --- | --- |
+| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | @Robert-Worm | 2026-10-20 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) |
 
 ## Waar kun je mee beginnen
 
