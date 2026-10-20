@@ -1,0 +1,43 @@
+{
+  "database": "2026-10-19",
+  "toelichting": "Bijwerken bij elke nieuwe databaserelease: welke Rijksmap-rapporten en welke wetten/kaders in de openbare database zitten.",
+  "rapporten": {
+    "2025-accountantsrapport-bij-de-25e-voortgangsrapportage-groot-project": "F35V25",
+    "2025-beheeronderzoek-begrotingsvoorbereiding": "BEGVOORB25",
+    "2025-beheersing-fraude-en-corruptierisicos": "FRAUDE25",
+    "2025-de-inrichting-van-regie-op-erp-systemen": "ERP25",
+    "2025-duurzame-bedrijfsvoering-leren-van-successen": "DUUR25",
+    "2025-evaluatie-programma-vim-vereenvoudiging-inkomensondersteuning-voor": "VIM25",
+    "2025-evaluatie-van-de-tek-crisis-regeling": "TEK25",
+    "2025-informatieverstrekking-over-de-bezoekfrequentie-van-de-inspectie-van-het": "IVHO25",
+    "2025-interne-audit-co2-prestatieladder-2024-ministerie-onderwijs-cultuur-en": "OCWCO224",
+    "2025-onderzoek-bsa-contractvoorwaarden-2023-2024": "BSA2324",
+    "2025-onderzoek-naar-basisonderhoudscontracten": "BOC25",
+    "2025-onderzoek-naar-de-uitvoering-van-het-nederlandse-hvp": "HVP25",
+    "2025-onderzoeksrapport-bevindingen-onderzoeksopdracht-proces-cloudtoets": "CLOUD25",
+    "2025-onderzoeksrapport-bio-normen-voor-donorregister-in-isms-2024-cibg": "CIBGBIO24",
+    "2025-onderzoeksrapport-evaluatie-programma-transitie-digiinkoop": "DIGIINKOOP25",
+    "2025-risicogericht-werken-bij-de-ilt": "ILTRISK25",
+    "2025-unit-vitale-belangen-terugkijken-en-vooruitkijken": "UVB25",
+    "2026-onderzoek-centraal-informatiepunt-onderzoek-telecommunicatie-ciot-bij": "CIOT25",
+    "2026-onderzoek-informatieveiligheid-en-gedrag-bij-ocw": "OCW26",
+    "2026-onderzoek-volwassenheid-informatiehuishouding-oorzakenanalyse": "IHH26",
+    "2026-onderzoeksrapport-autoriteit-dierwaardige-veehouderij": "ADV26",
+    "2026-onderzoeksrapport-bevindingen-onderzoeksopdracht-back-up-m365": "M36526",
+    "2026-onderzoeksrapport-skal-biocontrole-augustus-2024-tot-en-met-juli-2025": "SKAL25",
+    "2026-samenwerkingsrelatie-lvvn-rvo": "LVVN26",
+    "2026-sturing-en-beheersing-programma-open-overheid-spoor": "PROO26",
+    "2026-verkennend-onderzoek-uitvoerbaarheidstoetsen-ienw": "IENW26",
+    "2026-verkenning-van-de-niet-tijdig-uitgevoerde-betalingen-bij-de-indicator": "TOES26"
+  },
+  "wettenEnKaders": [
+    "WWKE",
+    "BVA2021",
+    "CIO2026",
+    "TR-CYBER",
+    "TR-THIRD",
+    "TR-BEHAV",
+    "TR-RESIL"
+  ],
+  "modellen": 14
+}
