@@ -18,7 +18,7 @@ const claimTemplate = "bron-claimen.yml";
 
 // ---------- werklijsten lezen ----------
 function readCsv(file) {
-  const text = readFileSync(file, "utf8").replace(/^﻿/, "");
+  const text = readFileSync(file, "utf8").replace(/^\uFEFF/, "");
   const rows = [];
   let row = [], field = "", quoted = false;
   for (let i = 0; i < text.length; i++) {
@@ -35,9 +35,9 @@ function readCsv(file) {
   const [head, ...body] = rows;
   return body.filter((r) => r.length === head.length).map((r) => Object.fromEntries(head.map((k, i) => [k, r[i]])));
 }
-const csvCell = (v) => (/[;"\n]/.test(String(v ?? "")) ? `"${String(v).replace(/"/g, '""')}"` : String(v ?? ""));
+const csvCell = (v) => (/[,;"\n]/.test(String(v ?? "")) ? `"${String(v).replace(/"/g, '""')}"` : String(v ?? ""));
 const writeCsv = (file, rows, cols) =>
-  writeFileSync(file, "﻿" + [cols.join(";"), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(";"))].join("\n") + "\n");
+  writeFileSync(file, "\uFEFF" + [cols.join(","), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(","))].join("\n") + "\n");
 
 const rapporten = readCsv(join(dataDir, "rapporten.csv"));
 const verwerkt = JSON.parse(readFileSync(join(dataDir, "verwerkt.json"), "utf8"));
@@ -179,7 +179,7 @@ function build(claims) {
     const s = statusOf("rapport", r.id);
     return { ...r, ...s, omnibus: verwerkt.rapporten[r.id] || "", rijksmap: rijksmapUrl(r.id), claimen: s.status === "open" ? claimLink(r.titel, rijksmapUrl(r.id)) : "" };
   });
-  const cols = ["status", "door", "sinds", "titel", "datum", "ministerie", "onderdeel", "bron", "aanbevolen", "omnibus", "rijksmap", "claimen", "issue", "id"];
+  const cols = ["status", "door", "titel", "datum", "ministerie", "onderdeel", "bron", "aanbevolen", "rijksmap", "claimen", "sinds", "issue", "omnibus", "id"];
   mkdirSync(outDir, { recursive: true });
   writeCsv(join(outDir, "werklijst-rapporten.csv"), rows, cols);
   writeCsv(join(outDir, "werklijst-aanbevolen.csv"), rows.filter((r) => r.aanbevolen === "ja"), cols);
