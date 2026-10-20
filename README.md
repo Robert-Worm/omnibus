@@ -42,6 +42,7 @@ flowchart LR
     A["1 · Onderzoeksrichting<br/>Begin met een vraag<br/>of met signalen"] --> B["2 · Verzamel<br/>Kies normen uit rapporten,<br/>wetten en kaders"]
     B --> C["3 · Bouw je kader<br/>Koppel de normen<br/>aan je onderzoeksvragen"]
     C --> D["4 · Exporteer<br/>Download je kader<br/>als Excel-werkdocument"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 1. **Onderzoeksrichting.** Begin vanuit een vraag van je opdrachtgever, of vanuit signalen en zorgen.

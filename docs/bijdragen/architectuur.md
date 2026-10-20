@@ -20,6 +20,7 @@ flowchart LR
     S <--> W
     W --> X["Projectbestand<br/>en Excel"]
     M --> X
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 1. **De database** bevat de verwerkte bronnen. Hij komt los van de code, via de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).

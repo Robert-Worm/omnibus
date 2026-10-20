@@ -21,6 +21,7 @@ Een paar begrippen:
 flowchart LR
     A["1 · Onderzoeksrichting"] --> B["2 · Verzamel"] --> C["3 · Bouw je kader"] --> D["4 · Exporteer"]
     D -.->|aanpassen| B
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 ### 1. Onderzoeksrichting

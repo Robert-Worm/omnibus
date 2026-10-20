@@ -22,6 +22,7 @@ flowchart LR
     A["Pakket uitpakken<br/>in de inbox"] --> B["plan.json<br/>maken"] --> C["content:prepare<br/>maakt intake.json"] --> D["content:intake<br/>controleert"]
     D -->|"FILES_VERIFIED…"| E["Door naar<br/>inhoudelijke review"]
     D -->|HOLD| F["Herstellen<br/>(zie hieronder)"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 ### 1. Zet het pakket in de inbox

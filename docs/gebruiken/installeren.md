@@ -17,6 +17,7 @@ Omnibus werkt op Windows, macOS en Linux. Je hebt geen account of internetverbin
 ```mermaid
 flowchart LR
     A["1 · Code ophalen"] --> B["2 · Installeren"] --> C["3 · Database uitpakken"] --> D["4 · Controleren<br/>en bouwen"] --> E["5 · Starten"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 ### 1. Haal de code op

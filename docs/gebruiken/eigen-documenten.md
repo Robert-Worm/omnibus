@@ -17,6 +17,7 @@
 ```mermaid
 flowchart LR
     A["Bron kiezen<br/>die je mag gebruiken"] --> B["Skill uitvoeren<br/>met je AI-assistent"] --> C["Controleren<br/>bronpassages en twijfels"] --> D["Pakket<br/>met bouwstenen"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 1. **Kies een bron die je mag verwerken.** Noteer de precieze versie of editie.

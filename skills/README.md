@@ -21,6 +21,7 @@ flowchart LR
         K["Kwaliteit beoordelen<br/>omnibus-review-audit-quality"]
     end
     Bron --> Kwaliteit
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 | Je wilt… | Skill |

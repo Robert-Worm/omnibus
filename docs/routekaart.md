@@ -14,6 +14,7 @@ flowchart LR
     N --> S4["4 · Samen bijdragen<br/>(loopt al)"]
     S4 --> S5["5 · Meer bronnen"]
     S5 --> S6["6 · Rijkere<br/>AI-koppeling"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 ## Wat er nu is

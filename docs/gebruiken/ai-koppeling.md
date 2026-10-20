@@ -18,6 +18,7 @@ flowchart LR
     U["Jij"] <--> AI["Je AI-assistent"]
     AI <-->|"lokale koppeling<br/>(MCP)"| O["Omnibus<br/>op je computer"]
     O --> F["Project en Excel<br/>in een eigen map"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 De koppeling gebruikt **MCP** (Model Context Protocol), een standaard waarmee AI-assistenten hulpmiddelen kunnen gebruiken. Omnibus start geen AI-model en heeft geen abonnement nodig; dat regelt je AI-assistent zelf.

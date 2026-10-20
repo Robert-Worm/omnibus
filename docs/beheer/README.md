@@ -13,6 +13,7 @@ flowchart TD
     C --> D["3 · Database publiceren<br/>en controleren"]
     D --> E["4 · Release op GitHub<br/>+ voortgang bijwerken"]
     E --> F["✅ Claim sluiten<br/>met label verwerkt"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 1. **Pakket controleren.** Is het ingeleverde pakket compleet, en zijn de bestanden ongewijzigd aangekomen? Zie [pakket controleren](pakket-controleren.md).

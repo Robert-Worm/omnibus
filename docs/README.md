@@ -7,6 +7,7 @@ flowchart TD
     S{"Wat wil je doen?"} --> G["🧭 Gebruiken<br/>Omnibus installeren<br/>en een kader maken"]
     S --> B["🤝 Bijdragen<br/>Een bron verwerken<br/>of de code verbeteren"]
     S --> H["🛠️ Beheren<br/>Pakketten controleren<br/>en de database publiceren"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 ## 🧭 Gebruiken

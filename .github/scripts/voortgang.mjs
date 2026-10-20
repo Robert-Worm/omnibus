@@ -289,6 +289,7 @@ function build(claims) {
     "  B -->|/inleveren| C[\"📦 Ingeleverd\"]",
     "  C -->|Controle en nieuwe database| D[\"✅ In database\"]",
     "  B -->|/vrijgeven| A",
+    "  classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;",
     "```",
     "",
     "1. **Claimen (check-out):** klik op *Claimen* bij een bron. Er opent een kort formulier; na verzenden staat de bron op jouw naam.",

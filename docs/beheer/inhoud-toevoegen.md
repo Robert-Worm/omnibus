@@ -7,6 +7,7 @@
 ```mermaid
 flowchart LR
     A["Pakket<br/>gecontroleerd"] --> B["Inhoud<br/>beoordelen"] --> C["Integreren in de<br/>verwerkingsomgeving"] --> D["Nieuwe database<br/>maken en vergelijken"] --> E["Testen in een<br/>aparte build"] --> F["Bewust<br/>in gebruik nemen"]
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 | Stap | Wie | Resultaat |

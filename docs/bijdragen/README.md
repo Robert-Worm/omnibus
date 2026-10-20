@@ -21,6 +21,7 @@ flowchart LR
     B -->|"3 · /inleveren"| C["📦 Ingeleverd"]
     C -->|"4 · Controle door<br/>de beheerder"| D["✅ In database"]
     B -->|"/vrijgeven"| A
+    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
 1. **Claimen (check-out).** Kies een open bron in de [voortgang](voortgang.md) of een van de werklijsten, en klik op *Claimen*. Er opent een kort formulier. Na verzenden staat de bron op jouw naam, zichtbaar voor iedereen.
