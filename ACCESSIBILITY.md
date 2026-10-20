@@ -1,6 +1,6 @@
 # Toegankelijkheid
 
-Omnibus moet bruikbaar zijn voor iedereen, ook met alleen een toetsenbord, een schermlezer of een vergroot scherm.
+> **In het kort:** Omnibus moet bruikbaar zijn voor iedereen, ook met alleen een toetsenbord, een schermlezer of een vergroot scherm.
 
 ## Waar we op letten
 
@@ -12,10 +12,10 @@ Omnibus moet bruikbaar zijn voor iedereen, ook met alleen een toetsenbord, een s
 
 ## Bekende beperkingen
 
-- **Geen formele toetsing.** Er is nog geen externe WCAG-audit gedaan. Een acceptatietest met schermlezers staat op de [routekaart](docs/routekaart.md).
+- **Geen formele toetsing.** Er is nog geen externe WCAG-audit en geen test met schermlezers gedaan. Ervaringen hiermee zijn heel welkom.
 - **Bronbestanden.** Omnibus toont passages uit rapporten en wetten van andere uitgevers. Of de originele pdf's toegankelijk zijn, ligt bij die uitgever.
 - **Complexe schermen.** Matrices met veel normen en toetspunten zijn informatiedicht. Verbeteringen hierin zijn welkom.
 
 ## Een barrière melden
 
-Loop je ergens tegenaan? [Open een issue](../../issues/new/choose) met het label "accessibility". Vermeld het scherm, wat er misging, en welk hulpmiddel en welke browser je gebruikt.
+Loop je ergens tegenaan? [Meld het als fout](https://github.com/Robert-Worm/omnibus/issues/new?template=bug_report.md) en zet "Toegankelijkheid" in de titel. Vermeld het scherm, wat er misging, en welk hulpmiddel en welke browser je gebruikt.

@@ -17,7 +17,7 @@ ketenregels uit [de rapportwerkwijze](references/report-method.md). Herhaal niet
 de volledige extractie of technische integratie; originele bronnen en bronstatus
 blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissie.
 
-1. Zoek de meegeleverde Omnibus-checkout via `AGENTS.md` en `docs/content-intake.md`.
+1. Zoek de meegeleverde Omnibus-checkout via `AGENTS.md` en `docs/beheer/pakket-controleren.md`.
    Lees de actuele `AGENTS.md`. Een code-only checkout bevat bewust geen private
    broncollectie. De aanwezige verificatiehelpers vormen zonder hun broninvoer
    geen complete toelatingsomgeving; gebruik daarvoor de expliciet aangewezen
@@ -51,7 +51,7 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
 
 ## Overdraagbare aanlevering
 
-Lees `docs/content-intake.md` als de checkout die bevat. Maak bij overdracht een
+Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Maak bij overdracht een
 apart `intake.json` rond kopieën van het bestaande rapportpakket; wijzig geen
 bevroren kitbestanden, reviewbasis of oorspronkelijke ontvangstbewijzen.
 Gebruik contract `report-kit-1.1` alleen voor een pakket volgens die methode.

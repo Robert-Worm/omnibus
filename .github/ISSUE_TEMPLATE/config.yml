@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vraag of idee
+    url: https://github.com/Robert-Worm/omnibus/discussions
+    about: Stel een vraag of deel een idee in Discussions.
+  - name: Beveiligingsprobleem
+    url: https://github.com/Robert-Worm/omnibus/blob/main/SECURITY.md
+    about: Meld beveiligingsproblemen vertrouwelijk, niet in een openbaar issue.

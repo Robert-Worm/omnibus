@@ -1,9 +1,8 @@
-# Lokale Content Workbench
+# Content Workbench
 
-Lokale beheerweergave van EP09-S04, met handmatige werkstatus en afzonderlijk
-gecontroleerd bewijs. Een werkplek voor de
-bronnenbacklog; geen nieuw publiek CMS en geen wijziging aan de onderzoeksapp.
-De rapport-, kader- en modelskills blijven in afzonderlijke voorbereidingschats.
+> **In het kort:** een lokaal werkbord voor de beheerder om de verwerking van veel bronnen bij te houden. Voor bijdragers is er het [claimsysteem op GitHub](../bijdragen/README.md); de Workbench is het interne overzicht ernaast.
+
+De Workbench draait alleen op je eigen computer (`127.0.0.1`). Er is geen account of extra dienst nodig. Het is geen publiek systeem en verandert niets aan de applicatie of de database.
 
 ## Starten en importeren
 
@@ -22,11 +21,10 @@ beschikbaar. De server bindt alleen aan `127.0.0.1`; open geen firewallpoort en
 plaats er geen publiek toegankelijke proxy of tunnel voor. Stop met Ctrl+C.
 De gegevens blijven na herstart bewaard. Dit is een lokaal beheerdershulpmiddel:
 iedereen met toegang tot deze computer kan het lokale register gebruiken.
-Het is geen publieke multi-userdienst. Applicatieaccounts zijn sinds 19 oktober
-uit scope; deze lokale beheerweergave blijft daarom van de publieke leesapp gescheiden.
+Het is geen publieke multi-userdienst.
 
-De eerste import op 18 oktober 2026 bevat 9.116 rapportrecords en een subset van
-542 IIA/non-assurancerecords uit de aanwezige CSV-exports. Alle subsetrecords
+Een typische import bestaat uit de 9.116 rapporten van de Rijksmap en de subset
+van 542 aanbevolen ADR-rapporten (zie de [werklijsten](../bijdragen/README.md#welke-bron-kies-je)). Alle subsetrecords
 sluiten aan op de volledige lijst; zij worden niet dubbel geteld. Dit is geen
 claim over het actuele aantal documenten op een externe website. Er zijn geen
 bronnen gedownload en de oorspronkelijke exports zijn niet gewijzigd.
@@ -67,7 +65,7 @@ Geblokkeerd, herstel nodig en niet geschikt zijn aparte afhandelingslabels.
 Een handmatig ingevulde dossierverwijzing wordt als tekst bewaard en niet geopend of geverifieerd.
 Werkstatus start geen AI-opdracht en verandert geen bronpakket. Inhoudelijke
 review, HOLD, kandidaatcontrole en acceptatie blijven via de bestaande
-[inhoudsinbox](content-intake.md) lopen. Er is bewust geen knop ‘Publiceren’.
+[inhoudsinbox](pakket-controleren.md) lopen. Er is bewust geen knop ‘Publiceren’.
 Er wordt geen kunstmatige score of percentage ‘klaar’ getoond.
 
 Bij gelijktijdige wijzigingen wordt een verouderde opslag geweigerd. Heropen
@@ -143,8 +141,7 @@ de oorspronkelijke controledatum blijft staan totdat opnieuw wordt gecontroleerd
 Backup en herstelbestand zijn privé en blijven buiten Git. De opdracht versleutelt
 niets en uploadt niets: gebruik zelf beschermde opslag en een afzonderlijke veilige
 kopie. Een kopie op dezelfde schijf beschermt niet tegen verlies van die schijf.
-Dit is de lokale Workbench-herstelroute, **geen** afronding van de hosted backup-,
-versleutelings- of RPO/RTO-eisen van EP13-S02/K14.
+Dit is de lokale Workbench-herstelroute, geen oplossing voor een latere online versie.
 
 ## Controle en afbakening
 
@@ -164,9 +161,7 @@ externe scriptdependency of browseropslag met brongegevens.
 Nog niet gebouwd: automatische skilluitvoering, algemene reviewadapters voor
 wetten/kaders/modellen (hun publicatie-inventaris is wel zichtbaar), nieuwe wet-/kader-/modelinvoer, normannotaties,
 automatische waarde-/overlapscores. De huidige vervolgstappen staan in
-[de routekaart](routekaart.md).
-Authenticatie en accountrollen zijn sinds 19 oktober uit scope; deze lokale
-beheerweergave is geen publieke hostingvrijgave.
+[de routekaart](../routekaart.md).
 
 ## Intake, review en publicatie koppelen
 
@@ -243,20 +238,17 @@ Na bron- of pakketwijzigingen moet de opdracht opnieuw worden uitgevoerd.
 ‘Vernieuwen’ in de browser haalt alleen de laatst opgeslagen controle op en
 herverifieert geen bestanden. De controledatum is altijd zichtbaar.
 
-Na gebruikersacceptatie en integratiecontrole is UVB lokaal actief, met behoud
-van BVA. De aansluiting omvat alle 23 actieve rapporten: 12 unieke titel-/datummatches
-en 11 expliciete koppelingen. De eerdere UVB-kandidaat is geen actuele wachtrij
-meer. CIBG en UVB hebben gecontroleerde intake- en reviewbindingen; tien andere
-rapporten hebben nu een gecontroleerde historische reviewbinding. De overige
-elf krijgen geen reviewbadge op grond van hun publicatie alleen.
-
-De actieve publicatie bevat daarnaast 42 wet-/kaderpakketten en 14 modellen.
-Klik op het aantal voor titels, pakket-ID's en versie-identiteiten. Dit is een
-publicatie-inventaris, niet de claim dat al deze bronnen selecteerbaar, juridisch
-toepasselijk of opnieuw inhoudelijk gereviewd zijn. Hun aparte reviewdossiers en
-invoerworkflow worden hiermee niet als voltooid aangemerkt.
-
 ‘Gekoppeld bewijs’ filtert de lijst en het bord. Versies, koppelmethode,
 reviewbesluiten en controledatum staan in het brondossier. Een identieke versie
 die actief én in een kandidaat staat, krijgt in de compacte lijst alleen de
 actieve badge; het dossier bewaart beide publicatieverwijzingen.
+
+## Samengevat
+
+- Importeer de werklijsten als CSV en houd per bron de werkstap bij.
+- Werkstappen zijn handmatige notities, geen goedkeuringen.
+- Maak back-ups met `content:workbench-backup` en herstel naar een nieuw bestand.
+
+## Volgende stap
+
+Terug naar het [beheeroverzicht](README.md).

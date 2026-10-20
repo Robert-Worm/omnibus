@@ -110,7 +110,7 @@ for (const kind of Object.keys(intakeContracts)) {
         assert.equal(failure.diagnostic.unexpectedFieldCount, location === "files[1]" ? 1 : 0);
         assert.match(failure.diagnostic.nextCommand, phase === "prepare" ? /content:prepare/ : /content:intake.*--expect-sha256/);
         if (phase === "check") assert.match(failure.diagnostic.action, /do not edit.*intake.json/i);
-        assert.equal(failure.diagnostic.documentation, "docs/content-intake.md#hold-herstellen");
+        assert.equal(failure.diagnostic.documentation, "docs/beheer/pakket-controleren.md#hold-herstellen");
         assert.equal(JSON.stringify(failure).includes("private-field-do-not-echo"), false);
         assert.deepEqual(packageSnapshot(f), before);
         assert.equal(existsSync(f.output), false);

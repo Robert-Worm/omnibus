@@ -1,31 +1,68 @@
-# Documentatie
+# Wegwijzer
 
-Begin bij het [projectoverzicht](../README.md). De interface en alle handleidingen zijn in het Nederlands.
+> **In het kort:** alle documentatie van Omnibus, ingedeeld naar wat je wilt doen. Kies hieronder je route.
 
-## De applicatie gebruiken en ontwikkelen
+```mermaid
+flowchart TD
+    S{"Wat wil je doen?"} --> G["🧭 Gebruiken<br/>Omnibus installeren<br/>en een kader maken"]
+    S --> B["🤝 Bijdragen<br/>Een bron verwerken<br/>of de code verbeteren"]
+    S --> H["🛠️ Beheren<br/>Pakketten controleren<br/>en de database publiceren"]
+```
 
-- [Setup en tests](contributor-setup.md): installeren, testen en lokaal starten.
-- [Eigen documenten](own-content.md): wat werkt en wat private verwerkingstools vraagt.
-- [Architectuur](contributor-architecture.md): codestructuur en de grens tussen code en data.
-- [Lokale AI-koppeling](../agent-tools/README.md): een MCP-client koppelen.
-- [Skills](../skills/README.md): een methode voor voorbereiding of review kiezen.
-- [Bijdragen](../CONTRIBUTING.md) en [beveiligingsmeldingen](../SECURITY.md).
+## 🧭 Gebruiken
 
-## Inhoud beheren
+Voor auditors en onderzoekers die Omnibus willen gebruiken.
 
-- [Intake](content-intake.md): pakketten voorbereiden en transport controleren.
-- [Inhoudsbeheer](content-maintenance.md): grenzen van review en integratie.
-- [Publicatie en overdracht](contributor-publication.md): de werkstroom voor vertrouwde beheerders.
-- [Content Workbench](content-workbench.md): voortgang volgen, geen goedkeuring.
+| Ik wil… | Lees |
+| --- | --- |
+| Omnibus op mijn computer zetten | [Installeren](gebruiken/installeren.md) |
+| Weten hoe de vier stappen werken | [Werken met Omnibus](gebruiken/werken-met-omnibus.md) |
+| Met mijn eigen documenten werken | [Eigen documenten](gebruiken/eigen-documenten.md) |
+| Mijn eigen AI-assistent laten meewerken | [AI-koppeling](gebruiken/ai-koppeling.md) |
 
-## De applicatie beheren
+## 🤝 Bijdragen
 
-- [Routekaart](routekaart.md): wat er is, wat bewust buiten scope valt en wat er nog komt.
-- [Voortgang](voortgang.md): welke rapporten, wetten en kaders al in de database zitten en welke nog open staan.
-- [Acceptatiecontracten](acceptatiecontracten.md): de afspraken waaraan de applicatie moet blijven voldoen.
-- [Runtimepakket](runtime-pakket.md) en [storingen, back-up en herstel](runtime-herstel.md).
-- [Hostingvoorbereiding](../hosting/release-delivery/README.md).
-- [Checklist voor een live demo](demo-release-checklist.md): code, database-aansluitingen, hostingproeven en menselijke acceptatie.
-- [Draagbare build](portable-build.md).
+Voor iedereen die Omnibus wil helpen groeien.
 
-Testresultaten met een datum gelden voor die versie. Ze zijn geen bewijs dat een latere build dezelfde controles haalt.
+| Ik wil… | Lees |
+| --- | --- |
+| Weten hoe ik kan helpen | [Meedoen](bijdragen/README.md) |
+| Zien wat er al is en wat nog open staat | [Voortgang](bijdragen/voortgang.md) |
+| Een rapport, wet of kader verwerken | [Een bron verwerken](bijdragen/bron-verwerken.md) |
+| Een wet of kader kiezen dat openbaar mag | [Werklijst wetten en kaders](bijdragen/werklijst-wetten-en-kaders.md) |
+| De code verbeteren | [Ontwikkelen](bijdragen/ontwikkelen.md) en [architectuur](bijdragen/architectuur.md) |
+
+## 🛠️ Beheren
+
+Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uitbrengt.
+
+| Ik wil… | Lees |
+| --- | --- |
+| Een overzicht van het beheerwerk | [Beheer](beheer/README.md) |
+| Een ingeleverd pakket controleren | [Pakket controleren](beheer/pakket-controleren.md) |
+| Een nieuwe database maken en uitbrengen | [Database publiceren](beheer/database-publiceren.md) |
+
+## Overig
+
+- [Routekaart](routekaart.md): wat er nog komt.
+- [AI-skills](../skills/README.md): de zes werkwijzen voor AI-assistenten.
+- [Versiegeschiedenis](../CHANGELOG.md), [beveiliging](../SECURITY.md), [toegankelijkheid](../ACCESSIBILITY.md) en [gedragscode](../CODE_OF_CONDUCT.md).
+
+## Waar vind je wat in de repository?
+
+| Map | Wat erin staat |
+| --- | --- |
+| `docs/` | Deze documentatie, in drie routes: `gebruiken/`, `bijdragen/` en `beheer/` |
+| `skills/` | Zes AI-skills om bronnen te verwerken en te controleren |
+| `app/`, `components/`, `hooks/` | De schermen van de applicatie |
+| `lib/` | Gedeelde regels: selecties, vragen, projecten en Excel-export |
+| `local-data/` | De koppeling met de database |
+| `agent-tools/` | De koppeling voor AI-assistenten |
+| `content-tools/`, `content-workbench/` | Hulpmiddelen voor de beheerder |
+| `scripts/`, `hosting/` | Bouwen, testen en voorbereiden op hosting |
+
+Elke map heeft een eigen README met uitleg.
+
+## Volgende stap
+
+Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md).

@@ -1,17 +1,27 @@
-# Hulpmiddelen voor inhoudsvoorbereiding
+# Hulpmiddelen voor de beheerder (`content-tools/`)
 
-Met deze map controleren beheerders binnenkomende inhoudspakketten en bereiden ze gereviewd materiaal voor op de aparte runtimedatabase. Het is geen uploadscherm voor pdf's.
+> **In het kort:** hulpmiddelen om ingeleverde pakketten te controleren en klaar te maken voor een nieuwe database. Geen uploadscherm, en geen goedkeuring van inhoud.
 
-## Begin hier
+## Belangrijkste bestanden
 
-- Lees [eigen documenten gebruiken](../docs/own-content.md) voordat je een pakket voorbereidt.
-- Kies de passende [skill voor rapporten, kaders of modellen](../skills/README.md).
-- Volg de [intakehandleiding](../docs/content-intake.md) voor de pakketcontroles.
-- Gebruik de [publicatiehandleiding](../docs/contributor-publication.md) voor gecontroleerde integratie.
-- Controleer zo nodig de [actieve inventaris](../docs/active-inventory-check.md) om onverwachte pakketten en documenten in een volgende publicatie te signaleren.
+| Bestand | Wat het doet |
+| --- | --- |
+| `intake.mjs` | Controleert of een pakket compleet en ongewijzigd is |
+| `runtime-delivery.mjs`, `runtime-author-data.mjs` | Gegevens klaarzetten voor een nieuwe publicatie |
+| `model-quality.mjs` | Controleert de structuur van modelreviews |
+| `identity.mjs` | Controlegetallen (hashes) berekenen |
+| `active-publication-guard.mjs` | Controleert of een nieuwe publicatie alleen de goedgekeurde pakketten en documenten bevat |
 
-## Grenzen
+## Wanneer heb je dit nodig?
 
-Technische controles stellen niet vast dat een bron klopt en vervangen geen inhoudelijke review. Ontbrekend bewijs of ontbrekende goedkeuring wordt nooit omzeild. Volledige publicatie vraagt nog steeds apart aangeleverde bronnen, contracten en invoer van de beheerder; deze map alleen levert die niet. Houd private pakketten en documenten buiten Git.
+Als beheerder, bij het controleren van een ingeleverde bron. Bijdragers hebben deze map niet nodig.
 
-[Terug naar het projectoverzicht](../README.md#wegwijs-in-de-mappen).
+## Spelregels
+
+- Een technische controle is geen inhoudelijke goedkeuring.
+- Ontbrekend bewijs wordt nooit omzeild; het pakket blijft in HOLD.
+- Pakketten en brondocumenten blijven buiten Git.
+
+## Verder lezen
+
+[Pakket controleren](../docs/beheer/pakket-controleren.md) · [Actieve inventaris controleren](../docs/beheer/actieve-inventaris-controleren.md) · [Inhoud toevoegen](../docs/beheer/inhoud-toevoegen.md) · [Beheer](../docs/beheer/README.md)

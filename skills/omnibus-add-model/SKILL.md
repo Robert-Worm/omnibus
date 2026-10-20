@@ -59,7 +59,7 @@ Zonder bronnen en echte reviews blijft de status `PENDING_REVIEW`/`HOLD`.
 
 ## Overdraagbare aanlevering
 
-Lees `docs/content-intake.md` als de checkout die bevat. Lever een apart
+Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Lever een apart
 `intake.json` met contract `model-review-1` rond de ongewijzigde modelpayload,
 bronnen, context, beperkingen, reviewbasis en werkelijke reviews. Bundel ook de
 toegepaste vraagkwaliteitsrubriek als contractbestand. Laat ontbrekende publicaties

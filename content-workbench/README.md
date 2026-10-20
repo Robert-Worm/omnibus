@@ -1,16 +1,26 @@
-# Content Workbench
+# Content Workbench (`content-workbench/`)
 
-De Workbench is een los lokaal voortgangsbord voor rapporten en hun verwerkingsbewijs. Beheerders zien er wat wacht, wat in review is en wat al aan gepubliceerde inhoud is gekoppeld.
+> **In het kort:** een lokaal werkbord waarop de beheerder bijhoudt welke bronnen wachten, in bewerking zijn of al in de database staan. Het draait alleen op de eigen computer.
 
-## Begin hier
+## Belangrijkste bestanden
 
-- Lees de [Workbench-handleiding](../docs/content-workbench.md) voor starten en gebruik.
-- `server.mjs` start de lokale interface.
-- `cli.mjs` importeert backlogregels; `link-evidence.mjs` koppelt geverifieerd bewijs.
-- `backup.mjs` maakt back-ups van de eigen data van de Workbench.
+| Bestand | Wat het doet |
+| --- | --- |
+| `server.mjs` | Start het werkbord op `127.0.0.1` |
+| `cli.mjs` | Importeert werklijsten (CSV) |
+| `link-evidence.mjs` | Koppelt gecontroleerd bewijs aan bronnen |
+| `backup.mjs` | Maakt een back-up van het werkbord |
+| `web/` | De schermen van het werkbord |
 
-## Grenzen
+## Wanneer heb je dit nodig?
 
-De Workbench heeft een eigen lokale database. Hij vervangt de broncatalogus van de applicatie niet, keurt geen inhoud goed en publiceert geen rapport omdat een status verandert. Backlogbestanden en bewijspakketten kunnen privé zijn: commit ze niet en gebruik geen echte onderzoeksdata in openbare voorbeelden.
+Als beheerder, om het overzicht te houden over veel bronnen tegelijk. Voor bijdragers is er het [claimsysteem op GitHub](../docs/bijdragen/README.md).
 
-[Terug naar het projectoverzicht](../README.md#wegwijs-in-de-mappen).
+## Spelregels
+
+- Het werkbord heeft een eigen database en keurt niets goed of publiceert niets.
+- Werklijsten en bewijs kunnen privé zijn: niet in Git zetten.
+
+## Verder lezen
+
+[Content Workbench-handleiding](../docs/beheer/content-workbench.md) · [Beheer](../docs/beheer/README.md)

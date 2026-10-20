@@ -70,7 +70,7 @@ export function intakeFailure(error, phase, historicalReport = false) {
     status: "HOLD",
     publishable: false,
     error: error instanceof Error ? error.message : (preparing ? "Intake preparation failed" : "Intake verification failed"),
-    ...(diagnostic ? { diagnostic: { ...diagnostic, action, nextCommand, documentation: "docs/content-intake.md#hold-herstellen" } } : {}),
+    ...(diagnostic ? { diagnostic: { ...diagnostic, action, nextCommand, documentation: "docs/beheer/pakket-controleren.md#hold-herstellen" } } : {}),
   };
 }
 

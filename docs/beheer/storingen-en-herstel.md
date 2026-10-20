@@ -1,9 +1,8 @@
-# Runtime: storingen, backup en herstel
+# Storingen en herstel
 
-Lokale route voor beheerders, stand 19 oktober 2026. Voer opdrachten uit in
-de codecheckout met Node 24 en expliciet gekozen private bestanden. Vul de
-plaatshouders zelf in. Pakket, database, instellingen en bewijs blijven buiten Git.
-Een online (hosted) route is nog niet bewezen; zie de [routekaart](routekaart.md).
+> **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Alles lokaal; een online versie bestaat nog niet.
+
+Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekozen bestanden. Vul de plaatshouders zelf in. Pakket, database, instellingen en bewijs blijven buiten Git.
 
 ## Diagnose zonder onderzoeksinhoud
 
@@ -67,7 +66,7 @@ Een online (hosted) route is nog niet bewezen; zie de [routekaart](routekaart.md
    database in-place en laat een oude build nooit stil een nieuwe publicatie kiezen.
 
 Workbench is een afzonderlijke private database met een eigen backupbewijs en
-herstelcommando; volg [Workbench-herstel](../content-workbench.md). Bewaar ook het
+herstelcommando; volg [Workbench-herstel](content-workbench.md). Bewaar ook het
 externe bewijsplan en bron-/reviewarchieven. Een runtimebackup bevat geen
 browserprojecten, oorspronkelijke PDF-archieven of Workbench. Gebruikers bewaren
 projecten via de bestaande projectdownload; er is geen serveraccountopslag.
@@ -85,3 +84,13 @@ projecten via de bestaande projectdownload; er is geen serveraccountopslag.
 Providerrollback herstelt geen disk en gebruikt actuele runtimeinstellingen.
 Providerdiskherstel draait de gehele disk terug en kan nieuwere bestanden verwijderen.
 Maak de combinatie van code, data, pins en beheerbesluit daarom expliciet.
+
+## Samengevat
+
+- Noteer tijdstip, commit, hashes en request-ID; deel geen onderzoeksinhoud.
+- Herstel altijd naar een nieuw bestand, nooit over de actieve database.
+- Controleer na herstel met `data:check-runtime`.
+
+## Volgende stap
+
+Terug naar het [beheeroverzicht](README.md).

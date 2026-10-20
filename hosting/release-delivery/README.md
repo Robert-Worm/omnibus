@@ -1,9 +1,6 @@
-# Afzonderlijke levering van runtime-image en SQLite
+# Hosting voorbereiden (`hosting/release-delivery/`)
 
-Voorbereiding voor EP13-S01/EP02-S01, bijgewerkt 20 oktober 2026.
-Een lokale imageproef met fictieve gegevens is uitgevoerd; dat is geen
-Sevalla-acceptatie. De [imagecontrole](../image-verification/README.md) maakt
-die proef herhaalbaar. Er is niets geüpload of op Sevalla ingericht.
+> **In het kort:** een voorbereiding voor de [online versie](../../docs/routekaart.md#3-online-versie). Hier staat hoe het runtimepakket in een container (image) wordt gezet, met de database apart ernaast. Een lokale proef met fictieve gegevens is gedaan (zie de [imagecontrole](../image-verification/README.md)); er is nog niets online gezet.
 
 Aanbevolen route: bouw de bestaande portable runtime op een gecontroleerde
 releasewerkplek met een afzonderlijke, goedgekeurde SQLite-publicatie. Maak met
@@ -189,7 +186,7 @@ runtime-build. Stop na iedere mislukte opdracht; gebruik gedeeltelijke uitvoer n
    Origin/CORS, probes, logs, misbruikgrens, leesrechten, restart, releasewissel en
    herstel. Bewaar de vorige image-digest plus bijpassende database/settings.
    Een rollback moet beide expliciet kiezen; een code-rollback herstelt SQLite niet.
-   Gebruik de bestaande [herstelroute](../../docs/runtime-herstel.md).
+   Gebruik de bestaande [herstelroute](../../docs/beheer/storingen-en-herstel.md).
 
 ## Stopcondities en integratie
 
@@ -218,3 +215,7 @@ Deze tests gebruiken uitsluitend synthetische SQLite en tijdelijke mappen.
 Ze controleren staging, bytebehoud, fouten en de Node-expressie uit de template
 op de host. Ze draaien geen Dockerparser, image, Linux-permissieproef, HTTP-listener
 of providerproef en leveren geen inhoudelijke of menselijke acceptatie.
+
+## Verder lezen
+
+[Runtimepakket](../../docs/beheer/runtime-pakket.md) · [Routekaart](../../docs/routekaart.md)

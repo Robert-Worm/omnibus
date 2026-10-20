@@ -1,15 +1,33 @@
-# Omnibus actieve acceptatiecontracten
+# Acceptatiecontracten
 
-Specificatie v0.6 — 19 oktober 2026. Geldt voor de bestaande app/database en de
-lokale MCP-demo; de 100-rapportentest is uitgesteld. Vervangt de v0.4-contracten; historische testnamen behouden
-hun K-ID. Dit document verklaart geen contract al geslaagd.
+> **In het kort:** de afspraken waaraan Omnibus moet blijven voldoen, ook na een wijziging. Elke afspraak heeft een code (K04, K05, …) die in tests en reviews terugkomt.
 
-K01–K03 (appidentiteit/rollen/leden) en K21 (betaling) zijn uit productscope.
-K10 (redactieportaal), K12 (serverjobs) en K19 (analytics/SEO)
-zijn niet geactiveerd en blokkeren deze fase niet. De bestaande lokale AI-koppeling
-blijft behouden; K08 is hieronder beperkt tot die lokale route. Deze IDs activeren geen lege infrastructuur.
+## Overzicht
 
-## K04 Lokale projecten zonder verlies
+| Code | Afspraak in één zin |
+| --- | --- |
+| K04 | Je werk gaat niet verloren: projecten blijven gelijk na herladen, opslaan en openen. |
+| K05 | Bronnen blijven exact zoals ze zijn; één gedeelde werkwijze voor alle bronnen. |
+| K06 | De lokale server accepteert alleen begrensde, veilige verzoeken. |
+| K07 | Excel-exports en projectbestanden kloppen en zijn veilig te openen. |
+| K08 | De lokale AI-koppeling leest alleen, en schrijft pas na akkoord. |
+| K09 | Nieuwe inhoud komt alleen binnen via controle en bewuste publicatie. |
+| K11 | Foutmeldingen helpen zonder onderzoeksinhoud te lekken. |
+| K13 | De applicatie blijft snel genoeg met de testcollectie. |
+| K14 | Back-up en herstel werken, naar een nieuw bestand. |
+| K15 | Code en database horen aantoonbaar bij elkaar. |
+| K16 | Bronrechten en gegevensgrenzen worden gerespecteerd. |
+| K17 | Bediening en opmaak zijn gedeeld en consistent. |
+| K18 | Het bewijs past bij de wijziging: niet te weinig, niet te veel. |
+| K20 | De beveiliging richt zich op echte aanvalsmogelijkheden. |
+
+Niet (meer) van toepassing: K01–K03 (accounts en rollen) en K21 (betalingen) vallen buiten het project. K10 (redactieportaal), K12 (serverjobs) en K19 (statistieken) zijn nog niet aan de orde.
+
+Dit document zegt niet dat alle afspraken al gehaald zijn; het beschrijft waaraan een wijziging getoetst wordt.
+
+## De afspraken in detail
+
+### K04 Lokale projecten zonder verlies
 
 Browseropslag, compressie, projectdownload/import, expliciete opslagstatus en
 conflictbescherming blijven werken. Selecties, eigen tekst, vraagkoppelingen en
@@ -17,7 +35,7 @@ bronverwijzingen blijven gelijk na herladen of bestandsoverdracht. Fouten wissen
 geen werk. Geen account, cloudprojectsave of stille projectupload. Beschrijf de
 beperking van browseropslag eerlijk; een codecommit is geen projectbackup.
 
-## K05 Bronintegriteit en gedeelde workflow
+### K05 Bronintegriteit en gedeelde workflow
 
 Originele bronnen, stabiele IDs, bronversies, exacte Unicode-spans, reviewbindingen,
 HOLD en selectie-/toepasselijkheidsgrenzen blijven intact. Transportoptimalisatie
@@ -26,7 +44,7 @@ rapport. Bron- en kaderdetail, selecties, vraagkoppelingen en Excel behouden hun
 betekenis. AI en browser wijzigen geen kerngegevens. Een bronrelease en
 afleverpublicatie worden expliciet gekozen; geen mix van versies.
 
-## K06 Begrensde API en veilige invoer
+### K06 Begrensde API en veilige invoer
 
 De publieke applicatie leest toegestane inhoud, publiceert niet. Geen browser-SQL,
 databasecredentials, beheerendpoint of publieke Workbench. Valideer paden,
@@ -41,7 +59,7 @@ webgrens; ruimere lokale catalogustooling is geen publieke serverconfiguratie.
 Hosting vereist een beoordeelde publieke servergrens, niet een open tunnel naar
 de lokale beheeromgeving. Geen anonieme schrijfroute als vervanging voor geschrapte login.
 
-## K07 Export en bestanden
+### K07 Export en bestanden
 
 Hergebruik de browserexport; geen exportbetaling of serverjob vereist.
 Project- en Excelbestanden blijven van de gebruiker en worden niet standaard
@@ -50,7 +68,7 @@ goedgekeurd. Geen directe database-/backuppaden of private reviewarchieven onder
 de webroot. Controleer veilige bestandsnamen, formule-/HTML-uitvoer en begrensde
 bestandsgrootte. De drie werkvormen behouden hun geteste inhoud.
 
-## K08 Lokale MCP-demo
+### K08 Lokale MCP-demo
 
 Eigen AI-client gebruikt de bestaande lokale STDIO-verbinding en dezelfde gepinde
 bronrelease als de demo-app. Bronpassages zijn data, geen uitvoerinstructies.
@@ -63,7 +81,7 @@ ongeldige invoer en bronintegriteit. Geen echte projectgegevens in Git.
 Eerlijke client-/installatievereisten; geen onbevestigde verbindingsstatus of
 claim dat een publieke URL bestaat. Publiek transport en accountbeheer uitgesloten.
 
-## K09 Inname en publicatie
+### K09 Inname en publicatie
 
 Gebruik bestaande soortspecifieke skills en intake. Manifest, bronhashes, passages,
 verwachte toevoegingen en vereiste reviews moeten op dezelfde eindversie kloppen.
@@ -73,14 +91,14 @@ batch, met korte afzonderlijke verificatie en gecontroleerde omschakeling.
 Herhaling maakt geen dubbele rapporten. Reviewscores vervangen geen brongetrouwheid.
 Workbench toont echte intake/review/actieve release; 100 betekent 100 unieke rapporten.
 
-## K11 Minimale diagnostiek
+### K11 Minimale diagnostiek
 
 Health, verzoek-/foutidentiteit en publicatie-uitkomsten zijn te onderzoeken zonder
 bron-, intake-, projectteksten, secrets of volledige callback-URLs in logs.
 Geen audittrail voor niet-bestaande gebruikersrollen. Gebruik bestaande
 providerdiagnostiek pas bij hosting; geen eigen monitoringproduct.
 
-## K13 Prestaties met de testcollectie
+### K13 Prestaties met de testcollectie
 
 Manifest vermeldt echte aantallen rapporten, normen, punten, pagina's en bytes.
 Hardware, build, netwerk, cachetoestand en duur horen bij de meting. Voorlopige
@@ -100,7 +118,7 @@ vooraf bevestigde capaciteit/meetopzet. Geen login-/serverprojectpad simuleren
 dat niet bestaat. Grotere 9.000-rapportenproef komt pas bij die groeifase.
 Geen budget achteraf versoepelen om een proef groen te maken.
 
-## K14 Herstel
+### K14 Herstel
 
 Herstel bronpublicatie en Workbench naar een aparte lege bestemming. Vergelijk
 hashes, relaties en een onderzoeks-/exportproef. Bewaar vorige werkende release;
@@ -108,7 +126,7 @@ een mislukte omschakeling verandert niet stil de actieve bronversie.
 Voor hosting: afzonderlijke afgeschermde backup, bewaartermijn, hersteldoelen en
 beheerder vastleggen. Cloudprojectherstel is geen vereiste: zulke opslag bestaat niet.
 
-## K15 Code en overdraagbare runtime
+### K15 Code en overdraagbare runtime
 
 Eén gedocumenteerde build-/startroute met expliciete database/publicatie en lockfile.
 Geen secrets, bronarchieven, databases of gegenereerde output in Git of webpakket.
@@ -119,34 +137,37 @@ herschrijving of extra abstractielaag zonder huidig probleem. Schone machine kan
 bouwen/starten met expliciet aangeleverde private data. Menselijke overdracht volgt
 bronlezen, lokale projectsave en publicatie, niet een geschrapt accountpad.
 
-## K16 Gegevens en bronrechten
+### K16 Gegevens en bronrechten
 
 Projectinhoud blijft lokaal tenzij de gebruiker zelf een bestand deelt of expliciet
 een bestaande AI-handeling kiest. Logs zijn geminimaliseerd. Een openbare bronroute
 zonder login is voor iedereen bereikbaar: onbekende rechten blokkeren publicatie.
 Hosting-/databasebeheer blijft beschermd; geen claim dat login verwijderen alle
-informatie veilig openbaar maakt. Geen bronbestanden naar GitHub.
+informatie veilig openbaar maakt. Geen bronarchieven, reviewdossiers of private documenten naar GitHub. De openbare database gaat alleen als release-bijlage, na een rechtencontrole per bron.
 
-## K17 Gedeelde bediening
+### K17 Gedeelde bediening
 
 Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry,
 smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen.
 Gerichte handmatige toetsenbord-/leesbaarheidstoets naast technische tests;
 niet-uitgevoerde screenreadertest blijft zichtbaar open.
 
-## K18 Proportioneel bewijs
+### K18 Proportioneel bewijs
 
 Bron-/tekstwijziging: inhoudelijke review. Transport-/schema-/API-wijziging:
 gerichte integratietests. Batchrelease: kritieke gebruikersreis en herstelgrens.
 Hergebruik geldig bewijs; geen volledige regressie per norm. Noteer echte versie,
 omgeving en beperkingen; testtelling of AI-oordeel is geen certificering.
-Onafhankelijke review van de openbare grens vóór hosting blijft nodig, zonder
-accounts als verplichte testscope. Geen open relevante hoge/kritieke bevindingen.
+Vóór hosting: geen open relevante hoge of kritieke bevindingen in de openbare grens.
 
-## K20 Werkelijke aanvalsgrenzen
+### K20 Werkelijke aanvalsgrenzen
 
 Behoud herstel en triage van relevante bevindingen rond imports, bronweergave,
 exports, API, bestanden, dependencies en secrets. Herbeoordeel gewijzigde grenzen.
 Verwijder geen werkende beveiliging samen met de losstaande identityproef.
 Infrastructuurcredentials beschermen is geen Omnibus-gebruikersbeheer.
 Geen actieve scans buiten de toegestane geïsoleerde testomgeving.
+
+## Volgende stap
+
+Terug naar het [beheeroverzicht](README.md), of lees hoe je deze afspraken toetst in [ontwikkelen](../bijdragen/ontwikkelen.md#welke-tests-passen-bij-je-wijziging).

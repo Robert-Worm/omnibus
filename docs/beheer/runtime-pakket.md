@@ -1,10 +1,12 @@
-# Verplaatsbaar lokaal runtimepakket
+# Runtimepakket
 
-Het runtimepakket is een tussenstap naar hosting . Het bevat de gebouwde Omnibus-interface en de bestaande alleen-lezen server, zonder ontwikkelomgeving, npm-installatie of database. Node 24 en een afzonderlijk voorbereide database zijn nodig. De standaardstart blijft lokaal op `127.0.0.1`. De expliciete hostingopties hieronder zijn voorbereiding, geen toestemming om het pakket via een proxy, tunnel of openbare poort te publiceren. De lokale herstelroute staat in [runtime-herstel.md](runtime-herstel.md).
+> **In het kort:** een runtimepakket is Omnibus zonder ontwikkelomgeving: de gebouwde app plus de lokale server. Handig om Omnibus naar een andere computer over te zetten, en de basis voor een latere online versie.
+
+Het runtimepakket bevat de gebouwde Omnibus-interface en de bestaande alleen-lezen server, zonder ontwikkelomgeving, npm-installatie of database. Je hebt Node 24 en een database nodig. Standaard start het alleen lokaal op `127.0.0.1`. De hostingopties hieronder zijn voorbereiding, geen toestemming om het pakket openbaar te maken.
 
 ## Bouwen en starten
 
-Voor latere hosting: [imagecontext voorbereiden](../hosting/release-delivery/README.md).
+Voor latere hosting: [imagecontext voorbereiden](../../hosting/release-delivery/README.md).
 Dat gebruikt het bestaande pakket; geen database in de image, geen automatische
 upload of deployment. `npm run test:hosting-preparation` controleert deze helpers
 met synthetische fixtures en loopback. Imagebouw en providerbewijs blijven apart.
@@ -37,7 +39,7 @@ Ook `--settings "<pad-naar-local-build.json>"` wordt ondersteund. Bewaar instell
 
 De startlaag accepteert de onderstaande opties alleen als complete configuratie.
 De startlaag, gedeelde originvalidator, publieke requestgrens en het burstbudget
-zijn in ronde vijf geïntegreerd. Beide echte CLI-routes zijn met synthetische
+zijn geïntegreerd. Beide echte CLI-routes zijn met synthetische
 data op loopback getest, inclusief het zelfstandige pakket zonder dependencies.
 Er is geen publieke listener gestart. Een echte hosted vrijgave blijft een
 afzonderlijk besluit; de localhost-probealias van een provider is niet toegestaan
@@ -130,10 +132,20 @@ Dit pakket introduceert geen tweede backend of hostingprovider. De bestaande uit
 - Aantoonbare SQLite-persistentie, minimale leesrechten, TLS en geteste readiness/restart op Sevalla.
 - Begrensd verkeer, providerlogprivacy, afzonderlijke backup en herstelproef, releasebescherming en onafhankelijke menselijke beveiligingsreview.
 
-Pas daarna kan een hosted startconfiguratie worden vrijgegeven. De loopbackserver of lokale STDIO-AI-service rechtstreeks online zetten is geen ondersteunde tussenoplossing. Zie de [routekaart](routekaart.md). Sinds het scopebesluit van 19 oktober zijn applicatieaccounts en betalingen verwijderd uit de productscope; SQLite blijft behouden en de bestaande lokale MCP-demo is actief.
+Pas daarna kan een hosted startconfiguratie worden vrijgegeven. De loopbackserver of lokale STDIO-AI-service rechtstreeks online zetten is geen ondersteunde tussenoplossing. Zie de [routekaart](../routekaart.md). Sinds het scopebesluit van 19 oktober zijn applicatieaccounts en betalingen verwijderd uit de productscope; SQLite blijft behouden en de bestaande lokale MCP-demo is actief.
 
 Deze startopties leveren geen authenticatie, providerconfiguratie of
 probe-authority-alias. Onder meer de werkelijke proxy-/TLS-/Host-/probeheaders,
 probe-isolatie, providerlogs, misbruikgrenzen, opslag/herstart en herstel blijven
-hostingchecks volgens het [ingresscontract](HOSTING-INGRESS-REHEARSAL.md).
+hostingchecks die nog moeten gebeuren voordat Omnibus online gaat.
 Een publieke origin is geen toegangscontrole voor vertrouwelijke inhoud.
+
+## Samengevat
+
+- `build:runtime` bouwt de app, `package:runtime` maakt het pakket.
+- Het pakket start standaard alleen lokaal; hostingopties staan uit tot je ze bewust instelt.
+- De database zit niet in het pakket en blijft apart.
+
+## Volgende stap
+
+Lees [storingen en herstel](storingen-en-herstel.md) voor back-up en herstel.

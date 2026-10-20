@@ -42,7 +42,7 @@ Repeat both Preferred workflow commands above with the corrected inputs and dest
 --check is not content approval; data:check-runtime alone cannot complete a failed publication.
 A publication-receipt.json alone is not success: writing local-build.json may still fail. Wait for the full command to succeed.
 Then compare the candidate and complete the separate review build and workflow checks before explicit activation.
-Detailed recovery guidance: docs/contributor-publication.md#herstellen-na-een-publicatiefout
+Detailed recovery guidance: docs/beheer/database-publiceren.md#herstellen-na-een-publicatiefout
 `;
 
 /** Add operator context without swallowing errors, retrying or changing review gates. */

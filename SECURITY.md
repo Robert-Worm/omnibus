@@ -1,68 +1,34 @@
 # Beveiligingsproblemen melden
 
-Omnibus is een openbare codebasis voor een lokale browserapp en lokale
-MCP-koppeling. De loopbackserver, Content Workbench en STDIO-server zijn niet
-vrijgegeven als openbare dienst. Er is geen gepubliceerde supportmatrix
-of gegarandeerde reactietermijn.
+> **In het kort:** vond je een beveiligingsprobleem? Meld het vertrouwelijk, niet in een openbaar issue. Gebruik de knop **Report a vulnerability** of mail naar info@rijksmap.nl.
 
-## Vertrouwelijk melden
+## Zo meld je het
 
-Meld een vermoedelijke kwetsbaarheid vertrouwelijk aan
-[info@rijksmap.nl](mailto:info@rijksmap.nl), met het onderwerp
-`Omnibus beveiligingsmelding`. Dit is het door de beheerder aangewezen meldadres.
-Je kunt ook de knop **Report a vulnerability** onder het tabblad Security van deze repository gebruiken. Gebruik geen openbare issue of pull request voor kwetsbaarheidsdetails.
-E-mail is geen beveiligde bestandskluis: stuur geen secrets, persoonsgegevens,
-echte onderzoeksbestanden of werkende aanvalspakketten mee. Vraag eerst om een
-passend overdrachtskanaal als een opgeschoonde beschrijving niet volstaat.
+1. Gebruik de knop **Report a vulnerability** onder het tabblad *Security* van deze repository, of mail naar [info@rijksmap.nl](mailto:info@rijksmap.nl) met als onderwerp `Omnibus beveiligingsmelding`.
+2. Beschrijf:
+   - welke versie (commit) en welk onderdeel het betreft, en je Node-versie en besturingssysteem;
+   - wat er mis kan gaan, en onder welke voorwaarden;
+   - korte stappen om het na te doen, met een klein fictief voorbeeld.
+3. Stuur **geen** wachtwoorden, persoonsgegevens, echte onderzoeksbestanden, databases of werkende aanvalscode mee. Is een beschrijving niet genoeg? Vraag dan eerst om een veilige manier om meer te delen.
 
-Een bruikbare melding bevat:
+## Wat wel en niet mag bij onderzoek
 
-- de betrokken commit en component, Node-/besturingssysteemversie en configuratie
-  zonder secrets of persoonlijke paden;
-- de noodzakelijke voorwaarden, het mogelijke effect en korte reproduceerstappen;
-- een minimaal synthetisch voorbeeld en opgeschoonde foutuitvoer;
-- welke gegevens of systemen mogelijk geraakt zijn, en eventuele tijdelijke
-  beperking die je al hebt toegepast.
+- Test alleen in je eigen, afgeschermde testomgeving, met fictieve gegevens.
+- Test geen servers, diensten of gegevens van anderen.
+- Beperk een test tot wat nodig is om het probleem aan te tonen.
 
-Deel geen echte projecten, bronarchieven, databasekopieën, tokens of volledige
-request-/logbestanden om de melding te onderbouwen. Vraag eerst om een passend
-privaat overdrachtskanaal als een minimaal voorbeeld niet volstaat. Plaats
-gevoelige details niet in commits, screenshots, openbare issues of pull requests.
+## Wat gebeurt er met je melding?
 
-## Onderzoek en afhandeling
+De beheerder beoordeelt welke versies geraakt zijn, bevestigt het probleem waar mogelijk en zorgt voor een oplossing en een test. Hoe en wanneer het probleem bekend wordt gemaakt, spreken we samen af. Er is geen vaste reactietermijn: Omnibus is een vrijwilligersproject.
 
-Reproduceer uitsluitend in je eigen toegestane, geïsoleerde testomgeving met
-synthetische data. Deze meldprocedure geeft geen toestemming om een bestaande
-server, externe provider of gegevens van anderen actief te testen. Beperk een
-reproductie tot wat nodig is om het probleem aan te tonen.
+Zijn er mogelijk wachtwoorden of sleutels uitgelekt? Meld dat direct. Een bestand uit de laatste commit verwijderen is niet genoeg: de sleutel moet worden vervangen.
 
-De beheerder beoordeelt de getroffen versies en bereikbare grens, bevestigt de
-bevinding waar mogelijk en bepaalt beperking, herstel en passende regressietest.
-Leg besluiten en bewijs in het afgesproken private dossier vast. Spreek eventuele
-bekendmaking afzonderlijk af; een rapport indienen start geen automatische
-publicatie of vaste reactietermijn.
+## Waar kunnen problemen zitten?
 
-Bij mogelijk gelekte credentials: neem contact op met de verantwoordelijke
-beheerder voor intrekken of roteren. Alleen een bestand uit de laatste commit
-verwijderen maakt een eerdere blootstelling niet ongedaan. Deel benodigde
-bewijzen beperkt en behandel gegevensherstel los van het terugzetten van code.
+Bijvoorbeeld in de bronweergave, het openen van projectbestanden, de Excel-export, de lokale server, de AI-koppeling, de publicatiehulpmiddelen of de gebruikte bibliotheken.
 
-## Relevante grenzen
+Omnibus draait nu alleen lokaal. De lokale server, de Content Workbench en de AI-koppeling zijn niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
 
-Kwetsbaarheden kunnen de bronweergave, projectimport en decompressie, Excel- of
-bestandsexport, HTTP-routes, lokale MCP-tools, publicatietools, dependencies of
-secrets raken. Applicatielogin en accounts zijn uit productscope; technische
-bescherming van deze grenzen blijft vereist. Oude WorkOS-/access-proefverslagen
-zijn geen actueel productbeveiligingsmodel.
+## Verder lezen
 
-De database, bronreviewarchieven en gebruikersprojecten blijven buiten Git.
-Een toekomstige openbare bronroute maakt de geleverde inhoud leesbaar zonder
-applicatielogin; bronrechten en de publieke servergrens moeten vooraf worden
-beoordeeld. Een geheime URL of CORS is geen toegangscontrole.
-
-[Actieve contracten](docs/acceptatiecontracten.md) en
-[architectuur en gegevensgrenzen](docs/contributor-architecture.md) beschrijven
-het te beschermen gedrag. `check:code-only` zoekt naar uitgesloten paden en
-enkele geheimpatronen; het is geen volledige secretscan. Fixturetests,
-historische securityreviews en deze meldprocedure vormen geen onafhankelijke
-veiligheidscertificering of vrijgave voor hosting.
+De [acceptatiecontracten](docs/beheer/acceptatiecontracten.md) en de [architectuur](docs/bijdragen/architectuur.md) beschrijven wat beschermd moet blijven. `npm run check:code-only` zoekt naar bestanden en geheimen die niet in Git horen; het is geen volledige beveiligingsscan.

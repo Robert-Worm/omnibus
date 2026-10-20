@@ -1,0 +1,42 @@
+name: Bron claimen (check-out)
+description: Zet een rapport, wet of kader op jouw naam, zodat niemand dubbel werk doet.
+title: "Claim: "
+labels: ["claim"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Zo werkt het:** na verzenden staat de bron op jouw naam in de [voortgang](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/voortgang.md).
+        Klaar? Schrijf `/inleveren` in een reactie. Lukt het niet? Schrijf `/vrijgeven`.
+  - type: input
+    id: bron
+    attributes:
+      label: Welke bron wil je verwerken?
+      description: Bij een rapport de link naar de Rijksmap, bijvoorbeeld https://www.rijksmap.nl/rapport/... Bij een wet of kader de code uit de werklijst, bijvoorbeeld CW2016.
+      placeholder: https://www.rijksmap.nl/rapport/...
+    validations:
+      required: true
+  - type: dropdown
+    id: termijn
+    attributes:
+      label: Wanneer verwacht je klaar te zijn?
+      options:
+        - Binnen een week
+        - Binnen twee weken
+        - Binnen een maand
+    validations:
+      required: true
+  - type: checkboxes
+    id: afspraken
+    attributes:
+      label: Afspraken
+      options:
+        - label: Ik werk met de skill uit de map `skills/` en lever een pakket aan volgens [een bron verwerken](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md).
+          required: true
+        - label: Ik zet geen vertrouwelijke documenten of persoonsgegevens in deze claim.
+          required: true
+  - type: textarea
+    id: toelichting
+    attributes:
+      label: Toelichting (optioneel)
+      description: Bijvoorbeeld waarom je deze bron kiest, of een vraag aan de beheerder.

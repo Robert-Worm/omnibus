@@ -1,39 +1,63 @@
-# AI-skills van Omnibus
+# AI-skills (`skills/`)
 
-Zes losse instructiepakketten helpen bij het voorbereiden en reviewen van auditinhoud. Je kunt ze afzonderlijk installeren; je hebt ze niet alle zes nodig.
+> **In het kort:** zes werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, drie helpen bij vragen en kwaliteit. Je installeert alleen wat je nodig hebt.
 
-| Taak | Skill |
-| --- | --- |
-| [Een auditrapport voorbereiden](omnibus-add-report/README.md) | `omnibus-add-report` |
-| [Een wet of normenkader voorbereiden](omnibus-add-framework/README.md) | `omnibus-add-framework` |
-| [Een conceptueel model voorbereiden](omnibus-add-model/README.md) | `omnibus-add-model` |
-| [Onderzoeks- en interviewvragen ontwerpen](omnibus-build-questions/README.md) | `omnibus-build-questions` |
-| [Thema's en overlappende bouwstenen ordenen](omnibus-curate-themes/README.md) | `omnibus-curate-themes` |
-| [De kwaliteit van auditbouwstenen reviewen](omnibus-review-audit-quality/README.md) | `omnibus-review-audit-quality` |
+## Wat is een skill?
 
-## Begin met één skill
+Een skill is een map met instructies (`SKILL.md`) en naslag die een AI-assistent stap voor stap volgt. Het is geen programma of getraind model: de kwaliteit hangt af van je assistent en van jouw controle.
 
-Lees de introductie hierboven, daarna de SKILL.md en de verplichte naslag. De applicatie en de bronverzameling zitten niet in een skill.
+## De zes skills
 
-Vanuit de repository controleer en installeer je één skill zo:
-
-```text
-npm run skills:check -- --skill omnibus-review-audit-quality
-npm run skills:install -- --skill omnibus-review-audit-quality
+```mermaid
+flowchart LR
+    subgraph Bron["Een bron omzetten"]
+        R["Rapport<br/>omnibus-add-report"]
+        F["Wet of kader<br/>omnibus-add-framework"]
+        M["Onderzoeksmodel<br/>omnibus-add-model"]
+    end
+    subgraph Kwaliteit["Vragen en kwaliteit"]
+        Q["Onderzoeksvragen<br/>omnibus-build-questions"]
+        T["Thema's ordenen<br/>omnibus-curate-themes"]
+        K["Kwaliteit beoordelen<br/>omnibus-review-audit-quality"]
+    end
+    Bron --> Kwaliteit
 ```
 
-Laat `--skill` weg om alle zes te kiezen, of herhaal het voor meerdere. De standaardbestemming is de skillsmap onder `CODEX_HOME`, of `~/.codex/skills` als die variabele niet is ingesteld. Met `--target <map>` kies je een andere bestemming. De controlemodus installeert niets. Een afwijkende bestaande skill wordt nooit overschreven: vergelijk en bewaar je eigen aanpassingen voordat je bijwerkt.
+| Je wilt… | Skill |
+| --- | --- |
+| [Een auditrapport omzetten naar normen en toetspunten](omnibus-add-report/README.md) | `omnibus-add-report` |
+| [Een wet of normenkader omzetten](omnibus-add-framework/README.md) | `omnibus-add-framework` |
+| [Een onderzoeksmodel met interviewvragen toevoegen](omnibus-add-model/README.md) | `omnibus-add-model` |
+| [Onderzoeks- en interviewvragen ontwerpen](omnibus-build-questions/README.md) | `omnibus-build-questions` |
+| [Te grote thema's ordenen en overlap vinden](omnibus-curate-themes/README.md) | `omnibus-curate-themes` |
+| [De kwaliteit van bouwstenen beoordelen](omnibus-review-audit-quality/README.md) | `omnibus-review-audit-quality` |
 
-Elke map heeft een eigen licentie en introductie, zodat je hem los kunt delen. Kopieer de hele map, niet alleen SKILL.md. Het installatiescript en de metadata zijn gemaakt voor Codex; andere assistenten hebben hun eigen manier nodig om instructies te laden.
+## Installeren
 
-## Belangrijke grenzen
+Voor Codex, vanuit de repository:
 
-Dit zijn herbruikbare methoden, geen getrainde modellen, zelfstandige diensten of gegarandeerde conclusies. Ze bevatten geen AI-abonnement, geen private databases, geen bronrechten en niet elk hulpmiddel uit de opnameroute.
+```text
+npm run skills:check -- --skill omnibus-add-report
+npm run skills:install -- --skill omnibus-add-report
+```
 
-Het voorbereiden van rapporten, kaders en modellen hangt voor volledige opname en publicatie af van aparte contracten, broninvoer of private werkstromen. Vragen ontwerpen en tekstreviews zijn ook bruikbaar met meegeleverde broncontext, zonder iets te publiceren. Zie [eigen documenten gebruiken](../docs/own-content.md) voor de precieze grens.
+- `skills:check` controleert alleen; `skills:install` installeert.
+- Laat `--skill` weg om alle zes te installeren.
+- Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
+- Andere bestemming? Gebruik `--target <map>`.
 
-Een technische intakecontrole toetst bestanden en integriteit, niet de betekenis. Ontbreekt verplicht bewijs of een onafhankelijke review, dan blijft de status HOLD of PENDING_REVIEW. Simuleer geen meerdere reviewers in één gesprek, en presenteer een AI-review niet als menselijke goedkeuring.
+Gebruik je een andere AI-assistent? Geef hem de hele map van de skill (niet alleen `SKILL.md`) en vraag hem `SKILL.md` te volgen.
 
-Controleer of je documenten naar een AI-aanbieder mag sturen. Houd vertrouwelijke bronnen buiten openbare issues, pull requests en voorbeelden.
+## Goed om te weten
 
-De eigen skillinstructies vallen onder de [PolyForm Noncommercial License 1.0.0](../LICENSE). Brondocumenten houden hun eigen rechten. Een voorstel voor een betere methode is welkom, met een voorbeeld van het probleem en bewijs dat de verbetering de brontrouw en de goedkeuringsgrenzen niet verzwakt.
+- **Controleer altijd zelf.** Een skill markeert twijfels als HOLD. Een AI-review is geen menselijke goedkeuring.
+- **Rechten en vertrouwelijkheid.** Stuur alleen documenten naar je AI-dienst die je mag delen.
+- **Opnemen in de database** loopt via [meedoen](../docs/bijdragen/README.md): de beheerder voegt de laatste controles toe.
+
+## Licentie
+
+De skills vallen onder de [PolyForm Noncommercial License 1.0.0](../LICENSE). Elke skill heeft een eigen kopie, zodat je hem los kunt delen. De licentie geeft geen rechten op de documenten die je verwerkt.
+
+## Verder lezen
+
+[Een bron verwerken](../docs/bijdragen/bron-verwerken.md) · [Eigen documenten](../docs/gebruiken/eigen-documenten.md)

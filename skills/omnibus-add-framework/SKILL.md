@@ -50,7 +50,7 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 
 ## Overdraagbare aanlevering
 
-Lees `docs/content-intake.md` als de checkout die bevat. Lever een apart
+Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Lever een apart
 `intake.json` rond ongewijzigde kopieën van bron, bronbank, catalogus,
 migratierelaties, context, beperkingen en reviewbasis met werkelijke reviews.
 Gebruik `framework-cio-0.1+addendum-01` alleen bij dat inhoudelijke contract.

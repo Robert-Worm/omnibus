@@ -1,19 +1,28 @@
-# Applicatieschermen
+# De schermen (`app/`)
 
-Deze map bevat de browserapplicatie: een thema verkennen, bouwstenen verzamelen, een onderzoekskader opbouwen en het resultaat exporteren.
+> **In het kort:** hier staat alles wat je in de browser ziet: de vier werkstappen, de bronviewers en de exportschermen.
 
-## Begin hier
+## Belangrijkste bestanden
 
-- `framework-editor.tsx` verbindt de hoofdwerkstroom, de navigatie en de projectstatus.
-- `workflow-patterns.tsx` levert de gedeelde introducties en keuzepanelen.
-- `law-point-source.tsx` en `criterion-source-layout.tsx` leveren de gedeelde bronviewers.
-- `export-creator.tsx` toont de exportkeuzes; het werkboek zelf wordt gemaakt in `../lib/`.
-- `viewer-readability.css` houdt opmaak en typografie van de viewers consistent.
+| Bestand | Wat het doet |
+| --- | --- |
+| `framework-editor.tsx` | De hoofdwerkstroom: navigatie, de vier stappen en de projectstatus |
+| `workflow-patterns.tsx` | Gedeelde introducties en keuzekaarten |
+| `law-point-source.tsx`, `criterion-source-layout.tsx` | De gedeelde bronviewers voor wetten, kaders en rapporten |
+| `database-report-library.tsx` | De rapportbibliotheek |
+| `export-creator.tsx` | De exportstap; het Excel-bestand zelf wordt gemaakt in [`lib/`](../lib/README.md) |
+| `viewer-readability.css` | Opmaak en typografie van de viewers |
 
-## Grenzen
+## Wanneer heb je dit nodig?
 
-Broninhoud komt uit de apart voorbereide database. Bouw geen rapporten in en maak geen nieuwe viewerstijl per bron. Houd selecties, vraagkoppelingen en het opslaan van projecten intact als je een scherm wijzigt.
+Als je iets aan een scherm wilt veranderen of verbeteren.
 
-Zie [setup en preview](../docs/contributor-setup.md), de [gedetailleerde codekaart](../docs/contributor-architecture.md) en de [richtlijnen voor bijdragen](../CONTRIBUTING.md).
+## Spelregels
 
-[Terug naar het projectoverzicht](../README.md#wegwijs-in-de-mappen).
+- Hergebruik de bestaande viewers en opmaak; maak geen nieuwe weergave per bron.
+- Inhoud komt uit de database. Zet geen rapporten of kaders in de code.
+- Selecties, vraagkoppelingen en opgeslagen projecten moeten blijven werken.
+
+## Verder lezen
+
+[Architectuur](../docs/bijdragen/architectuur.md) · [Ontwikkelen](../docs/bijdragen/ontwikkelen.md) · [AGENTS.md](../AGENTS.md)

@@ -1,30 +1,85 @@
 # Routekaart
 
-Waar Omnibus nu staat en wat er nog komt. Dit zijn voornemens, geen beloftes; volgorde en details kunnen veranderen.
+> **In het kort:** Omnibus werkt nu lokaal, met een openbare database. De volgende stappen maken het makkelijker om met je eigen bronnen te werken, en om samen de database te laten groeien.
+
+Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Ideeën en reacties zijn welkom in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+
+## Overzicht
+
+```mermaid
+flowchart LR
+    N["✅ Nu<br/>Lokaal werkend<br/>+ openbare database"] --> S1["1 · Start met je<br/>eigen document"]
+    S1 --> S2["2 · Koppel je<br/>eigen database"]
+    S2 --> S3["3 · Online versie"]
+    N --> S4["4 · Samen bijdragen<br/>(loopt al)"]
+    S4 --> S5["5 · Meer bronnen"]
+    S5 --> S6["6 · Rijkere<br/>AI-koppeling"]
+```
 
 ## Wat er nu is
 
-- Een werkende lokale applicatie met de vier werkstappen: onderzoeksvraag, bronnen verkennen, normen en toetspunten selecteren, en een toetsingskader opbouwen en exporteren naar Excel.
-- Viewers voor rapporten, wetten, kaders en modellen, met exacte bronmarkeringen in de originele tekst.
-- Lokale projecten in de browser, met download en import van projectbestanden.
-- Een lokale AI-koppeling via MCP (STDIO), waarmee een eigen AI-client de catalogus kan doorzoeken en conceptonderzoek kan voorbereiden, zonder de brondatabase te wijzigen.
-- Zes herbruikbare AI-skills voor het toevoegen van rapporten, kaders en modellen, het opbouwen van vragen, het samenstellen van thema's en het reviewen van auditkwaliteit.
-- Een gescheiden data- en codeomgeving: de database staat los van de code bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest); de oorspronkelijke bronverzameling blijft privé.
-
-## Bewust buiten scope
-
-- Accounts, inloggen, gebruikersbeheer, organisaties en rollen.
-- Projecten opslaan in de cloud of delen via accounts.
-- Betalingen, abonnementen of betaalde exportgrenzen.
-
-Opnieuw toevoegen vraagt een nieuw, expliciet besluit.
+- Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export.
+- Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met 27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen.
+- Zes [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren.
+- Een [lokale AI-koppeling](gebruiken/ai-koppeling.md) voor je eigen AI-assistent.
+- Een [claimsysteem](bijdragen/README.md) waarmee iedereen kan zien wie aan welke bron werkt.
 
 ## Volgende stappen
 
-1. **Eenvoudiger starten met eigen documenten.** Nieuwe bronnen gaan nu nog via de skills en een aparte verwerkingsomgeving. Het doel is een route waarin je met eigen bronnen kunt beginnen, zie [eigen documenten](own-content.md).
-2. **Online versie.** De applicatie is voorbereid op hosting met de bestaande SQLite-database, maar draait nog nergens online. Eerst moeten opslag, back-up, herstel en prestaties in de praktijk bewezen zijn ([runtimepakket](runtime-pakket.md), [herstel](runtime-herstel.md)).
-3. **Gebruikersacceptatie.** Een onafhankelijke beveiligingsreview, een test met schermlezers en een acceptatie van de Excel-export in desktopprogramma's.
-4. **Meer bronnen.** De collectie groeit gecontroleerd, rapport voor rapport, via de bestaande voorbereidings- en reviewstraat. Iedereen kan helpen; zie de [voortgangslijst](voortgang.md).
-5. **Rijkere AI-koppeling.** De lokale MCP-koppeling uitbreiden, bijvoorbeeld met koppelingen naar andere open datasets zoals de [Rijksmap](https://github.com/Robert-Worm/rijksmap).
+### 1. Start met je eigen document
 
-De afspraken waaraan de applicatie moet blijven voldoen, staan in de [acceptatiecontracten](acceptatiecontracten.md).
+**Doel:** een eigen rapport of kader direct in Omnibus kunnen gebruiken, zonder tussenkomst van de beheerder.
+
+Nu kun je een document al met een AI-skill omzetten, maar het resultaat komt pas via de beheerder in de database. Straks laad je het resultaat zelf, voor gebruik op je eigen computer.
+
+### 2. Koppel je eigen database
+
+**Doel:** naast de openbare database ook een eigen database gebruiken, met een knop in de applicatie.
+
+Denk aan een organisatie met eigen, vertrouwelijke rapporten of interne kaders. Die wil de openbare bronnen gebruiken, aangevuld met eigen materiaal dat de eigen computer of het eigen netwerk niet verlaat. Omnibus laat dan meerdere databases naast elkaar zien.
+
+### 3. Online versie
+
+**Doel:** Omnibus gebruiken zonder iets te installeren.
+
+De applicatie is al voorbereid op hosting, maar draait nog nergens online. Eerst moeten opslag, back-up, herstel en snelheid in de praktijk werken. Gebruikers testen de online versie voordat die definitief wordt.
+
+### 4. Samen bijdragen
+
+**Doel:** zo makkelijk mogelijk maken om een bron te verwerken en in te leveren.
+
+Het claimsysteem werkt al: [claimen, verwerken en inleveren](bijdragen/README.md). Volgende verbeteringen:
+
+- duidelijkere voorbeelden van een goed ingeleverd pakket;
+- automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is;
+- vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden.
+
+### 5. Meer bronnen
+
+**Doel:** een database die het grootste deel van het auditwerk bij de rijksoverheid dekt.
+
+- Eerst de [542 aanbevolen rapporten](bijdragen/werklijst-aanbevolen.csv) van de Auditdienst Rijk.
+- Daarna de overige [9.116 rapporten](bijdragen/werklijst-rapporten.csv) van de Rijksmap.
+- Alle wetten en kaders die openbaar mogen worden verwerkt; zie de [werklijst](bijdragen/werklijst-wetten-en-kaders.md). Voor kaders met auteursrecht zoeken we afspraken met de uitgevers.
+
+### 6. Rijkere AI-koppeling
+
+**Doel:** je AI-assistent meer laten doen met Omnibus.
+
+Bijvoorbeeld koppelingen met andere open datasets, zoals de [Rijksmap](https://github.com/Robert-Worm/rijksmap).
+
+## Bewust niet
+
+- **Accounts, inloggen en rollen.** Omnibus werkt zonder account.
+- **Projecten in de cloud.** Je werk blijft op je eigen computer.
+- **Betaalde functies.** Omnibus blijft niet-commercieel.
+
+Dat verandert alleen na een nieuw, bewust besluit.
+
+## Samengevat
+
+Eerst je eigen documenten en databases, dan online. Ondertussen groeit de openbare database met hulp van bijdragers.
+
+## Volgende stap
+
+Wil je helpen? Lees [meedoen](bijdragen/README.md).

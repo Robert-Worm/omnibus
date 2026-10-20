@@ -1,18 +1,17 @@
-# Lokale AI-koppeling
+# AI-koppeling (`agent-tools/`)
 
-Met deze map kunnen AI-clients Omnibus doorzoeken, aparte onderzoeksconcepten voorbereiden en via de bestaande werkstroom projectbestanden of Excel-exports maken. De map voert zelf geen AI-model uit en geeft de client geen toestemming om de brondatabase te bewerken.
+> **In het kort:** de lokale koppeling waarmee een AI-assistent in Omnibus kan zoeken en een onderzoeksopzet kan voorbereiden. Deze pagina is de technische uitleg; de gebruikershandleiding staat in [je eigen AI-assistent koppelen](../docs/gebruiken/ai-koppeling.md).
 
-## Begin hier
+## Belangrijkste bestanden
 
-Maak de agentbuild volgens de [instructies in het projectoverzicht](../README.md#lokale-ai-koppeling). Hieronder staat de uitgebreide handleiding voor koppelen en toestemmingen.
+| Bestand | Wat het doet |
+| --- | --- |
+| `server.mjs` | De MCP-server met zes tools, via STDIO (geen netwerkpoort) |
+| `service.mjs` | Bewaakt invoer en schrijft uitvoer naar aparte bestanden |
+| `workflow.mjs` | Hergebruikt de selectie-, vraag- en exportlogica uit [`lib/`](../lib/README.md) |
+| `index-store.mjs` | De afgeleide zoekindex |
 
-## Grenzen
-
-Dit is een lokale MCP-koppeling via STDIO, geen online adres. Je hebt een passende client en een apart voorbereide database nodig. De privacyvoorwaarden van een AI-dienst in de cloud blijven gelden voor wat je ernaartoe stuurt; een AI-abonnement zit er niet bij.
-
-[Terug naar het projectoverzicht](../README.md#wegwijs-in-de-mappen).
-
-## Eigen AI verbinden met Omnibus — lokale proefversie
+## Wat de koppeling doet
 
 Deze koppeling laat een eigen AI-client de bestaande Omnibus-werkwijze gebruiken. Omnibus voert zelf geen AI-model uit en bewaart geen AI-abonnement of API-sleutel. De eigen AI interpreteert het onderwerp of de intake, vergelijkt bouwstenen en formuleert vragen. Omnibus controleert de structuur, bewaart brongegevens en maakt het project en de Excel.
 
@@ -99,7 +98,7 @@ een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide
 testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`.
 Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
 
-Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de private instellingen uit de [README](../README.md#lokaal-bouwen-en-starten):
+Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de private instellingen uit de [README](../docs/gebruiken/installeren.md):
 
 ```powershell
 npm ci --ignore-scripts
@@ -124,4 +123,8 @@ Open voor de gezamenlijke acceptatie een gemaakt `omnibus-project.json` met **Op
 
 Serverversie 0.2.0 voegt het verplichte veld `consent` toe aan `prepare_research_draft` en `export_research_draft`. Herstart de lokale verbinding zodat de client de tools opnieuw opvraagt. Voeg het veld alleen na akkoord toe aan bestaande aanvraagbestanden voor `scripts/call-omnibus-mcp.mjs`; die brug geeft aanvragen ongewijzigd door en verzint geen toestemming. `test-fixture.mjs` levert bewust alleen het concept; tests voegen hun expliciet toegestane fictieve schrijfhandeling zelf toe. Eerder opgeslagen concepten zonder dit veld blijven exporteerbaar, met nieuw akkoord op de exportaanroep. De leesaanroepen en bestandsformaten blijven gelijk.
 
-Voor codeherstel kan de integrator de EP08-commits terugdraaien en de lokale client herstarten. Dat verandert geen bronrelease of browserproject. Een vorige agent-build kan via de bestaande lokale pointer worden teruggekozen nadat de beheerder release/publicatie heeft gecontroleerd; deze proef wijzigt geen globale registratie. De huidige opdracht bevat geen publiek MCP-endpoint, tunnel, login, accountbeheer of online opslag.
+Voor codeherstel kan de integrator de betreffende commits terugdraaien en de lokale client herstarten. Dat verandert geen bronrelease of browserproject. Een vorige agent-build kan via de bestaande lokale pointer worden teruggekozen nadat de beheerder release/publicatie heeft gecontroleerd; deze proef wijzigt geen globale registratie. De huidige opdracht bevat geen publiek MCP-endpoint, tunnel, login, accountbeheer of online opslag.
+
+## Verder lezen
+
+[AI-koppeling voor gebruikers](../docs/gebruiken/ai-koppeling.md) · [Architectuur](../docs/bijdragen/architectuur.md)
