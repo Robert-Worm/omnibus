@@ -42,7 +42,7 @@ Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrappo
 Meer kiezen:
 
 - [Alle 542 aanbevolen rapporten](werklijst-aanbevolen.csv): doorzoekbaar, met een claimlink per rapport.
-- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv): als download, opent in Excel.
+- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv): CSV-bestand om te downloaden en te filteren.
 - [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.
 
 ## Al in de database

@@ -262,7 +262,7 @@ function build(claims) {
     "Meer kiezen:",
     "",
     `- [Alle ${aanbevolen.length} aanbevolen rapporten](werklijst-aanbevolen.csv): doorzoekbaar, met een claimlink per rapport.`,
-    `- [Alle ${rows.length.toLocaleString("nl-NL")} rapporten van de Rijksmap](werklijst-rapporten.csv): als download, opent in Excel.`,
+    `- [Alle ${rows.length.toLocaleString("nl-NL")} rapporten van de Rijksmap](werklijst-rapporten.csv): CSV-bestand om te downloaden en te filteren.`,
     "- [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.",
     "",
     "## Al in de database",
