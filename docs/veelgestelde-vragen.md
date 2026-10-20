@@ -69,6 +69,9 @@ Je bijdrage valt onder dezelfde [licentie](../LICENSE) als het project. De bront
 **Welk AI-model moet ik gebruiken?**
 Het sterkste dat je hebt. Aanbevolen zijn Claude Opus, Claude Fable, Claude Mythos, GPT-5 en Codex. Zie [welk AI-model gebruik je?](bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
 
+**Werken de skills ook met Claude of ChatGPT?**
+Ja. Je uploadt de skillmap als zip, of voegt de bestanden toe aan je gesprek. Zie [skills gebruiken met je AI-assistent](bijdragen/skills-gebruiken.md).
+
 **Kan mijn AI-assistent ook direct in de database zoeken?**
 Ja, via een lokale koppeling (MCP) op je eigen computer. De assistent kan zoeken en een onderzoeksopzet voorstellen, maar slaat pas iets op na jouw akkoord. Zie [AI-koppeling](gebruiken/ai-koppeling.md).
 

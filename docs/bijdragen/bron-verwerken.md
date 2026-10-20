@@ -45,7 +45,7 @@ Voor Codex installeer je hem vanuit de repository:
 npm run skills:install -- --skill omnibus-add-report
 ```
 
-Gebruik je een andere assistent? Geef hem de map `skills/omnibus-add-report/` en vraag hem `SKILL.md` te volgen. Meer uitleg: [AI-skills](../../skills/README.md).
+Gebruik je Claude Code, de Claude-app of ChatGPT? Volg dan [skills gebruiken met je AI-assistent](skills-gebruiken.md).
 
 ### 2. Haal de bron op
 

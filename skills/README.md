@@ -47,6 +47,8 @@ npm run skills:install -- --skill omnibus-add-report
 - Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
 - Andere bestemming? Gebruik `--target <map>`.
 
+Gebruik je Claude Code, de Claude-app of ChatGPT? Zie [skills gebruiken met je AI-assistent](../docs/bijdragen/skills-gebruiken.md).
+
 Gebruik je een andere AI-assistent? Geef hem de hele map van de skill (niet alleen `SKILL.md`) en vraag hem `SKILL.md` te volgen.
 
 ## Goed om te weten

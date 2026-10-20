@@ -30,6 +30,7 @@ Voor iedereen die Omnibus wil helpen groeien.
 | Weten hoe ik kan helpen | [Meedoen](bijdragen/README.md) |
 | Zien wat er al is en wat nog open staat | [Voortgang](bijdragen/voortgang.md) |
 | Een rapport, wet of kader verwerken | [Een bron verwerken](bijdragen/bron-verwerken.md) |
+| Een skill gebruiken met Claude, ChatGPT of Codex | [Skills gebruiken](bijdragen/skills-gebruiken.md) |
 | Een wet of kader kiezen dat openbaar mag | [Werklijst wetten en kaders](bijdragen/werklijst-wetten-en-kaders.md) |
 | De code verbeteren | [Ontwikkelen](bijdragen/ontwikkelen.md) en [architectuur](bijdragen/architectuur.md) |
 | Documentatie schrijven in de huisstijl | [Stijlgids](bijdragen/stijlgids.md) |
