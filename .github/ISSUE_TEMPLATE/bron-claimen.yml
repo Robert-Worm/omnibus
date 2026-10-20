@@ -17,6 +17,26 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: aanbieder
+    attributes:
+      label: Met welke AI werk je?
+      description: Zo kunnen we zien of bronnen met een sterk model zijn verwerkt. Zie de [aanbevolen modellen](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+      options:
+        - Anthropic (Claude)
+        - OpenAI (GPT of Codex)
+        - Google (Gemini)
+        - Anders
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Welk model precies?
+      description: De naam en versie zoals je AI-programma die toont.
+      placeholder: bijvoorbeeld Claude Opus 5.5
+    validations:
+      required: true
+  - type: dropdown
     id: termijn
     attributes:
       label: Wanneer verwacht je klaar te zijn?

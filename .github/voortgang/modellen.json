@@ -1,0 +1,10 @@
+{
+  "toelichting": "AI-modellen die de beheerder aanbeveelt voor het verwerken van bronnen. Een claim met een model dat hier niet bij past, krijgt het label 'model-controleren'. De beheerder beslist dan of het resultaat bruikbaar is. Pas deze lijst aan als er betere modellen beschikbaar komen.",
+  "aanbevolen": [
+    { "naam": "Claude Opus", "herken": ["opus"] },
+    { "naam": "Claude Fable", "herken": ["fable"] },
+    { "naam": "Claude Mythos", "herken": ["mythos"] },
+    { "naam": "GPT-5 (OpenAI)", "herken": ["gpt-5", "gpt5", "gpt 5"] },
+    { "naam": "OpenAI Codex", "herken": ["codex"] }
+  ]
+}

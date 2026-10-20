@@ -16,18 +16,17 @@ npm run content:backlog-import -- --database work/content-workbench/backlog.sqli
 npm run content:workbench -- --database work/content-workbench/backlog.sqlite --port 4326
 ```
 
-Open `http://127.0.0.1:4326/` op dezelfde computer. Omnibus op 4318 blijft apart
+Open `http://127.0.0.1:4326/` op dezelfde computer. Omnibus zelf (standaard op 4319) blijft apart
 beschikbaar. De server bindt alleen aan `127.0.0.1`; open geen firewallpoort en
 plaats er geen publiek toegankelijke proxy of tunnel voor. Stop met Ctrl+C.
 De gegevens blijven na herstart bewaard. Dit is een lokaal beheerdershulpmiddel:
 iedereen met toegang tot deze computer kan het lokale register gebruiken.
 Het is geen publieke multi-userdienst.
 
-Een typische import bestaat uit de 9.116 rapporten van de Rijksmap en de subset
-van 542 aanbevolen ADR-rapporten (zie de [werklijsten](../bijdragen/README.md#welke-bron-kies-je)). Alle subsetrecords
-sluiten aan op de volledige lijst; zij worden niet dubbel geteld. Dit is geen
-claim over het actuele aantal documenten op een externe website. Er zijn geen
-bronnen gedownload en de oorspronkelijke exports zijn niet gewijzigd.
+De werklijst met alle 9.116 Rijksmap-rapporten staat klaar voor import in
+`.github/voortgang/rapporten.csv` (puntkomma-CSV met `titel` en `url`). De kolom
+`aanbevolen` markeert de 542 aanbevolen rapporten. Records die in meerdere
+collecties voorkomen, worden niet dubbel geteld. Er worden geen bronnen gedownload.
 
 ## Dagelijks gebruik
 

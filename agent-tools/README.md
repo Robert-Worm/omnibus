@@ -84,7 +84,7 @@ De voorbereidingsstap maakt een consistente SQLite-kopie met `node:sqlite.backup
 
 Zonder private database of agent-build zijn deze gerichte controles uitvoerbaar:
 
-```powershell
+```text
 node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs
 ```
 
@@ -98,11 +98,11 @@ een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide
 testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`.
 Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
 
-Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de private instellingen uit de [README](../docs/gebruiken/installeren.md):
+Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de instellingen uit [installeren](../docs/gebruiken/installeren.md):
 
-```powershell
-npm ci --ignore-scripts
-npm run build:agent -- --settings C:/private/omnibus/local-build.json
+```text
+npm ci --ignore-scripts --no-audit --no-fund
+npm run build:agent -- --settings local-data/runtime/local-build.json
 node --test agent-tools/input-contract.test.mjs
 node --test agent-tools/local-protocol.test.mjs
 ```

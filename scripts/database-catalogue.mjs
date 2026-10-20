@@ -11,6 +11,9 @@ import {flatLawSummary} from '../lib/admitted-foundation.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const quote = JSON.stringify;
+// Safe JS string/object literal for generated module code: escape characters that could
+// end a surrounding context (<, >, /) and line separators. JSON.parse/JS decode them identically.
+const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
 const MAX_CHUNK = 900_000;
 
 // Build-time transport projection, not an alternative extraction or viewer.
@@ -57,8 +60,8 @@ export function databaseCataloguePlugin({release, databasePath, transportModule}
   }
   function moduleFor(path, data) {
     const lines = [`import {registerCatalogueResource,applyCatalogueEdits} from ${quote(resolve(root,'lib/catalogue-runtime.mjs'))};`,
-      `import {databaseSourceClient} from ${quote(transportModule || resolve(root,'lib/database-source-client.mjs'))};`, `const data=${quote(data)};`];
-    for (const key of registrations.get(path) ?? []) lines.push(`registerCatalogueResource(${quote(key)},()=>databaseSourceClient.content(${quote(refs[key])}),value=>applyCatalogueEdits(data,value));`);
+      `import {databaseSourceClient} from ${quote(transportModule || resolve(root,'lib/database-source-client.mjs'))};`, `const data=${code(data)};`];
+    for (const key of registrations.get(path) ?? []) lines.push(`registerCatalogueResource(${code(key)},()=>databaseSourceClient.content(${code(refs[key])}),value=>applyCatalogueEdits(data,value));`);
     return lines.join('\n') + '\nexport default data;';
   }
   return {
@@ -194,8 +197,8 @@ export const validateCioEditorialTrace=trace=>validateEditorialTrace(trace,cioEd
 import {databaseSourceClient} from ${quote(transportModule || resolve(root,'lib/database-source-client.mjs'))};
 import {foundationSummaries,reportSummaries} from './catalogue-summary.mjs';
 ${Object.keys(navigation).filter(key=>!key.endsWith('Summaries')).map(key => `export const ${key}=[];`).join('\n')}
-export const catalogueRouting=${quote(routing)};
-registerCatalogueResource('catalogue',()=>databaseSourceClient.content(${quote(refs.catalogue)}),value=>applyCatalogueEdits(
+export const catalogueRouting=${code(routing)};
+registerCatalogueResource('catalogue',()=>databaseSourceClient.content(${code(refs.catalogue)}),value=>applyCatalogueEdits(
 {${Object.keys(navigation).join(',')}},Object.entries(value).map(([key,value])=>({path:[key],value}))));\n` + source.slice(end);
         // Virtual module import paths must resolve against the original directory.
         return source.replaceAll(/from '(\.[^']+)'/g, (_, relative) => 'from ' + quote(resolve(dirname(path),relative)));

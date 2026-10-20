@@ -62,3 +62,12 @@ hostingconfiguratie veranderen.
 Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md),
 [runtime-instructies](runtime-pakket.md) en
 [herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform.
+
+## Samengevat
+
+- Database, code, hosting, herstel en acceptatie hebben elk een verantwoordelijke en een duidelijk "klaar wanneer".
+- De data zijn streefdata, geen toestemming om diensten te activeren of kosten te maken.
+
+## Volgende stap
+
+Zie [pad A van de routekaart](../routekaart.md#pad-a--online-versie) en de voorbereiding in [`hosting/`](../../hosting/README.md).

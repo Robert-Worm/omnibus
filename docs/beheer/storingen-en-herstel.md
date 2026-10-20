@@ -30,7 +30,7 @@ Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekoze
    gewone bestandskopie. De backup-API neemt vastgelegde WAL-wijzigingen mee.
 
    ```text
-   node local-data/runtime-backup.mjs --from "<bron.sqlite>" --to "<nieuwe-map>/backup.sqlite" --release <releasehash> --publication <publicatiehash>
+   npm run data:runtime-backup -- --from "<bron.sqlite>" --to "<nieuwe-map>/backup.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 
    De opdracht controleert SQLite-integriteit, foreign keys, de geselecteerde
@@ -48,8 +48,8 @@ Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekoze
    Gebruik vervolgens dezelfde snapshotfunctie met een **nieuwe** bestemming:
 
    ```text
-   node local-data/runtime-backup.mjs --from "<backup.sqlite>" --to "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
-   node scripts/check-runtime-database.mjs --database "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
+   npm run data:runtime-backup -- --from "<backup.sqlite>" --to "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
+   npm run data:check-runtime -- --database "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 
    Vergelijk release/publicatie/contract, aantallen en bronhashcontrole. SQLite kan
@@ -89,7 +89,7 @@ Maak de combinatie van code, data, pins en beheerbesluit daarom expliciet.
 
 - Noteer tijdstip, commit, hashes en request-ID; deel geen onderzoeksinhoud.
 - Herstel altijd naar een nieuw bestand, nooit over de actieve database.
-- Controleer na herstel met `data:check-runtime`.
+- Controleer na herstel met `npm run data:check-runtime`.
 
 ## Volgende stap
 

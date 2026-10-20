@@ -24,9 +24,9 @@ flowchart LR
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
-1. **Claimen (check-out).** Kies een open bron in de [voortgang](voortgang.md) of een van de werklijsten, en klik op *Claimen*. Er opent een kort formulier. Na verzenden staat de bron op jouw naam, zichtbaar voor iedereen.
+1. **Claimen (check-out).** Kies een open bron in de [voortgang](voortgang.md) of een van de werklijsten, en klik op *Claimen*. Er opent een kort formulier, waarin je ook invult met welk AI-model je werkt. Na verzenden staat de bron op jouw naam, zichtbaar voor iedereen.
 2. **Verwerken.** Volg [een bron verwerken](bron-verwerken.md). Je AI-assistent doet het meeste werk; jij controleert.
-3. **Inleveren (check-in).** Voeg je pakket toe aan je claim en schrijf `/inleveren` in een reactie.
+3. **Inleveren (check-in).** Voeg je concept toe aan je claim en schrijf `/inleveren` in een reactie.
 4. **Controle.** De beheerder controleert het pakket. In de volgende databaserelease staat de bron op ✅ en wordt je claim gesloten.
 
 Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voor iemand anders. Geen probleem.
@@ -36,7 +36,7 @@ Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voo
 | Werklijst | Wat erin staat |
 | --- | --- |
 | [Voortgang](voortgang.md) | Het overzicht, met een paar aanbevolen rapporten om mee te beginnen |
-| [Aanbevolen rapporten](werklijst-aanbevolen.csv) | 542 adviesrapporten van de Auditdienst Rijk: veel bruikbare normen |
+| [Aanbevolen rapporten](werklijst-aanbevolen.md) | 542 adviesrapporten van de Auditdienst Rijk, per ministerie, met een claimlink: veel bruikbare normen |
 | [Alle rapporten](werklijst-rapporten.csv) | Alle 9.116 rapporten van de [Rijksmap](https://www.rijksmap.nl) (CSV-bestand om te downloaden) |
 | [Wetten en kaders](werklijst-wetten-en-kaders.md) | Wetten, regels en normenkaders, met per bron of je hem openbaar mag verwerken |
 
@@ -44,7 +44,8 @@ Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikba
 
 ## Afspraken
 
-- **Eén bron per claim.** Claim pas een volgende als je de vorige hebt ingeleverd.
+- **Eén bron tegelijk.** Claim pas een volgende als je de vorige hebt ingeleverd.
+- **Blijf in contact.** Na 30 dagen zonder reactie krijg je een herinnering; na 60 dagen komt de bron automatisch weer vrij.
 - **Geen vertrouwelijk materiaal** in issues, reacties of pull requests.
 - **Wees eerlijk over twijfels.** Een onzekere norm met een duidelijke vraag is beter dan een stellige fout.
 - **Respectvol samenwerken.** Zie de [gedragscode](../../CODE_OF_CONDUCT.md).

@@ -46,3 +46,13 @@ publicatievergelijking. De controle verwijdert geen historische gegevens.
 Een match bewijst niet wie de inventaris heeft goedgekeurd, maakt HOLD-inhoud
 niet goedgekeurd en verleent geen verspreidingsrechten. Behoud de inhoudelijke
 review en de bewuste activatiestap. Invoer en uitvoer blijven privé.
+
+## Samengevat
+
+- Leg vooraf vast welke pakketten en documenten in de nieuwe database horen.
+- Vergelijk de kandidaat daarmee; alles wat afwijkt, verklaar je eerst.
+- De controle wijzigt niets en keurt niets goed.
+
+## Volgende stap
+
+Terug naar [database publiceren](database-publiceren.md).

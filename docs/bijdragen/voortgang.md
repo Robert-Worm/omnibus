@@ -4,20 +4,20 @@
 
 ## Zo staat het ervoor
 
-| | In database | In bewerking | Ingeleverd | Open |
-| --- | ---: | ---: | ---: | ---: |
-| **Aanbevolen rapporten** (ADR, advies) | 27 | 1 | 0 | 514 |
-| **Alle rapporten op de Rijksmap** | 27 | 1 | 0 | 9088 |
-| **Wetten en kaders** | 7 | 0 | 0 | 32 |
-| **Onderzoeksmodellen** | 14 | | | |
+| | ✅ In database | 🔄 In bewerking | 📦 Ingeleverd | ⬜ Open | 🔒 Niet beschikbaar |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | 27 | 0 | 0 | 515 | 0 |
+| **Alle rapporten op de Rijksmap** | 27 | 0 | 0 | 9025 | 64 |
+| **Wetten en kaders** | 7 | 0 | 0 | 23 | 9 |
+| **Onderzoeksmodellen** | 14 | | | | |
+
+🔒 *Niet beschikbaar*: het rapport is niet openbaar, of voor het kader is toestemming van de uitgever nodig.
 
 Database van 2026-10-19.
 
 ## Nu in bewerking
 
-| Bron | Door | Sinds | Status |
-| --- | --- | --- | --- |
-| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | @Robert-Worm | 2026-10-20 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) |
+Nog niemand. Wees de eerste: kies hieronder een bron.
 
 ## Waar kun je mee beginnen
 
@@ -43,8 +43,8 @@ Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrappo
 
 Meer kiezen:
 
-- [Alle 542 aanbevolen rapporten](werklijst-aanbevolen.csv): doorzoekbaar, met een claimlink per rapport.
-- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv): CSV-bestand om te downloaden en te filteren.
+- [Alle 542 aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.
+- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren.
 - [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.
 
 ## Al in de database
@@ -95,22 +95,12 @@ Meer kiezen:
 
 </details>
 
-## Zo werkt claimen
+## Samengevat
 
-```mermaid
-flowchart LR
-  A["⬜ Open"] -->|Claimen| B["🔄 In bewerking<br/>op jouw naam"]
-  B -->|/inleveren| C["📦 Ingeleverd"]
-  C -->|Controle en nieuwe database| D["✅ In database"]
-  B -->|/vrijgeven| A
-  classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
-```
+27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Aan 0 bronnen wordt gewerkt.
 
-1. **Claimen (check-out):** klik op *Claimen* bij een bron. Er opent een kort formulier; na verzenden staat de bron op jouw naam.
-2. **Verwerken:** volg [een bron verwerken](bron-verwerken.md).
-3. **Inleveren (check-in):** schrijf `/inleveren` in een reactie op je claim.
-4. **Controle:** de beheerder controleert het pakket. In de volgende databaserelease staat de bron op ✅.
+## Volgende stap
 
-Lukt het niet? Schrijf `/vrijgeven`, dan komt de bron weer vrij. Vragen stel je in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+Kies een bron en klik op **Claimen**. Hoe claimen, inleveren en vrijgeven werkt, staat in [meedoen](README.md). Een ⚠️ achter een model betekent dat het niet op de lijst met [aanbevolen modellen](bron-verwerken.md#welk-ai-model-gebruik-je) staat.
 
 *Automatisch bijgewerkt. De gegevens staan in `.github/voortgang/`; het script in `.github/scripts/voortgang.mjs`.*

@@ -5,7 +5,7 @@
 ## Waar we op letten
 
 - **Toetsenbord:** alle vier de werkstappen, bronbestemmingen en het wisselen van route blijven met het toetsenbord bereikbaar, met een zichtbare focus.
-- **Inklapbare tekst:** lange toelichtingen kunnen inklappen achter een toegankelijke, omkeerbare knop "Lees verder". Normtekst, toetspunten en bronciteten worden nooit ingeklapt.
+- **Inklapbare tekst:** lange toelichtingen kunnen inklappen achter een toegankelijke, omkeerbare knop "Lees verder". Normtekst, toetspunten en broncitaten worden nooit ingeklapt.
 - **Smalle schermen:** bronviewers schakelen over op tabbladen, zodat uitleg en brontekst ook op een klein scherm te lezen zijn.
 - **Licht en donker:** gedeelde kleurtokens voor beide thema's, ook voor de toetsenbordfocus.
 - **Excel-export:** het toetsingskader is ook als werkboek te gebruiken, buiten de browser.
@@ -18,4 +18,4 @@
 
 ## Een barrière melden
 
-Loop je ergens tegenaan? [Meld het als fout](https://github.com/Robert-Worm/omnibus/issues/new?template=bug_report.md) en zet "Toegankelijkheid" in de titel. Vermeld het scherm, wat er misging, en welk hulpmiddel en welke browser je gebruikt.
+Loop je ergens tegenaan? [Meld het als fout](https://github.com/Robert-Worm/omnibus/issues/new?template=bug_report.md&labels=accessibility) en zet "Toegankelijkheid" in de titel. Vermeld het scherm, wat er misging, en welk hulpmiddel en welke browser je gebruikt.

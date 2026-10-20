@@ -2,13 +2,13 @@
 
 Dit bestand beschrijft de vaste afspraken voor iedereen die met een AI-agent aan Omnibus werkt (Codex, Claude Code of vergelijkbaar). De regels gelden net zo goed voor mensen.
 
-# Grens tussen code en data
+## Grens tussen code en data
 
-Deze repository bevat alleen de code. De runtimedatabase wordt apart en privé aangeleverd. `code-snapshot.json` legt vast welke private en inhoudsgebonden onderdelen bewust zijn weggelaten. Voeg die nooit geforceerd toe en haal ze niet automatisch op.
+Deze repository bevat alleen de code. De openbare database staat apart, als zip bij de releases; de oorspronkelijke bronnen en reviewdossiers blijven privé. `code-snapshot.json` legt vast welke private en inhoudsgebonden onderdelen bewust zijn weggelaten. Voeg die nooit geforceerd toe en haal ze niet automatisch op.
 
 `test:code-only` en `test:runtime` gebruiken zelfstandige, fictieve testdata. De ondersteunde web- en agentbuilds vragen expliciet om een database, een release en een hash van de runtimepublicatie; ze mogen geen private auteursmodules importeren of tijdens het compileren brondata schrijven. Houd uitvoerbare logica in de inhoudsadapters en data buiten Git. Het runtimecontract bevat alleen module-identiteiten en exports. Reviews van bronintegriteit blijven in de private voorbereidingsstraat. Vervang ontbrekend bewijs nooit door lege testdata. Niets uploaden of publiceren zonder toestemming.
 
-# Gedeelde viewers voor wetten en kaders
+## Gedeelde viewers voor wetten en kaders
 
 De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuwe wet en elk nieuw kader. Hergebruik is een harde eis; bedenk geen nieuwe opmaak per bron.
 
@@ -19,8 +19,8 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Houd bewijs uit de oorspronkelijke publicatie en uit de geconsolideerde versie gescheiden. Tekst die alleen in XML bestaat, moet duidelijk als zodanig herkenbaar zijn en mag niet worden gemarkeerd in een niet-gerelateerde pdf-pagina.
 - Behoud onveranderlijke extractiepakketten, opgeslagen bewijssnapshots, selectiegrenzen en de HOLD-status als je de presentatie wijzigt.
 - WWKE-groepen, normen en losse punten selecteren gebruikt dezelfde directe onderzoeksselectie als de knop "alles selecteren" bovenaan. Open voor gewone selectie geen dialoog voor toepasselijkheidsbeoordeling. Behoud bestaande beoordelingen en aanpassingen van gebruikers; direct selecteren bevestigt nooit juridische toepasselijkheid. Sectoruitzonderingen en niet-selecteerbare punten blijven beschermd.
-- Benoem bij selectie-aantallen de eenheid en de reikwijdte. Navigatie naar het hele toetsingskader mag geen onbenoemd aantal van alleen de huidige bron tonen. Vertaal technische extractietermen alleen in uitleg voor de gebruiker, nooit in bronciteten of opgeslagen bewijs.
-- Geopende viewers gebruiken de compacte navigatie uit `app/viewer-readability.css`; houd alle vier de werkstappen, bronbestemmingen en het wisselen van route bereikbaar. Hergebruik `CompactContextText` voor de vier toelichtende contextpanelen bij wetten en thema's/processen. Lange tekst mag inklappen achter een toegankelijke, omkeerbare knop "Lees verder"; klap nooit normtekst, toetspunten of bronciteten in en herschrijf ze niet via dit onderdeel.
+- Benoem bij selectie-aantallen de eenheid en de reikwijdte. Navigatie naar het hele toetsingskader mag geen onbenoemd aantal van alleen de huidige bron tonen. Vertaal technische extractietermen alleen in uitleg voor de gebruiker, nooit in broncitaten of opgeslagen bewijs.
+- Geopende viewers gebruiken de compacte navigatie uit `app/viewer-readability.css`; houd alle vier de werkstappen, bronbestemmingen en het wisselen van route bereikbaar. Hergebruik `CompactContextText` voor de vier toelichtende contextpanelen bij wetten en thema's/processen. Lange tekst mag inklappen achter een toegankelijke, omkeerbare knop "Lees verder"; klap nooit normtekst, toetspunten of broncitaten in en herschrijf ze niet via dit onderdeel.
 - Ruimte onder paginakoppen en de identiteit van panelen zijn gedeeld in `app/viewer-readability.css`. Houd de afstand tussen titel en vlak gelijk in de catalogus en in geopende viewers. Panelen Over voor wetten, thema's/processen en modellen hergebruiken `LawAboutIntro` en de gedeelde typografie, en nemen geen kopstijlen over uit model- of exportschermen.
 - Beslisschermen hergebruiken `WorkflowIntro` en `WorkflowOutcome` uit `app/workflow-patterns.tsx`, met de vastgestelde keuzekaarten. Zet taakkeuzes vóór optionele technische instellingen; maak voor export geen aparte genummerde mini-werkstroom. Werkpanelen blijven compacter dan instapkeuzes. Kleur- en lettertypekeuzes voor werkboeken horen alleen in de echte werkboekpreview, nooit in koppen of navigatie van de interface. Gedeelde CSS gebruikt gedefinieerde kleurtokens (ook voor zichtbare toetsenbordfocus en donkere modus).
 - Onthoud per viewerfamilie het tabblad Over in `project.view.aboutViews`, ook bij navigeren tussen stappen, wisselen van bron en herladen. Expliciete acties om een norm te tonen mogen terugkeren naar de normlijst; gewone navigatie mag deze voorkeur niet resetten. Deze presentatiestatus wijzigt nooit selecties, vraagkoppelingen of bewijssnapshots.

@@ -9,8 +9,8 @@
 | De meegeleverde database gebruiken | ✅ | |
 | Een eigen document omzetten naar normen en toetspunten, met een AI-skill | ✅ | |
 | Dat document openbaar toevoegen aan de database | ✅ via [meedoen](../bijdragen/README.md) | |
-| Een eigen document direct in Omnibus laden | | 🔜 [routekaart](../routekaart.md), stap 1 |
-| Een eigen, private database naast de openbare koppelen | | 🔜 [routekaart](../routekaart.md), stap 2 |
+| Een eigen document direct in Omnibus laden | | 🔜 [routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
+| Een eigen, private database naast de openbare koppelen | | 🔜 [routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
 
 ## Hoe zet je een document om?
 

@@ -12,5 +12,9 @@ Licenties van derden
 - npm-afhankelijkheden behouden hun eigen licenties; package-lock.json legt de versies vast.
   De opdracht release:sbom maakt een overzicht van afhankelijkheden, geen juridische goedkeuring.
 
-Bronrapporten, wetten, kaders, modelpublicaties en onderzoeksdata vallen niet
-onder deze notitie. Die worden apart van de coderepository beheerd.
+De openbare database staat apart van de code, als bijlage bij de releases.
+Eigen uitwerkingen daarin (normen, toetspunten, vragen en toelichtingen) vallen
+onder dezelfde PolyForm Noncommercial License 1.0.0. Bronteksten van rapporten,
+wetten, kaders en modellen behouden de rechten van hun uitgevers; deze licentie
+verleent daarop geen rechten. De IIA Topical Requirements staan met hun volledige
+tekst in de database; de rechten daarop liggen bij The Institute of Internal Auditors.

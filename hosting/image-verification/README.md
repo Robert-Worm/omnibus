@@ -1,5 +1,7 @@
 # Een runtime-image lokaal controleren
 
+> **In het kort:** bouwt en controleert de container (image) lokaal, alleen met fictieve gegevens. Zo weet je dat de image klopt voordat hij online gaat.
+
 Deze beheerhulp bouwt en controleert een echte image met uitsluitend fictieve
 gegevens. Zij hergebruikt de bestaande pakketmaker, Dockerfile-template en
 HTTP-controles. Je geeft geen echte database mee. Zonder argumenten toont de

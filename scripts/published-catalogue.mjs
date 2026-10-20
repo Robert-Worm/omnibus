@@ -10,6 +10,9 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const dataPrefix = 'omnibus-data:';
 const virtualPrefix = '\0omnibus-published:';
 const quote = JSON.stringify;
+// Safe JS string/object literal for generated module code: escape characters that could
+// end a surrounding context (<, >, /) and line separators. JSON.parse/JS decode them identically.
+const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
 
 /** Build code against an already published database. Never imports author files.
  * @param {{release?:string, publication?:string, databasePath?:string,
@@ -57,17 +60,17 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
         if (content.registrations[original]?.length) throw Error('Mutable export module requires an adapter: '+original);
         return entry.names.map(name=>{
           if (!Object.hasOwn(content.modules[original],name)) throw Error('Missing runtime export: '+name);
-          return `export const ${name}=/*#__PURE__*/JSON.parse(${quote(quote(content.modules[original][name]))});`;
+          return `export const ${name}=/*#__PURE__*/JSON.parse(${code(quote(content.modules[original][name]))});`;
         }).join('\n');
       }
       const original = key.slice('data:'.length);
       // JSON.parse preserves literal __proto__ keys as data, unlike a JS object literal.
-      const lines = [`const data=/*#__PURE__*/JSON.parse(${quote(quote(content.modules[original]))});`];
+      const lines = [`const data=/*#__PURE__*/JSON.parse(${code(quote(content.modules[original]))});`];
       const keys = content.registrations[original] || [];
       if (keys.length) {
         lines.push(`import {registerCatalogueResource,applyCatalogueEdits} from ${quote(resolve(root,'lib/catalogue-runtime.mjs'))};`);
         lines.push(`import {databaseSourceClient} from ${quote(resolve(root,'lib/database-source-client.mjs'))};`);
-        for (const key of keys) lines.push(`registerCatalogueResource(${quote(key)},()=>databaseSourceClient.content(${quote(content.refs[key])}),value=>applyCatalogueEdits(data,value));`);
+        for (const key of keys) lines.push(`registerCatalogueResource(${code(key)},()=>databaseSourceClient.content(${code(content.refs[key])}),value=>applyCatalogueEdits(data,value));`);
       }
       lines.push('export default data;');
       return lines.join('\n');

@@ -47,6 +47,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 ## Overig
 
 - [Routekaart](routekaart.md): wat er nog komt.
+- [Begrippen](begrippen.md): de woorden uit Omnibus in gewone taal.
 - [AI-skills](../skills/README.md): de zes werkwijzen voor AI-assistenten.
 - [Versiegeschiedenis](../CHANGELOG.md), [beveiliging](../SECURITY.md), [toegankelijkheid](../ACCESSIBILITY.md) en [gedragscode](../CODE_OF_CONDUCT.md).
 
@@ -61,9 +62,12 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | `local-data/` | De koppeling met de database |
 | `agent-tools/` | De koppeling voor AI-assistenten |
 | `content-tools/`, `content-workbench/` | Hulpmiddelen voor de beheerder |
-| `scripts/`, `hosting/` | Bouwen, testen en voorbereiden op hosting |
+| `scripts/` | Bouwen, testen en controleren |
+| `hosting/` | Voorbereiding van de online versie |
 
-Elke map heeft een eigen README met uitleg.
+In de hoofdmap staan ook een paar losse bestanden: `database.html` en `offline.tsx` (het startpunt van de app), de configuratie voor bouwen en controleren (`package.json`, `vite.*.ts`, `tsconfig.json` en dergelijke) en `code-snapshot.json` (een technische lijst van wat bewust niet in Git staat). Daar hoef je als nieuwkomer niets mee.
+
+Elke map heeft een korte README met uitleg.
 
 ## Volgende stap
 

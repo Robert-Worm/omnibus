@@ -64,7 +64,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 
 ## Kaders met auteursrecht van de uitgever
 
-**Rechten:** Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions.
+**Rechten:** Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. De vier IIA Topical Requirements staan al in de database, met hun volledige tekst; de rechten liggen bij The Institute of Internal Auditors.
 
 | Bron | Code | Status | Actie |
 | --- | --- | --- | --- |
@@ -72,15 +72,19 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [IIA Topical Requirement Third-Party](https://www.theiia.org/en/standards/2024-standards/topical-requirements/third-party) | `TR-THIRD` | ✅ in database |  |
 | [IIA Topical Requirement Organizational Behavior](https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-behavior/) | `TR-BEHAV` | ✅ in database |  |
 | [IIA Topical Requirement Organizational Resilience](https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-resilience/) | `TR-RESIL` | ✅ in database |  |
-| [IIA Global Internal Audit Standards](https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/) | `GIAS` | ⬜ open |  |
-| [IIA Three Lines Model](https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/) | `3LINES` | ⬜ open |  |
-| [ISO/IEC 27001:2022](https://www.iso.org/standard/27001) | `ISO27001` | ⬜ open |  |
-| [ISO/IEC 27002:2022](https://www.iso.org/standard/75652.html) | `ISO27002` | ⬜ open |  |
-| [ISO 31000:2018](https://www.iso.org/standard/65694.html) | `ISO31000` | ⬜ open |  |
-| [COBIT 2019 (ISACA)](https://www.isaca.org/resources/cobit) | `COBIT` | ⬜ open |  |
-| [COSO Internal Control – Integrated Framework](https://www.coso.org/) | `COSOIC` | ⬜ open |  |
-| [NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/) | `NOREA` | ⬜ open |  |
-| [Nederlandse Corporate Governance Code](https://www.mccg.nl/) | `GOVCODE` | ⬜ open |  |
+| [IIA Global Internal Audit Standards](https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/) | `GIAS` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [IIA Three Lines Model](https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/) | `3LINES` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [ISO/IEC 27001:2022](https://www.iso.org/standard/27001) | `ISO27001` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [ISO/IEC 27002:2022](https://www.iso.org/standard/75652.html) | `ISO27002` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [ISO 31000:2018](https://www.iso.org/standard/65694.html) | `ISO31000` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [COBIT 2019 (ISACA)](https://www.isaca.org/resources/cobit) | `COBIT` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [COSO Internal Control – Integrated Framework](https://www.coso.org/) | `COSOIC` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/) | `NOREA` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [Nederlandse Corporate Governance Code](https://www.mccg.nl/) | `GOVCODE` | 🔒 toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+
+## Samengevat
+
+7 wetten en kaders zitten in de database, 23 kun je claimen, en voor 9 is eerst toestemming van de uitgever nodig.
 
 ## Volgende stap
 

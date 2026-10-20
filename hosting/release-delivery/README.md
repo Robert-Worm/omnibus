@@ -1,6 +1,6 @@
 # Hosting voorbereiden (`hosting/release-delivery/`)
 
-> **In het kort:** een voorbereiding voor de [online versie](../../docs/routekaart.md#3-online-versie). Hier staat hoe het runtimepakket in een container (image) wordt gezet, met de database apart ernaast. Een lokale proef met fictieve gegevens is gedaan (zie de [imagecontrole](../image-verification/README.md)); er is nog niets online gezet.
+> **In het kort:** een voorbereiding voor de [online versie](../../docs/routekaart.md#pad-a--online-versie). Hier staat hoe het runtimepakket in een container (image) wordt gezet, met de database apart ernaast. Een lokale proef met fictieve gegevens is gedaan (zie de [imagecontrole](../image-verification/README.md)); er is nog niets online gezet.
 
 Aanbevolen route: bouw de bestaande portable runtime op een gecontroleerde
 releasewerkplek met een afzonderlijke, goedgekeurde SQLite-publicatie. Maak met

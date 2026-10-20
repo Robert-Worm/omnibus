@@ -1,5 +1,7 @@
 # Een wet of normenkader voorbereiden
 
+> **In het kort:** deze skill zet een wet of normenkader om naar normen en toetspunten, met exacte bronpassages, adressaten, voorwaarden en uitzonderingen.
+
 Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
 
 ## Wat je aanlevert

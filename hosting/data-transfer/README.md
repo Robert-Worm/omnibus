@@ -1,5 +1,7 @@
 # Een afzonderlijke database ontvangen en controleren
 
+> **In het kort:** een hulpmiddel om een database op de server te controleren tegen vooraf vastgelegde controlegetallen. Het verplaatst zelf niets en start de app niet.
+
 Deze lokale beheerhulp controleert een gesloten SQLite-back-up tegen vooraf
 vertrouwde hashes en het bijpassende runtimepakket. De hulp doet geen
 netwerkoverdracht, schrijft geen actieve instellingen en start de app niet.

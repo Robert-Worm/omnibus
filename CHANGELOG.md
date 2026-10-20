@@ -7,7 +7,9 @@ De belangrijkste wijzigingen, nieuwste eerst.
 - **Claimsysteem voor bijdragers:** zet een rapport, wet of kader op je naam (check-out), lever in met `/inleveren` (check-in). De [voortgang](docs/bijdragen/voortgang.md) werkt zichzelf bij.
 - **Werklijsten:** alle 9.116 rapporten van de Rijksmap, 542 aanbevolen ADR-rapporten en een lijst van wetten en kaders met hun rechten.
 - **Documentatie opnieuw ingedeeld** in drie routes: gebruiken, bijdragen en beheren. Kortere pagina's in eenvoudig Nederlands, met schema's en schermafbeeldingen.
-- **Nieuwe routekaart:** eerst eigen documenten en eigen databases, dan een online versie.
+- **Nieuwe routekaart** met vier paden: online versie, AI aan de database, eigen databases en samen bijdragen.
+- **Claims leggen het AI-model vast**, met een lijst aanbevolen modellen.
+- **Beveiliging:** drie meldingen van de codescan opgelost.
 
 ## 19 oktober 2026 · eerste database
 

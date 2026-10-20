@@ -1,5 +1,7 @@
 # Onderzoeks- en interviewvragen ontwerpen
 
+> **In het kort:** deze skill ontwerpt of beoordeelt een centrale onderzoeksvraag, deelvragen en interviewvragen bij de bouwstenen die je hebt gekozen.
+
 Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
 
 ## Wat je aanlevert

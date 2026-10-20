@@ -1,5 +1,7 @@
 # Bijdragen aan Omnibus
 
+> **In het kort:** helpen kan op veel manieren. De belangrijkste is een bron verwerken; alle uitleg staat in de documentatie hieronder.
+
 Fijn dat je wilt helpen! Alles over meedoen staat in de documentatie:
 
 | Je wilt… | Lees |

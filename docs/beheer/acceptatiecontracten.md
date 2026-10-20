@@ -168,6 +168,10 @@ Verwijder geen werkende beveiliging samen met de losstaande identityproef.
 Infrastructuurcredentials beschermen is geen Omnibus-gebruikersbeheer.
 Geen actieve scans buiten de toegestane geïsoleerde testomgeving.
 
+## Samengevat
+
+Veertien afspraken bewaken dat werk niet verloren gaat, bronnen exact blijven, invoer begrensd is en code en database bij elkaar horen. Een wijziging wordt getoetst aan de afspraken die ze raakt.
+
 ## Volgende stap
 
 Terug naar het [beheeroverzicht](README.md), of lees hoe je deze afspraken toetst in [ontwikkelen](../bijdragen/ontwikkelen.md#welke-tests-passen-bij-je-wijziging).

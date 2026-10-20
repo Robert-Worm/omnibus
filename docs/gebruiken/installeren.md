@@ -7,10 +7,10 @@
 | Wat | Waarom | Hoe controleer je het |
 | --- | --- | --- |
 | [Git](https://git-scm.com/) | Om de code op te halen | `git --version` |
-| [Node.js 24.17](https://nodejs.org/) met npm 11.13 | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
+| [Node.js 24.17](https://nodejs.org/) met npm 11.13 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
 | De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
 
-Omnibus werkt op Windows, macOS en Linux. Je hebt geen account of internetverbinding nodig zodra alles is geïnstalleerd.
+Omnibus is getest op Windows en Linux (Ubuntu 24.04); macOS zou moeten werken, maar is niet getest. Je hebt geen account of internetverbinding nodig zodra alles is geïnstalleerd.
 
 ## Stap voor stap
 
@@ -30,14 +30,20 @@ cd omnibus
 ### 2. Installeer de onderdelen
 
 ```text
-npm ci --workspaces=false --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 ```
 
 Dit duurt een paar minuten. npm haalt de bibliotheken op die Omnibus gebruikt.
 
 ### 3. Pak de database uit
 
-Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest). Pak de zip uit in de map `local-data/runtime/`. Daar staan dan:
+Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) (10 MB; uitgepakt ongeveer 90 MB). Maak de map `local-data/runtime/` aan (die zit niet in Git) en pak de zip daarin uit:
+
+```text
+mkdir local-data/runtime
+```
+
+Daar staan dan:
 
 - `catalogue.sqlite`: de database;
 - `local-build.json`: de instellingen, met twee controlegetallen (hashes) die bij deze database horen.

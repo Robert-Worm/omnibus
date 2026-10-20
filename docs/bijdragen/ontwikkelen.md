@@ -13,7 +13,7 @@
 ```text
 git clone https://github.com/<jouw-naam>/omnibus.git
 cd omnibus
-npm ci --workspaces=false --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 npm test
 ```
 

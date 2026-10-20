@@ -1,5 +1,7 @@
 # Een conceptueel model voorbereiden
 
+> **In het kort:** deze skill voegt een bekend onderzoeksmodel toe, met dimensies en interviewvragen per niveau, en controleert of de theorie goed is gebruikt.
+
 Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
 
 ## Wat je aanlevert

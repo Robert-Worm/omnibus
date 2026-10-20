@@ -20,7 +20,7 @@ flowchart TD
 2. **Inhoud beoordelen en integreren.** Klopt de inhoud, en past hij in de bestaande weergaven? Dit gebeurt in de private verwerkingsomgeving. Zie [inhoud toevoegen](inhoud-toevoegen.md).
 3. **Database publiceren.** Maak een nieuwe database, vergelijk hem met de vorige en test hem. Zie [database publiceren](database-publiceren.md).
 4. **Uitbrengen.** Zet de database als zip bij een nieuwe release en werk `.github/voortgang/verwerkt.json` bij. De voortgang past zich daarna vanzelf aan. Zie [een release uitbrengen](database-publiceren.md#een-release-uitbrengen).
-5. **Claims sluiten.** Geef de verwerkte claims het label **verwerkt** en sluit ze.
+5. **Claims sluiten.** Geef de verwerkte claims het label **verwerkt** en sluit ze. Doe dit pas ná het bijwerken van `verwerkt.json`; anders staat de bron even weer als open.
 
 ## Alle beheerpagina's
 

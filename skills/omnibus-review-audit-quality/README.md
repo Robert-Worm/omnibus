@@ -1,5 +1,7 @@
 # De kwaliteit van auditbouwstenen reviewen
 
+> **In het kort:** deze skill beoordeelt de kwaliteit van bouwstenen: klopt de bron, hangen doel, risico, beheersing en toetsing logisch samen? Je krijgt een cijfer van 1 tot 10 (de OAK-schaal) en concrete verbetervoorstellen.
+
 Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
 
 ## Wat je aanlevert

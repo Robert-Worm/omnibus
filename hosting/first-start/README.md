@@ -1,5 +1,7 @@
 # Eerste diskvulling: begrensde beheerstart
 
+> **In het kort:** een voorstel voor de allereerste start op de server, zodat de database veilig kan worden neergezet voordat Omnibus draait. Nog niet bij de hostingpartij bewezen.
+
 Deze voorgestelde beheerstart houdt een gecontroleerde container kort in leven
 zonder Omnibus, database of listener te starten. Het is geen bewezen
 Sevalla-bootstrapprocedure. Gebruik haar uitsluitend na providerbevestiging en

@@ -74,7 +74,7 @@ Je hebt Git, Node 24 en ongeveer tien minuten nodig. In het kort:
 ```text
 git clone https://github.com/Robert-Worm/omnibus.git
 cd omnibus
-npm ci --workspaces=false --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 ```
 
 Pak daarna de database-zip uit in `local-data/runtime/`, bouw de applicatie en open hem in je browser. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md).
@@ -92,7 +92,16 @@ Hoe dat precies gaat: [meedoen](docs/bijdragen/README.md). Vragen en ideeën kun
 
 ## Wat komt er nog?
 
-Eerst: met je eigen documenten beginnen en je eigen database koppelen. Daarna een online versie. Zie de [routekaart](docs/routekaart.md).
+Vanaf de lokale versie lopen vier paden:
+
+| Pad | Doel |
+| --- | --- |
+| 🌐 [Online versie](docs/routekaart.md#pad-a--online-versie) | Omnibus gebruiken zonder installatie; eerst een online demo |
+| 🤖 [AI aan de database](docs/routekaart.md#pad-b--ai-rechtstreeks-aan-de-database) | Je AI-assistent laten zoeken en een opzet laten voorbereiden |
+| 🗂️ [Eigen databases](docs/routekaart.md#pad-c--eigen-databases-bouwen) | Eigen documenten en een eigen database naast de openbare |
+| 🤝 [Samen bijdragen](docs/routekaart.md#pad-d--samen-bijdragen) | De openbare database samen uitbreiden |
+
+Zie de [routekaart](docs/routekaart.md).
 
 ## Verwant project
 
@@ -102,6 +111,6 @@ Omnibus hoort bij de [Rijksmap](https://www.rijksmap.nl): een kaart van de rijks
 ## Licentie
 
 - **Code, documentatie en skills:** [PolyForm Noncommercial 1.0.0](LICENSE). Je mag ze vrij gebruiken, aanpassen en delen, maar niet commercieel.
-- **Bronteksten in de database:** die blijven van hun uitgevers. De licentie geeft daar geen rechten op. Zie [NOTICE](NOTICE).
+- **Database:** eigen uitwerkingen (normen, toetspunten, vragen) vallen onder dezelfde licentie. Bronteksten van rapporten, wetten en kaders blijven van hun uitgevers; de licentie geeft daar geen rechten op. Zie [NOTICE](NOTICE).
 
 Omnibus is een persoonlijk, niet-commercieel initiatief van Robert Worm. Het is geen officiële uitgave van de rijksoverheid of van de uitgevers van de gebruikte kaders.

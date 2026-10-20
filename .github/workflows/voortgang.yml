@@ -4,13 +4,16 @@ name: Voortgang bijwerken
 # wat is ingeleverd (check-in) en wat in de database zit.
 on:
   issues:
-    types: [opened, edited, closed, reopened, labeled, unlabeled]
+    types: [opened, edited, closed, reopened]
   issue_comment:
     types: [created]
   push:
     branches: [main]
-    paths: ['.github/voortgang/**', '.github/scripts/voortgang.mjs']
+    paths: ['.github/voortgang/**', '.github/scripts/voortgang.mjs', '.github/workflows/voortgang.yml']
   workflow_dispatch:
+  schedule:
+    # Elke maandagochtend: herinneringen en verlopen claims.
+    - cron: '17 6 * * 1'
 
 permissions:
   contents: write

@@ -24,12 +24,11 @@ mkdirSync(runtime); mkdirSync(data);
 const canary = join(data, "existing.txt");
 writeFileSync(canary, "synthetic existing data\n");
 let sequence = 0;
-const quote = (value) => "'" + value.replaceAll("'", "'\\''") + "'";
 
-function run(t, executable, args) {
+function run(t, executable, args, env = process.env) {
   const log = join(root, `child-${++sequence}.log`);
   const fd = openSync(log, "wx", 0o600);
-  const child = spawn(executable, args, { cwd: runtime, stdio: ["ignore", fd, fd] });
+  const child = spawn(executable, args, { cwd: runtime, env, stdio: ["ignore", fd, fd] });
   closeSync(fd);
   const done = new Promise((resolveResult, reject) => {
     child.once("error", reject);
@@ -46,8 +45,9 @@ function run(t, executable, args) {
 function hold(t, deadline) {
   const body = command.replace("FIXED_UTC_DEADLINE", deadline);
   // Sevalla's documented shell form; only the locally installed Node location differs.
-  const path = quote(`${dirname(process.execPath)}:/usr/bin:/bin`);
-  return run(t, "/bin/sh", ["-l", "-c", `PATH=${path}; export PATH; ${body}`]);
+  // The Node location is passed as data in the environment, not spliced into the command text.
+  const env = { ...process.env, OMNIBUS_REHEARSAL_PATH: `${dirname(process.execPath)}:/usr/bin:/bin` };
+  return run(t, "/bin/sh", ["-l", "-c", `PATH="$OMNIBUS_REHEARSAL_PATH"; export PATH; ${body}`], env);
 }
 
 function inspectHolder(child) {
