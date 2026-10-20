@@ -43,7 +43,7 @@ for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f
   for (const epic of backlog.epics) {
     let epicIssue = known.get(epic.id);
     if (!epicIssue) {
-      epicIssue = await create(`[${epic.onderdeel}] ${epic.titel}`, `${mark(epic.id)}\n**Doel:** ${epic.doel}\n\n${epic.dod}\n\n*Wordt aangevuld met de user stories.*`, ["epic", ...backlog.labels]);
+      epicIssue = await create(`Epic: ${epic.titel}`, `${mark(epic.id)}\n**Doel:** ${epic.doel}\n\n${epic.dod}\n\n*Wordt aangevuld met de user stories.*`, ["epic", ...backlog.labels]);
       console.log(`epic #${epicIssue.number} ${epic.id}`);
     }
     const stories = [];
@@ -75,6 +75,7 @@ for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f
       "**User stories**",
       ...stories.map((i) => `- [${i.state === "closed" ? "x" : " "}] #${i.number}`),
     ].join("\n");
-    if ((epicIssue.body || "") !== body) await gh(`/issues/${epicIssue.number}`, { method: "PATCH", body: JSON.stringify({ body }) });
+    const title = `Epic: ${epic.titel}`;
+    if ((epicIssue.body || "") !== body || epicIssue.title !== title) await gh(`/issues/${epicIssue.number}`, { method: "PATCH", body: JSON.stringify({ title, body }) });
   }
 }
