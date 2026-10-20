@@ -13,22 +13,15 @@
  *   body text began     91px  into a 375px screen, from four nested paddings
  */
 @media (max-width: 560px) {
-  /* 1. Header. Two separate faults. The button that landed alone on the last
-     row stretched to the full width, and the action groups carry max-width:100%
-     from the desktop layout, so a group whose buttons do not fit has them spill
-     out of its own box and collide with the next group -- which is what cut
-     "Delen" in half.
-     Project actions are not navigation: hiding half of them behind a sideways
-     swipe is worse than showing them all. So they wrap, every button keeps its
-     natural width, and slightly smaller labels fit all six onto two rows.
-     The group separators are a desktop refinement and would land at the start
-     of a wrapped row, so they go. */
+  /* Keep each project task group on its own row. Controls stay visible in
+     DOM/tab order; very narrow screens may wrap within a group, never clip.
+     Group separators are omitted because each group already has its own row. */
   .framework-app .brand-bar { padding: 10px 12px; }
   .framework-app .brand-bar .project-actions { flex-wrap: wrap; gap: .4rem; }
   .framework-app .brand-bar .project-actions .project-action-group {
-    flex: 0 1 auto;
+    flex: 0 0 100%;
     flex-wrap: wrap;
-    max-width: none;
+    max-width: 100%;
     gap: .4rem;
   }
   .framework-app .brand-bar .project-actions .project-action-group + .project-action-group {

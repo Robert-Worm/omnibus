@@ -18,7 +18,7 @@ export function AiConnection() {
     catch { setMessage('Kopiëren lukt hier niet. Selecteer en kopieer de instelling hieronder.'); }
   }
   return <Dialog>
-    <DialogTrigger render={<Button variant="outline" className="appearance-toggle ai-connection-trigger" aria-label="AI koppelen" title="AI koppelen"/>}><Bot size={18} aria-hidden="true"/></DialogTrigger>
+    <DialogTrigger render={<Button variant="outline" className="ai-connection-trigger" aria-label="AI koppelen" title="AI koppelen"/>}><Bot size={18} aria-hidden="true"/>AI koppelen</DialogTrigger>
     <ProjectUtilityContent title="Je eigen AI koppelen" description="Verken bronnen en maak een onderzoeksproject met je eigen AI-app."
       icon={<Bot size={20}/>} closeLabel="AI-koppeling sluiten" className="ai-connection-dialog"
       footer={<><output>{message}</output><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose>{setup && <Button onClick={copyConfig}><Copy size={16} aria-hidden="true"/>Kopieer Codex-instelling</Button>}</>}>

@@ -921,13 +921,7 @@ export default function FrameworkEditor() {
             <span className="product-identity">{PRODUCT_NAME} <small>versie {PRODUCT_VERSION}</small></span>
           </div>
           <div className="file-actions project-actions">
-            <fieldset className="project-action-group"  aria-label="Project openen, bewaren en delen">
-            <Button variant="outline" disabled={!loaded} onClick={()=>inputRef.current?.click()}><FolderOpen size={16}/>Open project</Button>
-            <Button variant="outline" disabled={!loaded || !modelsReady} title="Bewaar onderzoek, modelkeuzes en werkplek in één bestand"
-              onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project.json','application/json')}><Download size={16}/>Bewaar project</Button>
-            <ShareProject disabled={!loaded || !modelsReady} onDownload={()=>download(serializeProject(projectRef.current,true),'omnibus-project-delen.json','application/json')} />
-            </fieldset>
-            <fieldset className="project-action-group"  aria-label="Opnieuw beginnen en herstellen">
+            <fieldset className="project-action-group" aria-label="Project starten en openen">
             <AlertDialog open={newProjectOpen} onOpenChange={setNewProjectOpen}>
               <AlertDialogTrigger render={<Button variant="outline" disabled={!loaded || !modelsReady} />}><FilePlus2 size={16}/>Nieuw project</AlertDialogTrigger>
               <AlertDialogContent className="new-project-dialog" initialFocus={cancelNewProjectRef}>
@@ -943,14 +937,30 @@ export default function FrameworkEditor() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            {recovery.length>0 && <Button variant="ghost" title={recovery.at(-1)?.label} onClick={()=>{
+            <Button variant="outline" disabled={!loaded} onClick={()=>inputRef.current?.click()}><FolderOpen size={16}/>Open project</Button>
+            </fieldset>
+            <fieldset className="project-action-group" aria-label="Project bewaren en delen">
+            <Button variant="outline" disabled={!loaded || !modelsReady} title="Bewaar onderzoek, modelkeuzes en werkplek in één bestand"
+              onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project.json','application/json')}><Download size={16}/>Bewaar project</Button>
+            <ShareProject disabled={!loaded || !modelsReady} onDownload={()=>download(serializeProject(projectRef.current,true),'omnibus-project-delen.json','application/json')} />
+              <Button variant="outline" className="project-save-indicator"
+                data-state={storageBlocked.current?'unsaved':savedLocally?'saved':'loading'}
+                disabled={!loaded || !modelsReady}
+                aria-label={storageBlocked.current?'Niet automatisch opgeslagen — bekijk opslagstatus':savedLocally?'Lokaal opgeslagen — bekijk opslagstatus':'Projectopslag wordt geladen'}
+                title={storageBlocked.current?'Niet automatisch opgeslagen. Klik voor uitleg en bewaar je project.':savedLocally?'Automatisch opgeslagen in deze browser. Klik voor uitleg.':'Projectopslag wordt geladen'}
+                onClick={openStorageHelp}>
+                {storageBlocked.current?<CircleAlert size={16} aria-hidden="true"/>:savedLocally?<Save size={16} aria-hidden="true"/>:<LoaderCircle size={16} aria-hidden="true"/>}
+              </Button>
+              <output className="sr-only">{storageBlocked.current?'Let op: je huidige werk wordt niet automatisch opgeslagen. Kies Bewaar project.':savedLocally?'Project automatisch opgeslagen in deze browser.':''}</output>
+            </fieldset>
+            {recovery.length>0 && <fieldset className="project-action-group" aria-label="Project herstellen"><Button variant="ghost" title={recovery.at(-1)?.label} onClick={()=>{
               const previous=recoveryRef.current.at(-1);if(!previous)return;
               recoveryRef.current=recoveryRef.current.slice(0,-1);setRecovery(recoveryRef.current);typingRecoveryRef.current=null;
               applyProject(previous.draft);saveProject(previous.draft);
               setResetNotice(previous.label+' ongedaan gemaakt.');
-            }}>Ongedaan maken</Button>}
-            </fieldset>
-            <fieldset className="project-action-group project-utility-group"  aria-label="Hulp en weergave">
+            }}>Ongedaan maken</Button></fieldset>}
+            <fieldset className="project-action-group project-utility-group" aria-label="AI, hulp en weergave">
+              <AiConnection />
               <WorkflowHelp page={page} draft={draft} ready={loaded && modelsReady}
                 blocked={newProjectOpen || storageHelpOpen || reloadOpen || detailsOpen || Boolean(adoptingModel)}
                 pendingQuestion={pendingGuideQuestion} storageBlocked={Boolean(problem && storageBlocked.current)}
@@ -971,16 +981,6 @@ export default function FrameworkEditor() {
                   });
                 }} />
               <AppearanceToggle />
-          <AiConnection />
-              <Button variant="outline" className="project-save-indicator"
-                data-state={storageBlocked.current?'unsaved':savedLocally?'saved':'loading'}
-                disabled={!loaded || !modelsReady}
-                aria-label={storageBlocked.current?'Niet automatisch opgeslagen — bekijk opslagstatus':savedLocally?'Lokaal opgeslagen — bekijk opslagstatus':'Projectopslag wordt geladen'}
-                title={storageBlocked.current?'Niet automatisch opgeslagen. Klik voor uitleg en bewaar je project.':savedLocally?'Automatisch opgeslagen in deze browser. Klik voor uitleg.':'Projectopslag wordt geladen'}
-                onClick={openStorageHelp}>
-                {storageBlocked.current?<CircleAlert size={16} aria-hidden="true"/>:savedLocally?<Save size={16} aria-hidden="true"/>:<LoaderCircle size={16} aria-hidden="true"/>}
-              </Button>
-              <output className="sr-only">{storageBlocked.current?'Let op: je huidige werk wordt niet automatisch opgeslagen. Kies Bewaar project.':savedLocally?'Project automatisch opgeslagen in deze browser.':''}</output>
             </fieldset>
             <input ref={inputRef} hidden type="file" accept=".json,application/json" aria-label="Open lokaal project of oud concept"
               onChange={e=>void importDraft(e.target.files?.[0])}/>
