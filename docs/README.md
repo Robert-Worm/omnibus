@@ -25,6 +25,7 @@ Begin bij het [projectoverzicht](../README.md). De interface en alle handleiding
 - [Acceptatiecontracten](acceptatiecontracten.md): de afspraken waaraan de applicatie moet blijven voldoen.
 - [Runtimepakket](runtime-pakket.md) en [storingen, back-up en herstel](runtime-herstel.md).
 - [Hostingvoorbereiding](../hosting/release-delivery/README.md).
+- [Checklist voor een live demo](demo-release-checklist.md): code, database-aansluitingen, hostingproeven en menselijke acceptatie.
 - [Draagbare build](portable-build.md).
 
 Testresultaten met een datum gelden voor die versie. Ze zijn geen bewijs dat een latere build dezelfde controles haalt.
