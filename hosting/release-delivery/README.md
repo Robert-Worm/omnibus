@@ -1,7 +1,9 @@
 # Afzonderlijke levering van runtime-image en SQLite
 
-Voorstel voor EP13-S01/EP02-S01, 19 oktober 2026. **Lokaal voorbereid, geen
-image gebouwd, registry gebruikt of Sevalla ingericht.**
+Voorbereiding voor EP13-S01/EP02-S01, bijgewerkt 20 oktober 2026.
+Een lokale imageproef met fictieve gegevens is uitgevoerd; dat is geen
+Sevalla-acceptatie. De [imagecontrole](../image-verification/README.md) maakt
+die proef herhaalbaar. Er is niets geüpload of op Sevalla ingericht.
 
 Aanbevolen route: bouw de bestaande portable runtime op een gecontroleerde
 releasewerkplek met een afzonderlijke, goedgekeurde SQLite-publicatie. Maak met
@@ -24,8 +26,8 @@ Op 19 oktober 2026 geraadpleegde officiële documentatie:
 | --- | --- |
 | [Sevalla Docker images](https://docs.sevalla.com/applications/docker-images) | Een vooraf gebouwde image wordt zonder providerbuild uitgevoerd. `linux/amd64`, tag of digest en private registrycredentials worden ondersteund. Kies voor elke release een digest; geen veranderlijke `latest`. |
 | [Sevalla Dockerfile](https://docs.sevalla.com/applications/builds/dockerfile) | De Git-route bouwt uit de repository/context. Een proces-startcommand vervangt zowel ENTRYPOINT als CMD en gebruikt `/bin/sh -l -c`. `PORT` is de ingestelde webpoort. Een volledige `exec node ... --port "$PORT"` past bij de bestaande expliciete CLI. |
-| [Sevalla disks](https://docs.sevalla.com/applications/disks) | SQLite kan op een disk bij één proces met één instantie. De nieuwe mount is leeg en verbergt imagebestanden op hetzelfde pad. Jobs/cronjobs kunnen geen disk krijgen; disks zijn niet deelbaar. Bestanden kunnen via de webterminal van een eigen URL worden opgehaald; er is geen dashboardupload. |
-| [Sevalla webterminal](https://docs.sevalla.com/applications/web-terminal) | Vereist een geslaagde deployment en een gezonde draaiende applicatie. Dat bewijst niet dat een wegens ontbrekende SQLite stoppende Omnibus-runtime kan worden ingericht. |
+| [Sevalla disks](https://docs.sevalla.com/applications/disks) | SQLite kan op een disk bij één proces met één instantie. De nieuwe mount is leeg en verbergt imagebestanden op hetzelfde pad. Jobs/cronjobs kunnen geen disk krijgen; disks zijn niet deelbaar. Bevestig ontvangst en rechten vóór de eerste appstart. |
+| [Sevalla webterminal](https://docs.sevalla.com/applications/web-terminal) | Vereist een draaiende, gereedstaande instantie. Het Files-menu ondersteunt upload/download tot 100 MB, met updatebevoegdheid. Zie het [eerste-startvoorstel](../first-start/README.md); daarmee is die providerprocedure nog niet bewezen. |
 | [Docker build context](https://docs.docker.com/build/concepts/context/) en [Dockerfile](https://docs.docker.com/reference/dockerfile/) | De context begrenst COPY; `.dockerignore` filtert vóór de overdracht. De template gebruikt een expliciet geverifieerde context, een exec-entrypoint en een numerieke niet-rootgebruiker. |
 
 **Afleiding voor dit project:** een Git-build mist de afzonderlijke SQLite-input
@@ -34,7 +36,7 @@ Deze route gebruikt de gemounte disk nergens tijdens de imagebuild. Dat is een
 ontwerpkeuze, geen claim dat een Sevalla-build toegang tot die disk zou hebben.
 
 **Eerste diskvulling blijft een harde poort.** De gedocumenteerde webterminalroute
-vereist een gezonde applicatie, terwijl onze pakketstart zonder database stopt.
+vereist een draaiende, gereedstaande instantie, terwijl onze pakketstart zonder database stopt.
 Laat de provider bevestigen hoe de eigenaar vóór de eerste Omnibus-start de disk
 kan vullen en de rechten kan instellen. Laat daarbij expliciet bevestigen hoe
 beheer toegang krijgt zonder eerst Omnibus-inhoud openbaar te serveren, met welke
@@ -55,7 +57,8 @@ toegevoegd. Zonder bevestigde, goedgekeurde bootstraproute stoppen vóór deploy
 | Providerconfiguratie | Image-digest, één webproces, expliciete HTTPS-origin, webpoort, diskpad en door de eigenaar beheerde registrycredentials. Credentials komen niet in image, buildargs of Git. |
 
 De template zet pakketbestanden op root-eigendom zonder schrijfrechten en kiest
-UID/GID `1000:1000`. Dit is nog niet in Linux of op Sevalla gemeten. De afzonderlijke
+UID/GID `1000:1000`. Dit is lokaal in een synthetische Linux-imageproef bevestigd,
+maar nog niet op Sevalla. De afzonderlijke
 versiemap moet voor die gebruiker doorzoekbaar zijn, SQLite en instellingen leesbaar;
 schrijfrechten zijn voor de applicatie niet nodig. Laat beheer de rechten buiten
 het applicatieproces instellen. Een image-`chmod` verandert geen later gemounte disk.
@@ -79,7 +82,7 @@ geen inhoudsreview of base-imagescan.
 
 ## Operatorstappen, uitsluitend na passende toestemming
 
-Onderstaande bouw- en providerstappen zijn hier **niet uitgevoerd**. Gebruik
+Onderstaande release- en providerstappen met echte inhoud zijn **niet uitgevoerd**. Gebruik
 nieuwe uitvoermappen, een vertrouwde codecommit en een rustige releasewerkplek.
 Geen automatische bronpublicatie, aanpassing van de actieve database of bestaande
 runtime-build. Stop na iedere mislukte opdracht; gebruik gedeeltelijke uitvoer niet.
@@ -128,9 +131,11 @@ runtime-build. Stop na iedere mislukte opdracht; gebruik gedeeltelijke uitvoer n
    bestandsuitzonderingen. Voeg later geen bestanden of Dockerfile-specifieke
    ignorefile toe; houd de context onveranderlijk. De helper vraagt geen databasepad
    en doet geen netwerkverkeer. Zijn resultaat `imageBuilt: false` blijft letterlijk waar.
-4. **Latere imagepoort:** laat een bevoegde operator met een al goedgekeurde
-   containerbouwomgeving de image bouwen en inspecteren. Niet in deze tranche;
-   geen Docker installeren/starten of base-image ophalen zonder nieuwe opdracht.
+4. **Imagepoort:** laat een bevoegde operator met een goedgekeurde
+   containerbouwomgeving de image bouwen en inspecteren. Gebruik de
+   [synthetische imagecontrole](../image-verification/README.md) en herhaal
+   relevante controles bij een nieuwe base-image of runtimepakket.
+   Onderstaand voorbeeld vervangt die volledige controle niet.
    Het contextpad is de enige bouwinput, nooit de checkout of datamap:
 
    ```powershell
@@ -160,6 +165,10 @@ runtime-build. Stop na iedere mislukte opdracht; gebruik gedeeltelijke uitvoer n
    de disk van het webproces vullen onder de nieuwe versie. Verifieer de
    ontvangen SQLite-bestandshash tegen de private overdracht, leg het instellingen-
    bestand met dezelfde release/publicatie vast en controleer minimale leesrechten.
+   De [ontvangsthelper](../data-transfer/README.md) controleert vier vooraf
+   vertrouwde pins, maar voert geen netwerktransfer of activatie uit.
+   Het [eerste-startvoorstel](../first-start/README.md) beschrijft de open
+   provider- en rechtenvragen.
    De concrete transferopdracht blijft open totdat kanaal, toegangsbeheer en eerste
    mounttoegang zijn bevestigd; een download-URL of credential wordt niet uitgevonden.
 7. Na die poort en de gezamenlijke ingressvrijgave: één instantie, mount
