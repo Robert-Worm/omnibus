@@ -153,7 +153,9 @@ test('both explicit hosting CLIs serve the same pinned bytes from loopback only'
           child.stderr.on('data',chunk=>{stderr+=chunk;});
           t.after(async()=>{
             if(child.exitCode!==null||child.signalCode!==null)return;
-            const exited=once(child,'exit');child.kill();await exited;
+            const exited=once(child,'exit');
+            const deadline=setTimeout(()=>child.kill('SIGKILL'),7000);
+            try {child.kill();await exited;} finally {clearTimeout(deadline);}
           });
           await new Promise((resolve,reject)=>{
             let stdout='';
@@ -191,6 +193,31 @@ test('both explicit hosting CLIs serve the same pinned bytes from loopback only'
             assert.equal(denied.status,403);assert.equal(denied.headers['access-control-allow-origin'],origin);
           }
           assert.doesNotMatch(stderr,/catalogue_request_failed/);
+          await t.test('Linux CLI handles SIGTERM with an unfinished request and releases its port',
+            {skip:process.platform!=='linux',timeout:10000},async t=>{
+              // Exercise the real CLI signal handler, not a test wrapper calling
+              // app.close(). A partial request must not hold up a hosting restart.
+              const socket=net.connect(port,'127.0.0.1');
+              const closed=new Promise(resolve=>socket.once('close',resolve));
+              socket.on('error',()=>{}); // A forced shutdown may reset this client.
+              t.after(()=>socket.destroy());
+              await once(socket,'connect');
+              socket.write('GET / HTTP/1.1\r\nHost: omnibus.example.invalid\r\n');
+              assert.equal((await request(port,'/api/v1/ready')).status,200);
+              assert.equal(socket.destroyed,false);
+              const exited=once(child,'exit'),started=performance.now();
+              assert.equal(child.kill('SIGTERM'),true);
+              assert.deepEqual(await exited,[0,null],stderr);
+              await closed;
+              assert(performance.now()-started<8000,'CLI must finish its bounded drain');
+              await assert.rejects(request(port,'/api/v1/health'),error=>error.code==='ECONNREFUSED');
+              const replacement=net.createServer();
+              t.after(()=>new Promise(resolve=>replacement.close(resolve)));
+              replacement.listen(port,'127.0.0.1');
+              await once(replacement,'listening');
+              assert.deepEqual(readFileSync(f.databasePath),before);
+              verifyRuntimePackage(out);
+            });
         });
     }
   });
