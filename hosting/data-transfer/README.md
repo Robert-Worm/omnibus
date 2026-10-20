@@ -8,7 +8,7 @@ Gebruik haar pas nadat de beheerder de overdracht heeft toegestaan.
 ## Eerst vastleggen
 
 - Maak een gesloten back-up met de bestaande
-  [back-uproute](../../docs/runtime-herstel.md).
+  [back-uproute](../../docs/beheer/storingen-en-herstel.md).
 - Leg de SHA-256 van de afgeronde back-up, de SHA-256 van het bijpassende
   `runtime-package.json`, de release en de publicatie afzonderlijk vast.
   Een hash uit dezelfde onbewezen inbox is geen onafhankelijk herkomstbewijs.

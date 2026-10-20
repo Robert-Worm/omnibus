@@ -79,4 +79,4 @@ geen echte imagebuild of mountproef.
 Een lokale imageproef bewijst geen bronrechten, kwetsbaarheidsvrijheid of werking
 op Sevalla. De [eerste diskvulling](../first-start/README.md), providerrechten,
 TLS/probes en herstelproef blijven aparte stappen van de
-[demo-vrijgavechecklist](../../docs/demo-release-checklist.md).
+[demo-vrijgavechecklist](../../docs/beheer/live-demo-checklist.md).

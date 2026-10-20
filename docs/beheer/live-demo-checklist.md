@@ -1,4 +1,6 @@
-# Van lokale applicatie naar een live demo
+# Checklist live demo
+
+> **In het kort:** wat er nog moet gebeuren om van de lokale applicatie naar een online demo te gaan: database, code, hosting, herstel en acceptatie.
 
 Doel: een werkende demo op Sevalla op **1 december 2026**, met de bestaande
 applicatie en een afzonderlijk aangeleverde SQLite-database. Deze checklist is
@@ -30,14 +32,14 @@ streefdata, geen toestemming om diensten te activeren of kosten te maken.
 
 - Controleer een nieuwe database met
   `npm run data:check-runtime -- --settings work/candidate/local-build.json`.
-  Volg daarbij de [publicatiehandleiding](contributor-publication.md).
+  Volg daarbij de [publicatiehandleiding](database-publiceren.md).
   Gebruik expliciete database-, release- en
   publicatie-identiteiten; val niet stilzwijgend terug op een oudere versie.
-- Gebruik zo nodig de [actieve-inventariscontrole](active-inventory-check.md)
+- Gebruik zo nodig de [actieve-inventariscontrole](actieve-inventaris-controleren.md)
   naast de volledige runtimevergelijking. Die controle wijzigt niets en
   beoordeelt geen bronrechten.
 - Een nieuwe webpublicatie maakt een bestaande agentbuild niet automatisch
-  actueel. Controleer de versie van de [lokale AI-koppeling](../agent-tools/README.md)
+  actueel. Controleer de versie van de [lokale AI-koppeling](../../agent-tools/README.md)
   tegen de voor de demo gekozen release. Bereid een passende agentbuild apart
   voor en test het protocol en de export; presenteer een oudere index niet als
   bewijs voor de nieuwe collectie.
@@ -57,6 +59,6 @@ toegankelijkheid. Een snelle lokale proef is evenmin een capaciteitsgarantie
 voor de host. Herhaal alleen relevante controles wanneer code, data of
 hostingconfiguratie veranderen.
 
-Gebruik de bestaande [hostingvoorbereiding](../hosting/release-delivery/README.md),
+Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md),
 [runtime-instructies](runtime-pakket.md) en
-[herstelhandleiding](runtime-herstel.md); bouw hiervoor geen tweede beheerplatform.
+[herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform.

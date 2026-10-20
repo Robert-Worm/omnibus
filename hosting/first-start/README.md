@@ -69,14 +69,14 @@ operatorhulpmiddel en zit bewust niet in het runtimepakket.
 
 Bewijs daarna dat de runtime kan lezen maar de database en instellingen niet
 kan wijzigen of vervangen. Sluit de beheersessie. Vervang de tijdelijke opdracht
-bewust door de [normale pakketstart](../../docs/runtime-pakket.md), met dezelfde
+bewust door de [normale pakketstart](../../docs/beheer/runtime-pakket.md), met dezelfde
 geverifieerde release/publicatie en expliciete origin. Begin niet vanuit een
 terminal een tweede app-proces. Open pas publieke toegang na de hostproeven.
 
 Bij fout of eindtijd: publieke toegang uit houden, app opschorten en gestopte
 instanties en sessies controleren. Bestaande data blijven behouden; partials
 blijven ongeactiveerd. Een volgende poging vraagt een nieuw bewust tijdvenster.
-Gebruik voor terugschakelen de [herstelroute](../../docs/runtime-herstel.md).
+Gebruik voor terugschakelen de [herstelroute](../../docs/beheer/storingen-en-herstel.md).
 
 ## Lokale proef
 

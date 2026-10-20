@@ -29,9 +29,11 @@ flowchart TD
 | [Pakket controleren](pakket-controleren.md) | Een ingeleverd pakket technisch controleren |
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
 | [Database publiceren](database-publiceren.md) | Een nieuwe database maken, vergelijken, uitbrengen en herstellen |
+| [Actieve inventaris controleren](actieve-inventaris-controleren.md) | Controleren dat een nieuwe database alleen goedgekeurde inhoud bevat |
 | [Content Workbench](content-workbench.md) | Lokaal werkbord om de verwerking van veel bronnen bij te houden |
 | [Runtimepakket](runtime-pakket.md) | Omnibus verpakken voor een andere computer of voor hosting |
 | [Storingen en herstel](storingen-en-herstel.md) | Back-up, herstel en wat te doen bij een storing |
+| [Checklist live demo](live-demo-checklist.md) | Wat er nog moet gebeuren voor een online demo |
 | [Acceptatiecontracten](acceptatiecontracten.md) | De afspraken waaraan de applicatie moet blijven voldoen |
 
 ## Vaste regels

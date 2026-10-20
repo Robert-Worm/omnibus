@@ -1,4 +1,6 @@
-# Controleren wat een nieuwe databasepublicatie bevat
+# Actieve inventaris controleren
+
+> **In het kort:** een extra controle bij een nieuwe database: bevat hij precies de pakketten en documenten die je hebt goedgekeurd, en komt er niets terug dat eerder is verwijderd?
 
 Bij een nieuwe publicatie wil je voorkomen dat eerder verwijderde pakketten of
 documenten ongemerkt terugkomen. Deze optionele beheercontrole vergelijkt de
@@ -7,7 +9,7 @@ aan de database en start geen upload of activatie.
 
 ## Gebruik
 
-1. Controleer de kandidaat met de bestaande [publicatieroute](contributor-publication.md).
+1. Controleer de kandidaat met de bestaande [publicatieroute](database-publiceren.md).
 2. Beoordeel welke pakket- en documentversies erin horen. Gebruik de bestaande
    `publicationInventory`-structuur: `packages` met `kind`, `id`, `version` en
    `documents` met `id`, `version`. Beide lijsten zijn verplicht. Een versie is
