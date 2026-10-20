@@ -10,7 +10,7 @@
         { "id": "BVA2021", "titel": "Besluit BVA-stelsel Rijksdienst 2021", "link": "https://wetten.overheid.nl/BWBR0044617" },
         { "id": "CIO2026", "titel": "Besluit CIO-stelsel Rijksdienst 2026", "link": "https://zoek.officielebekendmakingen.nl/stcrt-2025-40208.html" },
         { "id": "CW2016", "titel": "Comptabiliteitswet 2016", "link": "https://wetten.overheid.nl/BWBR0039429" },
-        { "id": "RPE2022", "titel": "Regeling periodiek evaluatieonderzoek 2022", "link": "https://wetten.overheid.nl/BWBR0046244" },
+        { "id": "RPE2022", "titel": "Regeling periodiek evaluatieonderzoek 2022", "link": "https://wetten.overheid.nl/BWBR0046970" },
         { "id": "WOO", "titel": "Wet open overheid (Woo)", "link": "https://wetten.overheid.nl/BWBR0045754" },
         { "id": "WDO", "titel": "Wet digitale overheid (Wdo)", "link": "https://wetten.overheid.nl/BWBR0048156" },
         { "id": "ARCHIEF2026", "titel": "Archiefwet 2026", "link": "https://wetten.overheid.nl/BWBR0052739" },
@@ -41,7 +41,7 @@
       "titel": "Kaders van de Nederlandse overheid",
       "rechten": "Openbare overheidspublicaties; hergebruik is toegestaan tenzij de uitgever rechten voorbehoudt (artikel 15b Auteurswet).",
       "bronnen": [
-        { "id": "BIO2", "titel": "Baseline Informatiebeveiliging Overheid 2 (BIO2)", "link": "https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/kaders-voor-cybersecurity/baseline-informatiebeveiliging-overheid/" },
+        { "id": "BIO2", "titel": "Baseline Informatiebeveiliging Overheid 2 (BIO2)", "link": "https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/" },
         { "id": "CLOUD2026", "titel": "Rijksbreed cloudbeleid 2026", "link": "https://www.tweedekamer.nl/downloads/document?id=2026D35295" }
       ]
     },

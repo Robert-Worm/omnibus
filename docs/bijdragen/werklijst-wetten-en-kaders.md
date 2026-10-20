@@ -4,7 +4,7 @@
 
 ## Wat staat hier
 
-Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. De kolom *Rechten* bij elke groep zegt waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.
+Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. Onder *Rechten* staat per groep waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.
 
 Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
@@ -18,7 +18,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [Besluit BVA-stelsel Rijksdienst 2021](https://wetten.overheid.nl/BWBR0044617) | `BVA2021` | ✅ in database |  |
 | [Besluit CIO-stelsel Rijksdienst 2026](https://zoek.officielebekendmakingen.nl/stcrt-2025-40208.html) | `CIO2026` | ✅ in database |  |
 | [Comptabiliteitswet 2016](https://wetten.overheid.nl/BWBR0039429) | `CW2016` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Comptabiliteitswet%202016&bron=CW2016) |
-| [Regeling periodiek evaluatieonderzoek 2022](https://wetten.overheid.nl/BWBR0046244) | `RPE2022` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Regeling%20periodiek%20evaluatieonderzoek%202022&bron=RPE2022) |
+| [Regeling periodiek evaluatieonderzoek 2022](https://wetten.overheid.nl/BWBR0046970) | `RPE2022` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Regeling%20periodiek%20evaluatieonderzoek%202022&bron=RPE2022) |
 | [Wet open overheid (Woo)](https://wetten.overheid.nl/BWBR0045754) | `WOO` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20open%20overheid%20(Woo)&bron=WOO) |
 | [Wet digitale overheid (Wdo)](https://wetten.overheid.nl/BWBR0048156) | `WDO` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20digitale%20overheid%20(Wdo)&bron=WDO) |
 | [Archiefwet 2026](https://wetten.overheid.nl/BWBR0052739) | `ARCHIEF2026` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Archiefwet%202026&bron=ARCHIEF2026) |
@@ -49,7 +49,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 
 | Bron | Code | Status | Actie |
 | --- | --- | --- | --- |
-| [Baseline Informatiebeveiliging Overheid 2 (BIO2)](https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/kaders-voor-cybersecurity/baseline-informatiebeveiliging-overheid/) | `BIO2` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Baseline%20Informatiebeveiliging%20Overheid%202%20(BIO2)&bron=BIO2) |
+| [Baseline Informatiebeveiliging Overheid 2 (BIO2)](https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/) | `BIO2` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Baseline%20Informatiebeveiliging%20Overheid%202%20(BIO2)&bron=BIO2) |
 | [Rijksbreed cloudbeleid 2026](https://www.tweedekamer.nl/downloads/document?id=2026D35295) | `CLOUD2026` | ⬜ open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Rijksbreed%20cloudbeleid%202026&bron=CLOUD2026) |
 
 ## Internationale kaders die vrij te gebruiken zijn

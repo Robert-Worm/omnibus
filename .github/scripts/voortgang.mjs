@@ -199,7 +199,7 @@ function build(claims) {
     "",
     "## Wat staat hier",
     "",
-    "Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. De kolom *Rechten* bij elke groep zegt waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.",
+    "Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. Onder *Rechten* staat per groep waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.",
     "",
     "Mis je een bron? Stel hem voor in [Discussions](" + `${repoUrl}/discussions` + ").",
     "",
