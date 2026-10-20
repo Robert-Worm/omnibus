@@ -10,7 +10,9 @@
 </p>
 
 <p align="center">
+  <!--badge:database-->
   <a href="https://github.com/Robert-Worm/omnibus/releases/latest"><img alt="Database: 27 rapporten" src="https://img.shields.io/badge/database-27%20rapporten-01689b?style=flat-square&labelColor=15233b"></a>
+  <!--/badge-->
   <a href="docs/bijdragen/voortgang.md"><img alt="Meedoen: bronnen claimen" src="https://img.shields.io/badge/meedoen-bronnen%20claimen-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="skills/README.md"><img alt="6 AI-skills" src="https://img.shields.io/badge/AI--skills-6-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="#licentie"><img alt="Code: PolyForm Noncommercial" src="https://img.shields.io/badge/code-PolyForm%20Noncommercial-01689b?style=flat-square&labelColor=15233b"></a>
@@ -62,7 +64,7 @@ Omnibus bestaat uit twee delen die je los downloadt:
 | Deel | Wat het is | Waar |
 | --- | --- | --- |
 | **De applicatie** | De code van Omnibus. Draait lokaal in je browser. | Deze repository |
-| **De database** | De inhoud: 27 rapporten van de Auditdienst Rijk, 7 wetten en kaders en 14 onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
+| **De database** | De inhoud: <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
 
 Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).
 

@@ -1,4 +1,4 @@
-name: Documentatie controleren
+name: Documentatie en claimsysteem controleren
 
 # Controleert links en ankers, de Node-versie, de installatieopdracht en het
 # vaste paginapatroon. Zie docs/bijdragen/ontwikkelen.md#documentatie-controleren.
@@ -31,5 +31,5 @@ jobs:
           package-manager-cache: false
       - name: Tests van de documentatiecheck
         run: node --test scripts/check-docs.test.mjs
-      - name: Documentatie controleren
+      - name: Documentatie en claimsysteem controleren
         run: node scripts/check-docs.mjs

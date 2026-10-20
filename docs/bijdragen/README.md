@@ -36,8 +36,8 @@ Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voo
 | Werklijst | Wat erin staat |
 | --- | --- |
 | [Voortgang](voortgang.md) | Het overzicht, met een paar aanbevolen rapporten om mee te beginnen |
-| [Aanbevolen rapporten](werklijst-aanbevolen.md) | 542 adviesrapporten van de Auditdienst Rijk, per ministerie, met een claimlink: veel bruikbare normen |
-| [Alle rapporten](werklijst-rapporten.csv) | Alle 9.116 rapporten van de [Rijksmap](https://www.rijksmap.nl) (CSV-bestand om te downloaden) |
+| [Aanbevolen rapporten](werklijst-aanbevolen.md) | <!--n:aanbevolen-->542<!--/n--> adviesrapporten van de Auditdienst Rijk, per ministerie, met een claimlink: veel bruikbare normen |
+| [Alle rapporten](werklijst-rapporten.csv) | Alle <!--n:alle-->9.116<!--/n--> rapporten van de [Rijksmap](https://www.rijksmap.nl) (CSV-bestand om te downloaden) |
 | [Wetten en kaders](werklijst-wetten-en-kaders.md) | Wetten, regels en normenkaders, met per bron of je hem openbaar mag verwerken |
 
 Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikbare normen op.

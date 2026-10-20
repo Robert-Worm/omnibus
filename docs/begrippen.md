@@ -27,7 +27,7 @@
 | **Skill** | Een werkwijze voor je AI-assistent: een map met instructies die de assistent stap voor stap volgt. Je roept hem aan met de naam, zoals `$omnibus-add-report`. |
 | **Concept** | Wat een bijdrager inlevert: bouwstenen met bronpassages, nog niet formeel gecontroleerd. |
 | **HOLD** | Een punt dat nog niet goed genoeg onderbouwd is, omdat bewijs of een controle ontbreekt. HOLD-punten blijven zichtbaar en worden nooit stilletjes goedgekeurd. |
-| **Aanbevolen rapport** | Een van de 542 adviesrapporten van de ADR. Die leveren veel bruikbare normen op. |
+| **Aanbevolen rapport** | Een van de <!--n:aanbevolen-->542<!--/n--> adviesrapporten van de ADR. Die leveren veel bruikbare normen op. |
 
 ## Techniek
 

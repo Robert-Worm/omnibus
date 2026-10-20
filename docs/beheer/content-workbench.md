@@ -25,7 +25,7 @@ Het is geen publieke multi-userdienst.
 
 De werklijst met alle 9.116 Rijksmap-rapporten staat klaar voor import in
 `.github/voortgang/rapporten.csv` (puntkomma-CSV met `titel` en `url`). De kolom
-`aanbevolen` markeert de 542 aanbevolen rapporten. Records die in meerdere
+`aanbevolen` markeert de <!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten. Records die in meerdere
 collecties voorkomen, worden niet dubbel geteld. Er worden geen bronnen gedownload.
 
 ## Dagelijks gebruik

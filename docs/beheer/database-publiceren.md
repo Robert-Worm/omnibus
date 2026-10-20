@@ -83,9 +83,11 @@ Als de nieuwe database is goedgekeurd:
 1. **Maak de zip** met `catalogue.sqlite`, `local-build.json`, een `LEESMIJ.txt` en `SHA256SUMS.txt`. Noem hem `omnibus-database-<jjjj-mm-dd>.zip`.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
 3. **Maak een release** op GitHub met tag `database-<jjjj-mm-dd>`. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe.
-4. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's werken zich daarna vanzelf bij.
-5. **Werk de teller in de README bij** (de badge *database* en de tekst onder *Wat zit erin?*).
-6. **Sluit de verwerkte claims** met het label **verwerkt**.
+4. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
+5. **Sluit de verwerkte claims** met het label **verwerkt**.
+
+> [!NOTE]
+> Aantallen in de documentatie staan tussen onzichtbare markeringen, zoals `<!--n:rapporten-->27<!--/n-->`. Het voortgangsscript vult ze in. Pas het getal niet met de hand aan; gebruik een markering als je een aantal ergens nieuw noemt. Beschikbaar: `rapporten`, `kaders`, `modellen`, `alle`, `aanbevolen` en `aanbevolenInDatabase`.
 
 ## Herstellen na een publicatiefout
 

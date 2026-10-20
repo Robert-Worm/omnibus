@@ -1,0 +1,20 @@
+{
+  "toelichting": "Rapporten met (bijna) dezelfde titel bij hetzelfde ministerie, binnen 92 dagen gepubliceerd, gelden als mogelijk dubbel. Het oudste rapport blijft claimbaar; de andere krijgen geen claimlink. Zet hieronder groepen rapport-ID's die op elkaar lijken maar toch verschillende rapporten zijn.",
+  "beoordeeld": [
+    {
+      "ids": ["2026-adr-rapport-onderzoek-naar-het-convenant-ter-voorkoming-recidive", "2026-onderzoek-naar-het-convenant-ter-voorkoming-recidive-drugskoeriers"],
+      "oordeel": "dubbel",
+      "toelichting": "Hetzelfde ADR-rapport, twee keer gepubliceerd (rijksoverheid.nl en open.overheid.nl)."
+    },
+    {
+      "ids": ["2021-onderzoek-misbruikrisicos-wao-en-tw-onderdeel-wao", "2022-onderzoek-misbruikrisicos-wao-en-tw-onderdeel-tw"],
+      "oordeel": "verschillend",
+      "toelichting": "Twee delen van één onderzoek: WAO en TW."
+    },
+    {
+      "ids": ["2021-monitor-toegankelijkheid-van-zorg-gevolgen-van-covid-19", "2021-monitor-toegankelijkheid-van-zorg-gevolgen-van-covid-19-2", "2021-monitor-toegankelijkheid-van-zorg-gevolgen-van-covid-19-3", "2021-monitor-toegankelijkheid-van-zorg-gevolgen-van-covid-19-4"],
+      "oordeel": "verschillend",
+      "toelichting": "Opeenvolgende edities van een maandelijkse monitor."
+    }
+  ]
+}

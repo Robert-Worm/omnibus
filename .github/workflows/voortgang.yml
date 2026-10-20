@@ -9,7 +9,7 @@ on:
     types: [created]
   push:
     branches: [main]
-    paths: ['.github/voortgang/**', '.github/scripts/voortgang.mjs', '.github/workflows/voortgang.yml']
+    paths: ['.github/voortgang/**', '.github/scripts/voortgang*.mjs', '.github/workflows/voortgang.yml']
   workflow_dispatch:
   schedule:
     # Elke maandagochtend: herinneringen en verlopen claims.
@@ -34,6 +34,8 @@ jobs:
         with:
           node-version: '24.17.0'
           package-manager-cache: false
+      - name: Tests van het claimsysteem
+        run: node --test .github/scripts/voortgang.test.mjs
       - name: Claims verwerken en pagina's opnieuw maken
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/bijdragen
+          git add docs README.md
           if git diff --cached --quiet; then echo "Geen wijzigingen"; exit 0; fi
           git commit -m "Voortgang bijgewerkt"
           git pull --rebase --quiet

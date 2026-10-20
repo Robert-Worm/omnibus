@@ -6,20 +6,18 @@
 
 | | ✅ In database | 🔄 In bewerking | 📦 Ingeleverd | ⬜ Open | 🔒 Niet beschikbaar |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | 27 | 1 | 0 | 514 | 0 |
-| **Alle rapporten op de Rijksmap** | 27 | 1 | 0 | 9024 | 64 |
+| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | 27 | 0 | 0 | 513 | 2 |
+| **Alle rapporten op de Rijksmap** | 27 | 0 | 0 | 9008 | 81 |
 | **Wetten en kaders** | 7 | 0 | 0 | 23 | 9 |
 | **Onderzoeksmodellen** | 14 | | | | |
 
-🔒 *Niet beschikbaar*: het rapport is niet openbaar, of voor het kader is toestemming van de uitgever nodig.
+🔒 *Niet beschikbaar*: het rapport is niet openbaar, lijkt dubbel met een ander rapport, of voor het kader is toestemming van de uitgever nodig.
 
 Database van 2026-10-19.
 
 ## Nu in bewerking
 
-| Bron | Door | Model | Sinds | Status |
-| --- | --- | --- | --- | --- |
-| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | @Robert-Worm | – | 2026-10-20 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) |
+Nog niemand. Wees de eerste: kies hieronder een bron.
 
 ## Waar kun je mee beginnen
 
@@ -36,17 +34,17 @@ Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrappo
 | [Onderzoek naar de samenwerking in het vastgoedproces van CZSK](https://www.rijksmap.nl/rapport/2026-onderzoek-naar-de-samenwerking-in-het-vastgoedproces-van-czsk/) | 2026-04-28 | Defensie | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoek%20naar%20de%20samenwerking%20in%20het%20vastgoedproces%20van%20CZSK&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-onderzoek-naar-de-samenwerking-in-het-vastgoedproces-van-czsk%2F) |
 | [Rapport Onderzoek Centraal Informatiepunt Onderzoek Telecommunicatie (CIOT) bij opsporing…](https://www.rijksmap.nl/rapport/2026-rapport-onderzoek-centraal-informatiepunt-onderzoek-telecommunicatie-2/) | 2026-03-31 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Rapport%20Onderzoek%20Centraal%20Informatiepunt%20Onderzoek%20Telecommunicatie%20(CIOT)%20bij%20opsporingsdienst%20Rijksrecherche%202025&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-rapport-onderzoek-centraal-informatiepunt-onderzoek-telecommunicatie-2%2F) |
 | [Rapport Onderzoek Centraal Informatiepunt Onderzoek Telecommunicatie (CIOT) bij opsporing…](https://www.rijksmap.nl/rapport/2026-rapport-onderzoek-centraal-informatiepunt-onderzoek-telecommunicatie/) | 2026-03-27 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Rapport%20Onderzoek%20Centraal%20Informatiepunt%20Onderzoek%20Telecommunicatie%20(CIOT)%20bij%20opsporingsdienst%20KMar%202025&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-rapport-onderzoek-centraal-informatiepunt-onderzoek-telecommunicatie%2F) |
-| [Onderzoek naar het convenant ter voorkoming recidive drugskoeriers](https://www.rijksmap.nl/rapport/2026-onderzoek-naar-het-convenant-ter-voorkoming-recidive-drugskoeriers/) | 2026-02-16 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoek%20naar%20het%20convenant%20ter%20voorkoming%20recidive%20drugskoeriers&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-onderzoek-naar-het-convenant-ter-voorkoming-recidive-drugskoeriers%2F) |
 | [Onderzoek database met administratieve vastleggingen van verzonden brieven en ontvangen r…](https://www.rijksmap.nl/rapport/2026-onderzoek-database-met-administratieve-vastleggingen-van-verzonden/) | 2026-02-04 | Financiën | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoek%20database%20met%20administratieve%20vastleggingen%20van%20verzonden%20brieven%20en%20ontvangen%20reacties%20vanuit%20het%20massale%20uitv&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-onderzoek-database-met-administratieve-vastleggingen-van-verzonden%2F) |
 | [RAM-analyse Belastingdienst](https://www.rijksmap.nl/rapport/2026-ram-analyse-belastingdienst/) | 2026-01-21 | Financiën | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20RAM-analyse%20Belastingdienst&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-ram-analyse-belastingdienst%2F) |
 | [Accountantsrapport bij de Basisrapportage PALLAS-nieuwbouwprogramma](https://www.rijksmap.nl/rapport/2026-accountantsrapport-bij-de-basisrapportage-pallas-nieuwbouwprogramma/) | 2026-01-21 | Volksgezondheid, Welzijn en Sport | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Accountantsrapport%20bij%20de%20Basisrapportage%20PALLAS-nieuwbouwprogramma&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-accountantsrapport-bij-de-basisrapportage-pallas-nieuwbouwprogramma%2F) |
 | [Onderzoek Beheer Verwijzingsportaal Bankgegevens Justid 2025 - Definitief](https://www.rijksmap.nl/rapport/2026-onderzoek-beheer-verwijzingsportaal-bankgegevens-justid-2025-definitief/) | 2026-01-13 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoek%20Beheer%20Verwijzingsportaal%20Bankgegevens%20Justid%202025%20-%20Definitief&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-onderzoek-beheer-verwijzingsportaal-bankgegevens-justid-2025-definitief%2F) |
 | [ADR-rapport Onderzoek naar het convenant ter voorkoming recidive drugskoeriers](https://www.rijksmap.nl/rapport/2026-adr-rapport-onderzoek-naar-het-convenant-ter-voorkoming-recidive/) | 2026-01-13 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20ADR-rapport%20Onderzoek%20naar%20het%20convenant%20ter%20voorkoming%20recidive%20drugskoeriers&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-adr-rapport-onderzoek-naar-het-convenant-ter-voorkoming-recidive%2F) |
+| [Managementreactie ADR-rapport Convenant voorkoming recidive drugskoeriers](https://www.rijksmap.nl/rapport/2026-managementreactie-adr-rapport-convenant-voorkoming-recidive/) | 2026-01-11 | Justitie en Veiligheid | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Managementreactie%20ADR-rapport%20Convenant%20voorkoming%20recidive%20drugskoeriers&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2026-managementreactie-adr-rapport-convenant-voorkoming-recidive%2F) |
 
 Meer kiezen:
 
 - [Alle 542 aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.
-- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren.
+- [Alle 9.116 rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren. Dit bestand toont de stand van de database; wie waaraan werkt, staat alleen op deze pagina.
 - [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.
 
 ## Al in de database
@@ -97,9 +95,13 @@ Meer kiezen:
 
 </details>
 
+## Tempo en bijdragers
+
+Nog geen bijdragen via claims. De bronnen die nu in de database zitten, zijn door de beheerder verwerkt. Jouw bijdrage kan de eerste zijn.
+
 ## Samengevat
 
-27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Aan 1 bron wordt gewerkt.
+27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Op dit moment werkt niemand aan een bron.
 
 ## Volgende stap
 

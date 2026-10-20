@@ -28,7 +28,7 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 ## Het vertrekpunt: wat er nu is
 
 - Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md).
-- Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met 27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen.
+- Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met <!--n:rapporten-->27<!--/n--> rapporten, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen.
 - Zes [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren.
 
 ## Pad A · Online versie
@@ -80,9 +80,9 @@ demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde v�
 | Stap | Status |
 | --- | --- |
 | Claimsysteem: bronnen op je naam zetten, inleveren en volgen | ✅ [meedoen](bijdragen/README.md) |
-| Werklijsten: 9.116 rapporten, 542 aanbevolen, wetten en kaders met hun rechten | ✅ [voortgang](bijdragen/voortgang.md) |
+| Werklijsten: <!--n:alle-->9.116<!--/n--> rapporten, <!--n:aanbevolen-->542<!--/n--> aanbevolen, wetten en kaders met hun rechten | ✅ [voortgang](bijdragen/voortgang.md) |
 | Vastleggen met welk AI-model een bron is verwerkt | ✅ |
-| Eerst de [542 aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk | 🔄 27 in de database |
+| Eerst de [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk | 🔄 <!--n:aanbevolenInDatabase-->27<!--/n--> in de database |
 | Alle wetten en kaders die openbaar mogen; afspraken met uitgevers van beschermde kaders | ⬜ [werklijst](bijdragen/werklijst-wetten-en-kaders.md) |
 | Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ⬜ |
 | Vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden | ⬜ |
