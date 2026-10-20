@@ -2,9 +2,9 @@
 
 > **In het kort:** de 542 adviesrapporten van de Auditdienst Rijk op de Rijksmap, per ministerie. Ze leveren veel bruikbare normen en toetspunten op. Klik op **Claimen** om er een op je naam te zetten.
 
-**Stand:** 27 in de database · 0 in bewerking of ingeleverd · 515 open.
+**Stand:** 27 in de database · 1 in bewerking of ingeleverd · 514 open.
 
-<details><summary><b>Financiën</b> · 119 open van 123</summary>
+<details><summary><b>Financiën</b> · 118 open van 123</summary>
 
 | Rapport | Datum | Status |
 | --- | --- | --- |
@@ -17,7 +17,7 @@
 | [Samenvattend eindrapport Dossierreviews zelfreinigende maatregelen bij de aanbesteding van Betaling…](https://www.rijksmap.nl/rapport/2025-samenvattend-eindrapport-dossierreviews-zelfreinigende-maatregelen-bij/) | 2025-11-24 | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Samenvattend%20eindrapport%20Dossierreviews%20zelfreinigende%20maatregelen%20bij%20de%20aanbesteding%20van%20Betalingsverkeer%20Belastingdie&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-samenvattend-eindrapport-dossierreviews-zelfreinigende-maatregelen-bij%2F) |
 | [Onderzoeksrapport Bevindingen onderzoeksopdracht proces Cloudtoets Douane](https://www.rijksmap.nl/rapport/2025-onderzoeksrapport-bevindingen-onderzoeksopdracht-proces-cloudtoets/) | 2025-11-04 | ✅ in database |
 | [Proefconversietraject van de Consignatiekas Financiën naar SAP 3F (SZWFDC)](https://www.rijksmap.nl/rapport/2025-proefconversietraject-van-de-consignatiekas-financien-naar-sap-3f-szwfdc/) | 2025-10-21 | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Proefconversietraject%20van%20de%20Consignatiekas%20Financi%C3%ABn%20naar%20SAP%203F%20(SZWFDC)&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-proefconversietraject-van-de-consignatiekas-financien-naar-sap-3f-szwfdc%2F) |
-| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | 2025-10-15 | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Conceptwerkproces%20team%20FG%20Ministerie%20van%20Financi%C3%ABn&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-conceptwerkproces-team-fg-ministerie-van-financien%2F) |
+| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | 2025-10-15 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) @Robert-Worm |
 | [Onderzoek naar de uitvoering van het Nederlandse HVP](https://www.rijksmap.nl/rapport/2025-onderzoek-naar-de-uitvoering-van-het-nederlandse-hvp/) | 2025-07-21 | ✅ in database |
 | [Onderzoeksrapport Belastingdienst totstandkoming ICS 2024](https://www.rijksmap.nl/rapport/2025-onderzoeksrapport-belastingdienst-totstandkoming-ics-2024/) | 2025-05-22 | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoeksrapport%20Belastingdienst%20totstandkoming%20ICS%202024&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-onderzoeksrapport-belastingdienst-totstandkoming-ics-2024%2F) |
 | [Hoofdlijnen auditrapporten Auditdienst Rijk 2024](https://www.rijksmap.nl/rapport/2025-hoofdlijnen-auditrapporten-auditdienst-rijk-2024/) | 2025-05-21 | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Hoofdlijnen%20auditrapporten%20Auditdienst%20Rijk%202024&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-hoofdlijnen-auditrapporten-auditdienst-rijk-2024%2F) |

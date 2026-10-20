@@ -6,8 +6,8 @@
 
 | | ✅ In database | 🔄 In bewerking | 📦 Ingeleverd | ⬜ Open | 🔒 Niet beschikbaar |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | 27 | 0 | 0 | 515 | 0 |
-| **Alle rapporten op de Rijksmap** | 27 | 0 | 0 | 9025 | 64 |
+| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | 27 | 1 | 0 | 514 | 0 |
+| **Alle rapporten op de Rijksmap** | 27 | 1 | 0 | 9024 | 64 |
 | **Wetten en kaders** | 7 | 0 | 0 | 23 | 9 |
 | **Onderzoeksmodellen** | 14 | | | | |
 
@@ -17,7 +17,9 @@ Database van 2026-10-19.
 
 ## Nu in bewerking
 
-Nog niemand. Wees de eerste: kies hieronder een bron.
+| Bron | Door | Model | Sinds | Status |
+| --- | --- | --- | --- | --- |
+| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | @Robert-Worm | – | 2026-10-20 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) |
 
 ## Waar kun je mee beginnen
 
@@ -97,7 +99,7 @@ Meer kiezen:
 
 ## Samengevat
 
-27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Aan 0 bronnen wordt gewerkt.
+27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Aan 1 bron wordt gewerkt.
 
 ## Volgende stap
 
