@@ -8,6 +8,7 @@ Met deze map controleren beheerders binnenkomende inhoudspakketten en bereiden z
 - Kies de passende [skill voor rapporten, kaders of modellen](../skills/README.md).
 - Volg de [intakehandleiding](../docs/content-intake.md) voor de pakketcontroles.
 - Gebruik de [publicatiehandleiding](../docs/contributor-publication.md) voor gecontroleerde integratie.
+- Controleer zo nodig de [actieve inventaris](../docs/active-inventory-check.md) om onverwachte pakketten en documenten in een volgende publicatie te signaleren.
 
 ## Grenzen
 
