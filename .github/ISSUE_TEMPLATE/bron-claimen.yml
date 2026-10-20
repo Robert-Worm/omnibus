@@ -6,8 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        **Zo werkt het:** na verzenden staat de bron op jouw naam in de [voortgang](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/voortgang.md).
-        Klaar? Schrijf `/inleveren` in een reactie. Lukt het niet? Schrijf `/vrijgeven`.
+        Na verzenden staat de bron op jouw naam; hoe claimen, inleveren en vrijgeven werkt, lees je in [meedoen](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/README.md#zo-werkt-een-bron-verwerken).
   - type: input
     id: bron
     attributes:

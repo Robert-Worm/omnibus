@@ -75,7 +75,7 @@ Wil je een tweede mening? De skill [`omnibus-review-audit-quality`](../../skills
 2. Voeg de zip toe aan je claim: sleep hem in een reactie (maximaal 25 MB). Te groot? Zet hem online en deel de link.
 3. Schrijf in dezelfde reactie, **op een eigen regel**, `/inleveren`. Zet erbij wat goed ging en waar je twijfelt.
 
-De claim krijgt dan het label **ingeleverd** en de voortgang werkt zich bij.
+Wat er daarna met je claim gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
 
 ## Wat lever je in?
 

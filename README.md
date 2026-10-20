@@ -23,10 +23,15 @@
   <a href="docs/gebruiken/installeren.md">Installeren</a> ·
   <a href="docs/bijdragen/README.md">Meedoen</a> ·
   <a href="docs/README.md">Alle documentatie</a> ·
+  <a href="docs/veelgestelde-vragen.md">Vragen</a> ·
   <a href="docs/routekaart.md">Routekaart</a>
 </p>
 
 ---
+
+| 👥 Voor wie | ❓ Het probleem | ✅ Wat je krijgt |
+| --- | --- | --- |
+| Auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten | Bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een toetsingskader samenstellen kost veel zoekwerk. | Een toetsingskader als Excel-werkdocument, met bij elke norm de bron waar hij vandaan komt |
 
 ## Wat is Omnibus?
 
@@ -84,13 +89,7 @@ Pak daarna de database-zip uit in `local-data/runtime/`, bouw de applicatie en o
 <a id="meedoen"></a>
 ## Meedoen
 
-Omnibus wordt beter met elke bron die erbij komt. Je kunt helpen door een rapport, wet of kader te verwerken:
-
-1. **Claim** een bron in de [voortgang](docs/bijdragen/voortgang.md). Dan staat hij op jouw naam.
-2. **Verwerk** hem met een van de [AI-skills](skills/README.md).
-3. **Lever in** door `/inleveren` te schrijven bij je claim.
-
-Hoe dat precies gaat: [meedoen](docs/bijdragen/README.md). Vragen en ideeën kun je kwijt in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+Omnibus wordt beter met elke bron die erbij komt. Je zet een rapport, wet of kader op je naam, verwerkt hem met een [AI-skill](skills/README.md) en levert hem in; hoe dat gaat, lees je in [meedoen](docs/bijdragen/README.md). Kijk in de [voortgang](docs/bijdragen/voortgang.md) wat er nog open staat. Vragen en ideeën kun je kwijt in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
 ## Wat komt er nog?
 

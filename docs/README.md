@@ -32,6 +32,7 @@ Voor iedereen die Omnibus wil helpen groeien.
 | Een rapport, wet of kader verwerken | [Een bron verwerken](bijdragen/bron-verwerken.md) |
 | Een wet of kader kiezen dat openbaar mag | [Werklijst wetten en kaders](bijdragen/werklijst-wetten-en-kaders.md) |
 | De code verbeteren | [Ontwikkelen](bijdragen/ontwikkelen.md) en [architectuur](bijdragen/architectuur.md) |
+| Documentatie schrijven in de huisstijl | [Stijlgids](bijdragen/stijlgids.md) |
 
 ## 🛠️ Beheren
 
@@ -47,6 +48,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 ## Overig
 
 - [Routekaart](routekaart.md): wat er nog komt.
+- [Veelgestelde vragen](veelgestelde-vragen.md): korte antwoorden op de meest gestelde vragen.
 - [Begrippen](begrippen.md): de woorden uit Omnibus in gewone taal.
 - [AI-skills](../skills/README.md): de zes werkwijzen voor AI-assistenten.
 - [Versiegeschiedenis](../CHANGELOG.md), [beveiliging](../SECURITY.md), [toegankelijkheid](../ACCESSIBILITY.md) en [gedragscode](../CODE_OF_CONDUCT.md).
@@ -71,7 +73,7 @@ Elke map heeft een korte README met uitleg.
 
 ## Volgende stap
 
-Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md).
+Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md). Heb je eerst een vraag? Kijk bij de [veelgestelde vragen](veelgestelde-vragen.md).
 
 ---
 

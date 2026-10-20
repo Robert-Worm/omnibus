@@ -61,7 +61,7 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Installatieopdracht | In codeblokken en workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
 | Paginapatroon | Elke pagina in `docs/` heeft *In het kort*, *Samengevat* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Elke `README.md` in een map heeft *In het kort*. |
 
-Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit.
+Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit. Hoe je een pagina opbouwt en welke woorden je gebruikt, staat in de [stijlgids](stijlgids.md).
 
 ## Een pull request maken
 

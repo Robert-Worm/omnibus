@@ -113,6 +113,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     { name: "dubbel", color: "bf8700", description: "Bron was al geclaimd of verwerkt" },
     { name: "model-controleren", color: "d4a72c", description: "Het gekozen AI-model staat niet op de lijst met aanbevolen modellen" },
     { name: "toestemming-nodig", color: "cf222e", description: "Voor deze bron is toestemming van de uitgever nodig" },
+    { name: "release", color: "0e8a16", description: "Checklist voor een nieuwe databaserelease" },
   ];
   async function ensureLabels() {
     const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));

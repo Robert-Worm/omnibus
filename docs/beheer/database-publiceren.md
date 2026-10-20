@@ -78,7 +78,7 @@ Controleer de nieuwe inhoud en een kopie van een bestaand project. Zie [inhoud t
 <a id="een-release-uitbrengen"></a>
 ## 6. Een release uitbrengen
 
-Als de nieuwe database is goedgekeurd:
+Als de nieuwe database is goedgekeurd, open je een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml). Daarin staan alle stappen, van controle tot aankondiging, om af te vinken. In het kort:
 
 1. **Maak de zip** met `catalogue.sqlite`, `local-build.json`, een `LEESMIJ.txt` en `SHA256SUMS.txt`. Noem hem `omnibus-database-<jjjj-mm-dd>.zip`.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).

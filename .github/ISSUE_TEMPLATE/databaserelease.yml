@@ -1,0 +1,52 @@
+name: Databaserelease (beheerder)
+description: Checklist voor de beheerder bij het uitbrengen van een nieuwe database. Niet voor bijdragers.
+title: "Databaserelease <jjjj-mm-dd>"
+labels: ["release"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Alleen voor de beheerder.** Werk de stappen van boven naar beneden af en vink ze aan in het issue. De volledige uitleg staat in [database publiceren](https://github.com/Robert-Worm/omnibus/blob/main/docs/beheer/database-publiceren.md).
+  - type: input
+    id: datum
+    attributes:
+      label: Datum van de database
+      description: Wordt de tag database-<datum> en de naam van de zip.
+      placeholder: "2026-11-30"
+    validations:
+      required: true
+  - type: textarea
+    id: claims
+    attributes:
+      label: Welke claims gaan mee?
+      description: De nummers van de ingeleverde claims die in deze database komen.
+      placeholder: "#12, #15"
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Laat de lijst staan; vink de stappen later aan in het issue.
+      value: |
+        **1. Inhoud**
+        - [ ] Elk ingeleverd pakket is technisch gecontroleerd ([pakket controleren](https://github.com/Robert-Worm/omnibus/blob/main/docs/beheer/pakket-controleren.md))
+        - [ ] De inhoud is beoordeeld en geïntegreerd; HOLD-punten zijn niet goedgekeurd om verder te kunnen
+        - [ ] De rechten per bron zijn gecontroleerd (alleen bronnen die openbaar mogen)
+
+        **2. Database maken**
+        - [ ] Instellingen vastgelegd en voorcontrole (`--check`) geslaagd
+        - [ ] Gepubliceerd en vergeleken met de vorige database
+        - [ ] `npm run data:check-runtime` geeft `VERIFIED_RUNTIME_DATABASE`
+        - [ ] Testbuild: nieuwe inhoud bekeken en een bestaand project geopend
+
+        **3. Uitbrengen**
+        - [ ] Zip gemaakt met `catalogue.sqlite`, `local-build.json`, `LEESMIJ.txt` en `SHA256SUMS.txt`
+        - [ ] Release gemaakt met tag `database-<datum>`, beschrijving en zip
+        - [ ] `.github/voortgang/verwerkt.json` bijgewerkt (datum, rapporten, wetten en kaders, modellen) en gepusht
+        - [ ] Voortgang, badge en tellingen in de README kloppen (vanzelf bijgewerkt na de push)
+
+        **4. Afronden**
+        - [ ] Verwerkte claims gesloten met het label **verwerkt**
+        - [ ] Aankondiging in [Discussions](https://github.com/Robert-Worm/omnibus/discussions)
+        - [ ] `CHANGELOG.md` bijgewerkt
+    validations:
+      required: true
