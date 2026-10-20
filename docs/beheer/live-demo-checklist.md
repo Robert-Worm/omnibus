@@ -11,6 +11,36 @@ De code-integratie controleert de aansluitingen, versiegrenzen en workflows.
 Login, gebruikersbeheer, betalingen en een publiek MCP-endpoint vallen buiten
 deze demo. De bestaande lokale MCP-koppeling blijft een aparte demonstratieroute.
 
+## Actuele vervolgstappen — 20 oktober 2026
+
+De eerdere lokale ontwikkeltranche is geleverd. Onderstaande open verhalen vragen
+vooral **bewijs op de echte host of menselijke acceptatie**, niet nog een
+nieuwe applicatiefunctie. Lokaal geslaagde tests sluiten deze poorten niet.
+De codes EP… verwijzen naar die oorspronkelijke demo-backlog. De nieuwe
+[kwaliteitsbacklog](../../.github/backlog/kwaliteit-2026-10.mjs) bevat daarnaast
+verbeteringen voor documentatie en bijdragen; die zijn niet allemaal voorwaarden
+voor deze demo. Verhaal K4-5 verbindt deze checklist met pad A van de routekaart.
+
+| Verhaal | Wat is lokaal voorbereid? | Wat resteert voor de demo? |
+| --- | --- | --- |
+| EP11-S02 · storingen signaleren | Health/readiness, veilige foutdiagnostiek en begrensde HTTP-controle | Providerprobes, logprivacy, meldingsontvanger en handelen bij overbelasting beproeven. |
+| EP12-S02 · snelheid op de host | Gemeten lokale workflow; de HTTP-controle verifieert ook gzip en exacte uitgepakte bundelbytes | Cold/warm browsermeting via de echte HTTPS-host en afgesproken belasting uitvoeren. |
+| EP13-S02 · back-up en herstel | Ontvangstcontrole en afzonderlijk herstel met fictieve gegevens getest | Bewaarplaats, retentie, verantwoordelijke en hersteldoelen kiezen; herstel op de host oefenen. |
+| EP13-S03 · release en terugschakelen | Gepind pakket, afzonderlijke database en strikte startweigering | Rechten op de disk, eerste ontvangst, herstart en terugschakelen van de volledige code/data-combinatie beproeven. |
+| EP02-S03/S04 · overdracht | Lokale tests en handmatig te starten CI aanwezig | CI-gebruik en reviewafspraken bewust kiezen; een niet-betrokken ontwikkelaar de setup laten volgen. |
+| EP07-S03 · beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
+| EP12-S03 · gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheids- en schermlezercontrole; desktop-Excel en generale repetitie. |
+
+De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd.
+Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index
+gebruikt. Controleer vóór de demonstratie de actuele pinnen, niet alleen een
+eerder geslaagd resultaat.
+
+De uitgestelde publicatieoptimalisatie (EP12-S01) is geen verplicht nieuw
+bouwproject. Pak die alleen op als een relevante meting daar aanleiding toe
+geeft, met afzonderlijke toestemming voor een kandidaatpublicatie. De actieve
+database blijft bij codeverbeteringen ongewijzigd.
+
 ## Wat moet nog worden aangetoond?
 
 | Stap | Verantwoordelijke | Klaar wanneer |
@@ -62,6 +92,10 @@ hostingconfiguratie veranderen.
 Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md),
 [runtime-instructies](runtime-pakket.md) en
 [herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform.
+De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo)
+kan alvast met een synthetisch pakket op loopback worden uitgevoerd. Zij houdt
+ontvangen en uitgepakte bytes apart bij en stopt bij de eerste fout; het is
+geen vervanging voor de latere hosted browsermeting.
 
 ## Samengevat
 

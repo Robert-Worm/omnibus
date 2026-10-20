@@ -40,11 +40,17 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 | Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ |
 | Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ |
 | Database veilig naar de server overbrengen en de eerste start regelen | 🔄 |
-| Online proef: beveiligde verbinding, snelheid, back-up en herstel | ⬜ |
-| Gebruikers testen de demo | ⬜ |
+| Online proef: beveiligde verbinding, probes en logs, snelheid, back-up en herstel | ⬜ |
+| Onafhankelijke beveiligings- en overdrachtsreview | ⬜ |
+| Gebruikers testen de demo, inclusief schermlezer en desktop-Excel | ⬜ |
+| Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ |
 | Online demo | ⬜ |
 
 Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md).
+De schermlezer- en desktop-Excelcontrole blijven menselijke acceptatiestappen;
+automatische tests tekenen ze niet af. Deze tabel en de checklist volgen dezelfde
+demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór
+1 december.
 
 ## Pad B · AI rechtstreeks aan de database
 
