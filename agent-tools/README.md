@@ -76,6 +76,41 @@ dit is geen crashbestendige transactie of bescherming tegen een kwaadwillende
 lokale gebruiker met dezelfde bestandsrechten. Een onvolledig project/conceptpaar
 kan niet worden geëxporteerd. Oude `.pending-*`-mappen worden niet automatisch gewist.
 
+## Browser en MCP na een nieuwe collectie gelijkzetten
+
+Een werkende verbinding kan nog naar een oude installatie of index wijzen.
+Gebruik dezelfde instellingen als voor de lokale website:
+
+```sh
+npm run build:agent -- --settings /pad/naar/local-build.json
+npm run test:agent:protocol
+```
+
+De build leest de bron uitsluitend en maakt een afzonderlijke databasekopie
+met zoekindex. Hij vervangt `agent-build/current.json` pas na een geslaagde
+build; bewaar de vorige pointer vooraf om te kunnen terugschakelen.
+De protocoltest maakt fictieve projecten en drie Excelwerkvormen in de
+lokale, van Git uitgesloten `agent-output`-map.
+
+Controleer daarna:
+
+1. `release` en `publication` uit `get_workflow_guide` zijn gelijk aan de
+   gekozen instellingen en de webbuild. Controleer ook de bronlijst; alleen
+   hetzelfde aantal rapporten bewijst geen gelijke publicatie.
+2. Het geregistreerde serverpad verwijst naar `agent-tools/server.mjs` van
+   deze installatie, niet naar een oud archief of een andere checkout.
+3. Herstart de bestaande MCP-verbinding na omschakeling. Een reeds draaiend
+   proces kan de vorige index blijven gebruiken. Bouwen wijzigt geen
+   clientregistratie.
+4. Open een gegenereerd fictief project via **Open project** in een afzonderlijke
+   lokale testwerkplek. Controleer selecties, vraagkoppelingen en exportinstellingen.
+
+De protocoltest gebruikt bewust gekozen voorbeeldpunten. Een ontbrekend punt
+vraagt onderzoek; vervang het niet automatisch door het eerste zoekresultaat.
+Houd lokale paden, indexkopieën, projecten en testuitvoer buiten Git.
+Een geslaagde STDIO-proef bewijst niet dat een reeds geopende AI-client opnieuw
+verbonden is.
+
 ## Technische opbouw en opnieuw voorbereiden
 
 De voorbereidingsstap maakt een consistente SQLite-kopie met `node:sqlite.backup`, leest dezelfde vastgepinde runtimepublicatie als de website en bouwt een afgeleide FTS-zoekindex. De bestaande selectiemodules leveren de brongebonden gegevens. Tijdens gebruik worden alleen geselecteerde bronmodules geladen; de volledige rapportcollectie wordt niet per zoekvraag ingelezen. De index bevat gepubliceerde toetspunten en modelvragen per niveau, geen alternatieve bronextractie. Oorspronkelijke bronarchieven worden niet door deze agent-build geïmporteerd.
