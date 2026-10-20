@@ -124,6 +124,42 @@ publieke DoS-bescherming.
 
 ## Grens naar echte hosting
 
+### Begrensde HTTP-controle vóór de demo
+
+Gebruik vanuit de **codecheckout** de bestaande operatorcontrole tegen een al
+gestart pakket. Zij start of wijzigt niets. Zonder argumenten toont zij alleen
+hulp en maakt zij geen verbinding. Het hulpmiddel hoort niet in de webroot.
+
+```text
+node scripts/hosting-acceptance.mjs --run --target http://127.0.0.1:8080 --public-origin https://omnibus.example.invalid --package "<geverifieerd-runtimepakket>" --release "<releasehash>" --publication "<publicatiehash>" --approved-resource "<hash-uit-het-pakketmanifest>" --excluded-resource "<hash-van-bestaande-maar-uitgesloten-resource>"
+```
+
+Gebruik de werkelijk gekozen pinnen en resources. De uitgesloten resource moet
+bekend aanwezig zijn in de database, maar ontbreken in de webpublicatie: een
+verzonnen hash bewijst niet dat bestaande niet-openbare inhoud afgeschermd is.
+De controle verifieert het lokale pakket vóór het eerste verzoek.
+
+Zestien opeenvolgende GET-verzoeken controleren health, readiness, startpagina,
+één JavaScript-bundel, één toegestane resource en uitgesloten routes. De bundel
+wordt met gzip opgevraagd en moet na uitpakken exact overeenkomen met het
+vertrouwde pakket. Ontbrekende compressie, gewijzigde inhoud, beschadigde gzip,
+onveilige headers of een overschreden limiet geven een mislukte controle.
+De overige verzoeken gebruiken ongecomprimeerde antwoorden.
+
+Grenzen: drie seconden per verzoek, dertig seconden totaal; maximaal 8 MiB per
+antwoord en 24 MiB totaal, **afzonderlijk voor ontvangen en uitgepakte bytes**.
+Er zijn geen retries of redirects. Uitvoer bevat alleen controlenamen,
+statuscodes, byteaantallen en tijden; geen antwoordinhoud. Afsluitcode 0 betekent
+dat deze steekproef slaagt, 1 een mislukte controle en 2 geweigerde invoer.
+
+Voor de later goedgekeurde host vereist de hulp expliciet `--allow-external`
+en een HTTPS-target dat exact gelijk is aan `--public-origin`. Gebruik dat nu
+niet als impliciete toestemming voor een hostproef. Een geslaagde lokale run
+bewijst geen hosted snelheid, providerprobes, browserwerking, volledige
+collectie-integriteit of onafhankelijke beveiligingsacceptatie.
+
+### Nog te bewijzen op de host
+
 Historisch bewijs van de eerdere pakketroute: lokaal getest op Windows en Ubuntu 24.04 met Node 24.17.0, met 59 geslaagde ondersteunde tests. Beide pakketversies behielden in de browserproef selecties, vraagkoppelingen, bronmarkeringen en projectoverdracht; de drie Excel-werkvormen hadden dezelfde uitgepakte inhoud als de eerdere Windows-preview. De brondata en actieve lokale versie zijn toen niet vervangen. Dit is geen nieuwe browser-/Linuxtest van latere wijzigingen.
 
 Dit pakket introduceert geen tweede backend of hostingprovider. De bestaande uitrolcontracten blijven leidend. Voor een publieke pilot ontbreken nog:

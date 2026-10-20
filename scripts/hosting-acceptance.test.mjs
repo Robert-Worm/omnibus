@@ -4,6 +4,7 @@ import http from 'node:http';
 import https from 'node:https';
 import {once} from 'node:events';
 import {spawn} from 'node:child_process';
+import {gzipSync} from 'node:zlib';
 import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -18,6 +19,7 @@ import {limits, parseArgs, runAcceptance} from './hosting-acceptance.mjs';
 
 const origin = 'https://omnibus.example.invalid';
 const canary = 'PRIVATE-CANARY-query-path-token';
+const bundleBody = '// synthetic bundle é 😀\n'.repeat(100);
 const cli = fileURLToPath(new URL('./hosting-acceptance.mjs', import.meta.url));
 
 function fixture(t) {
@@ -30,7 +32,7 @@ function fixture(t) {
   } finally { repository.close(); }
   mkdirSync(join(webRoot, 'assets'), {recursive: true});
   writeFileSync(join(webRoot, 'database.html'), '<!doctype html><title>Synthetic é 😀</title>');
-  writeFileSync(join(webRoot, 'assets', 'app-12345678.js'), '// synthetic bundle');
+  writeFileSync(join(webRoot, 'assets', 'app-12345678.js'), bundleBody);
   writeFileSync(join(webRoot, 'omnibus-release.json'), JSON.stringify({schema: 1,
     runtimeTarget: 'portable-local', release: f.release, publication: f.publication,
     contract: runtimeContractHash, refs: publication.refs}));
@@ -132,14 +134,17 @@ test('CLI checks real pinned runtime package: 16 bounded GETs, unchanged databas
   assert.equal(requests.length, 16);
   for (const req of requests) {
     assert.equal(req.method, 'GET'); assert.equal(req.headers.host, new URL(origin).host);
-    assert.equal(req.headers['accept-encoding'], 'identity');
+    assert.equal(req.headers['accept-encoding'], req.path.startsWith('/assets/') ? 'gzip' : 'identity');
     for (const key of ['authorization', 'cookie', 'proxy-authorization', 'content-length', 'origin'])
       assert.equal(req.headers[key], undefined);
   }
   for (const check of result.checks) {
     assert(check.passed); assert(check.bodyBytes > 0 && check.bodyBytes <= limits.bodyBytes);
+    assert(check.decodedBodyBytes > 0 && check.decodedBodyBytes <= limits.bodyBytes);
     assert(check.headersMs >= 0 && check.totalMs >= check.headersMs);
   }
+  assert.equal(result.checks[3].decodedBodyBytes, Buffer.byteLength(bundleBody));
+  assert(result.checks[3].bodyBytes < result.checks[3].decodedBodyBytes);
   for (const secret of [canary, f.root, f.release, f.publication, f.options['approved-resource'],
     'Synthetic', '?release=', '/local-data/', 'sha256', origin, app.url])
     assert(!out.stdout.includes(secret), 'report contains only fixed labels and numeric observations');
@@ -211,20 +216,23 @@ test('redirects never follow even to another loopback server; CLI returns failed
   assert(!out.stdout.includes(canary)); assert(!out.stdout.includes(destination));
 });
 
-test('readiness, sampled bytes and denied bodies are checked beyond health', async t => {
-  const f = fixture(t);
+function sampleResponses(f) {
   const staticCsp = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
-  const responses = [
+  return [
     {body: healthBody},
     {body: JSON.stringify({status: 'ready', mode: 'public-read-only', schema: 1})},
     {body: readFileSync(join(f.root, 'database-build', 'database.html')),
       headers: {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Content-Security-Policy': staticCsp}},
-    {body: '// synthetic bundle', headers: {'Content-Type': 'text/javascript; charset=utf-8',
+    {body: gzipSync(bundleBody), headers: {'Content-Type': 'text/javascript; charset=utf-8', 'Content-Encoding': 'gzip',
       'Cache-Control': 'private, max-age=86400', 'Content-Security-Policy': staticCsp}},
     {body: JSON.stringify({label: 'Synthetic test only'})},
     {body: JSON.stringify({error: 'Not found'}), status: 404},
     {body: JSON.stringify({error: 'Not found'}), status: 404},
   ];
+}
+
+test('readiness, sampled bytes and denied bodies are checked beyond health', async t => {
+  const f = fixture(t), responses = sampleResponses(f);
   for (const [index, failure, status] of [
     [1, 'status', 503], [1, 'body-digest'], [2, 'body-digest'], [3, 'body-digest'],
     [4, 'body-digest'], [6, 'status', 200], [6, 'body-digest'],
@@ -235,12 +243,48 @@ test('readiness, sampled bytes and denied bodies are checked beyond health', asy
       assert(value, 'stop at the injected failure');
       res.writeHead(current === index && status ? status : (value.status || 200),
         {...probeHeaders, ...value.headers});
-      res.end(current === index ? canary : value.body);
+      res.end(current === index ? (current === 3 ? gzipSync(canary) : canary) : value.body);
     });
     const result = await runAcceptance({...f.options, target});
     assert.equal(result.passed, false); assert.equal(calls, index + 1);
     assert.equal(result.checks.at(-1).failure, failure);
     assert.equal(result.notRun, limits.requests - calls); assert(!JSON.stringify(result).includes(canary));
+  });
+});
+
+test('bundle compression is required, byte-exact and bounded on both sides without retries', async t => {
+  const f = fixture(t), responses = sampleResponses(f);
+  const cases = [
+    {name: 'uncompressed bundle', encoding: undefined, body: bundleBody, failure: 'headers'},
+    {name: 'unexpected encoding', encoding: 'br', body: canary, failure: 'headers'},
+    {name: 'invalid gzip', body: canary, failure: 'transport-or-limit'},
+    {name: 'truncated gzip', body: gzipSync(bundleBody).subarray(0, -5), failure: 'transport-or-limit'},
+    {name: 'unfinished gzip deadline', body: gzipSync(bundleBody).subarray(0, 10),
+      holdOpen: true, failure: 'transport-or-limit'},
+    {name: 'different decoded bytes', body: gzipSync(canary), failure: 'body-digest'},
+    {name: 'expanded body limit', body: gzipSync(Buffer.alloc(limits.bodyBytes + 1, 65)), failure: 'transport-or-limit'},
+    {name: 'wire limit before header rejection', encoding: undefined,
+      body: Buffer.alloc(limits.bodyBytes + 1, 65), failure: 'transport-or-limit'},
+  ];
+  for (const example of cases) await t.test(example.name, async t => {
+    let calls = 0;
+    const target = await listen(t, (_req, res) => {
+      const current = calls++, value = responses[current];
+      assert(current <= 3, 'stop at bundle failure');
+      const headers = {...probeHeaders, ...value.headers};
+      if (current === 3 && Object.hasOwn(example, 'encoding')) {
+        delete headers['Content-Encoding'];
+        if (example.encoding) headers['Content-Encoding'] = example.encoding;
+      }
+      res.writeHead(value.status || 200, headers);
+      if (current === 3 && example.holdOpen) { res.write(example.body); return; }
+      res.end(current === 3 ? example.body : value.body);
+    });
+    const result = await runAcceptance({...f.options, target});
+    assert.equal(result.passed, false);
+    assert.equal(calls, 4); assert.equal(result.notRun, 12);
+    assert.equal(result.checks.at(-1).failure, example.failure);
+    assert(!JSON.stringify(result).includes(canary));
   });
 });
 

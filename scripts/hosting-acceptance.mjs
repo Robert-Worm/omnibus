@@ -2,6 +2,9 @@
 import http from 'node:http';
 import https from 'node:https';
 import {createHash} from 'node:crypto';
+import {Transform, Writable} from 'node:stream';
+import {pipeline} from 'node:stream/promises';
+import {createGunzip} from 'node:zlib';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {verifyRuntimePackage, fileBytes} from '../local-data/runtime-package.mjs';
@@ -18,6 +21,8 @@ External HTTPS requires --allow-external and target exactly equal to public-orig
 Use an approved resource in the package manifest and a known existing excluded resource.
 No credentials, URL queries, redirects, retries, crawling or environment configuration.
 At most 16 sequential GETs; 3s/request, 30s total, 8 MiB/body, 24 MiB total.
+Byte limits apply separately to received and decoded bytes. The bundle sample
+must use gzip and decode to the trusted package bytes; other samples use identity.
 Outputs only check labels, status, byte counts and HTTP timings; no response content.
 Exit 0: sampled checks passed; 1: check failed; 2: input/package refused.
 This is not browser performance, provider-probe acceptance or public release approval.`;
@@ -72,7 +77,8 @@ function prepare(options) {
     {id: 'web-entry', path: '/', status: 200, type: 'text/html', cache: 'no-cache',
       digest: receipt.files['database-build/database.html'].sha256},
     {id: 'bundle-sample', path: '/' + bundle.slice('database-build/'.length), status: 200,
-      type: 'text/javascript', cache: 'private, max-age=86400', digest: receipt.files[bundle].sha256},
+      type: 'text/javascript', cache: 'private, max-age=86400', encoding: 'gzip',
+      digest: receipt.files[bundle].sha256},
     {id: 'approved-resource', path: content(options['approved-resource']), status: 200,
       digest: options['approved-resource']},
     {id: 'other-release-denied', path: `/api/v1/content/${options['approved-resource']}?release=${otherRelease}`, status: 404},
@@ -94,30 +100,47 @@ function prepare(options) {
 }
 
 // Node's direct HTTP clients do not follow Location or manage cookies. One socket
-// per request, identity encoding, explicit TLS verification, no proxy/credential options.
-function request(target, authority, check, timeoutMs, maxBytes) {
+// per request, explicit encoding/TLS, no proxy/credential options. Hash decoded
+// bytes without retaining response bodies; bound both sides of decompression.
+function request(target, authority, check, timeoutMs, maxBytes, maxDecodedBytes) {
   return new Promise((resolve, reject) => {
     const started = performance.now();
+    const controller = new AbortController();
     const client = target.protocol === 'https:' ? https : http;
     const req = client.request({protocol: target.protocol, hostname: target.hostname.replace(/^\[|\]$/g, ''),
       port: target.port || undefined, path: check.path, method: 'GET', agent: false,
       rejectUnauthorized: true, maxHeaderSize: limits.headerBytes,
-      headers: {Host: authority, Accept: '*/*', 'Accept-Encoding': 'identity'}}, res => {
+      headers: {Host: authority, Accept: '*/*', 'Accept-Encoding': check.encoding || 'identity'}}, res => {
       const headersMs = performance.now() - started;
       const digest = createHash('sha256');
-      let bytes = 0;
-      res.on('error', reject);
-      res.on('data', chunk => {
-        bytes += chunk.length;
-        if (bytes > maxBytes) req.destroy(Error('Response limit'));
-        else digest.update(chunk);
+      let bytes = 0, decodedBytes = 0;
+      const received = new Transform({
+        transform(chunk, _encoding, done) {
+          bytes += chunk.length;
+          done(bytes > maxBytes ? Error('Response limit') : null, chunk);
+        },
       });
-      res.on('end', () => resolve({status: res.statusCode, headers: res.headers,
-        bytes, sha256: digest.digest('hex'), headersMs, totalMs: performance.now() - started}));
+      const decoded = new Writable({
+        write(chunk, _encoding, done) {
+          decodedBytes += chunk.length;
+          if (decodedBytes > maxDecodedBytes) return done(Error('Decoded response limit'));
+          digest.update(chunk);
+          done();
+        },
+      });
+      const streams = check.encoding === 'gzip' && res.headers['content-encoding'] === 'gzip'
+        ? [res, received, createGunzip(), decoded] : [res, received, decoded];
+      pipeline(streams, {signal: controller.signal}).then(() => {
+        clearTimeout(timer);
+        resolve({status: res.statusCode, headers: res.headers, bytes, decodedBytes,
+          sha256: digest.digest('hex'), headersMs, totalMs: performance.now() - started});
+      }, error => { clearTimeout(timer); reject(error); });
     });
-    const timer = setTimeout(() => req.destroy(Error('Request deadline')), timeoutMs);
-    req.on('error', reject);
-    req.on('close', () => clearTimeout(timer));
+    const timer = setTimeout(() => {
+      controller.abort();
+      req.destroy(Error('Request deadline'));
+    }, timeoutMs);
+    req.on('error', error => { clearTimeout(timer); reject(error); });
     req.end();
   });
 }
@@ -136,7 +159,8 @@ function responseFailure(response, check, origin) {
     'content-type': (check.type || 'application/json') + '; charset=utf-8'};
   if (Object.entries(expected).some(([key, value]) => headers[key] !== value) ||
       ['access-control-allow-credentials', 'access-control-allow-methods', 'access-control-allow-headers',
-        'set-cookie', 'content-encoding', 'location'].some(key => headers[key] !== undefined) ||
+        'set-cookie', 'location'].some(key => headers[key] !== undefined) ||
+      headers['content-encoding'] !== check.encoding ||
       !String(headers.vary || '').toLowerCase().split(',').map(v => v.trim()).includes('accept-encoding')) return 'headers';
   const expectedDigest = check.digest || digest(JSON.stringify(check.probe
     ? {status: check.probe, mode: 'public-read-only', schema: 1} : {error: 'Not found'}));
@@ -148,20 +172,22 @@ export async function runAcceptance(options) {
   try { prepared = prepare(options); } catch { refused(); }
   const {target, policy, checks, loopback} = prepared;
   const started = performance.now();
-  let received = 0;
+  let received = 0, decoded = 0;
   const result = {schema: 1, scope: 'bounded HTTP sample; not hosted or human acceptance',
     transport: loopback ? 'loopback' : 'https', localPackagePinsVerified: true,
     remotePinsAttested: false, limits, checks: []};
   for (const check of checks) {
     const remaining = limits.totalMs - (performance.now() - started);
-    if (remaining <= 0 || received >= limits.totalBytes) break;
+    if (remaining <= 0 || received >= limits.totalBytes || decoded >= limits.totalBytes) break;
     try {
       const response = await request(target, policy.authority, check,
-        Math.min(limits.requestMs, remaining), Math.min(limits.bodyBytes, limits.totalBytes - received));
+        Math.min(limits.requestMs, remaining), Math.min(limits.bodyBytes, limits.totalBytes - received),
+        Math.min(limits.bodyBytes, limits.totalBytes - decoded));
       received += response.bytes;
+      decoded += response.decodedBytes;
       const failure = responseFailure(response, check, policy.publicOrigin);
       result.checks.push({check: check.id, passed: failure === null, failure,
-        status: response.status, bodyBytes: response.bytes,
+        status: response.status, bodyBytes: response.bytes, decodedBodyBytes: response.decodedBytes,
         headersMs: Number(response.headersMs.toFixed(2)), totalMs: Number(response.totalMs.toFixed(2))});
       if (failure) break;
     } catch {
