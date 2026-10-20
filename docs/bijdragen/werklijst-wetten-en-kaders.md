@@ -64,7 +64,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 
 ## Kaders met auteursrecht van de uitgever
 
-**Rechten:** Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. De vier IIA Topical Requirements staan al in de database, met hun volledige tekst; de rechten liggen bij The Institute of Internal Auditors.
+**Rechten:** Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. Uitzondering: de vier IIA Topical Requirements staan met hun volledige tekst in de database. Dat is een bewust besluit van de beheerder (20 oktober 2026); de rechten blijven bij The Institute of Internal Auditors en de teksten worden verwijderd als de IIA daarom vraagt.
 
 | Bron | Code | Status | Actie |
 | --- | --- | --- | --- |
