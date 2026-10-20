@@ -55,7 +55,7 @@ Omnibus weigert te starten als database, hashes en code niet bij elkaar passen. 
 | Bronlogica | [lib/runtime-contract.mjs](../../lib/runtime-contract.mjs), [lib/content-adapters/](../../lib/content-adapters/) | Hoe brongegevens worden omgezet voor de app |
 | Database en server | [local-data/repository.mjs](../../local-data/repository.mjs), [local-data/server.mjs](../../local-data/server.mjs) | Database lezen en de lokale server |
 | AI-koppeling | [agent-tools/server.mjs](../../agent-tools/server.mjs), [agent-tools/workflow.mjs](../../agent-tools/workflow.mjs) | De MCP-tools |
-| Beheer | [content-tools/](../../content-tools/), [content-workbench/](../../content-workbench/) | Pakketten controleren en voortgang bijhouden |
+| Beheer | [content-tools/](../../content-tools/) | Pakketten controleren (de Workbench in `content-workbench/` is niet meer in gebruik) |
 
 Tests staan meestal naast de code die ze controleren (`*.test.mjs`). Fictieve testgegevens staan in [local-data/test-support/](../../local-data/test-support/).
 

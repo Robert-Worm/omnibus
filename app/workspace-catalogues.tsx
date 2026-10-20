@@ -339,7 +339,7 @@ export function ReportCatalogue({
               onChange={(e) => onScope(e.target.value as "open" | "audit" | "all")}
             >
               <option value="open">Open thema’s</option>
-              <option value="audit">Mijn auditkader</option>
+              <option value="audit">Mijn referentiekader</option>
               <option value="all">Alle bronrapporten</option>
             </select>
           </label>

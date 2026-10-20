@@ -40,7 +40,7 @@ Een `README.md` in een map begint ook met *In het kort*. De wegwijzer en de begr
 
 | Gebruik | Niet |
 | --- | --- |
-| toetsingskader, met bij het eerste gebruik: *in de applicatie: referentiekader* | normenkader of auditkader (voor het eindresultaat) |
+| referentiekader | toetsingskader, auditkader, onderzoekskader of normenkader (voor het eindresultaat) |
 | bouwsteen, norm, toetspunt | item, criterium (in uitleg voor gebruikers) |
 | bron | document, input |
 | claimen, inleveren, vrijgeven | check-out, check-in (alleen als uitleg tussen haakjes) |

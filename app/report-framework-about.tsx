@@ -17,7 +17,7 @@ export default function ReportFrameworkAbout({title,workspaces,reports,lines,all
  return <section className="law-about report-framework-about" aria-label="Achtergrond bij dit thema of proces">
   <LawAboutIntro title={title} links={[]}><p>{content.intro}</p><p className="law-about-note">De uitleg op deze pagina helpt je het kader te gebruiken. De normen en toetspunten zijn afgeleide onderzoeksvoorstellen, geen actuele bevindingen of zelfstandige wettelijke verplichtingen.</p></LawAboutIntro>
   <LawAboutSpecifications>
-   <div><dt>Soort kader</dt><dd>Thema- of procesgericht onderzoekskader</dd></div>
+   <div><dt>Soort kader</dt><dd>Thema- of procesgericht referentiekader</dd></div>
    <div><dt>Bronrapporten</dt><dd>{used.length} in gebruik · {reports.length} beschikbaar</dd></div>
    <div><dt>Normen binnen rapportkeuze</dt><dd>{lines.length} van {allLines.length}</dd></div>
    <div><dt>Herkomst</dt><dd>Bronanalyses en afgeleide onderzoeksvoorstellen</dd></div>

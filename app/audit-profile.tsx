@@ -50,7 +50,7 @@ export function AuditProfilePicker({
       <PopoverContent className="audit-profile-panel" align="start">
         <PopoverTitle>Auditprofiel</PopoverTitle>
         <p className="profile-caption">
-          Rangschik de normen voor uw onderzoek. Uw auditkader blijft ongewijzigd.
+          Rangschik de normen voor uw onderzoek. Uw referentiekader blijft ongewijzigd.
         </p>
         {(
           [

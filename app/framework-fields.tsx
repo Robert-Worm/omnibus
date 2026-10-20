@@ -76,7 +76,7 @@ export default function FrameworkFields({
                         onChange(chooseField(draft, line, kind, field.id, Boolean(v)) as Draft)
                       }
                     />
-                    Opnemen in mijn auditkader
+                    Opnemen in mijn referentiekader
                   </label>
                 )}
                 <span className={"basis-tag " + basis}>{provenance[basis]}</span>

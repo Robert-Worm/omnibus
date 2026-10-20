@@ -5,7 +5,7 @@
 ## Over Omnibus
 
 **Wat is Omnibus, in één zin?**
-Een hulpmiddel waarmee je als auditor of onderzoeker een toetsingskader samenstelt uit normen van echte rapporten, wetten en kaders, en dat als Excel-werkdocument downloadt. Zie [werken met Omnibus](gebruiken/werken-met-omnibus.md).
+Een hulpmiddel waarmee je als auditor of onderzoeker een referentiekader samenstelt uit normen van echte rapporten, wetten en kaders, en dat als Excel-werkdocument downloadt. Zie [werken met Omnibus](gebruiken/werken-met-omnibus.md).
 
 **Wat kost het?**
 Niets. Omnibus is een niet-commercieel project. Je mag het vrij gebruiken, aanpassen en delen, maar niet commercieel. Zie de [licentie](../README.md#licentie).

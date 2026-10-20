@@ -131,6 +131,7 @@ export const TE_VERMIJDEN = [
   [/\bintegrator\b/gi, "beheerder of ontwikkelaar"],
   [/\bbundles?\b/gi, "pakket"],
   [/\brollback\b/gi, "terugzetten"],
+  [/\b(?:toetsingskader|auditkader|onderzoekskader)s?\b/gi, "referentiekader (het vaste woord in Omnibus)"],
 ];
 const ZONDER_WOORDCONTROLE = "<!-- check-docs: geen-woordcontrole -->";
 // Een pagina die zelf codes uitlegt (zoals de acceptatiecontracten), krijgt geen codewaarschuwingen.

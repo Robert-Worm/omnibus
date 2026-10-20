@@ -67,7 +67,7 @@ export default function ExcelExport({
         draft.title
           .replace(/[^\p{L}\p{N} _-]/gu, "")
           .trim()
-          .slice(0, 80) || "Auditkader";
+          .slice(0, 80) || "Referentiekader";
       a.download =
         title +
         "-v" +
@@ -97,7 +97,7 @@ export default function ExcelExport({
       </DialogTrigger>
       <DialogContent className="excel-export-dialog">
         <DialogHeader>
-          <DialogTitle>Auditkader naar Excel</DialogTitle>
+          <DialogTitle>Referentiekader naar Excel</DialogTitle>
           <DialogDescription>Een bewerkbaar startpunt voor uw onderzoek.</DialogDescription>
         </DialogHeader>
         <div className="export-meta-grid">
@@ -173,12 +173,12 @@ export default function ExcelExport({
               {t.title}
             </label>
           ))}
-          <small>{count} geselecteerde normen · uw auditkader blijft ongewijzigd</small>
+          <small>{count} geselecteerde normen · uw referentiekader blijft ongewijzigd</small>
         </fieldset>
         <details className="export-customize">
           <summary>Indeling aanpassen</summary>
           <fieldset className="export-options">
-            <legend>Kolommen in het auditkader</legend>
+            <legend>Kolommen in het referentiekader</legend>
             {exportFields.map((f) => (
               <label key={f.id}>
                 <Checkbox
@@ -222,7 +222,7 @@ export default function ExcelExport({
         </details>
         <p className="export-note">
           {questions ? "3" : "2"} werkbladen: Versiebeheer,{" "}
-          {questions ? "Onderzoeksvragen en " : ""}Toetskader. Het team houdt het wijzigingslog zelf
+          {questions ? "Onderzoeksvragen en " : ""}Referentiekader. Het team houdt het wijzigingslog zelf
           bij. Excel-wijzigingen worden niet teruggelezen.
         </p>
         {error && <p role="alert">{error}</p>}

@@ -1259,7 +1259,7 @@ export default function FrameworkEditor() {
                   <nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:false}))}>Normen</button><button aria-pressed={aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:true}))}>Over dit kader</button></nav>
                   <div className="report-view-actions"><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
                 </div>}
-                {!editable&&<TabsContent value="about"><ReportFrameworkAbout title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Onderzoekskader'} workspaces={browseThemes} reports={corpus.filter(c=>browseThemes.some(t=>t.reportIds.includes(c.framework.report.id))).map(c=>c.framework)} lines={visibleLines} allLines={browseThemeLines(framework,browseThemes,[])} onChoice={openReportChoice} onRead={id=>{setReturnPage('topics');setReaderId(id);setReportEvidence(null);setReportPage(1);navigate('reader',id);}}/></TabsContent>}
+                {!editable&&<TabsContent value="about"><ReportFrameworkAbout title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Referentiekader'} workspaces={browseThemes} reports={corpus.filter(c=>browseThemes.some(t=>t.reportIds.includes(c.framework.report.id))).map(c=>c.framework)} lines={visibleLines} allLines={browseThemeLines(framework,browseThemes,[])} onChoice={openReportChoice} onRead={id=>{setReturnPage('topics');setReaderId(id);setReportEvidence(null);setReportPage(1);navigate('reader',id);}}/></TabsContent>}
                 <TabsContent value="framework" id="working-area">
                   {!editable && (combinedView ? hiddenBrowseNorms > 0 : hiddenReportCount > 0) && (
                     <div className="report-choice-summary">
@@ -1307,7 +1307,7 @@ export default function FrameworkEditor() {
                       <h2>Geen normen binnen uw rapportkeuze</h2>
                       <p>
                         Zet een rapport aan om de bijbehorende normen weer te bekijken. Uw
-                        auditkader is niet gewijzigd.
+                        referentiekader is niet gewijzigd.
                       </p>
                       <Button
                         onClick={() => {
@@ -1385,7 +1385,7 @@ export default function FrameworkEditor() {
                             >
                               {pointCounts[line.id] ? (pointCounts[line.id].selected === pointCounts[line.id].total ? "Toetspunten deselecteren" : "Alle toetspunten selecteren") : draft.included.includes(line.id)
                                 ? "Uit selectie halen"
-                                : "Opnemen in mijn auditkader"}
+                                : "Opnemen in mijn referentiekader"}
                             </Button>
                             <SheetClose render={<Button variant="outline" />}>Sluiten</SheetClose>
                           </div>
@@ -1581,7 +1581,7 @@ export default function FrameworkEditor() {
                                   <p className="edit-note">
                                     {editable
                                       ? "Pas de basisvelden aan voor uw audit. Uw wijzigingen blijven voorstellen; de bronanalyse verandert niet mee."
-                                      : "Lees de oorspronkelijke thema-analyse en volg de bronverwijzingen. Selecteer dit onderdeel om het in Mijn auditkader te configureren."}
+                                      : "Lees de oorspronkelijke thema-analyse en volg de bronverwijzingen. Selecteer dit onderdeel om het in Mijn referentiekader te configureren."}
                                   </p>
                                   <FrameworkFields
                                     framework={framework}

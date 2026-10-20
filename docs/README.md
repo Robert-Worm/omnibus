@@ -64,7 +64,8 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | `lib/` | Gedeelde regels: selecties, vragen, projecten en Excel-export |
 | `local-data/` | De koppeling met de database |
 | `agent-tools/` | De koppeling voor AI-assistenten |
-| `content-tools/`, `content-workbench/` | Hulpmiddelen voor de beheerder |
+| `content-tools/` | Hulpmiddelen voor de beheerder |
+| `content-workbench/` | Oud werkbord van de beheerder, niet meer in gebruik |
 | `scripts/` | Bouwen, testen en controleren |
 | `hosting/` | Voorbereiding van de online versie |
 

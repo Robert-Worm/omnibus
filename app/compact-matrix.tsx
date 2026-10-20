@@ -507,7 +507,7 @@ export default function CompactMatrix({
                       checked={rowAll(l.id)}
                       indeterminate={rowSome(l.id) && !rowAll(l.id)}
                       disabled={disabled || pointChoices?.counts[l.id]?.total===0}
-                      aria-label={pointChoices?.counts[l.id] ? `Selecteer alle toetspunten van ${l.id}` : `Neem ${l.id} op in mijn auditkader`}
+                      aria-label={pointChoices?.counts[l.id] ? `Selecteer alle toetspunten van ${l.id}` : `Neem ${l.id} op in mijn referentiekader`}
                       onCheckedChange={() => selectRows([l.id],!rowAll(l.id))}
                     />}
                     {onOpenReport ? (

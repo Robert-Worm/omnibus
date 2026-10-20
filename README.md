@@ -1,11 +1,11 @@
 <h1 align="center">Omnibus</h1>
 
 <p align="center">
-  <img src="docs/images/omnibus-banner.png" alt="Omnibus: van brondocument naar toetsingskader" width="820">
+  <img src="docs/images/omnibus-banner.png" alt="Omnibus: van brondocument naar referentiekader" width="820">
 </p>
 
 <p align="center">
-  Stel in een paar stappen een toetsingskader samen voor je onderzoek,<br>
+  Stel in een paar stappen een referentiekader samen voor je onderzoek,<br>
   met normen uit echte rapporten, wetten en kaders. En exporteer het naar Excel.
 </p>
 
@@ -31,11 +31,11 @@
 
 | 👥 Voor wie | ❓ Het probleem | ✅ Wat je krijgt |
 | --- | --- | --- |
-| Auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten | Bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een toetsingskader samenstellen kost veel zoekwerk. | Een toetsingskader als Excel-werkdocument, met bij elke norm de bron waar hij vandaan komt |
+| Auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten | Bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een referentiekader samenstellen kost veel zoekwerk. | Een referentiekader als Excel-werkdocument, met bij elke norm de bron waar hij vandaan komt |
 
 ## Wat is Omnibus?
 
-Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *toetsingskader* te maken: de lijst met normen en toetspunten waarmee je een organisatie onderzoekt.
+Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *referentiekader* te maken: de lijst met normen en toetspunten waarmee je een organisatie onderzoekt.
 
 Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapporten, uit wetten en uit normenkaders. Jij kiest wat past bij jouw onderzoek. Bij elke norm kun je de oorspronkelijke bron lezen, zodat je altijd weet waar hij vandaan komt.
 
@@ -61,6 +61,8 @@ flowchart LR
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
 
 ![Rondleiding van 25 seconden: een onderzoeksrichting kiezen, normen uit het CIO-stelsel selecteren, een centrale vraag met zes bouwstenen maken en het kader als Excel exporteren](docs/images/rondleiding.gif)
+
+Wil je eerst het resultaat zien, zonder iets te installeren? Download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
 
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 

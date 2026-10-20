@@ -79,7 +79,7 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
       {adviceText !== guidance.explanation && <p>{guidance.explanation}</p>}
       {action?.reason && <p>{action.reason}</p>}
       <h3>Ook om te verkennen</h3>
-      <p>Je kunt Omnibus ook gebruiken om bronnen te verkennen, normen te begrijpen en te combineren, zonder direct een volledig onderzoekskader te maken.</p>
+      <p>Je kunt Omnibus ook gebruiken om bronnen te verkennen, normen te begrijpen en te combineren, zonder direct een volledig referentiekader te maken.</p>
       <h3>Zo werkt Omnibus</h3>
       <ol className="workflow-help-steps">
         <li><strong>Onderzoeksrichting of Verken je onderwerp</strong><p>Begin vraaggestuurd bij de behoefte van je opdrachtgever, of verken vanuit signalen een thema, proces, wet, kader of model. Wisselen van route wist je werk niet.</p></li>

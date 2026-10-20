@@ -1,6 +1,6 @@
 # Content Workbench (`content-workbench/`)
 
-> **In het kort:** een lokaal werkbord waarop de beheerder bijhoudt welke bronnen wachten, in bewerking zijn of al in de database staan. Het draait alleen op de eigen computer.
+> **In het kort:** een lokaal werkbord waarop de beheerder vroeger bijhield welke bronnen wachten, in bewerking zijn of al in de database staan. **Niet meer in gebruik** (20 oktober 2026): de voortgang staat nu op GitHub, in de [claims en de voortgangspagina](../docs/bijdragen/voortgang.md).
 
 ## Belangrijkste bestanden
 

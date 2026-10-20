@@ -1,10 +1,13 @@
 # Content Workbench
 
-> **In het kort:** een lokaal werkbord voor de beheerder om de verwerking van veel bronnen bij te houden. Voor bijdragers is er het [claimsysteem op GitHub](../bijdragen/README.md); de Workbench is het interne overzicht ernaast.
+> **In het kort:** een lokaal werkbord dat de beheerder vroeger gebruikte om de verwerking van veel bronnen bij te houden. Dat gebeurt nu op GitHub.
+
+> [!IMPORTANT]
+> **Niet meer in gebruik** (besluit van de beheerder, 20 oktober 2026). De voortgang wordt bijgehouden op GitHub: met [claims](https://github.com/Robert-Worm/omnibus/issues?q=label%3Aclaim) en de [voortgangspagina](../bijdragen/voortgang.md). De Workbench blijft voorlopig in de repository; of de code eruit gaat, is een apart besluit.
 
 ## Wanneer gebruik je dit?
 
-Als beheerder, om de verwerking van veel bronnen tegelijk bij te houden: welke bron in welke stap zit, waarom, en wat er al in Omnibus staat. Bijdragers gebruiken het [claimsysteem op GitHub](../bijdragen/README.md); de Workbench is het interne werkbord ernaast.
+In het normale beheerwerk niet meer. Deze pagina blijft staan voor wie oude Workbench-gegevens wil bekijken of herstellen.
 
 ## Stap voor stap
 
@@ -23,7 +26,7 @@ flowchart LR
 
 - De Workbench draait alleen op je eigen computer. Zet er nooit een openbare poort, proxy of tunnel voor.
 - De werkstappen zijn handmatig. Ze keuren niets inhoudelijk goed.
-- Workbench en claimsysteem zijn nu twee aparte overzichten. Hoe ze op elkaar aansluiten, is nog een open besluit ([#45](https://github.com/Robert-Worm/omnibus/issues/45)).
+- Het overzicht van alle bronnen staat nu op GitHub; zie [voortgang](../bijdragen/voortgang.md).
 
 ## Technische referentie
 

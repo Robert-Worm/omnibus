@@ -1,12 +1,14 @@
 # Begrippen
 
+<!-- check-docs: geen-woordcontrole -->
+
 > **In het kort:** de woorden die je in Omnibus en in deze documentatie tegenkomt, in gewone taal uitgelegd.
 
 ## Onderzoek en inhoud
 
 | Begrip | Betekenis |
 | --- | --- |
-| **Toetsingskader** | De set normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt. In de applicatie heet dit *referentiekader*. |
+| **Referentiekader** | De set normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen. Elders heet dit ook wel toetsingskader of auditkader; in Omnibus heet het altijd referentiekader. |
 | **Norm** | Waar de organisatie aan zou moeten voldoen. |
 | **Toetspunt** | Een concrete controle bij een norm: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
 | **Bouwsteen** | Alles wat je in Omnibus kunt kiezen: normen, toetspunten en modelvragen. |

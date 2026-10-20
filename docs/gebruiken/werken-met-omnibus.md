@@ -1,10 +1,10 @@
 # Werken met Omnibus
 
-> **In het kort:** Omnibus leidt je in vier stappen van een onderzoeksvraag naar een toetsingskader in Excel. Je kunt steeds terug naar een eerdere stap; je werk blijft bewaard.
+> **In het kort:** Omnibus leidt je in vier stappen van een onderzoeksvraag naar een referentiekader in Excel. Je kunt steeds terug naar een eerdere stap; je werk blijft bewaard.
 
 ## Wat maak je?
 
-Een **toetsingskader** (in Omnibus: *referentiekader*). Dat is de set normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen.
+Een **referentiekader**. Dat is de set normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen.
 
 Een paar begrippen:
 
@@ -79,7 +79,7 @@ Kies een werkvorm voor je Excel-bestand:
 | **Risico-controlmatrix** | Je werkt van doel en risico naar beheersing en toetsing. |
 | **Interviewleidraad** | Je verkent een onderwerp met vragen, voorbeelden en doorvragen. |
 
-Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde.
+Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
 ![Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen](../images/stap-4-exporteer.png)
 

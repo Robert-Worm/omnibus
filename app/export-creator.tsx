@@ -436,7 +436,7 @@ export default function ExportCreator({
                     </label>
                   ))}
                   <p className="creator-help">
-                    Uitsluiten geldt alleen voor deze export. Je auditkader blijft behouden.
+                    Uitsluiten geldt alleen voor deze export. Je referentiekader blijft behouden.
                   </p>
                 </details>}
                 {!!planningIssues.length && (
