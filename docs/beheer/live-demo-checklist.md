@@ -2,14 +2,9 @@
 
 > **In het kort:** wat er nog moet gebeuren om van de lokale applicatie naar een online demo te gaan: database, code, hosting, herstel en acceptatie.
 
-Doel: een werkende demo op Sevalla op **1 december 2026**, met de bestaande
-applicatie en een afzonderlijk aangeleverde SQLite-database. Deze checklist is
-geen melding dat Omnibus al is uitgerold of voor productie is goedgekeurd.
+Doel: een werkende demo op Sevalla op **1 december 2026**, met de bestaande applicatie en een afzonderlijk aangeleverde SQLite-database. Deze checklist is geen melding dat Omnibus al is uitgerold of voor productie is goedgekeurd.
 
-De beheerder levert de database en beoordeelt de inhoud en verspreidingsrechten.
-De ontwikkelaar controleert de aansluitingen, versiegrenzen en werkwijzen.
-Login, gebruikersbeheer, betalingen en een publiek MCP-endpoint vallen buiten
-deze demo. De bestaande lokale MCP-koppeling blijft een aparte demonstratieroute.
+De beheerder levert de database en beoordeelt de inhoud en verspreidingsrechten. De ontwikkelaar controleert de aansluitingen, versiegrenzen en werkwijzen. Login, gebruikersbeheer, betalingen en een publiek MCP-endpoint vallen buiten deze demo. De bestaande lokale MCP-koppeling blijft een aparte demonstratieroute.
 
 ## Actuele vervolgstappen — 20 oktober 2026
 
@@ -25,15 +20,9 @@ Het lokale ontwikkelwerk voor de demo is af. Wat nog open staat, vraagt vooral *
 | beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
 | gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheidscontrole en generale repetitie. Een test met schermlezer en in desktop-Excel valt buiten deze demo (besluit 20 oktober 2026). |
 
-De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd.
-Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index
-gebruikt. Controleer vóór de demonstratie de actuele pinnen, niet alleen een
-eerder geslaagd resultaat.
+De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd. Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index gebruikt. Controleer vóór de demonstratie de actuele pinnen, niet alleen een eerder geslaagd resultaat.
 
-De uitgestelde publicatieoptimalisatie is geen verplicht nieuw
-bouwproject. Pak die alleen op als een relevante meting daar aanleiding toe
-geeft, met afzonderlijke toestemming voor een kandidaatpublicatie. De actieve
-database blijft bij codeverbeteringen ongewijzigd.
+De uitgestelde publicatieoptimalisatie is geen verplicht nieuw bouwproject. Pak die alleen op als een relevante meting daar aanleiding toe geeft, met afzonderlijke toestemming voor een kandidaatpublicatie. De actieve database blijft bij codeverbeteringen ongewijzigd.
 
 ## Wat moet nog worden aangetoond?
 
@@ -47,50 +36,22 @@ database blijft bij codeverbeteringen ongewijzigd.
 | Gebruikersacceptatie | Demonstrator en onafhankelijke tester | Bronnen, selecties, vragen, bewaren/openen en drie Excelwerkvormen zijn door mensen doorlopen, ook met alleen het toetsenbord. Schermlezer en desktop-Excel horen bewust niet bij deze demo. |
 | Generale repetitie | Eigenaar en ontwikkelaar | Dezelfde vastgezette code/data-combinatie is op de gekozen host doorlopen en een terugvalroute is beschikbaar. |
 
-Voorgestelde planning: pakket en ontvangst eind oktober, echte hostingproef
-begin november, herstel en gebruikersacceptatie uiterlijk 20 november,
-vrijgavebesluit op 27 november en generale repetitie op 30 november. Dit zijn
-streefdata, geen toestemming om diensten te activeren of kosten te maken.
+Voorgestelde planning: pakket en ontvangst eind oktober, echte hostingproef begin november, herstel en gebruikersacceptatie uiterlijk 20 november, vrijgavebesluit op 27 november en generale repetitie op 30 november. Dit zijn streefdata, geen toestemming om diensten te activeren of kosten te maken.
 
 ## Database en koppelingen
 
-- Controleer een nieuwe database met
-  `npm run data:check-runtime -- --settings work/candidate/local-build.json`.
-  Volg daarbij de [publicatiehandleiding](database-publiceren.md).
-  Gebruik expliciete database-, release- en
-  publicatie-identiteiten; val niet stilzwijgend terug op een oudere versie.
-- Gebruik zo nodig de [actieve-inventariscontrole](actieve-inventaris-controleren.md)
-  naast de volledige runtimevergelijking. Die controle wijzigt niets en
-  beoordeelt geen bronrechten.
-- Een nieuwe webpublicatie maakt een bestaande agentbuild niet automatisch
-  actueel. Controleer de versie van de [lokale AI-koppeling](../../agent-tools/README.md)
-  tegen de voor de demo gekozen release. Bereid een passende agentbuild apart
-  voor en test het protocol en de export; presenteer een oudere index niet als
-  bewijs voor de nieuwe collectie.
-- Onderzoeksprojecten blijven in de browser. Naar een ander adres verhuizen
-  vraagt een projectdownload en opnieuw openen, geen veronderstelde automatische
-  overdracht van browseropslag.
+- Controleer een nieuwe database met `npm run data:check-runtime -- --settings work/candidate/local-build.json`. Volg daarbij de [publicatiehandleiding](database-publiceren.md). Gebruik expliciete database-, release- en publicatie-identiteiten; val niet stilzwijgend terug op een oudere versie.
+- Gebruik zo nodig de [actieve-inventariscontrole](actieve-inventaris-controleren.md) naast de volledige runtimevergelijking. Die controle wijzigt niets en beoordeelt geen bronrechten.
+- Een nieuwe webpublicatie maakt een bestaande agentbuild niet automatisch actueel. Controleer de versie van de [lokale AI-koppeling](../../agent-tools/README.md) tegen de voor de demo gekozen release. Bereid een passende agentbuild apart voor en test het protocol en de export; presenteer een oudere index niet als bewijs voor de nieuwe collectie.
+- Onderzoeksprojecten blijven in de browser. Naar een ander adres verhuizen vraagt een projectdownload en opnieuw openen, geen veronderstelde automatische overdracht van browseropslag.
 
 ## Hoe bewijs wordt vastgelegd
 
-Leg per controle de exacte codeversie, release/publicatie, datum, uitvoerder,
-resultaat en beperkingen vast. Houd broninhoud, echte projecten, exports,
-databasebestanden en ruwe testuitvoer buiten de coderepository.
+Leg per controle de exacte codeversie, release/publicatie, datum, uitvoerder, resultaat en beperkingen vast. Houd broninhoud, echte projecten, exports, databasebestanden en ruwe testuitvoer buiten de coderepository.
 
-Een lokale browserrepetitie kan selecties, vraagkoppelingen en Excel-inhoud
-controleren, maar bewijst geen desktop-Excelweergave of menselijke
-toegankelijkheid. Die twee tests zijn voor deze demo bewust buiten scope
-gelaten (besluit van de eigenaar, 20 oktober 2026). Een snelle lokale proef is evenmin een capaciteitsgarantie
-voor de host. Herhaal alleen relevante controles wanneer code, data of
-hostingconfiguratie veranderen.
+Een lokale browserrepetitie kan selecties, vraagkoppelingen en Excel-inhoud controleren, maar bewijst geen desktop-Excelweergave of menselijke toegankelijkheid. Die twee tests zijn voor deze demo bewust buiten scope gelaten (besluit van de eigenaar, 20 oktober 2026). Een snelle lokale proef is evenmin een capaciteitsgarantie voor de host. Herhaal alleen relevante controles wanneer code, data of hostingconfiguratie veranderen.
 
-Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md),
-[runtime-instructies](runtime-pakket.md) en
-[herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform.
-De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo)
-kan alvast met een synthetisch pakket op loopback worden uitgevoerd. Zij houdt
-ontvangen en uitgepakte bytes apart bij en stopt bij de eerste fout; het is
-geen vervanging voor de latere hosted browsermeting.
+Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md), [runtime-instructies](runtime-pakket.md) en [herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform. De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kan alvast met een synthetisch pakket op loopback worden uitgevoerd. Zij houdt ontvangen en uitgepakte bytes apart bij en stopt bij de eerste fout; het is geen vervanging voor de latere hosted browsermeting.
 
 ## Samengevat
 
