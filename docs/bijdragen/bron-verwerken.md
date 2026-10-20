@@ -124,3 +124,7 @@ Skill installeren, bron ophalen, skill uitvoeren, zelf controleren, het concept 
 ## Volgende stap
 
 Nog geen claim? Kies een bron in de [voortgang](voortgang.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

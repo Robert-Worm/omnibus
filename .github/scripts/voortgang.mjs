@@ -8,6 +8,8 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+const VOET = "[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
+
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const dataDir = join(root, ".github", "voortgang");
 const outDir = join(root, "docs", "bijdragen");
@@ -300,6 +302,10 @@ function build(claims) {
     "",
     "*Deze pagina wordt automatisch bijgewerkt. Pas haar niet met de hand aan; de gegevens staan in `.github/voortgang/`.*",
     "",
+    "---",
+    "",
+    VOET,
+    "",
   ].join("\n");
   writeFileSync(join(outDir, "werklijst-wetten-en-kaders.md"), kaderMd);
 
@@ -374,6 +380,10 @@ function build(claims) {
     "",
     "*Automatisch bijgewerkt. De gegevens staan in `.github/voortgang/`; het script in `.github/scripts/voortgang.mjs`.*",
     "",
+    "---",
+    "",
+    VOET,
+    "",
   ].join("\n");
   writeFileSync(join(outDir, "voortgang.md"), md);
 
@@ -410,6 +420,10 @@ function build(claims) {
     "Na het claimen volg je [een bron verwerken](bron-verwerken.md). Alle 9.116 rapporten staan in [werklijst-rapporten.csv](werklijst-rapporten.csv).",
     "",
     "*Automatisch bijgewerkt.*",
+    "",
+    "---",
+    "",
+    VOET,
     "",
   ].join("\n");
   writeFileSync(join(outDir, "werklijst-aanbevolen.md"), aanbevolenMd);

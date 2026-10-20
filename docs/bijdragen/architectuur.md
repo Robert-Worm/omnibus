@@ -88,3 +88,7 @@ Eén database, één lokale server die alleen leest, één webapp en één AI-ko
 ## Volgende stap
 
 Klaar om iets te veranderen? Lees [ontwikkelen](ontwikkelen.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

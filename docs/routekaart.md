@@ -108,3 +108,7 @@ Vier paden vanaf een werkende lokale versie: online, AI, eigen databases en same
 ## Volgende stap
 
 Wil je helpen? Begin bij [meedoen](bijdragen/README.md).
+
+---
+
+[↑ Wegwijzer](README.md) · [Begrippen](begrippen.md)

@@ -185,3 +185,7 @@ Een publieke origin is geen toegangscontrole voor vertrouwelijke inhoud.
 ## Volgende stap
 
 Lees [storingen en herstel](storingen-en-herstel.md) voor back-up en herstel.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

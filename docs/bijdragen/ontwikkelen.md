@@ -38,7 +38,7 @@ Een tekstcorrectie vraagt geen volledige testronde. Kies wat past:
 
 | Je wijzigt… | Draai |
 | --- | --- |
-| Alleen documentatie | Controleer de links; tests niet nodig |
+| Alleen documentatie | `npm run check:docs` |
 | Schermen of opmaak | `npm run check:types`, `npm run lint` en `npm run test:frontend` |
 | Bronweergave of Excel-export | `npm run test:source` |
 | Onderzoeksmodellen of formuleringen | `npm run test:models` |
@@ -49,6 +49,19 @@ Een tekstcorrectie vraagt geen volledige testronde. Kies wat past:
 | Twijfel? | `npm test` |
 
 Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat er geen databases, bronbestanden of geheimen in Git terechtkomen.
+
+## Documentatie controleren
+
+`npm run check:docs` zoekt tegenstrijdigheden in alle markdownbestanden. Dezelfde controle draait in GitHub Actions bij elke push en elk pull request.
+
+| Controle | Wat moet kloppen |
+| --- | --- |
+| Links en ankers | Elk gelinkt bestand bestaat; elk `#anker` hoort bij een kop of een `<a id>` op die pagina |
+| Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de workflows |
+| Installatieopdracht | In codeblokken en workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
+| Paginapatroon | Elke pagina in `docs/` heeft *In het kort*, *Samengevat* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Elke `README.md` in een map heeft *In het kort*. |
+
+Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit.
 
 ## Een pull request maken
 
@@ -95,3 +108,7 @@ Clone, `npm ci`, `npm test`. Kies gerichte tests bij je wijziging, draai `check:
 ## Volgende stap
 
 Lees [architectuur](architectuur.md) voor een kaart van de code.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -116,3 +116,7 @@ Pakket in de inbox, plan maken, `content:prepare`, `content:intake`. Een geslaag
 ## Volgende stap
 
 Geslaagd? Ga naar [inhoud toevoegen](inhoud-toevoegen.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

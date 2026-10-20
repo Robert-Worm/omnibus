@@ -106,3 +106,7 @@ geen vervanging voor de latere hosted browsermeting.
 ## Volgende stap
 
 Zie [pad A van de routekaart](../routekaart.md#pad-a--online-versie) en de voorbereiding in [`hosting/`](../../hosting/README.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -90,3 +90,7 @@ Beoordelen, controleren of het past, database maken met `--expect-addition`, tes
 ## Volgende stap
 
 Ga naar [database publiceren](database-publiceren.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -106,3 +106,7 @@ Meer kiezen:
 Kies een bron en klik op **Claimen**. Hoe claimen, inleveren en vrijgeven werkt, staat in [meedoen](README.md). Een ⚠️ achter een model betekent dat het niet op de lijst met [aanbevolen modellen](bron-verwerken.md#welk-ai-model-gebruik-je) staat.
 
 *Automatisch bijgewerkt. De gegevens staan in `.github/voortgang/`; het script in `.github/scripts/voortgang.mjs`.*
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

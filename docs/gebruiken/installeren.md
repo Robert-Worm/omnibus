@@ -82,3 +82,7 @@ Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
 ## Volgende stap
 
 Lees [werken met Omnibus](werken-met-omnibus.md) voor een rondleiding door de vier stappen.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

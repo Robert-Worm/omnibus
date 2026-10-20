@@ -91,3 +91,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 Kies een open bron en klik op **Claimen**. Daarna volg je [een bron verwerken](bron-verwerken.md).
 
 *Deze pagina wordt automatisch bijgewerkt. Pas haar niet met de hand aan; de gegevens staan in `.github/voortgang/`.*
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

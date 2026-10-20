@@ -646,3 +646,7 @@ Kies een open rapport bij een ministerie dat je kent. Een rapport in je eigen va
 Na het claimen volg je [een bron verwerken](bron-verwerken.md). Alle 9.116 rapporten staan in [werklijst-rapporten.csv](werklijst-rapporten.csv).
 
 *Automatisch bijgewerkt.*
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -46,3 +46,7 @@ Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bi
 ## Volgende stap
 
 Bekijk de [AI-skills](../../skills/README.md) en kies de skill die bij je document past.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

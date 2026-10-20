@@ -51,3 +51,7 @@ Controleren, beoordelen, publiceren, uitbrengen, claims sluiten. Bij twijfel: HO
 ## Volgende stap
 
 Is er een claim met het label **ingeleverd**? Begin bij [pakket controleren](pakket-controleren.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

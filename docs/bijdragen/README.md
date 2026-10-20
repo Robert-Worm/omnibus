@@ -58,3 +58,7 @@ Claim een bron, verwerk hem met een skill, lever hem in. De voortgang werkt zich
 ## Volgende stap
 
 Open de [voortgang](voortgang.md) en kies je eerste bron.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

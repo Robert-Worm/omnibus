@@ -130,3 +130,7 @@ Instellingen, `--check`, publiceren, vergelijken, testen, en pas dan de release 
 ## Volgende stap
 
 Na de release: sluit de verwerkte claims en kondig de nieuwe database aan in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

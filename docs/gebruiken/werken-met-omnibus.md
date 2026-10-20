@@ -92,3 +92,7 @@ Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen bli
 ## Volgende stap
 
 Wil je met je eigen rapporten of kaders werken? Lees [eigen documenten](eigen-documenten.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

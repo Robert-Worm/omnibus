@@ -118,3 +118,7 @@ Maak de combinatie van code, data, pins en beheerbesluit daarom expliciet.
 ## Volgende stap
 
 Terug naar het [beheeroverzicht](README.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

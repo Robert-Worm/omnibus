@@ -16,6 +16,7 @@
 | `npm run build:agent` | `build-agent-tools.mjs` | Bereidt de AI-koppeling voor |
 | `npm run skills:install` | `install-content-skills.mjs` | Installeert AI-skills |
 | `npm run check:code-only` | `check-code-only.mjs` | Controleert dat er geen data of geheimen in Git staan |
+| `npm run check:docs` | `check-docs.mjs` | Controleert links, ankers, versies en het paginapatroon van de documentatie |
 
 De `review-*`- en `verify-*`-scripts zijn controles die de beheerder gebruikt bij nieuwe inhoud. Tests staan naast de scripts (`*.test.mjs`).
 

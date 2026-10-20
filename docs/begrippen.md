@@ -44,3 +44,7 @@
 ## Volgende stap
 
 Terug naar de [wegwijzer](README.md).
+
+---
+
+[↑ Wegwijzer](README.md) · [Routekaart](routekaart.md)

@@ -65,3 +65,7 @@ collectie gebruiken. Zie de [technische controle](../../agent-tools/README.md#br
 ## Volgende stap
 
 Probeer het met een klein onderwerp, en open het resultaat met **Open project** in Omnibus.
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

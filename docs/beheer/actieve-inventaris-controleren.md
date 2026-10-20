@@ -56,3 +56,7 @@ review en de bewuste activatiestap. Invoer en uitvoer blijven privé.
 ## Volgende stap
 
 Terug naar [database publiceren](database-publiceren.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

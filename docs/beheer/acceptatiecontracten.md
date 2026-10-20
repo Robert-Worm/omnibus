@@ -176,3 +176,7 @@ Veertien afspraken bewaken dat werk niet verloren gaat, bronnen exact blijven, i
 ## Volgende stap
 
 Terug naar het [beheeroverzicht](README.md), of lees hoe je deze afspraken toetst in [ontwikkelen](../bijdragen/ontwikkelen.md#welke-tests-passen-bij-je-wijziging).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

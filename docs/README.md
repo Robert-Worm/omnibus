@@ -72,3 +72,7 @@ Elke map heeft een korte README met uitleg.
 ## Volgende stap
 
 Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md).
+
+---
+
+[↑ Terug naar Omnibus](../README.md)

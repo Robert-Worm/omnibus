@@ -1,0 +1,35 @@
+name: Documentatie controleren
+
+# Controleert links en ankers, de Node-versie, de installatieopdracht en het
+# vaste paginapatroon. Zie docs/bijdragen/ontwikkelen.md#documentatie-controleren.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Node instellen
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.17.0'
+          package-manager-cache: false
+      - name: Tests van de documentatiecheck
+        run: node --test scripts/check-docs.test.mjs
+      - name: Documentatie controleren
+        run: node scripts/check-docs.mjs
