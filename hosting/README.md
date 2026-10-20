@@ -17,6 +17,14 @@ flowchart LR
 | [`data-transfer/`](data-transfer/README.md) | Een database op de server ontvangen en tegen vaste controlegetallen controleren |
 | [`first-start/`](first-start/README.md) | De allereerste start op de server, voordat de database er staat |
 
-## Verder lezen
+## Samengevat
 
-[Checklist live demo](../docs/beheer/live-demo-checklist.md) · [Runtimepakket](../docs/beheer/runtime-pakket.md)
+Vier stappen, elk met een eigen hulpmiddel: de image maken, de image controleren, de database ontvangen en de eerste start. Alles is lokaal getest met fictieve gegevens; de afspraken met de hostingpartij volgen nog.
+
+## Volgende stap
+
+Begin bij [de online versie voorbereiden](release-delivery/README.md), of bekijk wat er voor de demo nog moet gebeuren in de [checklist live demo](../docs/beheer/live-demo-checklist.md).
+
+---
+
+[↑ Wegwijzer](../docs/README.md) · [Runtimepakket](../docs/beheer/runtime-pakket.md) · [Routekaart](../docs/routekaart.md)
