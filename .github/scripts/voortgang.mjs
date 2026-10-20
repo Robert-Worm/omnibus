@@ -41,7 +41,23 @@ async function gh(path, options = {}) {
   return res.status === 204 ? null : res.json();
 }
 
-const v = maakVoortgang({ data, repo, gh });
+// Haalt een bijlage op, met een harde bovengrens. Alleen bijlagen op github.com.
+async function download(url, maxBytes) {
+  if (!/^https:\/\/github\.com\//.test(url)) throw new Error("alleen bijlagen op github.com");
+  const res = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(30000) });
+  if (!res.ok) throw new Error(`download mislukt (${res.status})`);
+  if (Number(res.headers.get("content-length") || 0) > maxBytes) throw new Error("groter dan 25 MB");
+  const delen = [];
+  let totaal = 0;
+  for await (const deel of res.body) {
+    totaal += deel.length;
+    if (totaal > maxBytes) throw new Error("groter dan 25 MB");
+    delen.push(deel);
+  }
+  return Buffer.concat(delen);
+}
+
+const v = maakVoortgang({ data, repo, gh, download: token ? download : null });
 let claims = [];
 if (!offline) {
   try {

@@ -91,7 +91,7 @@ export function werkTellingenBij(tekst, t, repoUrl) {
 }
 
 // ---------- de voortgang ----------
-export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = () => Date.now() }) {
+export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = () => Date.now(), download = null }) {
   const { rapporten, verwerkt, kaders, modellen, dubbelingen = { beoordeeld: [] } } = data;
   const repoUrl = `https://github.com/${repo}`;
   const docs = (pad) => `${repoUrl}/blob/main/docs/bijdragen/${pad}`;
@@ -174,9 +174,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       const comments = await gh(`/issues/${n}/comments?per_page=100`);
       const bot = comments.filter((c) => c.user.type === "Bot").map((c) => c.body).join("\n");
       const legacy = { welkom: "Deze bron staat nu op jouw naam", afgewezen: "Deze bron is al geclaimd door" };
+      const heeft = (key) => bot.includes(mark(key)) || Boolean(legacy[key] && bot.includes(legacy[key]));
       const once = async (key, body) => {
-        if (bot.includes(mark(key)) || (legacy[key] && bot.includes(legacy[key]))) return;
-        await comment(n, `${mark(key)}\n${body}`);
+        if (heeft(key)) return;
+        await comment(n, `${mark(key)}\n${typeof body === "function" ? await body() : body}`);
       };
       const label = async (name, on) => {
         const has = claim.labels.includes(name);
@@ -264,11 +265,33 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
           await addLabels(n, ["ingeleverd"]); claim.labels.push("ingeleverd"); claim.status = "ingeleverd";
           await once(`inleveren-${c.id}`, "📦 Ingeleverd. De beheerder controleert het pakket en laat hier weten hoe het verdergaat. Zodra de bron in een nieuwe databaserelease zit, wordt deze claim gesloten.");
         }
+        if (cmd === "inleveren" && download) await once(`pakket-${c.id}`, () => pakketBericht(c.body));
         if (cmd === "vrijgeven") {
           await once(`vrijgeven-${c.id}`, "De bron is vrijgegeven en staat weer open in de werklijst. Bedankt voor het laten weten.");
           await closeIssue(n, "not_planned"); claim.open = false; break;
         }
       }
+    }
+  }
+
+  async function pakketBericht(tekst) {
+    const { github, extern } = zipLinks(tekst);
+    const kop = "**Automatische eerste controle van je pakket**";
+    const slot = "Dit is alleen een eerste blik op de bestandsnamen; de beheerder controleert het pakket nog volledig.";
+    if (!github.length) {
+      return extern.length
+        ? `${kop}\n\nJe pakket staat op een externe plek. Dat controleer ik niet automatisch; de beheerder kijkt ernaar.`
+        : `${kop}\n\n⚠️ Ik zie geen zip bij je reactie. Sleep de zip in een nieuwe reactie, met \`/inleveren\` op een eigen regel. Is hij groter dan 25 MB? Zet hem dan online en deel de link.`;
+    }
+    const url = github[0];
+    const naam = decodeURIComponent(url.split("/").pop());
+    try {
+      const buf = await download(url, PAKKET_GRENZEN.maxBytes);
+      const { ok, regels } = beoordeelPakket(zipInhoud(buf), buf.length);
+      return [`${kop} (\`${naam}\`)`, "", ...regels.map((r) => `- ${r}`), "",
+        ok ? slot : `${slot} Pas het pakket aan en lever opnieuw in: zet de nieuwe zip in een reactie, met \`/inleveren\` op een eigen regel.`].join("\n");
+    } catch (fout) {
+      return `${kop} (\`${naam}\`)\n\n⚠️ Ik kon de zip niet lezen (${String(fout.message).slice(0, 80)}). Controleer of het een gewone zip is, of wacht op de beheerder.`;
     }
   }
 
@@ -519,4 +542,69 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   }
 
   return { identify, loadClaims, ensureLabels, reconcile, build, dubbelVan, repoUrl };
+}
+
+// ---------- ingeleverd pakket controleren ----------
+// Leest alleen de inhoudsopgave van een zip (de "central directory"). Er wordt niets
+// uitgepakt of uitgevoerd.
+export const PAKKET_GRENZEN = { maxBytes: 25 * 1024 * 1024, maxUitgepakt: 250 * 1024 * 1024, maxBestanden: 2000 };
+
+export function zipInhoud(buf) {
+  if (buf.length < 22) throw new Error("geen zip-bestand");
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 22 - 65535); i--) {
+    if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error("geen zip-bestand");
+  const aantal = buf.readUInt16LE(eocd + 10);
+  let p = buf.readUInt32LE(eocd + 16);
+  const bestanden = [];
+  for (let n = 0; n < aantal; n++) {
+    if (p + 46 > buf.length || buf.readUInt32LE(p) !== 0x02014b50) throw new Error("beschadigde zip");
+    const gecomprimeerd = buf.readUInt32LE(p + 20), grootte = buf.readUInt32LE(p + 24);
+    const naamLen = buf.readUInt16LE(p + 28), extraLen = buf.readUInt16LE(p + 30), commentLen = buf.readUInt16LE(p + 32);
+    const naam = buf.subarray(p + 46, p + 46 + naamLen).toString("utf8");
+    bestanden.push({ naam, grootte, gecomprimeerd });
+    p += 46 + naamLen + extraLen + commentLen;
+  }
+  return bestanden;
+}
+
+const SOORTEN = [
+  ["De bron", /(\.pdf$|bron|source)/i],
+  ["De bouwstenen (normen en toetspunten)", /(norm|bouwsteen|toetspunt|criteri|catalog|points?|controls?|extract)/i],
+  ["De beperkingen en twijfels", /(beperking|limitation|hold|open-?punt|twijfel)/i],
+  ["Je eigen controle", /(controle|review|check|notitie|toelichting|readme)/i],
+];
+const UITVOERBAAR = /\.(exe|bat|cmd|com|ps1|sh|msi|dll|scr|vbs|jar|app|dmg)$/i;
+
+/** Beoordeelt de inhoudsopgave van een pakket. Geeft { ok, regels } terug. */
+export function beoordeelPakket(bestanden, bytes) {
+  const g = PAKKET_GRENZEN;
+  const regels = [];
+  let ok = true;
+  const echt = bestanden.filter((b) => !b.naam.endsWith("/") && !/(^|\/)(__MACOSX|\.DS_Store)/.test(b.naam));
+  const uitgepakt = echt.reduce((s, b) => s + b.grootte, 0);
+  if (bytes > g.maxBytes) { ok = false; regels.push(`❌ Het pakket is groter dan 25 MB.`); }
+  if (!echt.length) { ok = false; regels.push("❌ De zip is leeg."); }
+  if (echt.length > g.maxBestanden || uitgepakt > g.maxUitgepakt) { ok = false; regels.push("❌ Uitgepakt is het pakket ongewoon groot. De beheerder kijkt ernaar."); }
+  const vreemd = echt.filter((b) => b.naam.startsWith("/") || b.naam.split("/").includes("..") || /^[a-z]:/i.test(b.naam));
+  if (vreemd.length) { ok = false; regels.push(`❌ Ongeldige paden in de zip: ${vreemd.slice(0, 3).map((b) => `\`${b.naam}\``).join(", ")}.`); }
+  const uitvoer = echt.filter((b) => UITVOERBAAR.test(b.naam));
+  if (uitvoer.length) { ok = false; regels.push(`❌ Het pakket bevat programma's of scripts (${uitvoer.slice(0, 3).map((b) => `\`${b.naam}\``).join(", ")}). Haal die eruit.`); }
+  if (echt.length) {
+    regels.push(`✅ ${echt.length} ${echt.length === 1 ? "bestand" : "bestanden"}, samen ${(uitgepakt / 1024 / 1024).toFixed(1)} MB uitgepakt.`);
+    for (const [wat, re] of SOORTEN) {
+      regels.push(echt.some((b) => re.test(b.naam)) ? `✅ ${wat}: lijkt aanwezig.` : `⚠️ ${wat}: niet herkend aan de bestandsnamen. Zit het erin? Noem het dan in je toelichting.`);
+    }
+  }
+  return { ok, regels };
+}
+
+/** Zoekt bijlagen en links naar een zip in een reactie. */
+export function zipLinks(tekst) {
+  const alle = [...(tekst || "").matchAll(/https:\/\/[^\s)<>"]+/g)].map((m) => m[0]);
+  const github = alle.filter((u) => /^https:\/\/github\.com\/(user-attachments\/files\/\d+\/[^/]+\.zip|[\w.-]+\/[\w.-]+\/files\/\d+\/[^/]+\.zip)$/i.test(u));
+  const extern = alle.filter((u) => !github.includes(u) && !/^https:\/\/(github\.com|www\.rijksmap\.nl)\//.test(u));
+  return { github, extern };
 }

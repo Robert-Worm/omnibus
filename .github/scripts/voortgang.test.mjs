@@ -1,7 +1,8 @@
 // Tests voor het claimsysteem, met een gesimuleerde GitHub. Draai: npm run test:voortgang
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { maakVoortgang, readCsv, werkTellingenBij, zoekDubbelingen } from "./voortgang-lib.mjs";
+import { crc32 } from "node:zlib";
+import { beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
 
 const DAG = 24 * 60 * 60 * 1000;
 const START = Date.parse("2026-10-01T09:00:00Z");
@@ -82,8 +83,8 @@ function nepGitHub() {
   };
 }
 
-async function draai(github) {
-  const v = maakVoortgang({ data: data(), repo: "x/y", gh: github.gh, now: github.nu });
+async function draai(github, download = null) {
+  const v = maakVoortgang({ data: data(), repo: "x/y", gh: github.gh, now: github.nu, download });
   await v.ensureLabels();
   await v.reconcile(await v.loadClaims());
   return v;
@@ -270,4 +271,75 @@ test("tellingen in andere pagina's worden bijgewerkt", () => {
   assert.match(uit, /badge\/database-28%20rapporten/);
   assert.match(uit, /alt="Database: 28 rapporten"/);
   assert.match(uit, /<!--\/badge-->\n<\/p>/);
+});
+
+/** Maakt een kleine, echte zip (zonder compressie). */
+function maakZip(bestanden) {
+  const lokaal = [], centraal = [];
+  let offset = 0;
+  for (const [naam, inhoud] of Object.entries(bestanden)) {
+    const n = Buffer.from(naam), d = Buffer.from(inhoud), crc = crc32(d);
+    const l = Buffer.alloc(30); l.writeUInt32LE(0x04034b50, 0); l.writeUInt16LE(20, 4); l.writeUInt32LE(crc, 14); l.writeUInt32LE(d.length, 18); l.writeUInt32LE(d.length, 22); l.writeUInt16LE(n.length, 26);
+    const c = Buffer.alloc(46); c.writeUInt32LE(0x02014b50, 0); c.writeUInt16LE(20, 4); c.writeUInt16LE(20, 6); c.writeUInt32LE(crc, 16); c.writeUInt32LE(d.length, 20); c.writeUInt32LE(d.length, 24); c.writeUInt16LE(n.length, 28); c.writeUInt32LE(offset, 42);
+    lokaal.push(l, n, d); centraal.push(c, n); offset += 30 + n.length + d.length;
+  }
+  const cd = Buffer.concat(centraal);
+  const e = Buffer.alloc(22); e.writeUInt32LE(0x06054b50, 0); e.writeUInt16LE(centraal.length / 2, 8); e.writeUInt16LE(centraal.length / 2, 10); e.writeUInt32LE(cd.length, 12); e.writeUInt32LE(offset, 16);
+  return Buffer.concat([...lokaal, cd, e]);
+}
+
+test("de inhoudsopgave van een zip wordt gelezen zonder uit te pakken", () => {
+  const zip = maakZip({ "pakket/bron.pdf": "%PDF", "pakket/normen.json": "{}" });
+  assert.deepEqual(zipInhoud(zip).map((b) => b.naam), ["pakket/bron.pdf", "pakket/normen.json"]);
+  assert.throws(() => zipInhoud(Buffer.from("geen zip, maar gewoon tekst die lang genoeg is")), /geen zip/);
+});
+
+test("een compleet pakket krijgt vinkjes; ontbrekende delen een waarschuwing", () => {
+  const goed = beoordeelPakket(zipInhoud(maakZip({ "a/bron.pdf": "x", "a/normen.json": "x", "a/beperkingen.md": "x", "a/controle.md": "x" })), 100);
+  assert.equal(goed.ok, true);
+  assert.equal(goed.regels.filter((r) => r.startsWith("⚠️")).length, 0);
+  const half = beoordeelPakket(zipInhoud(maakZip({ "a/bron.pdf": "x" })), 100);
+  assert.equal(half.ok, true);
+  assert.equal(half.regels.filter((r) => r.startsWith("⚠️")).length, 3);
+});
+
+test("scripts, vreemde paden, lege en te grote pakketten worden afgekeurd", () => {
+  assert.equal(beoordeelPakket(zipInhoud(maakZip({ "a/installeer.sh": "x" })), 10).ok, false);
+  assert.equal(beoordeelPakket(zipInhoud(maakZip({ "../buiten.md": "x" })), 10).ok, false);
+  assert.equal(beoordeelPakket([], 10).ok, false);
+  assert.equal(beoordeelPakket([{ naam: "a.md", grootte: 1 }], 26 * 1024 * 1024).ok, false);
+  assert.equal(beoordeelPakket([{ naam: "a.md", grootte: 300 * 1024 * 1024 }], 10).ok, false);
+});
+
+test("alleen zip-bijlagen op GitHub worden opgehaald", () => {
+  const l = zipLinks("Hier: https://github.com/user-attachments/files/123/pakket.zip en https://example.org/groot.zip");
+  assert.deepEqual(l.github, ["https://github.com/user-attachments/files/123/pakket.zip"]);
+  assert.deepEqual(l.extern, ["https://example.org/groot.zip"]);
+});
+
+test("na /inleveren volgt één automatische controle van de bijgevoegde zip", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  const zip = maakZip({ "a/bron.pdf": "x", "a/normen.json": "x", "a/beperkingen.md": "x", "a/controle.md": "x" });
+  const gevraagd = [];
+  const download = async (url) => { gevraagd.push(url); return zip; };
+  await draai(g, download);
+  g.reageer(n, "anna", "Klaar: https://github.com/user-attachments/files/9/pakket.zip\n/inleveren");
+  await draai(g, download);
+  await draai(g, download);
+  assert.equal(gevraagd.length, 1);
+  assert.equal(g.botTekst(n).match(/Automatische eerste controle/g).length, 1);
+  assert.match(g.botTekst(n), /De bouwstenen \(normen en toetspunten\): lijkt aanwezig/);
+});
+
+test("/inleveren zonder zip krijgt uitleg; een kapotte zip een nette melding", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  const download = async () => Buffer.from("dit is geen zip-bestand, echt niet");
+  g.reageer(n, "anna", "/inleveren");
+  await draai(g, download);
+  assert.match(g.botTekst(n), /Ik zie geen zip/);
+  g.reageer(n, "anna", "Nieuwe versie https://github.com/user-attachments/files/10/pakket.zip\n/inleveren");
+  await draai(g, download);
+  assert.match(g.botTekst(n), /Ik kon de zip niet lezen/);
 });

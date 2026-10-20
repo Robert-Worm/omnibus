@@ -84,7 +84,7 @@ demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde v�
 | Vastleggen met welk AI-model een bron is verwerkt | ✅ |
 | Eerst de [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk | 🔄 <!--n:aanbevolenInDatabase-->27<!--/n--> in de database |
 | Alle wetten en kaders die openbaar mogen; afspraken met uitgevers van beschermde kaders | ⬜ [werklijst](bijdragen/werklijst-wetten-en-kaders.md) |
-| Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ⬜ |
+| Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ✅ |
 | Vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden | ⬜ |
 
 ## Hoe de paden samenhangen
