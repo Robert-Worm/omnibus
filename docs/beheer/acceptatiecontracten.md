@@ -149,8 +149,9 @@ informatie veilig openbaar maakt. Geen bronarchieven, reviewdossiers of private 
 
 Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry,
 smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen.
-Gerichte handmatige toetsenbord-/leesbaarheidstoets naast technische tests;
-niet-uitgevoerde screenreadertest blijft zichtbaar open.
+Gerichte handmatige toetsenbord- en leesbaarheidstoets naast technische tests.
+Een schermlezertest valt voor de demo buiten scope (besluit 20 oktober 2026)
+en staat als open punt in ACCESSIBILITY.md.
 
 ### K18 Proportioneel bewijs
 

@@ -42,13 +42,13 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 | Database veilig naar de server overbrengen en de eerste start regelen | 🔄 |
 | Online proef: beveiligde verbinding, probes en logs, snelheid, back-up en herstel | ⬜ |
 | Onafhankelijke beveiligings- en overdrachtsreview | ⬜ |
-| Gebruikers testen de demo, inclusief schermlezer en desktop-Excel | ⬜ |
+| Gebruikers testen de demo | ⬜ |
 | Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ |
 | Online demo | ⬜ |
 
 Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md).
-De schermlezer- en desktop-Excelcontrole blijven menselijke acceptatiestappen;
-automatische tests tekenen ze niet af. Deze tabel en de checklist volgen dezelfde
+Een test met schermlezer en in desktop-Excel hoort bewust niet bij deze demo
+(besluit 20 oktober 2026). Deze tabel en de checklist volgen dezelfde
 demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór
 1 december.
 

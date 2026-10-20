@@ -29,7 +29,7 @@ voor deze demo. Verhaal K4-5 verbindt deze checklist met pad A van de routekaart
 | EP13-S03 · release en terugschakelen | Gepind pakket, afzonderlijke database en strikte startweigering | Rechten op de disk, eerste ontvangst, herstart en terugschakelen van de volledige code/data-combinatie beproeven. |
 | EP02-S03/S04 · overdracht | Lokale tests en handmatig te starten CI aanwezig | CI-gebruik en reviewafspraken bewust kiezen; een niet-betrokken ontwikkelaar de setup laten volgen. |
 | EP07-S03 · beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
-| EP12-S03 · gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheids- en schermlezercontrole; desktop-Excel en generale repetitie. |
+| EP12-S03 · gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheidscontrole en generale repetitie. Een test met schermlezer en in desktop-Excel valt buiten deze demo (besluit 20 oktober 2026). |
 
 De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd.
 Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index
@@ -50,7 +50,7 @@ database blijft bij codeverbeteringen ongewijzigd.
 | Eerste ontvangst | Hostingbeheerder | Een ondersteund, beschermd overdrachtskanaal, de disk, procesidentiteiten en daadwerkelijke leesrechten zijn vastgesteld. De tijdelijke beheerstart wordt veilig beëindigd. |
 | Hosted werking | Hostingbeheerder en reviewer | TLS, Host/Origin/CORS, probes, fout- en herstelgedrag, logs en cold/warm prestaties werken op de echte host. Lokale tests vervangen deze proef niet. |
 | Herstel | Hostingbeheerder | Een aparte back-up, retentie en hersteldoelen zijn gekozen; herstel en terugschakelen naar een passende eerdere code/data-combinatie zijn geoefend. |
-| Gebruikersacceptatie | Demonstrator en onafhankelijke tester | Bronnen, selecties, vragen, bewaren/openen en drie Excelwerkvormen zijn doorlopen; toetsenbord, schermlezer en desktop-Excel zijn door mensen beoordeeld. |
+| Gebruikersacceptatie | Demonstrator en onafhankelijke tester | Bronnen, selecties, vragen, bewaren/openen en drie Excelwerkvormen zijn door mensen doorlopen, ook met alleen het toetsenbord. Schermlezer en desktop-Excel horen bewust niet bij deze demo. |
 | Generale repetitie | Eigenaar en integrator | Dezelfde vastgezette code/data-combinatie is op de gekozen host doorlopen en een terugvalroute is beschikbaar. |
 
 Voorgestelde planning: pakket en ontvangst eind oktober, echte hostingproef
@@ -85,7 +85,8 @@ databasebestanden en ruwe testuitvoer buiten de coderepository.
 
 Een lokale browserrepetitie kan selecties, vraagkoppelingen en Excel-inhoud
 controleren, maar bewijst geen desktop-Excelweergave of menselijke
-toegankelijkheid. Een snelle lokale proef is evenmin een capaciteitsgarantie
+toegankelijkheid. Die twee tests zijn voor deze demo bewust buiten scope
+gelaten (besluit van de eigenaar, 20 oktober 2026). Een snelle lokale proef is evenmin een capaciteitsgarantie
 voor de host. Herhaal alleen relevante controles wanneer code, data of
 hostingconfiguratie veranderen.
 
