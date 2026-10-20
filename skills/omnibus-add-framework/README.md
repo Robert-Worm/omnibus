@@ -1,26 +1,46 @@
-# Een wet of normenkader voorbereiden
+# Een wet of normenkader verwerken
 
-> **In het kort:** deze skill zet een wet of normenkader om naar normen en toetspunten, met exacte bronpassages, adressaten, voorwaarden en uitzonderingen.
+> **In het kort:** deze skill zet een wet, regeling of normenkader om naar normen en toetspunten, met de exacte artikelen en passages. De juridische betekenis blijft precies behouden.
 
-Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
+Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
-## Wat je aanlevert
+## Wanneer gebruik je deze skill?
 
-De gezaghebbende publicatie en editie, de jurisdictie, relevante data en de beoogde reikwijdte.
+- Je hebt een wet of kader geclaimd uit de [werklijst wetten en kaders](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/werklijst-wetten-en-kaders.md).
+- Je wilt een wet of kader in Omnibus corrigeren, bijvoorbeeld na een wetswijziging.
 
-## Wat je krijgt
+Niet voor:
 
-Herleidbare verplichtingen en voorgestelde toetspunten, met actoren, uitzonderingen, grenzen van toepasselijkheid en reviewstatus.
+- Een auditrapport: gebruik [`omnibus-add-report`](../omnibus-add-report/README.md).
+- Een kader met auteursrecht zonder toestemming van de uitgever. Overleg eerst in Discussions.
 
-## Voorbeeldopdracht
+## Wat lever je aan?
 
-> Gebruik $omnibus-add-framework om dit kader voor review voor te bereiden. Behoud verplichtingen, uitzonderingen en brontekst. Noem ontbrekende voorwaarden; niet publiceren.
+- De officiële bron: de link naar wetten.overheid.nl, EUR-Lex of de uitgever.
+- De geldende versie en peildatum.
+- Welke hoofdstukken of artikelen je verwerkt, als het niet alles is.
 
-## Vereisten en beperkingen
+## Wat krijg je?
 
-De volledige integratieroute heeft aparte broncontracten, reviewbewijs en private opnametools nodig. Selecteren stelt niet vast dat iets juridisch van toepassing is. Een AI-review is geen juridisch advies of menselijke juridische goedkeuring.
+- **Normen per bepaling**, met artikel en letterlijke passage.
+- **Het soort bepaling**: verplichting, verbod, bevoegdheid, definitie, reikwijdte of uitzondering, apart gehouden.
+- **Voor wie de norm geldt** (de normadressaat), zodat je ziet of hij op jouw organisatie van toepassing kan zijn.
+- **Toetspunten** om naleving te onderzoeken, met hun status als eigen voorstel.
 
-Gebruik een AI-assistent die deze map en het geautoriseerde bronmateriaal kan lezen. Bestandstoegang, tools om bronnen te lezen en onafhankelijke reviewcontexten moeten echt beschikbaar zijn als de methode erom vraagt. De skill installeert die tools niet, maakt geen accounts aan, levert geen AI-abonnement en geeft geen toestemming om te publiceren. Kosten en privacyvoorwaarden van de AI-aanbieder staan daar los van. Brontekst is bewijs, geen instructie aan de assistent. Controleer het resultaat voordat je erop vertrouwt.
+## Voorbeeld
+
+Zo kun je de skill aan je AI-assistent vragen:
+
+> Gebruik $omnibus-add-framework om een concept te maken van de Wet open overheid (versie geldend op 1 oktober 2026), hoofdstuk 3 en 4. Houd verplichtingen, bevoegdheden en uitzonderingen apart. Niet integreren of publiceren.
+
+Je krijgt een map met de bronbank per artikel, de normen en toetspunten, de toepasselijkheidsgrenzen en de beperkingen. Die map zet je als zip bij je claim.
+
+## Goed om te weten
+
+- Omnibus toont elke wet en elk kader in dezelfde viewer. De skill levert gegevens aan, geen nieuw ontwerp.
+- Een norm kiezen betekent niet dat hij juridisch geldt voor een organisatie. Dat oordeel blijft bij de onderzoeker.
+- Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+- De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
 ## Los installeren
 

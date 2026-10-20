@@ -7,36 +7,30 @@ applicatie en een afzonderlijk aangeleverde SQLite-database. Deze checklist is
 geen melding dat Omnibus al is uitgerold of voor productie is goedgekeurd.
 
 De beheerder levert de database en beoordeelt de inhoud en verspreidingsrechten.
-De code-integratie controleert de aansluitingen, versiegrenzen en workflows.
+De ontwikkelaar controleert de aansluitingen, versiegrenzen en werkwijzen.
 Login, gebruikersbeheer, betalingen en een publiek MCP-endpoint vallen buiten
 deze demo. De bestaande lokale MCP-koppeling blijft een aparte demonstratieroute.
 
 ## Actuele vervolgstappen — 20 oktober 2026
 
-De eerdere lokale ontwikkeltranche is geleverd. Onderstaande open verhalen vragen
-vooral **bewijs op de echte host of menselijke acceptatie**, niet nog een
-nieuwe applicatiefunctie. Lokaal geslaagde tests sluiten deze poorten niet.
-De codes EP… verwijzen naar die oorspronkelijke demo-backlog. De nieuwe
-[kwaliteitsbacklog](../../.github/backlog/kwaliteit-2026-10.mjs) bevat daarnaast
-verbeteringen voor documentatie en bijdragen; die zijn niet allemaal voorwaarden
-voor deze demo. Verhaal K4-5 verbindt deze checklist met pad A van de routekaart.
+Het lokale ontwikkelwerk voor de demo is af. Wat nog open staat, vraagt vooral **bewijs op de echte host of menselijke acceptatie**, geen nieuwe functies. Lokaal geslaagde tests zijn daarvoor niet genoeg. De [kwaliteitsbacklog](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aissue+label%3Akwaliteit) met verbeteringen voor documentatie en bijdragen staat daar los van: die is geen voorwaarde voor deze demo. Deze checklist en [pad A van de routekaart](../routekaart.md#pad-a--online-versie) noemen dezelfde stappen.
 
-| Verhaal | Wat is lokaal voorbereid? | Wat resteert voor de demo? |
+| Onderdeel | Wat is lokaal voorbereid? | Wat resteert voor de demo? |
 | --- | --- | --- |
-| EP11-S02 · storingen signaleren | Health/readiness, veilige foutdiagnostiek en begrensde HTTP-controle | Providerprobes, logprivacy, meldingsontvanger en handelen bij overbelasting beproeven. |
-| EP12-S02 · snelheid op de host | Gemeten lokale workflow; de HTTP-controle verifieert ook gzip en exacte uitgepakte bundelbytes | Cold/warm browsermeting via de echte HTTPS-host en afgesproken belasting uitvoeren. |
-| EP13-S02 · back-up en herstel | Ontvangstcontrole en afzonderlijk herstel met fictieve gegevens getest | Bewaarplaats, retentie, verantwoordelijke en hersteldoelen kiezen; herstel op de host oefenen. |
-| EP13-S03 · release en terugschakelen | Gepind pakket, afzonderlijke database en strikte startweigering | Rechten op de disk, eerste ontvangst, herstart en terugschakelen van de volledige code/data-combinatie beproeven. |
-| EP02-S03/S04 · overdracht | Lokale tests en handmatig te starten CI aanwezig | CI-gebruik en reviewafspraken bewust kiezen; een niet-betrokken ontwikkelaar de setup laten volgen. |
-| EP07-S03 · beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
-| EP12-S03 · gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheidscontrole en generale repetitie. Een test met schermlezer en in desktop-Excel valt buiten deze demo (besluit 20 oktober 2026). |
+| storingen signaleren | Health/readiness, veilige foutdiagnostiek en begrensde HTTP-controle | Providerprobes, logprivacy, meldingsontvanger en handelen bij overbelasting beproeven. |
+| snelheid op de host | Gemeten lokale werkwijze; de HTTP-controle verifieert ook gzip en exacte uitgepakte bundelbytes | Cold/warm browsermeting via de echte HTTPS-host en afgesproken belasting uitvoeren. |
+| back-up en herstel | Ontvangstcontrole en afzonderlijk herstel met fictieve gegevens getest | Bewaarplaats, retentie, verantwoordelijke en hersteldoelen kiezen; herstel op de host oefenen. |
+| release en terugschakelen | Gepind pakket, afzonderlijke database en strikte startweigering | Rechten op de disk, eerste ontvangst, herstart en terugschakelen van de volledige code/data-combinatie beproeven. |
+| overdracht | Lokale tests en handmatig te starten CI aanwezig | CI-gebruik en reviewafspraken bewust kiezen; een niet-betrokken ontwikkelaar de setup laten volgen. |
+| beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
+| gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheidscontrole en generale repetitie. Een test met schermlezer en in desktop-Excel valt buiten deze demo (besluit 20 oktober 2026). |
 
 De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd.
 Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index
 gebruikt. Controleer vóór de demonstratie de actuele pinnen, niet alleen een
 eerder geslaagd resultaat.
 
-De uitgestelde publicatieoptimalisatie (EP12-S01) is geen verplicht nieuw
+De uitgestelde publicatieoptimalisatie is geen verplicht nieuw
 bouwproject. Pak die alleen op als een relevante meting daar aanleiding toe
 geeft, met afzonderlijke toestemming voor een kandidaatpublicatie. De actieve
 database blijft bij codeverbeteringen ongewijzigd.
@@ -46,12 +40,12 @@ database blijft bij codeverbeteringen ongewijzigd.
 | Stap | Verantwoordelijke | Klaar wanneer |
 | --- | --- | --- |
 | Database kiezen | Inhoudsbeheerder | De bedoelde dataset en verspreidingsrechten zijn beoordeeld; privébestanden en persoonlijke paden worden niet onbedoeld meegeleverd. |
-| Code en runtimepakket | Integrator | De gekozen code is gereviewd en getest, de echte image is gebouwd, de base-image is opnieuw op actuele beveiligingsupdates beoordeeld en de database blijft buiten de image. |
+| Code en runtimepakket | Ontwikkelaar | De gekozen code is gereviewd en getest, de echte image is gebouwd, de base-image is opnieuw op actuele beveiligingsupdates beoordeeld en de database blijft buiten de image. |
 | Eerste ontvangst | Hostingbeheerder | Een ondersteund, beschermd overdrachtskanaal, de disk, procesidentiteiten en daadwerkelijke leesrechten zijn vastgesteld. De tijdelijke beheerstart wordt veilig beëindigd. |
 | Hosted werking | Hostingbeheerder en reviewer | TLS, Host/Origin/CORS, probes, fout- en herstelgedrag, logs en cold/warm prestaties werken op de echte host. Lokale tests vervangen deze proef niet. |
 | Herstel | Hostingbeheerder | Een aparte back-up, retentie en hersteldoelen zijn gekozen; herstel en terugschakelen naar een passende eerdere code/data-combinatie zijn geoefend. |
 | Gebruikersacceptatie | Demonstrator en onafhankelijke tester | Bronnen, selecties, vragen, bewaren/openen en drie Excelwerkvormen zijn door mensen doorlopen, ook met alleen het toetsenbord. Schermlezer en desktop-Excel horen bewust niet bij deze demo. |
-| Generale repetitie | Eigenaar en integrator | Dezelfde vastgezette code/data-combinatie is op de gekozen host doorlopen en een terugvalroute is beschikbaar. |
+| Generale repetitie | Eigenaar en ontwikkelaar | Dezelfde vastgezette code/data-combinatie is op de gekozen host doorlopen en een terugvalroute is beschikbaar. |
 
 Voorgestelde planning: pakket en ontvangst eind oktober, echte hostingproef
 begin november, herstel en gebruikersacceptatie uiterlijk 20 november,

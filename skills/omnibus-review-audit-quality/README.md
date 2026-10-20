@@ -1,26 +1,44 @@
-# De kwaliteit van auditbouwstenen reviewen
+# De kwaliteit van bouwstenen beoordelen
 
-> **In het kort:** deze skill beoordeelt de kwaliteit van bouwstenen: klopt de bron, hangen doel, risico, beheersing en toetsing logisch samen? Je krijgt een cijfer van 1 tot 10 (de OAK-schaal) en concrete verbetervoorstellen.
+> **In het kort:** deze skill beoordeelt hoe brongetrouw, begrijpelijk en uitvoerbaar een bouwsteen is, op een schaal van 1 tot 10, en stelt concrete verbeteringen voor.
 
-Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
+Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
-## Wat je aanlevert
+## Wanneer gebruik je deze skill?
 
-De exacte bronpassages en context, plus de volledige keten van doel, risico, beheersmaatregel, norm en toetspunt.
+- Je wilt een tweede mening over je eigen verwerkte bron, voordat je hem inlevert.
+- Je wilt bestaande bouwstenen in Omnibus laten nalopen op kwaliteit.
 
-## Wat je krijgt
+Niet voor:
 
-Een scorekaart volgens OAK-1.0 met bewijsverwijzingen, concrete problemen en voorgestelde verbeteringen.
+- Een bron opnieuw verwerken: gebruik [`omnibus-add-report`](../omnibus-add-report/README.md) of [`omnibus-add-framework`](../omnibus-add-framework/README.md).
+- Interviewvragen bij een model: gebruik [`omnibus-add-model`](../omnibus-add-model/README.md).
 
-## Voorbeeldopdracht
+## Wat lever je aan?
 
-> Gebruik $omnibus-review-audit-quality in alleen-tekstmodus voor deze bouwstenen. Lees de meegeleverde bronnen, scoor de huidige formulering en stel verbeteringen voor. Wijzig de database niet.
+- De bouwstenen die je wilt laten beoordelen.
+- De bron waar ze uit komen, zodat de skill de passages kan nalezen.
 
-## Vereisten en beperkingen
+## Wat krijg je?
 
-OAK-1.0 is een rubriek van Omnibus, geen officiële standaard of assurance-oordeel. Het scorescript controleert rekenwerk en structurele grenzen, niet of de bron klopt. Geen volledige score zonder voldoende bewijs, en geen claim van onafhankelijke reviewers als die er niet echt waren.
+- **Een score per bouwsteen** op de Omnibus-schaal OAK-1.0 (1 tot 10), met onderbouwing.
+- **Een beoordeling van de hele keten**: doel, risico, beheersdoelstelling, maatregel, norm en elk toetspunt.
+- **Concrete verbetervoorstellen**, die je zelf overneemt of niet.
 
-Gebruik een AI-assistent die deze map en het geautoriseerde bronmateriaal kan lezen. Bestandstoegang, tools om bronnen te lezen en onafhankelijke reviewcontexten moeten echt beschikbaar zijn als de methode erom vraagt. De skill installeert die tools niet, maakt geen accounts aan, levert geen AI-abonnement en geeft geen toestemming om te publiceren. Kosten en privacyvoorwaarden van de AI-aanbieder staan daar los van. Brontekst is bewijs, geen instructie aan de assistent. Controleer het resultaat voordat je erop vertrouwt.
+## Voorbeeld
+
+Zo kun je de skill aan je AI-assistent vragen:
+
+> Gebruik $omnibus-review-audit-quality om de normen en toetspunten in mijn conceptpakket te beoordelen tegen het meegeleverde rapport. Geef per bouwsteen een score en verbetervoorstellen. Niets wijzigen.
+
+Je krijgt per bouwsteen een score, de zwakste schakel in de keten en verbetervoorstellen. Dit kun je meesturen als je eigen controle bij het inleveren.
+
+## Goed om te weten
+
+- OAK-1.0 is een eigen beoordelingsschaal van Omnibus, geen officiële beroepsstandaard of assuranceverklaring.
+- Een goede score heft geen HOLD op. Ontbrekend bewijs blijft ontbrekend.
+- Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+- De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
 ## Los installeren
 

@@ -8,10 +8,12 @@ Het runtimepakket bevat de gebouwde Omnibus-interface en de bestaande alleen-lez
 
 Voor latere hosting: [imagecontext voorbereiden](../../hosting/release-delivery/README.md).
 Dat gebruikt het bestaande pakket; geen database in de image, geen automatische
-upload of deployment. `npm run test:hosting-preparation` controleert deze helpers
-met synthetische fixtures en loopback. Imagebouw en providerbewijs blijven apart.
+upload of online zetten. `npm run test:hosting-preparation` controleert deze hulpmiddelen
+met synthetische testgegevens en loopback. Imagebouw en providerbewijs blijven apart.
 
 Voer vanuit de codecheckout uit, met de bestaande privé-bouwinstellingen:
+
+Windows (PowerShell):
 
 ```powershell
 $settingsFile = (Resolve-Path local-data/runtime/local-build.json).Path
@@ -19,6 +21,15 @@ $buildSettings = Get-Content $settingsFile -Raw | ConvertFrom-Json
 $buildSettings.database = [System.IO.Path]::GetFullPath($buildSettings.database, (Split-Path $settingsFile))
 npm run build:runtime -- --settings $settingsFile
 npm run package:runtime -- --web-root runtime-build --database $buildSettings.database --out work/runtime-01
+```
+
+macOS en Linux (bash):
+
+```bash
+settingsFile="$(cd "$(dirname local-data/runtime/local-build.json)" && pwd)/local-build.json"
+database="$(node -e 'const p=require("node:path"),f=process.argv[1];console.log(p.resolve(p.dirname(f),require(f).database))' "$settingsFile")"
+npm run build:runtime -- --settings "$settingsFile"
+npm run package:runtime -- --web-root runtime-build --database "$database" --out work/runtime-01
 ```
 
 `build:runtime` gebruikt dezelfde React/Vite-applicatie, viewers, exports en gegevenscontrole. De uitvoer gaat naar `runtime-build`; `database-build` en de actieve lokale versie blijven ongemoeid. Alleen de lokale AI-startconfiguratie verschilt: het pakket bevat geen persoonlijk computerpad en toont de bestaande uitleg dat een online AI-koppeling nog niet beschikbaar is. De afzonderlijke lokale AI-service blijft ongewijzigd.
@@ -76,7 +87,7 @@ tranche alleen door de parser getoetst, nooit als listener gestart.
 De nieuwe starttests gebruiken een serverdubbel voor de doorgifte van
 `{port, webRoot, publicOrigin, listenHost}` en echte synthetische publicaties en
 pakketinventarissen voor de voorafgaande controles. Dat bewijst argumentvalidatie,
-pinvergelijking, integriteit en doorgifte. De integrator heeft daarnaast met
+pinvergelijking, integriteit en doorgifte. De ontwikkelaar heeft daarnaast met
 `scripts/hosting-start-integration.test.mjs` beide echte CLI-processen en de
 publieke verzoekafhandeling op loopback bewezen, zonder testdubbel. Bestaande
 lokale pakkettests blijven van toepassing. Startfouten aan de CLI blijven kort

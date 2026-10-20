@@ -81,7 +81,7 @@ kan niet worden geëxporteerd. Oude `.pending-*`-mappen worden niet automatisch 
 Een werkende verbinding kan nog naar een oude installatie of index wijzen.
 Gebruik dezelfde instellingen als voor de lokale website:
 
-```sh
+```text
 npm run build:agent -- --settings /pad/naar/local-build.json
 npm run test:agent:protocol
 ```
@@ -123,9 +123,9 @@ Zonder private database of agent-build zijn deze gerichte controles uitvoerbaar:
 node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs
 ```
 
-De uitvoergrenstest maakt uitsluitend eigen synthetische fixtures onder
-`work/mcp-output-safety/` en ruimt alleen die nieuwe fixtures op. Hij gebruikt de
-echte service, alleen-lezen index en projectcodec. De domeinworkflow levert vaste
+De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder
+`work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de
+echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste
 testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte
 Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef
 leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken;
@@ -158,7 +158,7 @@ Open voor de gezamenlijke acceptatie een gemaakt `omnibus-project.json` met **Op
 
 Serverversie 0.2.0 voegt het verplichte veld `consent` toe aan `prepare_research_draft` en `export_research_draft`. Herstart de lokale verbinding zodat de client de tools opnieuw opvraagt. Voeg het veld alleen na akkoord toe aan bestaande aanvraagbestanden voor `scripts/call-omnibus-mcp.mjs`; die brug geeft aanvragen ongewijzigd door en verzint geen toestemming. `test-fixture.mjs` levert bewust alleen het concept; tests voegen hun expliciet toegestane fictieve schrijfhandeling zelf toe. Eerder opgeslagen concepten zonder dit veld blijven exporteerbaar, met nieuw akkoord op de exportaanroep. De leesaanroepen en bestandsformaten blijven gelijk.
 
-Voor codeherstel kan de integrator de betreffende commits terugdraaien en de lokale client herstarten. Dat verandert geen bronrelease of browserproject. Een vorige agent-build kan via de bestaande lokale pointer worden teruggekozen nadat de beheerder release/publicatie heeft gecontroleerd; deze proef wijzigt geen globale registratie. De huidige opdracht bevat geen publiek MCP-endpoint, tunnel, login, accountbeheer of online opslag.
+Voor codeherstel kan de ontwikkelaar de betreffende commits terugdraaien en de lokale client herstarten. Dat verandert geen bronrelease of browserproject. Een vorige agent-build kan via de bestaande lokale pointer worden teruggekozen nadat de beheerder release/publicatie heeft gecontroleerd; deze proef wijzigt geen globale registratie. De huidige opdracht bevat geen publiek MCP-endpoint, tunnel, login, accountbeheer of online opslag.
 
 ## Verder lezen
 

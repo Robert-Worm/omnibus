@@ -162,7 +162,7 @@ wetten/kaders/modellen (hun publicatie-inventaris is wel zichtbaar), nieuwe wet-
 automatische waarde-/overlapscores. De huidige vervolgstappen staan in
 [de routekaart](../routekaart.md).
 
-## Intake, review en publicatie koppelen
+## Inname, review en publicatie koppelen
 
 ```text
 npm run content:link-evidence -- --database work/content-workbench/backlog.sqlite --plan work/content-workbench/evidence-plan.json
@@ -211,7 +211,7 @@ niet dat een willekeurig draaiend browservenster dezelfde versie gebruikt.
   met afwijkende individuele besluiten of open herstelpunten wordt geweigerd.
   De getoonde besluiten zijn behouden revieweruitspraken, geen nieuwe beoordeling
   of onafhankelijk bewezen identiteit. Menselijke validatie wordt niet afgeleid.
-  Reviewbinding aan een intake is niet automatisch reviewbinding aan een latere
+  Reviewbinding aan een ingenomen pakket is niet automatisch reviewbinding aan een latere
   catalogustekst. Andere reviewformaten krijgen geen veronderstelde goedkeuring.
 - **Historische rapportreview:** de bestaande afzonderlijk behouden ontvangstpin
   bindt alle receipt-bestanden, beide SOURCE/PRACTICAL-reviews en hun volledige
@@ -219,7 +219,7 @@ niet dat een willekeurig draaiend browservenster dezelfde versie gebruikt.
   verschillende reviewers, besluiten en dezelfde reviewbasis worden gecontroleerd.
   De reviewbasis-hash is de historische versie-identiteit, niet de huidige
   catalogusversie. Dit verleent alleen een historische reviewbadge: geen volledige
-  intake, nieuw PDF-onderzoek of goedkeuring van latere tekstcorrecties. Er worden
+  inname, nieuw PDF-onderzoek of goedkeuring van latere tekstcorrecties. Er worden
   geen extra kopieën van de archieven gemaakt. Afwijkende archiefformaten blijven
   ongekoppeld; de oorspronkelijke bron- en uitzonderingsgates blijven bestaan.
 

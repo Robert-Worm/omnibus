@@ -8,7 +8,7 @@ Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekoze
 
 - Bewaar tijdstip, codecommit, lokaal gebruikte release-/publicatiepin, foutstatus
   en `X-Request-ID`. De server maakt een nieuwe willekeurige ID; een meegestuurde
-  request-ID wordt niet vertrouwd. Deel geen databasepaden, queries, intake,
+  request-ID wordt niet vertrouwd. Deel geen databasepaden, queries, ingeleverde pakketten,
   projecttekst, cookies, headers of volledige URLs in een openbaar incident.
 - Onverwachte synchrone requestfouten geven een generiek 500-antwoord en één
   JSON-regel op stderr: `event`, `requestId`, `status`, `time`. Er is geen standaard

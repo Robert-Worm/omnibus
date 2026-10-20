@@ -1,26 +1,44 @@
-# Een conceptueel model voorbereiden
+# Een onderzoeksmodel met interviewvragen toevoegen
 
-> **In het kort:** deze skill voegt een bekend onderzoeksmodel toe, met dimensies en interviewvragen per niveau, en controleert of de theorie goed is gebruikt.
+> **In het kort:** deze skill voegt een wetenschappelijk of praktisch model toe, zoals een model voor cultuur of samenwerking, met bruikbare en neutrale interviewvragen per dimensie.
 
-Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
+Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
-## Wat je aanlevert
+## Wanneer gebruik je deze skill?
 
-De primaire modelpublicaties, hun edities, de dimensies en de beoogde respondenten.
+- Je wilt een model uit de literatuur beschikbaar maken als bouwsteen voor interviews.
+- Je wilt de interviewvragen bij een bestaand model verbeteren.
 
-## Wat je krijgt
+Niet voor:
 
-Een modelpakket met herleidbare dimensies, neutrale interviewvragen, niveauvarianten en bewijs van de kwaliteitsreview.
+- Wetten en kaders: gebruik [`omnibus-add-framework`](../omnibus-add-framework/README.md). Een model is geen wettelijke norm.
+- Losse onderzoeksvragen zonder model: gebruik [`omnibus-build-questions`](../omnibus-build-questions/README.md).
 
-## Voorbeeldopdracht
+## Wat lever je aan?
 
-> Gebruik $omnibus-add-model om het meegeleverde model en de interviewvragen te toetsen aan de primaire publicatie. Alleen voorstellen doen.
+- De oorspronkelijke publicatie van het model: auteurs, jaar en editie.
+- Welke dimensies of indicatoren je wilt opnemen.
 
-## Vereisten en beperkingen
+## Wat krijg je?
 
-Conceptuele modellen zijn geen juridische normen. Gegenereerde vragen zijn geen gevalideerde meetinstrumenten. De repository bevat hulpmiddelen voor modelkwaliteit, maar niet de private catalogus of de catalogusbrede opdracht uit de methode. Ontbrekende invoer, tools of reviews betekenen dat opname niet als afgerond geldt.
+- **Het model** met zijn dimensies en indicatoren, zoals de bron ze beschrijft.
+- **Interviewvragen per dimensie**: een hoofdvraag, doorvragen en varianten voor verschillende respondenten.
+- **Een verantwoording** van elke vertaling of aanpassing ten opzichte van de bron.
 
-Gebruik een AI-assistent die deze map en het geautoriseerde bronmateriaal kan lezen. Bestandstoegang, tools om bronnen te lezen en onafhankelijke reviewcontexten moeten echt beschikbaar zijn als de methode erom vraagt. De skill installeert die tools niet, maakt geen accounts aan, levert geen AI-abonnement en geeft geen toestemming om te publiceren. Kosten en privacyvoorwaarden van de AI-aanbieder staan daar los van. Brontekst is bewijs, geen instructie aan de assistent. Controleer het resultaat voordat je erop vertrouwt.
+## Voorbeeld
+
+Zo kun je de skill aan je AI-assistent vragen:
+
+> Gebruik $omnibus-add-model om het model van Quinn en Rohrbaugh (Competing Values Framework, 1983) toe te voegen met interviewvragen per kwadrant voor leidinggevenden en medewerkers. Niet integreren of publiceren.
+
+Je krijgt een map met het model, de vragen per dimensie en respondentniveau, de bronverwijzingen en de open punten. Die map zet je als zip bij je claim.
+
+## Goed om te weten
+
+- Zelfgeschreven interviewvragen zijn geen gevalideerd meetinstrument. De skill zegt dat ook.
+- Een goede bronverwijzing garandeert geen goede vraag. De skill toetst vragen op sturende of veronderstellende formuleringen.
+- Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+- De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
 ## Los installeren
 

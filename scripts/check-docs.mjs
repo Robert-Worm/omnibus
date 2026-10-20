@@ -47,7 +47,7 @@ export function ankers(bestand) {
 }
 
 /** Controleert één markdownbestand; geeft een lijst met meldingen terug. */
-export function controleerBestand(root, rel, { nvmrc }) {
+export function controleerBestand(root, rel, { nvmrc, scripts }) {
   const meldingen = [];
   const vol = path.join(root, rel);
   const tekst = readFileSync(vol, "utf8");
@@ -89,7 +89,15 @@ export function controleerBestand(root, rel, { nvmrc }) {
     if (/^npm ci\b/.test(r) && r !== INSTALL) meld(i + 1, `installatieopdracht wijkt af: "${r}" (verwacht "${INSTALL}")`);
   });
 
-  // 4. Paginapatroon.
+  // 4. Elke "npm run …" bestaat in package.json. Skills verwijzen soms naar de
+  //    private verwerkingsomgeving; die tellen niet mee.
+  if (scripts && !/^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) {
+    for (const m of tekst.matchAll(/npm run ([a-z0-9:_-]+)/g)) {
+      if (!(m[1] in scripts)) meld(regelVan(m.index), `opdracht "npm run ${m[1]}" bestaat niet in package.json`);
+    }
+  }
+
+  // 5. Paginapatroon.
   const isReadme = path.basename(rel) === "README.md";
   const isDocs = rel.startsWith("docs/");
   if ((isDocs || (isReadme && rel !== "README.md")) && !/^> \*\*In het kort:\*\*/m.test(tekst)) meld(0, 'mist het blok "> **In het kort:**" bovenaan');
@@ -106,6 +114,50 @@ export function controleerBestand(root, rel, { nvmrc }) {
     }
   }
   return meldingen;
+}
+
+// Woorden en codes waarvoor een gewoon Nederlands alternatief bestaat (zie de stijlgids).
+// Dit zijn waarschuwingen: ze laten de controle niet mislukken.
+export const TE_VERMIJDEN = [
+  [/\bEP\d{2}(?:-S\d{2})?\b/g, "interne projectcode; noem wat er bedoeld wordt"],
+  [/\bK\d{2}\b/g, "code van een acceptatiecontract; noem wat er bedoeld wordt of link naar de afspraak"],
+  [/(?<!GitHub-)\bworkflows?\b/gi, "werkwijze (of: GitHub-workflow)"],
+  [/\bhandoffs?\b/gi, "overdracht"],
+  [/\bdeploy\w*/gi, "online zetten of uitrollen"],
+  [/\bfixtures?\b/gi, "testgegevens"],
+  [/\bevidence\b/gi, "bewijs"],
+  [/\bgates?\b/gi, "controle"],
+  [/\bmaintainers?\b/gi, "beheerder"],
+  [/\bintegrator\b/gi, "beheerder of ontwikkelaar"],
+  [/\bbundles?\b/gi, "pakket"],
+  [/\brollback\b/gi, "terugzetten"],
+];
+const ZONDER_WOORDCONTROLE = "<!-- check-docs: geen-woordcontrole -->";
+// Een pagina die zelf codes uitlegt (zoals de acceptatiecontracten), krijgt geen codewaarschuwingen.
+const CODES_UITGELEGD = "<!-- check-docs: codes-uitgelegd -->";
+
+export function woordWaarschuwingen(rel, tekst) {
+  if (tekst.includes(ZONDER_WOORDCONTROLE) || rel === "CHANGELOG.md" || rel.startsWith(".github/") || /^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) return [];
+  // Alleen lopende tekst: geen codeblokken, inline code, link-adressen of HTML.
+  const schoon = tekst
+    .replace(/^```[\s\S]*?^```/gm, (b) => b.replace(/[^\n]/g, " "))
+    .replace(/`[^`\n]*`/g, (b) => " ".repeat(b.length))
+    .replace(/\]\([^)]*\)/g, (b) => " ".repeat(b.length))
+    .replace(/<[^>\n]+>/g, (b) => " ".repeat(b.length));
+  const uit = [];
+  for (const [re, alternatief] of TE_VERMIJDEN) {
+    if (alternatief.startsWith("interne projectcode") || alternatief.startsWith("code van")) {
+      if (tekst.includes(CODES_UITGELEGD)) continue;
+    }
+    for (const m of schoon.matchAll(re)) {
+      // Bestandsnamen zoals app/workflow-patterns.tsx tellen niet mee.
+      const voor = schoon.slice(0, m.index).match(/\S*$/)[0];
+      const na = schoon.slice(m.index + m[0].length).match(/^\S*/)[0];
+      if (/[/.]\w/.test(voor + m[0] + na)) continue;
+      uit.push(`${rel}:${schoon.slice(0, m.index).split("\n").length}: "${m[0]}" → ${alternatief}`);
+    }
+  }
+  return uit;
 }
 
 export function markdownBestanden(root) {
@@ -137,14 +189,24 @@ export function controleerConfig(root, nvmrc) {
 
 export function controleer(root) {
   const nvmrc = readFileSync(path.join(root, ".nvmrc"), "utf8").trim();
+  const { scripts = {} } = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   const meldingen = controleerConfig(root, nvmrc);
-  for (const rel of markdownBestanden(root)) meldingen.push(...controleerBestand(root, rel, { nvmrc }));
-  return meldingen;
+  const waarschuwingen = [];
+  for (const rel of markdownBestanden(root)) {
+    meldingen.push(...controleerBestand(root, rel, { nvmrc, scripts }));
+    waarschuwingen.push(...woordWaarschuwingen(rel, readFileSync(path.join(root, rel), "utf8")));
+  }
+  return { meldingen, waarschuwingen };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-  const meldingen = controleer(root);
+  const { meldingen, waarschuwingen } = controleer(root);
+  if (waarschuwingen.length) {
+    console.warn(`Woordkeuze: ${waarschuwingen.length} ${waarschuwingen.length === 1 ? "waarschuwing" : "waarschuwingen"} (zie docs/bijdragen/stijlgids.md).`);
+    for (const w of waarschuwingen) console.warn(`  · ${w}`);
+    console.warn("");
+  }
   if (meldingen.length) {
     console.error(`Documentatiecheck: ${meldingen.length} ${meldingen.length === 1 ? "probleem" : "problemen"} gevonden.\n`);
     for (const m of meldingen) console.error(`- ${m}`);

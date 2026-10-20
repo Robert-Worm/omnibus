@@ -47,7 +47,7 @@ Gebruik `content-tools/model-quality.mjs` voor structurele checks en een
 versiegebonden werkvoorraad. `prepareModelReview(model, {sourceEvidence})`
 verwacht de daadwerkelijke modelpayload en `{id, sha256}` per bevroren bron.
 Bereken hashes uit werkelijk aanwezige bytes; een opgegeven hash bewijst geen
-lezing. De bestaande catalogus is inventariseerbaar met `npm run quality:models`.
+lezing. De bestaande catalogus is in de privé-verwerkingsomgeving inventariseerbaar met `npm run quality:models`.
 Waarschuwingen zijn aandachtspunten, geen automatische inhoudelijke afkeuring.
 
 Laat theorie/brongebruik en praktische vraagkwaliteit in afzonderlijke contexten

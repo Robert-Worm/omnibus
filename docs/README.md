@@ -67,7 +67,17 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | `scripts/` | Bouwen, testen en controleren |
 | `hosting/` | Voorbereiding van de online versie |
 
-In de hoofdmap staan ook een paar losse bestanden: `database.html` en `offline.tsx` (het startpunt van de app), de configuratie voor bouwen en controleren (`package.json`, `vite.*.ts`, `tsconfig.json` en dergelijke) en `code-snapshot.json` (een technische lijst van wat bewust niet in Git staat). Daar hoef je als nieuwkomer niets mee.
+In de hoofdmap staan verder alleen bestanden die daar moeten staan, omdat hulpmiddelen ze daar zoeken. Als nieuwkomer hoef je er niets mee.
+
+| Bestand | Waarvoor |
+| --- | --- |
+| `README.md`, `CONTRIBUTING.md`, `SECURITY.md` en andere hoofdletterbestanden | Uitleg, licentie en afspraken; GitHub toont ze op vaste plekken |
+| `database.html`, `offline.tsx` | Het startpunt van de app: de pagina en de code die hem opstart |
+| `package.json`, `package-lock.json`, `.nvmrc` | Welke onderdelen en welke Node-versie Omnibus gebruikt |
+| `vite.config.ts`, `vite.database.config.ts`, `vite-env.d.ts`, `tsconfig.json` | Instellingen voor het bouwen en de typecontrole |
+| `components.json`, `.oxlintrc.json` | Instellingen voor de schermonderdelen en de codecontrole |
+| `code-snapshot.json` | Een technische lijst van wat bij de eerste publicatie bewust niet in Git is gezet |
+| `CITATION.cff` | Hoe je Omnibus citeert |
 
 Elke map heeft een korte README met uitleg.
 

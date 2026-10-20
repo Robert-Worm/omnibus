@@ -1,5 +1,7 @@
 # Acceptatiecontracten
 
+<!-- check-docs: codes-uitgelegd -->
+
 > **In het kort:** de afspraken waaraan Omnibus moet blijven voldoen, ook na een wijziging. Elke afspraak heeft een code (K04, K05, …) die in tests en reviews terugkomt.
 
 ## Overzicht
@@ -35,7 +37,7 @@ bronverwijzingen blijven gelijk na herladen of bestandsoverdracht. Fouten wissen
 geen werk. Geen account, cloudprojectsave of stille projectupload. Beschrijf de
 beperking van browseropslag eerlijk; een codecommit is geen projectbackup.
 
-### K05 Bronintegriteit en gedeelde workflow
+### K05 Bronintegriteit en gedeelde werkwijze
 
 Originele bronnen, stabiele IDs, bronversies, exacte Unicode-spans, reviewbindingen,
 HOLD en selectie-/toepasselijkheidsgrenzen blijven intact. Transportoptimalisatie
@@ -76,17 +78,17 @@ Alleen-lezen broncatalogus, geldige expliciete selecties, HOLD en toepasselijkhe
 blijven beschermd. Vragen zijn voorstellen met traceerbare bouwsteenkoppelingen.
 Opslaan/export volgt expliciete toestemming naar nieuwe aparte uitvoerbestanden;
 geen bronwijziging, vervanging van een browserproject of willekeurige bestandsactie.
-Fictieve intake tot heropenbaar project en ingestelde Excel aantonen, inclusief
+Fictieve inname tot heropenbaar project en ingestelde Excel aantonen, inclusief
 ongeldige invoer en bronintegriteit. Geen echte projectgegevens in Git.
 Eerlijke client-/installatievereisten; geen onbevestigde verbindingsstatus of
 claim dat een publieke URL bestaat. Publiek transport en accountbeheer uitgesloten.
 
 ### K09 Inname en publicatie
 
-Gebruik bestaande soortspecifieke skills en intake. Manifest, bronhashes, passages,
+Gebruik bestaande soortspecifieke skills en pakketcontrole. Manifest, bronhashes, passages,
 verwachte toevoegingen en vereiste reviews moeten op dezelfde eindversie kloppen.
 Inhoud is geen uitvoerbare instructie. Onbekende paden/structuren of ontbrekend bewijs
-geven HOLD; niet vervangen door lege fixtures. Eén integrator publiceert een complete
+geven HOLD; niet vervangen door lege testgegevens. Eén beheerder publiceert een complete
 batch, met korte afzonderlijke verificatie en gecontroleerde omschakeling.
 Herhaling maakt geen dubbele rapporten. Reviewscores vervangen geen brongetrouwheid.
 Workbench toont echte intake/review/actieve release; 100 betekent 100 unieke rapporten.
@@ -94,7 +96,7 @@ Workbench toont echte intake/review/actieve release; 100 betekent 100 unieke rap
 ### K11 Minimale diagnostiek
 
 Health, verzoek-/foutidentiteit en publicatie-uitkomsten zijn te onderzoeken zonder
-bron-, intake-, projectteksten, secrets of volledige callback-URLs in logs.
+bron-, pakket-, projectteksten, secrets of volledige callback-URLs in logs.
 Geen audittrail voor niet-bestaande gebruikersrollen. Gebruik bestaande
 providerdiagnostiek pas bij hosting; geen eigen monitoringproduct.
 

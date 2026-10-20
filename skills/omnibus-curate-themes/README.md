@@ -1,26 +1,44 @@
-# Thema's en overlappende bouwstenen ordenen
+# Thema's en processen ordenen
 
-> **In het kort:** deze skill deelt te grote thema's op in kleinere en zoekt bouwstenen die elkaar overlappen. Het levert een voorstel; er wordt niets automatisch verborgen.
+> **In het kort:** deze skill maakt te grote thema's en processen in Omnibus overzichtelijker, door ze op te delen en overlap te beoordelen. Er gaat geen inhoud verloren.
 
-Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
+Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
-## Wat je aanlevert
+## Wanneer gebruik je deze skill?
 
-De huidige catalogus, bronversies, bestaande curatiebesluiten en de inhoud op puntniveau.
+- Een thema of proces bevat zoveel bouwstenen (ruim boven de 100) dat gebruikers het overzicht verliezen.
+- Je vermoedt dat bouwstenen uit verschillende rapporten elkaar grotendeels overlappen.
 
-## Wat je krijgt
+Niet voor:
 
-Een onderbouwde thema-indeling en voorkeursvoorstellen, met tellingen voor en na en bewijs van dekking.
+- Nieuwe inhoud toevoegen: gebruik [`omnibus-add-report`](../omnibus-add-report/README.md).
+- De kwaliteit van losse bouwstenen beoordelen: gebruik [`omnibus-review-audit-quality`](../omnibus-review-audit-quality/README.md).
 
-## Voorbeeldopdracht
+## Wat lever je aan?
 
-> Gebruik $omnibus-curate-themes om een duidelijkere indeling voor te stellen voor dit grote thema. Laat overlap op puntniveau zien en houd twijfelgevallen zichtbaar. Nog niets toepassen.
+- Welk thema of proces je wilt ordenen.
+- De actuele versie van de database waar je mee werkt.
 
-## Vereisten en beperkingen
+## Wat krijg je?
 
-Ongeveer 100 bouwstenen is een signaal om te reviewen, geen harde grens. Vergelijkbare formulering is geen bewijs van gelijkwaardigheid. Verborgen alternatieven blijven bereikbaar via hun rapporten; bronnen en opgeslagen onderzoek worden nooit verwijderd. Het inventarisatiehulpmiddel heeft de relevante catalogusinvoer nodig, niet alleen deze map.
+- **Een inventaris**: hoeveel bouwstenen en toetspunten er per thema en proces zijn.
+- **Een voorstel voor deelonderwerpen**, met gewone namen en een korte regel wat erin hoort en wat niet.
+- **Een overlapbeoordeling**: welke bouwstenen een voorkeur krijgen en waarom, zonder iets te verwijderen.
 
-Gebruik een AI-assistent die deze map en het geautoriseerde bronmateriaal kan lezen. Bestandstoegang, tools om bronnen te lezen en onafhankelijke reviewcontexten moeten echt beschikbaar zijn als de methode erom vraagt. De skill installeert die tools niet, maakt geen accounts aan, levert geen AI-abonnement en geeft geen toestemming om te publiceren. Kosten en privacyvoorwaarden van de AI-aanbieder staan daar los van. Brontekst is bewijs, geen instructie aan de assistent. Controleer het resultaat voordat je erop vertrouwt.
+## Voorbeeld
+
+Zo kun je de skill aan je AI-assistent vragen:
+
+> Gebruik $omnibus-curate-themes om het thema Besturing te beoordelen. Het heeft nu ruim 200 bouwstenen. Stel bruikbare deelonderwerpen voor en beoordeel overlap. Alleen een voorstel; niets toepassen.
+
+Je krijgt een inventaris met aantallen vóór en na, een voorgestelde indeling met per bouwsteen de toewijzing, en de overlapbesluiten met motivering.
+
+## Goed om te weten
+
+- De grens van ongeveer 100 bouwstenen is een signaal, geen harde regel. Een samenhangende lijst van 104 kan beter zijn dan een onlogische splitsing.
+- Een voorstel verandert de applicatie niet. Toepassen vraagt een aparte opdracht.
+- Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+- De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
 ## Los installeren
 

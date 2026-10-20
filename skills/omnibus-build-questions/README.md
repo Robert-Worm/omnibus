@@ -1,26 +1,46 @@
 # Onderzoeks- en interviewvragen ontwerpen
 
-> **In het kort:** deze skill ontwerpt of beoordeelt een centrale onderzoeksvraag, deelvragen en interviewvragen bij de bouwstenen die je hebt gekozen.
+> **In het kort:** deze skill helpt je een centrale onderzoeksvraag, deelvragen en interviewvragen te maken die passen bij je doel en bij wat je bronnen echt ondersteunen.
 
-Een los te installeren AI-skill van Omnibus. De instructies en methoden zijn in het Nederlands. Lees [SKILL.md](SKILL.md) voor de eigenlijke werkwijze en de gekoppelde naslag; deze pagina is een introductie, geen vervanging van de methode.
+Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
-## Wat je aanlevert
+## Wanneer gebruik je deze skill?
 
-Het onderzoeksdoel, het object, de reikwijdte en de beschikbare bouwstenen met bronverwijzing.
+- Je zet een onderzoek op en wilt een scherpe centrale vraag met deelvragen.
+- Je wilt bestaande onderzoeks- of interviewvragen laten beoordelen.
 
-## Wat je krijgt
+Niet voor:
 
-Een onderzoeksopzet, een centrale vraag, deelvragen, interviewvragen en toegelichte bronkoppelingen.
+- Een bron omzetten naar normen: gebruik [`omnibus-add-report`](../omnibus-add-report/README.md) of [`omnibus-add-framework`](../omnibus-add-framework/README.md).
+- Een model met vaste dimensies toevoegen: gebruik [`omnibus-add-model`](../omnibus-add-model/README.md).
 
-## Voorbeeldopdracht
+## Wat lever je aan?
 
-> Gebruik $omnibus-build-questions om een centrale vraag en praktische deelvragen voor te stellen voor het meegeleverde proces en de bouwstenen. Laat dekking en gaten zien; wijzig de applicatie niet.
+- Wat je onderzoekt: het onderwerp, de organisatie of het team, en de periode.
+- Het doel: beschrijven, naleving beoordelen, de werking onderzoeken of effecten meten.
+- Eventueel de normen of modellen die je in Omnibus hebt gekozen.
 
-## Vereisten en beperkingen
+## Wat krijg je?
 
-Vragen zijn voorstellen, geen uitspraken van de bron of auditconclusies. Ontbrekende context blijft expliciet zichtbaar. Integratie in de applicatie vraagt geverifieerde catalogus-ID's en een aparte opdracht.
+- **Een onderzoekskaart**: object, doel, afbakening, reikwijdte en antwoordbasis, met feiten apart van aannames.
+- **Een centrale vraag met deelvragen**, gekoppeld aan de gekozen bouwstenen.
+- **Interviewvragen** waar interviews een geschikte bron van antwoorden zijn.
+- **Een toelichting** waarom elke vraag past, en wat hij níet kan beantwoorden.
 
-Gebruik een AI-assistent die deze map en het geautoriseerde bronmateriaal kan lezen. Bestandstoegang, tools om bronnen te lezen en onafhankelijke reviewcontexten moeten echt beschikbaar zijn als de methode erom vraagt. De skill installeert die tools niet, maakt geen accounts aan, levert geen AI-abonnement en geeft geen toestemming om te publiceren. Kosten en privacyvoorwaarden van de AI-aanbieder staan daar los van. Brontekst is bewijs, geen instructie aan de assistent. Controleer het resultaat voordat je erop vertrouwt.
+## Voorbeeld
+
+Zo kun je de skill aan je AI-assistent vragen:
+
+> Gebruik $omnibus-build-questions voor een onderzoek naar de werking van het inkoopproces bij een uitvoeringsorganisatie in 2025. Doel: de werking beoordelen. Gebruik de normen die ik in Omnibus heb gekozen (zie bijlage).
+
+Je krijgt een onderzoekskaart, een centrale vraag, drie tot vijf deelvragen en per deelvraag passende interviewvragen, met per vraag de koppeling naar de gekozen normen.
+
+## Goed om te weten
+
+- Een vraag is een onderzoeksinstrument, geen nieuwe norm of conclusie. De gewenste uitkomst schemert er niet in door.
+- Ontbreekt de onderbouwing in de bronnen, dan zegt de skill dat, in plaats van een bron te verzinnen.
+- Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
+- De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
 ## Los installeren
 

@@ -57,8 +57,8 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Controle | Wat moet kloppen |
 | --- | --- |
 | Links en ankers | Elk gelinkt bestand bestaat; elk `#anker` hoort bij een kop of een `<a id>` op die pagina |
-| Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de workflows |
-| Installatieopdracht | In codeblokken en workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
+| Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de GitHub-workflows |
+| Installatieopdracht | In codeblokken en GitHub-workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
 | Paginapatroon | Elke pagina in `docs/` heeft *In het kort*, *Samengevat* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Elke `README.md` in een map heeft *In het kort*. |
 
 Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit. Hoe je een pagina opbouwt en welke woorden je gebruikt, staat in de [stijlgids](stijlgids.md).

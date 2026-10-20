@@ -1,5 +1,7 @@
 # Stijlgids voor de documentatie
 
+<!-- check-docs: geen-woordcontrole -->
+
 > **In het kort:** zo schrijf je een pagina die past bij de rest van Omnibus: dezelfde opbouw, dezelfde woorden, dezelfde schema's. De belangrijkste regels controleert `npm run check:docs` automatisch.
 
 ## Voor wie schrijf je?
@@ -54,7 +56,7 @@ Termen uit GitHub zelf (*issue*, *pull request*, *release*, *Discussions*) en na
 ### Te vermijden
 
 - **Interne projectcodes** zoals `EP13-S01` of `K06` zonder uitleg. Noem wat er bedoeld wordt; zet de code er hooguit tussen haakjes achter.
-- **Onnodig Engels**, zoals *workflow*, *handoff*, *deploy* of *intake*. Gebruik *werkwijze*, *overdracht*, *online zetten* en *inname*.
+- **Onnodig Engels**, zoals *workflow*, *handoff* of *deploy*. Gebruik *werkwijze*, *overdracht* en *online zetten*. *Intake* is goed als je het intakegesprek of de intake van een onderzoek bedoelt.
 - **Beloftes over de toekomst** buiten de [routekaart](../routekaart.md).
 
 ## Getallen

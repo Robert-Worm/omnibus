@@ -18,10 +18,8 @@ aan de database en start geen upload of activatie.
    Neem de kandidaatuitvoer niet zonder review over als goedkeuring.
 4. Voer de vergelijking uit met expliciete bestanden:
 
-```sh
-npm run data:check-active-inventory -- \
-  --approved work/approvals/active-inventory.json \
-  --candidate work/candidate/local-build.json
+```text
+npm run data:check-active-inventory -- --approved work/approvals/active-inventory.json --candidate work/candidate/local-build.json
 ```
 
 Het kandidaatinstellingenbestand bevat `database`, `release` en `publication`.
