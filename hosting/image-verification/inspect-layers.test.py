@@ -1,7 +1,10 @@
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -49,6 +52,36 @@ class LayerChecks(unittest.TestCase):
     def test_changed_application_bytes(self):
         with self.assertRaisesRegex(AssertionError, 'hash mismatch'):
             self.inspect(('app/omnibus-runtime/runtime-package.json', b'{"files":[]}'))
+
+    def test_changed_application_size(self):
+        with self.assertRaisesRegex(AssertionError, 'size mismatch'):
+            self.inspect(('app/omnibus-runtime/runtime-package.json', b'short'))
+
+    def test_unsafe_layer_path(self):
+        with self.assertRaisesRegex(AssertionError, 'Unsafe layer path'):
+            self.inspect(('../outside', b'synthetic'))
+
+    def test_canary_in_path(self):
+        with self.assertRaisesRegex(AssertionError, 'Excluded canary'):
+            self.inspect(('tmp/OMNIBUS_SYNTHETIC_CONTEXT_EXCLUSION_CANARY', b'synthetic'))
+
+
+class OptimizationChecks(unittest.TestCase):
+    def test_validation_survives_flags_and_inherited_environment(self):
+        for flag, optimization in [('-O', None), ('-OO', None), (None, '1')]:
+            with self.subTest(flag=flag, optimization=optimization):
+                env = dict(os.environ)
+                env.pop('PYTHONOPTIMIZE', None)
+                if optimization is not None:
+                    env['PYTHONOPTIMIZE'] = optimization
+                command = [sys.executable, '-B']
+                if flag:
+                    command.append(flag)
+                # Select only fixtures: never recursively run this driver.
+                command.extend([str(Path(__file__).resolve()), 'LayerChecks'])
+                result = subprocess.run(command, env=env, capture_output=True,
+                                        text=True, timeout=15, check=False)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == '__main__':
