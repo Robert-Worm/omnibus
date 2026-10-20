@@ -73,6 +73,30 @@ projecten via de bestaande projectdownload; er is geen serveraccountopslag.
 
 ## Korte incidentroute
 
+### De terugweg lokaal oefenen
+
+De bestaande integratietest oefent een wissel tussen twee afzonderlijke,
+fictieve versies. Vanuit de codecheckout, met Node 24:
+
+```text
+node --test --test-concurrency=1 --test-timeout=120000 scripts/hosting-start-integration.test.mjs scripts/start-hosting-options.test.mjs scripts/package-runtime.test.mjs
+```
+
+De proef start pakket A en daarna pakket B op dezelfde lokale testpoort.
+Vervolgens probeert zij verkeerde combinaties van pakket, database en
+versie-identiteiten. Die moeten weigeren voordat een server gaat luisteren.
+Daarna start zij de volledige combinatie A opnieuw, en herhaalt die start.
+Bij iedere geslaagde start worden de startpagina, gereedheid, toegestane inhoud en
+weigering van de andere bronversie gecontroleerd. Na afsluiten is de testpoort
+vrij en zijn alle pakketbestanden, instellingen en databasebytes behouden.
+
+Dit gebruikt alleen tijdelijke fictieve bestanden; de actieve installatie wordt
+niet omgeschakeld. Het bewijst de terugweg via de bestaande pakketstart, niet
+automatisch herstel na een storing. Het vervangt ook geen echte imagewissel,
+proxy-/cachecontrole, diskherstel of terugschakelproef op Sevalla.
+
+### Handelen bij een storing
+
 | Signaal | Eerste handeling | Voorwaarde voor hervatten |
 | --- | --- | --- |
 | Startweigering/verkeerde release | Laat de werkende versie staan; vergelijk pakket, instellingen en expliciete pins met het herstelbewijs. Controleer de kandidaat alleen-lezen. | Pakket en databasecontrole slagen samen; lokale smokeproef geslaagd. |

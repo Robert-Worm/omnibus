@@ -8,7 +8,7 @@ import { runtimeContract } from "../../lib/runtime-contract.mjs";
 import { runtimeContractHash } from "../../lib/runtime-contract-identity.mjs";
 
 // Synthetically satisfies module identities, never represents approved source content.
-export function runtimeFixture(t, { packages = [], documents = [], artifacts = [] } = {}) {
+export function runtimeFixture(t, { packages = [], documents = [], artifacts = [], baselineVersion = "synthetic" } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "omnibus-publication-test-"));
   const beforeCleanup = [];
   t.after(async () => {
@@ -19,7 +19,7 @@ export function runtimeFixture(t, { packages = [], documents = [], artifacts = [
   const repository = new CatalogueRepository(databasePath);
   try {
     const release = repository.importRelease({
-      manifest: { baselineVersion: "synthetic" },
+      manifest: { baselineVersion },
       packages,
       documents,
       artifacts,

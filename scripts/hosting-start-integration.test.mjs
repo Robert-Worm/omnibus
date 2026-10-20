@@ -10,6 +10,10 @@ import {fileURLToPath} from 'node:url';
 import {runtimeFixture} from '../local-data/test-support/runtime-fixture.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 import {packageRuntime} from './package-runtime.mjs';
+import {parseRuntimePackageArgs, startRuntimePackage} from './start-runtime-package.mjs';
+import {readRuntimePublication} from '../local-data/runtime-publication.mjs';
+import {CatalogueRepository} from '../local-data/repository.mjs';
+import {verifyRuntimePackage, bytesHash} from '../local-data/runtime-package.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const origin='https://omnibus.example.invalid';
@@ -37,6 +41,89 @@ function request(port,path,headers={}){
     req.on('error',reject);req.end();
   });
 }
+
+test('separate A/B packages can restart and roll back after mixed release refusal without changing data',
+  {timeout:30000},async t=>{
+    const versions=[];
+    for(const name of ['A','B']){
+      const f=runtimeFixture(t,{baselineVersion:'synthetic-rollback-'+name});
+      const webRoot=join(f.dir,'web'),out=join(f.dir,'package');
+      mkdirSync(join(webRoot,'assets'),{recursive:true});
+      const html='<!doctype html><title>Synthetic release '+name+'</title>';
+      writeFileSync(join(webRoot,'database.html'),html);
+      writeFileSync(join(webRoot,'assets','app-12345678.js'),'// synthetic '+name);
+      const repository=new CatalogueRepository(f.databasePath,{readOnly:true});
+      let refs;
+      try { refs=readRuntimePublication(repository,{...f,contract:runtimeContractHash}).refs; }
+      finally { repository.close(); }
+      writeFileSync(join(webRoot,'omnibus-release.json'),JSON.stringify({schema:1,
+        runtimeTarget:'portable-local',release:f.release,publication:f.publication,
+        contract:runtimeContractHash,refs}));
+      packageRuntime({webRoot,databasePath:f.databasePath,out});
+      const settings=join(f.dir,'local-build.json');
+      writeFileSync(settings,JSON.stringify({database:'synthetic.sqlite',
+        release:f.release,publication:f.publication}));
+      const originals=new Map([f.databasePath,settings,join(out,'runtime-package.json')]
+        .map(path=>[path,bytesHash(readFileSync(path))]));
+      const unchanged=()=>{
+        for(const [path,hash] of originals) assert.equal(bytesHash(readFileSync(path)),hash);
+        verifyRuntimePackage(out); // Checks every package byte, not only its manifest.
+      };
+      f.beforeCleanup.push(unchanged);
+      versions.push({...f,out,settings,html,refs,unchanged});
+    }
+    const [a,b]=versions;
+    assert.notEqual(a.release,b.release);
+    assert.notEqual(a.publication,b.publication);
+    const port=await unusedLoopbackPort();
+    const options=v=>({root:v.out,...parseRuntimePackageArgs(['--settings',v.settings,
+      '--public-origin',origin,'--listen-host','127.0.0.1','--port',String(port)])});
+    const portClosed=async()=>{
+      await assert.rejects(request(port,'/api/v1/health'),error=>error.code==='ECONNREFUSED');
+    };
+    const serve=async(v,other)=>{
+      const app=await startRuntimePackage(options(v));
+      try {
+        assert.equal((await request(port,'/')).body,v.html);
+        const ready=await request(port,'/api/v1/ready');
+        assert.equal(ready.status,200);
+        assert.equal(JSON.parse(ready.body).mode,'public-read-only');
+        const resource='/api/v1/content/'+v.refs.test.hash;
+        const content=await request(port,resource+'?release='+v.release);
+        assert.equal(content.status,200);
+        assert.deepEqual(JSON.parse(content.body),{label:'Synthetic test only'});
+        assert.equal((await request(port,resource+'?release='+other.release)).status,404);
+        assert.equal((await request(port,'/omnibus-release.json')).status,404);
+      } finally { await app.close(); }
+      await portClosed();
+      for(const value of versions) value.unchanged();
+    };
+    await t.test('previous A then candidate B use their own complete tuple',async()=>{
+      await serve(a,b);
+      await serve(b,a);
+    });
+    await t.test('mixed package, data or pins fail before listening',async()=>{
+      for(const mixed of [
+        {...options(b),root:a.out},
+        {...options(b),databasePath:a.databasePath},
+        {...options(b),publication:a.publication},
+        {...options(b),release:a.release},
+      ]){
+        // If a regression accidentally starts a listener, close only that test
+        // server before failing rather than leaving the port occupied.
+        await assert.rejects(async()=>{
+          const accidental=await startRuntimePackage(mixed);
+          await accidental.close();
+        });
+        await portClosed();
+        for(const value of versions) value.unchanged();
+      }
+    });
+    await t.test('operator can return to complete A on the same port and restart it',async()=>{
+      await serve(a,b);
+      await serve(a,b);
+    });
+  });
 
 test('both explicit hosting CLIs serve the same pinned bytes from loopback only',
   {timeout:120000},async t=>{
