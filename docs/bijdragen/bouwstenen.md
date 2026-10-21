@@ -268,12 +268,21 @@ Lees [werken met Omnibus](werken-met-omnibus.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Gebruiken](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
 ```
 
-- *Volgende stap* wijst vooruit, met één link.
-- *Samengevat* staat alleen op taakpagina's en lange pagina's. Op een startpagina laat je hem weg.
-- Het pijltje (↑) wijst naar de pagina erboven.
+- *Volgende stap* wijst vooruit, met één link. Begin niet met *Terug naar…*.
+- De voetregel begint met de pagina erboven (↑), gevolgd door de wegwijzer, de begrippen en de routekaart. Een link naar de pagina zelf, of twee keer dezelfde, laat je weg. Dit geldt voor elke pagina voor lezers, ook buiten `docs/`, zoals `hosting/`, de skills en CONTRIBUTING.
+- *Samengevat* staat alleen op taakpagina's en pagina's van 60 regels of meer. Op een startpagina of een korte pagina laat je hem weg.
+
+**Nette tekst**
+
+- Geen emoji in koppen: het anker wordt dan onleesbaar.
+- Een alinea staat op één regel. Breek hem niet af over meerdere regels.
+- HTML alleen voor afbeeldingen, uitklapblokken en de kop van de README: `a`, `b`, `br`, `details`, `h1`, `img`, `kbd`, `p`, `picture`, `source`, `strong`, `sub`, `summary` en `sup`.
+- Twee links met dezelfde tekst wijzen naar dezelfde pagina. Wijzen ze ergens anders heen, maak de tekst dan verschillend, of geef de link een titel.
+
+**Wat de check bewaakt:** de hele voetregel en de streep erboven, *Volgende stap* die terugwijst, *Samengevat* op een korte pagina, emoji in koppen, afgebroken alinea's, andere HTML en gelijke linkteksten naar verschillende pagina's.
 
 ## Samengevat
 
@@ -285,4 +294,4 @@ Lees de [stijlgids](stijlgids.md) voor taal en woorden, en controleer je pagina 
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

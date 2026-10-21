@@ -98,4 +98,4 @@ Ga naar [database publiceren](database-publiceren.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

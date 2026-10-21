@@ -87,7 +87,7 @@ Omnibus bestaat uit twee delen. Online en met Docker krijg je ze samen; bij een 
 
 | Deel | Wat het is | Waar |
 | --- | --- | --- |
-| De applicatie | De code van Omnibus. Draait lokaal in je browser. | Deze repository; vaste versies bij de [releases](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) |
+| De applicatie | De code van Omnibus. Draait lokaal in je browser. | Deze repository; vaste versies, zoals [versie 0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) |
 | De database | De inhoud: <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
 
 Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).

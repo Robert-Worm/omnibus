@@ -149,4 +149,4 @@ Na de release: sluit de verwerkte claims en kondig de nieuwe database aan in [Di
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

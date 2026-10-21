@@ -25,6 +25,7 @@ export function schermWaarschuwingen(stand, versie) {
 // Paginatypen (zie docs/bijdragen/bouwstenen.md#paginatypen). Elke pagina in docs/ noemt haar
 // type in een verborgen regel: <!-- paginatype: taak -->.
 export const PAGINATYPEN = ["start", "taak", "naslag", "data", "logboek"];
+export const KORTE_PAGINA = 60;
 
 /** Meldingen voor de verplichte onderdelen van het paginatype. */
 export function paginatypeMeldingen(ruw) {
@@ -36,14 +37,40 @@ export function paginatypeMeldingen(ruw) {
   const heeftSamengevat = /^## Samengevat$/m.test(tekst);
   const uit = [];
   if (type === "start" && heeftSamengevat) uit.push('startpagina zonder "## Samengevat" (zie de bouwstenen)');
-  if (type === "taak" && !heeftSamengevat) uit.push('mist de kop "## Samengevat"');
+  const lang = ruw.split("\n").length >= KORTE_PAGINA;
+  if (type === "taak" && lang && !heeftSamengevat) uit.push('mist de kop "## Samengevat"');
+  if (heeftSamengevat && !lang) uit.push(`korte pagina (minder dan ${KORTE_PAGINA} regels): laat "## Samengevat" weg`);
+  const volgende = tekst.match(/^## Volgende stap\n+([^\n]+)/m)?.[1] ?? "";
+  if (/^Terug\b/.test(volgende)) uit.push('"Volgende stap" wijst vooruit; begin niet met "Terug naar…"');
   if (type === "taak" && !/^(#{2,3} \d+\. |\d+\. )/m.test(tekst)) uit.push("taakpagina zonder genummerde stappen");
-  if (type === "data" && !/automatisch bijgewerkt/i.test(tekst)) uit.push('datapagina zonder de regel "Automatisch bijgewerkt"');
+  if (type === "data" && !/automatisch bijgewerkt/i.test(tekst.split("\n").slice(0, 12).join("\n"))) uit.push('datapagina zonder de regel "Automatisch bijgewerkt" bovenaan');
   if (type === "logboek" && !/^\|.+\|\s*$/m.test(tekst)) uit.push("logboek zonder tabel");
   return uit;
 }
 
-const FOOTER = /^\[↑ (Wegwijzer|Terug naar Omnibus)\]\(([^)]+)\)/;
+/** Welke pagina's eindigen met de vaste voetregel: alles voor lezers, niet de instructies voor AI-assistenten. */
+export const heeftVoetregel = (rel) =>
+  rel !== "README.md" && rel !== "AGENTS.md" && rel !== "CHANGELOG.md" && !rel.startsWith(".github/") &&
+  !/^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel) && !rel.startsWith("work/") && !rel.startsWith("local-data/runtime");
+
+/** De vaste voetregel: [↑ ouder] · Wegwijzer · Begrippen · Routekaart, met paden vanaf de pagina zelf. */
+export function voetregel(rel, titelVan) {
+  const map = path.posix.dirname(rel), isIndex = path.posix.basename(rel) === "README.md";
+  const ouder = isIndex ? (map === "." ? null : path.posix.join(path.posix.dirname(map), "README.md")) : path.posix.join(map, "README.md");
+  const naar = (doel) => path.posix.relative(map, doel) || path.posix.basename(doel);
+  const naam = ouder === "README.md" ? "Omnibus" : ouder === "docs/README.md" ? "Wegwijzer" : titelVan(ouder);
+  const delen = [`[↑ ${naam}](${naar(ouder)})`];
+  for (const [label, doel] of [["Wegwijzer", "docs/README.md"], ["Begrippen", "docs/begrippen.md"], ["Routekaart", "docs/routekaart.md"]])
+    if (doel !== rel && doel !== ouder) delen.push(`[${label}](${naar(doel)})`);
+  return delen.join(" · ");
+}
+
+/** De korte naam van een pagina: de titel, zonder toevoeging tussen haakjes. */
+export function korteTitel(root, rel) {
+  const pad = path.join(root, rel);
+  const kop = (existsSync(pad) ? readFileSync(pad, "utf8").match(/^# (.+)$/m)?.[1] : null) ?? path.posix.basename(path.posix.dirname(rel));
+  return kop.replace(/\s*\(.*\)\s*$/, "").replace(/`/g, "").trim();
+}
 
 /** GitHub-anker van een kop, zoals GitHub het maakt. */
 export function slug(kop) {
@@ -135,14 +162,12 @@ export function controleerBestand(root, rel, { nvmrc, scripts }) {
   if (isDocs) {
     for (const m of paginatypeMeldingen(tekst)) meld(0, m);
     if (!/^## Volgende stap$/m.test(tekst)) meld(0, 'mist de kop "## Volgende stap"');
-    const laatste = regels.filter((r) => r.trim()).at(-1) ?? "";
-    const f = FOOTER.exec(laatste);
-    if (!f) meld(0, "eindigt niet met de vaste navigatieregel naar de wegwijzer");
-    else {
-      const doel = path.normalize(path.join(path.dirname(rel), f[2]));
-      const verwacht = rel === "docs/README.md" ? "README.md" : path.join("docs", "README.md");
-      if (doel !== verwacht) meld(0, `navigatieregel wijst naar ${doel} in plaats van ${verwacht}`);
-    }
+  }
+  if (heeftVoetregel(rel)) {
+    const gevuld = regels.filter((r) => r.trim());
+    const verwacht = voetregel(rel, (r) => korteTitel(root, r));
+    if (gevuld.at(-1) !== verwacht) meld(0, `eindigt niet met de vaste voetregel: ${verwacht}`);
+    else if (gevuld.at(-2) !== "---") meld(0, 'zet "---" direct boven de voetregel');
   }
   return meldingen;
 }
@@ -275,6 +300,32 @@ export function meldingWaarschuwingen(rel, ruw) {
     if (i - vorigeEinde <= 2) uit.push(`${waar(i)}: twee meldingen direct onder elkaar`);
     let j = i + 1; while (j < regels.length && regels[j].startsWith(">")) j++;
     vorigeEinde = j - 1;
+  });
+  return uit;
+}
+
+/** Nette tekst (docs/bijdragen/bouwstenen.md): geen emoji in koppen, geen afgebroken alinea's, alleen toegestane HTML, en geen gelijke linktekst naar verschillende pagina's. */
+export const TOEGESTANE_HTML = ["a", "b", "br", "details", "h1", "img", "p", "picture", "source", "strong", "summary", "sub", "sup", "kbd"];
+const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
+export function tekstWaarschuwingen(rel, ruw) {
+  if (!heeftVoetregel(rel) && rel !== "README.md") return [];
+  const uit = [], waar = (i) => `${rel}:${i + 1}`;
+  const regels = ruw.replace(/^ *```[\s\S]*?^ *```/gm, (b) => b.replace(/[^\n]/g, "")).split("\n");
+  const gewoon = (r) => r.trim() && !/^\s*([-*+] |\d+\. |\||>|#|<|!\[|\[↑|---)/.test(r) && !/^ {4}/.test(r) && !/<\/?\w+[^>]*>\s*$/.test(r);
+  const links = new Map(), data = /<!-- paginatype: data -->/.test(ruw);
+  regels.forEach((r, i) => {
+    if (/^#{1,6} /.test(r) && EMOJI.test(r)) uit.push(`${waar(i)}: emoji in een kop; het anker wordt dan onleesbaar`);
+    if (i && gewoon(r) && gewoon(regels[i - 1]) && !/( {2}|\\)$/.test(regels[i - 1])) uit.push(`${waar(i)}: alinea over meerdere regels afgebroken; zet hem op één regel`);
+    const zonderCode = r.replace(/`[^`]*`/g, "");
+    for (const [, tag] of zonderCode.matchAll(/<\/?([a-zA-Z][\w-]*)\b(?!:)[^>]*>/g)) if (!TOEGESTANE_HTML.includes(tag.toLowerCase())) uit.push(`${waar(i)}: HTML-element <${tag}> is niet toegestaan; zie de bouwstenen`);
+    if (data) return;
+    for (const [, tekst, doel, titel] of zonderCode.matchAll(/(?<!!)\[([^\]]+)\]\(([^)\s]+)( "[^"]*")?\)/g)) {
+      if (titel) continue;
+      const sleutel = tekst.trim().toLowerCase(), pagina = doel.split("#")[0] || rel;
+      const eerder = links.get(sleutel);
+      if (eerder && eerder.pagina !== pagina) uit.push(`${waar(i)}: linktekst "${tekst}" wijst ook naar ${eerder.doel} (regel ${eerder.regel + 1}); maak de tekst verschillend`);
+      else if (!eerder) links.set(sleutel, { pagina, doel, regel: i });
+    }
   });
   return uit;
 }
@@ -490,6 +541,7 @@ export function controleer(root) {
     waarschuwingen.push(...blokWaarschuwingen(rel, tekst));
     waarschuwingen.push(...afbeeldingWaarschuwingen(rel, tekst));
     waarschuwingen.push(...schemaWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...tekstWaarschuwingen(rel, tekst));
     const tabel = tabelControle(rel, tekst);
     meldingen.push(...tabel.fouten);
     waarschuwingen.push(...tabel.waarschuwingen);

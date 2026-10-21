@@ -26,3 +26,7 @@ Als je iets aan een scherm wilt veranderen of verbeteren.
 ## Verder lezen
 
 [Architectuur](../docs/bijdragen/architectuur.md) · [Ontwikkelen](../docs/bijdragen/ontwikkelen.md) · [AGENTS.md](../AGENTS.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

@@ -25,3 +25,7 @@ Als je iets verandert aan hoe selecties, vragen, projecten of exports werken.
 ## Verder lezen
 
 [Architectuur](../docs/bijdragen/architectuur.md) · [Ontwikkelen](../docs/bijdragen/ontwikkelen.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

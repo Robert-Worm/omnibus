@@ -75,4 +75,4 @@ Voor back-up en herstel van de database zelf: [back-up en herstel](storingen-en-
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -130,4 +130,4 @@ Lees [architectuur](architectuur.md) voor een kaart van de code.
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

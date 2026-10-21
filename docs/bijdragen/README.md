@@ -59,7 +59,7 @@ Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikba
 - **Hooguit vijf bronnen tegelijk.** Zo kun je bronnen naast elkaar verwerken, zonder dat er veel op jouw naam blijft liggen. Een zesde claim wordt gesloten, met uitleg.
 - **Blijf in contact.** Na 30 dagen zonder reactie krijg je een herinnering; na 60 dagen komt de bron automatisch weer vrij.
 - **Ook de beheerder heeft een termijn.** Wacht je ingeleverde pakket 7 dagen zonder reactie? Dan krijgt de beheerder automatisch een herinnering. Wat er wacht, zie je op de [voortgang](voortgang.md), onder *Wacht op de beheerder*.
-- **Elke maandag een weekoverzicht.** In [Discussions](https://github.com/Robert-Worm/omnibus/discussions/categories/general) staat wat er is geclaimd, ingeleverd en verwerkt. Alleen GitHub-namen en bronnen, nooit inhoud.
+- **Elke maandag een weekoverzicht.** In [Discussions, categorie General](https://github.com/Robert-Worm/omnibus/discussions/categories/general) staat wat er is geclaimd, ingeleverd en verwerkt. Alleen GitHub-namen en bronnen, nooit inhoud.
 - **Geen vertrouwelijk materiaal** in issues, reacties of pull requests.
 - **Wees eerlijk over twijfels.** Een onzekere norm met een duidelijke vraag is beter dan een stellige fout.
 - **Respectvol samenwerken.** Zie de [gedragscode](../../CODE_OF_CONDUCT.md).

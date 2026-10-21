@@ -124,4 +124,4 @@ Geslaagd? Ga naar [inhoud toevoegen](inhoud-toevoegen.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

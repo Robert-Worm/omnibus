@@ -100,4 +100,4 @@ Lees hoe de [eerste start](../first-start/README.md) op de server gaat.
 
 ---
 
-[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Routekaart](../../docs/routekaart.md)
+[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

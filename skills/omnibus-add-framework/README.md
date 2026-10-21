@@ -26,10 +26,7 @@ Niet voor:
 - **Het soort bepaling**: verplichting, verbod, bevoegdheid, definitie, reikwijdte of uitzondering, apart gehouden.
 - **Voor wie de norm geldt** (de normadressaat), zodat je ziet of hij op jouw organisatie van toepassing kan zijn.
 - **Toetspunten** om naleving te onderzoeken, met hun status als eigen voorstel.
-- **Een complete beheersketen**: doel, risico, beheersdoelstelling en
-  beheersmaatregel. Niet-letterlijke onderdelen worden uit het brongebonden
-  risico afgeleid, als voorstel gemarkeerd en inhoudelijk beoordeeld. Een
-  selecteerbare norm wordt niet met lege schakels opgeleverd.
+- **Een complete beheersketen**: doel, risico, beheersdoelstelling en beheersmaatregel. Niet-letterlijke onderdelen worden uit het brongebonden risico afgeleid, als voorstel gemarkeerd en inhoudelijk beoordeeld. Een selecteerbare norm wordt niet met lege schakels opgeleverd.
 
 ## Voorbeeld
 
@@ -60,3 +57,7 @@ Het installatiescript gebruikt de ingestelde Codex-skillsmap en overschrijft noo
 ## Licentie
 
 Copyright 2026 Robert Worm en bijdragers. Deze skill valt onder de [PolyForm Noncommercial License 1.0.0](LICENSE): vrij te gebruiken, aan te passen en te delen, niet commercieel, en zonder garantie. De licentie dekt niet de brondocumenten die je aanlevert, en geeft geen toestemming om die met een AI-aanbieder te delen.
+
+---
+
+[↑ AI-skills](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

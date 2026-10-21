@@ -68,4 +68,4 @@ Zie de [checklist live demo](../../docs/beheer/live-demo-checklist.md) voor wat 
 
 ---
 
-[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Routekaart](../../docs/routekaart.md)
+[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

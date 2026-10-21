@@ -25,3 +25,7 @@ Als beheerder, bij het controleren van een ingeleverde bron. Bijdragers hebben d
 ## Verder lezen
 
 [Pakket controleren](../docs/beheer/pakket-controleren.md) · [Actieve inventaris controleren](../docs/beheer/actieve-inventaris-controleren.md) · [Inhoud toevoegen](../docs/beheer/inhoud-toevoegen.md) · [Beheer](../docs/beheer/README.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

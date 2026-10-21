@@ -51,65 +51,31 @@ De koppeling leest geen intakebestand rechtstreeks van schijf. Je eigen AI-clien
 - De lokale computergebruiker blijft de vertrouwensgrens. Een AI-client met aanvullende bestands- of terminalrechten kan méér dan deze koppeling; die rechten worden niet door Omnibus beheerd.
 - Maximaal 250 expliciete bouwstenen per concept, 200 vragen en 40 zoekresultaten per pagina. Zoekresultaten zijn lexicale kandidaten, geen garantie dat de AI alles relevants heeft gevonden. De inhoudelijke kwaliteit en toepasselijkheid blijven te beoordelen.
 
-De uitvoermap moet een gewone lokale map zijn: geen symlink of Windows-junction,
-ook niet in het bovenliggende pad. Conceptmappen mogen niet vervangen of omgeleid
-worden terwijl de service werkt. Opgeslagen conceptbestanden moeten gewone bestanden
-zijn met één hardlink. De service controleert de mapidentiteit opnieuw na het
-voorbereiden van een export. Namen bestaan uitsluitend uit een gegenereerde UUID,
-vaste projectnamen en één van de drie bestaande werkvormcodes. Bestaande namen
-worden ook bij een toevallige UUID-botsing geweigerd.
+De uitvoermap moet een gewone lokale map zijn: geen symlink of Windows-junction, ook niet in het bovenliggende pad. Conceptmappen mogen niet vervangen of omgeleid worden terwijl de service werkt. Opgeslagen conceptbestanden moeten gewone bestanden zijn met één hardlink. De service controleert de mapidentiteit opnieuw na het voorbereiden van een export. Namen bestaan uitsluitend uit een gegenereerde UUID, vaste projectnamen en één van de drie bestaande werkvormcodes. Bestaande namen worden ook bij een toevallige UUID-botsing geweigerd.
 
-Project en `ai-concept.json` mogen ieder maximaal 24.000.000 UTF-8-bytes zijn, zowel
-bij opslaan als bij teruglezen. De gedeelde projectcodec behoudt zijn eigen
-uitpakgrens. Lezen gebruikt een begrensde buffer en weigert bestanden die tijdens
-het lezen groeien. Beschadigde JSON geeft een fout zonder opgeslagen tekstfragmenten.
-Dit zijn bestands- en veldgrenzen; de lokale STDIO-wachtrij, ruwe transportbytes,
-Exceluitvoer en totale schijfruimte hebben hiermee geen nieuw afzonderlijk budget.
+Project en `ai-concept.json` mogen ieder maximaal 24.000.000 UTF-8-bytes zijn, zowel bij opslaan als bij teruglezen. De gedeelde projectcodec behoudt zijn eigen uitpakgrens. Lezen gebruikt een begrensde buffer en weigert bestanden die tijdens het lezen groeien. Beschadigde JSON geeft een fout zonder opgeslagen tekstfragmenten. Dit zijn bestands- en veldgrenzen; de lokale STDIO-wachtrij, ruwe transportbytes, Exceluitvoer en totale schijfruimte hebben hiermee geen nieuw afzonderlijk budget.
 
-Een concept-ID wordt pas teruggegeven nadat beide bestanden volledig zijn geschreven.
-Bij een gewone schrijffout probeert de service uitsluitend de zelf aangemaakte
-onvolledige bestanden en de eigen lege map op te ruimen. Zij wist nooit recursief
-een uitvoermap en laat een bestaand, vervangen of niet meer herkenbaar bestand
-staan. Een nieuwe poging kan daarna nieuwe uitvoer maken. Bij procesuitval,
-geweigerde opruiming of gelijktijdige wijzigingen kunnen resten blijven staan;
-dit is geen crashbestendige transactie of bescherming tegen een kwaadwillende
-lokale gebruiker met dezelfde bestandsrechten. Een onvolledig project/conceptpaar
-kan niet worden geëxporteerd. Oude `.pending-*`-mappen worden niet automatisch gewist.
+Een concept-ID wordt pas teruggegeven nadat beide bestanden volledig zijn geschreven. Bij een gewone schrijffout probeert de service uitsluitend de zelf aangemaakte onvolledige bestanden en de eigen lege map op te ruimen. Zij wist nooit recursief een uitvoermap en laat een bestaand, vervangen of niet meer herkenbaar bestand staan. Een nieuwe poging kan daarna nieuwe uitvoer maken. Bij procesuitval, geweigerde opruiming of gelijktijdige wijzigingen kunnen resten blijven staan; dit is geen crashbestendige transactie of bescherming tegen een kwaadwillende lokale gebruiker met dezelfde bestandsrechten. Een onvolledig project/conceptpaar kan niet worden geëxporteerd. Oude `.pending-*`-mappen worden niet automatisch gewist.
 
 ## Browser en MCP na een nieuwe collectie gelijkzetten
 
-Een werkende verbinding kan nog naar een oude installatie of index wijzen.
-Gebruik dezelfde instellingen als voor de lokale website:
+Een werkende verbinding kan nog naar een oude installatie of index wijzen. Gebruik dezelfde instellingen als voor de lokale website:
 
 ```text
 npm run build:agent -- --settings /pad/naar/local-build.json
 npm run test:agent:protocol
 ```
 
-De build leest de bron uitsluitend en maakt een afzonderlijke databasekopie
-met zoekindex. Hij vervangt `agent-build/current.json` pas na een geslaagde
-build; bewaar de vorige pointer vooraf om te kunnen terugschakelen.
-De protocoltest maakt fictieve projecten en drie Excelwerkvormen in de
-lokale, van Git uitgesloten `agent-output`-map.
+De build leest de bron uitsluitend en maakt een afzonderlijke databasekopie met zoekindex. Hij vervangt `agent-build/current.json` pas na een geslaagde build; bewaar de vorige pointer vooraf om te kunnen terugschakelen. De protocoltest maakt fictieve projecten en drie Excelwerkvormen in de lokale, van Git uitgesloten `agent-output`-map.
 
 Controleer daarna:
 
-1. `release` en `publication` uit `get_workflow_guide` zijn gelijk aan de
-   gekozen instellingen en de webbuild. Controleer ook de bronlijst; alleen
-   hetzelfde aantal rapporten bewijst geen gelijke publicatie.
-2. Het geregistreerde serverpad verwijst naar `agent-tools/server.mjs` van
-   deze installatie, niet naar een oud archief of een andere checkout.
-3. Herstart de bestaande MCP-verbinding na omschakeling. Een reeds draaiend
-   proces kan de vorige index blijven gebruiken. Bouwen wijzigt geen
-   clientregistratie.
-4. Open een gegenereerd fictief project via **Open project** in een afzonderlijke
-   lokale testwerkplek. Controleer selecties, vraagkoppelingen en exportinstellingen.
+1. `release` en `publication` uit `get_workflow_guide` zijn gelijk aan de gekozen instellingen en de webbuild. Controleer ook de bronlijst; alleen hetzelfde aantal rapporten bewijst geen gelijke publicatie.
+2. Het geregistreerde serverpad verwijst naar `agent-tools/server.mjs` van deze installatie, niet naar een oud archief of een andere checkout.
+3. Herstart de bestaande MCP-verbinding na omschakeling. Een reeds draaiend proces kan de vorige index blijven gebruiken. Bouwen wijzigt geen clientregistratie.
+4. Open een gegenereerd fictief project via **Open project** in een afzonderlijke lokale testwerkplek. Controleer selecties, vraagkoppelingen en exportinstellingen.
 
-De protocoltest gebruikt bewust gekozen voorbeeldpunten. Een ontbrekend punt
-vraagt onderzoek; vervang het niet automatisch door het eerste zoekresultaat.
-Houd lokale paden, indexkopieën, projecten en testuitvoer buiten Git.
-Een geslaagde STDIO-proef bewijst niet dat een reeds geopende AI-client opnieuw
-verbonden is.
+De protocoltest gebruikt bewust gekozen voorbeeldpunten. Een ontbrekend punt vraagt onderzoek; vervang het niet automatisch door het eerste zoekresultaat. Houd lokale paden, indexkopieën, projecten en testuitvoer buiten Git. Een geslaagde STDIO-proef bewijst niet dat een reeds geopende AI-client opnieuw verbonden is.
 
 ## Technische opbouw en opnieuw voorbereiden
 
@@ -123,15 +89,7 @@ Zonder private database of agent-build zijn deze gerichte controles uitvoerbaar:
 node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs
 ```
 
-De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder
-`work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de
-echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste
-testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte
-Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef
-leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken;
-een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide
-testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`.
-Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
+De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder `work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken; een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`. Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
 
 Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de instellingen uit [installeren](../docs/gebruiken/installeren.md):
 
@@ -163,3 +121,7 @@ Voor codeherstel kan de ontwikkelaar de betreffende commits terugdraaien en de l
 ## Verder lezen
 
 [AI-koppeling voor gebruikers](../docs/gebruiken/ai-koppeling.md) · [Architectuur](../docs/bijdragen/architectuur.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

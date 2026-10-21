@@ -232,4 +232,4 @@ Lees hoe de image wordt [gecontroleerd](../image-verification/README.md), of bek
 
 ---
 
-[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Routekaart](../../docs/routekaart.md)
+[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

@@ -106,8 +106,8 @@ Een kort tijdelijk proces maakt het mogelijk om de database neer te zetten voord
 
 ## Volgende stap
 
-Terug naar het [overzicht van hosting](../README.md), of bekijk de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
+Bekijk in de [checklist live demo](../../docs/beheer/live-demo-checklist.md) wat er nog moet gebeuren.
 
 ---
 
-[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Routekaart](../../docs/routekaart.md)
+[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

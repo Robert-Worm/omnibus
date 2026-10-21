@@ -2,7 +2,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { crc32 } from "node:zlib";
-import { beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
+import { blokWaarschuwingen, KORTE_PAGINA as KORT_CHECK, paginatypeMeldingen, tabelControle, tekstWaarschuwingen, vormWaarschuwingen, zinWaarschuwingen } from "../../scripts/check-docs.mjs";
+import { KORTE_PAGINA, beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
 
 const DAG = 24 * 60 * 60 * 1000;
 const START = Date.parse("2026-10-01T09:00:00Z");
@@ -445,4 +446,19 @@ test("gegenereerde pagina's volgen de bouwstenen: claimlinks met titel, geen leg
   const koppen = [...aanbevolen.matchAll(/^### (.+)$/gm)].map((m) => [...m[1].trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-"));
   assert.ok(ankers.length > 0);
   for (const a of ankers) assert.ok(koppen.includes(a), `anker #${a} zonder kop`);
+});
+
+test("gegenereerde pagina's halen dezelfde controles als de rest van de documentatie", async () => {
+  assert.equal(KORTE_PAGINA, KORT_CHECK, "dezelfde grens voor korte pagina's");
+  const g = nepGitHub();
+  const v = maakVoortgang({ data: data(), repo: "x/y", gh: g.gh, now: g.nu });
+  g.claim("anna", { bron: rapport("2026-open-rapport") });
+  const { bestanden } = v.build(await v.loadClaims());
+  for (const pad of ["voortgang.md", "werklijst-aanbevolen.md", "werklijst-wetten-en-kaders.md"]) {
+    const rel = `docs/bijdragen/${pad}`, tekst = bestanden[rel];
+    const tabel = tabelControle(rel, tekst);
+    const meldingen = [...paginatypeMeldingen(tekst), ...tabel.fouten, ...tabel.waarschuwingen, ...tekstWaarschuwingen(rel, tekst), ...blokWaarschuwingen(rel, tekst), ...vormWaarschuwingen(rel, tekst), ...zinWaarschuwingen(rel, tekst)];
+    assert.deepEqual(meldingen, [], rel);
+    assert.ok(tekst.trimEnd().endsWith("---\n\n[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)"), `${rel}: vaste voetregel`);
+  }
 });

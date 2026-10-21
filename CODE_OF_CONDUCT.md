@@ -21,3 +21,7 @@ Omnibus is een hulpmiddel voor auditors en onderzoekers. Wie hier meedenkt, meld
 Zie je gedrag dat hier niet past, mail dan naar [info@rijksmap.nl](mailto:info@rijksmap.nl). Meldingen worden vertrouwelijk behandeld. De beheerder kan berichten aanpassen of verwijderen en kan deelnemers tijdelijk of blijvend uitsluiten.
 
 Deze gedragscode is gebaseerd op de [Contributor Covenant](https://www.contributor-covenant.org/), versie 2.1.
+
+---
+
+[↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)

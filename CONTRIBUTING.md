@@ -22,3 +22,7 @@ Fijn dat je wilt helpen! Alles over meedoen staat in de documentatie:
 ## Rechten
 
 Wat je bijdraagt, bied je aan onder de licentie van het project: de [PolyForm Noncommercial License 1.0.0](LICENSE), tenzij anders afgesproken. Draag alleen materiaal bij dat je mag delen, en vermeld materiaal van anderen. De licentie geeft geen rechten op de brondocumenten die Omnibus verwerkt.
+
+---
+
+[↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)

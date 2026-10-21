@@ -47,7 +47,7 @@
 
 ## Volgende stap
 
-Terug naar de [wegwijzer](README.md).
+Zie de begrippen aan het werk in [werken met Omnibus](gebruiken/werken-met-omnibus.md).
 
 ---
 

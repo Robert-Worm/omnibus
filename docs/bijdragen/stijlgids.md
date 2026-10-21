@@ -112,4 +112,4 @@ Ga terug naar [ontwikkelen](ontwikkelen.md) en lees hoe je [documentatie control
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

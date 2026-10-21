@@ -44,3 +44,7 @@ Omnibus draait lokaal en als [proefversie online](https://omnibus.sliplane.app),
 ## Verder lezen
 
 De [acceptatiecontracten](docs/beheer/acceptatiecontracten.md) en de [architectuur](docs/bijdragen/architectuur.md) beschrijven wat beschermd moet blijven. `npm run check:code-only` zoekt naar bestanden en geheimen die niet in Git horen; het is geen volledige beveiligingsscan.
+
+---
+
+[↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)

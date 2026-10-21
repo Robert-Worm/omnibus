@@ -57,4 +57,4 @@ Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md). Heb je ee
 
 ---
 
-[↑ Terug naar Omnibus](../README.md)
+[↑ Omnibus](../README.md) · [Begrippen](begrippen.md) · [Routekaart](routekaart.md)

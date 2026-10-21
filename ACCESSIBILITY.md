@@ -19,3 +19,7 @@
 ## Een barrière melden
 
 Loop je ergens tegenaan? [Meld het als fout](https://github.com/Robert-Worm/omnibus/issues/new?template=bug_report.md&labels=accessibility) en zet "Toegankelijkheid" in de titel. Vermeld het scherm, wat er misging, en welk hulpmiddel en welke browser je gebruikt.
+
+---
+
+[↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)

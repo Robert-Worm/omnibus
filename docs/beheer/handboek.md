@@ -66,4 +66,4 @@ Lees wat je doet als er iets misgaat: het [storingsdraaiboek](draaiboek.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -111,16 +111,20 @@ Daarna staat de bron op ✅ in de voortgang en wordt je claim gesloten. Hoe de b
 
 ## Veelgestelde vragen
 
-**Moet ik zelf de technische controles draaien?**
+### Moet ik zelf de technische controles draaien?
+
 Nee. Ben je technisch onderlegd, dan kun je met `npm run content:prepare` en `npm run content:intake` alvast een controlebestand maken; zie [pakket controleren](../beheer/pakket-controleren.md). Het hoeft niet.
 
-**Wat als de AI fouten maakt?**
+### Wat als de AI fouten maakt?
+
 Dat gebeurt. Daarom controleer jij, en daarna de beheerder. Meld twijfels gewoon in je toelichting.
 
-**Mag ik elke bron verwerken?**
+### Mag ik elke bron verwerken?
+
 Bijna. Een paar rapporten op de Rijksmap zijn niet openbaar; die hebben geen claimlink. Bij kaders met auteursrecht staat 🔒 *toestemming nodig* in de [werklijst wetten en kaders](werklijst-wetten-en-kaders.md); overleg dan eerst in Discussions.
 
-**Wat betekent HOLD?**
+### Wat betekent HOLD?
+
 Een punt dat nog niet goed genoeg onderbouwd is: er ontbreekt bewijs of een controle. HOLD-punten blijven zichtbaar en worden niet stilletjes goedgekeurd. Zie de [begrippenlijst](../begrippen.md).
 
 ## Samengevat
@@ -133,4 +137,4 @@ Nog geen claim? Kies een bron in de [voortgang](voortgang.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

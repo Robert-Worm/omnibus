@@ -2,9 +2,10 @@
 // opsporen en de voortgangspagina's maken. Zonder bestands- of netwerktoegang, zodat
 // alles te testen is (zie voortgang.test.mjs). voortgang.mjs koppelt dit aan GitHub.
 
-export const VOET = "[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
+export const VOET = "[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
 const DAG = 24 * 60 * 60 * 1000;
 export const MAX_CLAIMS = 5;
+export const KORTE_PAGINA = 60; // gelijk aan scripts/check-docs.mjs
 const CLAIM_TEMPLATE = "bron-claimen.yml";
 const COMMAND = /^\s*\/(inleveren|vrijgeven)\b/im;
 const mark = (key) => `<!-- omnibus:${key} -->`;
@@ -394,7 +395,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       b.status === "open" ? claimActie(titel, url)
         : b.issue ? `[Claim van @${b.door}](${b.issue})`
         : b.status === "toestemming nodig" ? `[Overleg](${repoUrl}/discussions)`
-        : b.status === "mogelijk dubbel" && b.dubbel_van ? `[Ander rapport](${b.dubbel_van})`
+        : b.status === "mogelijk dubbel" && b.dubbel_van ? `[Ander rapport](${b.dubbel_van} "Ander rapport dan: ${String(titel).replace(/"/g, "”")}")`
         : "–";
     bestanden["docs/bijdragen/werklijst-wetten-en-kaders.md"] = [
       "# Werklijst wetten en kaders",
@@ -613,6 +614,9 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
     ].join("\n");
 
+    // Een korte pagina krijgt geen "Samengevat" (zie de bouwstenen).
+    for (const [pad, tekst] of Object.entries(bestanden))
+      if (pad.endsWith(".md") && tekst.split("\n").length < KORTE_PAGINA) bestanden[pad] = tekst.replace(/## Samengevat\n\n[^\n]*\n\n/, "");
     return { bestanden, tellingen, stats: { rapporten: rows.length, inDatabase: inDb.length, bezig: busy.length, dubbel: dubbelVan.size } };
   }
 

@@ -25,14 +25,10 @@ flowchart LR
 | [`data-transfer/`](data-transfer/README.md) | Een database op de server ontvangen en tegen vaste controlegetallen controleren |
 | [`first-start/`](first-start/README.md) | De allereerste start op de server, voordat de database er staat |
 
-## Samengevat
-
-De proefversie draait via één Dockerfile met de openbare database erin. De vier andere mappen (image maken, controleren, database ontvangen, eerste start) blijven klaarliggen voor een route met een aparte database.
-
 ## Volgende stap
 
 Begin bij [online zetten in een container](container/README.md), of bekijk wat er voor de demo nog moet gebeuren in de [checklist live demo](../docs/beheer/live-demo-checklist.md).
 
 ---
 
-[↑ Wegwijzer](../docs/README.md) · [Runtimepakket](../docs/beheer/runtime-pakket.md) · [Routekaart](../docs/routekaart.md)
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

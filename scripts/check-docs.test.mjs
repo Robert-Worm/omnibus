@@ -3,16 +3,16 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, blokWaarschuwingen, afbeeldingWaarschuwingen, beeldbestandWaarschuwingen, schemaWaarschuwingen, SCHEMAKLEUREN, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, tekstWaarschuwingen, voetregel, heeftVoetregel, vormWaarschuwingen, blokWaarschuwingen, afbeeldingWaarschuwingen, beeldbestandWaarschuwingen, schemaWaarschuwingen, SCHEMAKLEUREN, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
-const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
+const VOET = "---\n\n[↑ a](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)\n";
 const goed = (extra = "") =>
-  `# Titel\n\n<!-- paginatype: naslag -->\n\n> **In het kort:** uitleg.\n\n## Uitleg\n${extra}\n## Samengevat\n\nKort.\n\n## Volgende stap\n\nVerder.\n\n${VOET}`;
+  `# Titel\n\n<!-- paginatype: naslag -->\n\n> **In het kort:** uitleg.\n\n## Uitleg\n${extra}\n## Volgende stap\n\nVerder.\n\n${VOET}`;
 
 function maakRepo(bestanden) {
   const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
-  for (const [rel, inhoud] of Object.entries(bestanden)) {
+  for (const [rel, inhoud] of Object.entries({ "docs/begrippen.md": "# Begrippen\n", "docs/routekaart.md": "# Routekaart\n", "docs/a/README.md": "# a\n", ...bestanden })) {
     mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     writeFileSync(path.join(root, rel), inhoud);
   }
@@ -81,7 +81,7 @@ test("ontbrekende onderdelen van het paginapatroon worden gemeld", () => {
     assert.match(m, /In het kort/);
     assert.match(m, /paginatype/);
     assert.match(m, /Volgende stap/);
-    assert.match(m, /navigatieregel/);
+    assert.match(m, /vaste voetregel: \[↑ a\]\(README\.md\) · \[Wegwijzer\]/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -154,8 +154,12 @@ test("elk paginatype heeft zijn eigen verplichte onderdelen", () => {
   assert.match(paginatypeMeldingen(t("blog"))[0], /onbekend paginatype "blog"/);
   assert.match(paginatypeMeldingen(t("start", "## Samengevat\n"))[0], /startpagina zonder/);
   assert.deepEqual(paginatypeMeldingen(t("start", "| a | b |\n")), []);
-  assert.deepEqual(paginatypeMeldingen(t("taak", "### 1. Doe iets\n\n## Samengevat\n")), []);
-  assert.deepEqual(paginatypeMeldingen(t("taak", "Uitleg.\n")), ['mist de kop "## Samengevat"', "taakpagina zonder genummerde stappen"]);
+  const lang = "Tekst.\n".repeat(60);
+  assert.deepEqual(paginatypeMeldingen(t("taak", "### 1. Doe iets\n\n" + lang + "## Samengevat\n")), []);
+  assert.deepEqual(paginatypeMeldingen(t("taak", lang)), ['mist de kop "## Samengevat"', "taakpagina zonder genummerde stappen"]);
+  assert.deepEqual(paginatypeMeldingen(t("taak", "### 1. Doe iets\n")), [], "een korte taakpagina heeft geen Samengevat nodig");
+  assert.match(paginatypeMeldingen(t("naslag", "## Samengevat\n\nKort.\n")).join(), /laat "## Samengevat" weg/);
+  assert.match(paginatypeMeldingen(t("naslag", "## Volgende stap\n\nTerug naar de [wegwijzer](README.md).\n")).join(), /wijst vooruit/);
   assert.match(paginatypeMeldingen(t("data", "Lijst.\n"))[0], /Automatisch bijgewerkt/);
   assert.match(paginatypeMeldingen(t("logboek", "Geen tabel.\n"))[0], /zonder tabel/);
   assert.deepEqual(paginatypeMeldingen(t("naslag", "```text\n<!-- paginatype: taak -->\n```\n")), [], "voorbeelden in codeblokken tellen niet");
@@ -236,4 +240,26 @@ test("schema's: vaste kleuren en van boven naar beneden bij meer dan vier vakken
   assert.deepEqual(schemaWaarschuwingen("docs/a.md", "```mermaid\nflowchart LR\n    A[\"a\"] --> B[\"b\"]\n" + def + "```\n"), []);
   const w = schemaWaarschuwingen("docs/a.md", "```mermaid\nflowchart LR\n    A[\"a\"] --> B[\"b\"] --> C[\"c\"] --> D[\"d\"] --> E[\"e\"]\n    classDef rood fill:#f00;\n    style A fill:#0f0\n```\n").join("\n");
   for (const m of [/5 vakken van links naar rechts/, /zonder de vaste kleur/, /classDef rood/, /losse style-regel/]) assert.match(w, m);
+});
+
+test("de voetregel per niveau: ouder, wegwijzer, begrippen en routekaart, zonder de pagina zelf", () => {
+  const titel = (r) => ({ "docs/gebruiken/README.md": "Gebruiken", "hosting/README.md": "Hosting", "skills/README.md": "Skills" })[r];
+  assert.equal(voetregel("docs/gebruiken/installeren.md", titel), "[↑ Gebruiken](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)");
+  assert.equal(voetregel("docs/gebruiken/README.md", titel), "[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)");
+  assert.equal(voetregel("docs/begrippen.md", titel), "[↑ Wegwijzer](README.md) · [Routekaart](routekaart.md)");
+  assert.equal(voetregel("docs/README.md", titel), "[↑ Omnibus](../README.md) · [Begrippen](begrippen.md) · [Routekaart](routekaart.md)");
+  assert.equal(voetregel("hosting/container/README.md", titel), "[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)");
+  assert.equal(voetregel("SECURITY.md", titel), "[↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)");
+  for (const r of ["README.md", "AGENTS.md", "CHANGELOG.md", "skills/x/SKILL.md", "skills/x/references/y.md", ".github/ISSUE_TEMPLATE/a.md"]) assert.equal(heeftVoetregel(r), false, r);
+  assert.equal(heeftVoetregel("skills/x/README.md"), true);
+});
+
+test("nette tekst: geen emoji in koppen, geen afgebroken alinea's, alleen toegestane HTML, verschillende linkteksten", () => {
+  const goed = "# T\n\nEen alinea op één regel met [installeren](a.md) en [installeren](a.md#stap).\n\nOpen <http://127.0.0.1:4319/>.\n\n- lijst\n- lijst\n\n<details><summary><b>X</b></summary>\n\n</details>\n";
+  assert.deepEqual(tekstWaarschuwingen("docs/a.md", goed), []);
+  const fout = "## Klaar ✅\n\nEen alinea die\nover twee regels loopt.\n\n<div>blok</div>\n\n[releases](a.md) en [releases](b.md)\n";
+  const w = tekstWaarschuwingen("docs/a.md", fout).join("\n");
+  for (const m of [/emoji in een kop/, /afgebroken/, /<div> is niet toegestaan/, /linktekst "releases" wijst ook naar a\.md/]) assert.match(w, m);
+  assert.deepEqual(tekstWaarschuwingen("docs/a.md", '[Claimen](a "Claimen: A") en [Claimen](b "Claimen: B")\n'), [], "een titel maakt gelijke linkteksten verschillend");
+  assert.deepEqual(tekstWaarschuwingen("skills/x/SKILL.md", fout), [], "instructies voor AI-assistenten tellen niet mee");
 });

@@ -117,8 +117,8 @@ De meeste problemen komen door een ontbrekend programma, een verkeerde Node-vers
 
 ## Volgende stap
 
-Terug naar [Omnibus installeren](installeren.md).
+Werkt Omnibus? Lees dan [werken met Omnibus](werken-met-omnibus.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Omnibus gebruiken](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

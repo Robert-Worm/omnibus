@@ -28,14 +28,10 @@ Een besluit geldt tot er een nieuw besluit is dat het vervangt. Wil je een beslu
 | <a id="b-002"></a>B-002 | 2026-10-19 | De openbare database staat als zip bij de releases, niet in Git | Code en inhoud blijven gescheiden; de repository blijft klein | `check:code-only` weigert databases en bronbestanden in Git |
 | <a id="b-001"></a>B-001 | 2026-10-19 | Geen accounts, inloggen of betalingen; projecten blijven op de eigen computer | Eenvoud en privacy; Omnibus is niet-commercieel | Zie [bewust niet](../routekaart.md#bewust-niet) in de routekaart |
 
-## Samengevat
-
-Deze besluiten bepalen nu hoe Omnibus werkt. Kort gezegd: geen account, de database apart, één woord voor het resultaat en voortgang op GitHub. Verder hooguit vijf claims per persoon en een vaste prijs online.
-
 ## Volgende stap
 
-Terug naar het [beheerhandboek](handboek.md).
+Lees in het [beheerhandboek](handboek.md) welke taken er per dag, week en release zijn.
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

@@ -94,4 +94,4 @@ Lees hoe een database op de server wordt [ontvangen en gecontroleerd](../data-tr
 
 ---
 
-[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Routekaart](../../docs/routekaart.md)
+[↑ Hosting](../README.md) · [Wegwijzer](../../docs/README.md) · [Begrippen](../../docs/begrippen.md) · [Routekaart](../../docs/routekaart.md)

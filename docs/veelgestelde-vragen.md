@@ -12,7 +12,7 @@ Een hulpmiddel waarmee je als auditor of onderzoeker een referentiekader samenst
 
 ### Wat kost het?
 
-Niets. Omnibus is een niet-commercieel project. Je mag het vrij gebruiken, aanpassen en delen, maar niet commercieel. Zie de [licentie](../README.md#licentie).
+Niets. Omnibus is een niet-commercieel project. Je mag het vrij gebruiken, aanpassen en delen, maar niet commercieel. Zie [licentie in de README](../README.md#licentie).
 
 ### Is Omnibus een officieel product van de overheid?
 
@@ -66,7 +66,7 @@ Bij voorkeur een [aanbevolen rapport](bijdragen/werklijst-aanbevolen.md) van de 
 
 Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voor iemand anders. Na 60 dagen zonder reactie gebeurt dat automatisch.
 
-### Wat betekent een 🔁 in de werklijst?
+### Wat betekent *Mogelijk dubbel* in de werklijst?
 
 Dat rapport staat waarschijnlijk twee keer op de Rijksmap, bijvoorbeeld op twee websites. Claim dan het andere rapport; de link staat erbij.
 
@@ -82,7 +82,7 @@ Dat is een bewust besluit van de beheerder. De rechten blijven bij The Institute
 
 ### Van wie is wat ik bijdraag?
 
-Je bijdrage valt onder dezelfde [licentie](../LICENSE) als het project. De bronteksten zelf blijven van hun uitgevers.
+Je bijdrage valt onder dezelfde [licentie (LICENSE)](../LICENSE) als het project. De bronteksten zelf blijven van hun uitgevers.
 
 ## AI
 

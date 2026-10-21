@@ -16,3 +16,7 @@
 ## Verder lezen
 
 [Architectuur](../docs/bijdragen/architectuur.md) · [`app/`](../app/README.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

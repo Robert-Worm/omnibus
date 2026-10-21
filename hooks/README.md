@@ -5,3 +5,7 @@
 ## Verder lezen
 
 [`app/`](../app/README.md) · [Architectuur](../docs/bijdragen/architectuur.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

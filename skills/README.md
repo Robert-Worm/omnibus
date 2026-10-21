@@ -66,3 +66,7 @@ De skills vallen onder de [PolyForm Noncommercial License 1.0.0](../LICENSE). El
 ## Verder lezen
 
 [Een bron verwerken](../docs/bijdragen/bron-verwerken.md) · [Eigen documenten](../docs/gebruiken/eigen-documenten.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

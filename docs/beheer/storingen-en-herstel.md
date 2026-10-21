@@ -118,8 +118,8 @@ De test start versie A, daarna versie B, en probeert verkeerde combinaties van p
 
 ## Volgende stap
 
-Terug naar het [beheeroverzicht](README.md).
+Gaat het om claims, releases of GitHub? Kijk dan in het [storingsdraaiboek](draaiboek.md).
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Beheer](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

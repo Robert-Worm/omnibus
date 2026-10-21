@@ -24,3 +24,7 @@ De `review-*`- en `verify-*`-scripts zijn controles die de beheerder gebruikt bi
 ## Verder lezen
 
 [Ontwikkelen](../docs/bijdragen/ontwikkelen.md) · [Database publiceren](../docs/beheer/database-publiceren.md)
+
+---
+
+[↑ Omnibus](../README.md) · [Wegwijzer](../docs/README.md) · [Begrippen](../docs/begrippen.md) · [Routekaart](../docs/routekaart.md)

@@ -13,9 +13,9 @@ Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in.
 | Status | Aanbevolen rapporten | Alle rapporten | Wetten en kaders |
 | --- | ---: | ---: | ---: |
 | ✅ In database | 27 | 27 | 7 |
-| 🔄 In bewerking | 1 | 1 | 0 |
+| 🔄 In bewerking | 0 | 0 | 0 |
 | 📦 Ingeleverd | 0 | 0 | 0 |
-| ⬜ Open | 512 | 9007 | 23 |
+| ⬜ Open | 513 | 9008 | 23 |
 | 🔒 Niet beschikbaar | 2 | 81 | 9 |
 
 **Legenda**
@@ -59,9 +59,7 @@ Meer kiezen:
 
 ## Nu in bewerking
 
-| Bron | Claim | Sinds | Status |
-| --- | --- | --- | --- |
-| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | [#4](https://github.com/Robert-Worm/omnibus/issues/4) · @Robert-Worm · – | 2026-10-20 | 🔄 In bewerking |
+Nog niemand. Kies hierboven een bron.
 
 ## Wacht op de beheerder
 
@@ -121,7 +119,7 @@ Nog geen bijdragen via claims. De bronnen die nu in de database zitten, zijn doo
 
 ## Samengevat
 
-27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Aan 1 bron wordt gewerkt.
+27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Op dit moment werkt niemand aan een bron.
 
 ## Volgende stap
 
@@ -129,4 +127,4 @@ Kies een bron en klik op **Claimen**. Hoe claimen, inleveren en vrijgeven werkt,
 
 ---
 
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
+[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
