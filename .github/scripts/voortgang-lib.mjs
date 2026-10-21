@@ -319,8 +319,18 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
 
   // ---------- pagina's ----------
   const claimLink = (titel, bron) =>
-    `${repoUrl}/issues/new?template=${CLAIM_TEMPLATE}&title=${encodeURIComponent("Claim: " + titel.slice(0, 120))}&bron=${encodeURIComponent(bron)}`;
-  const short = (s, n = 90) => (s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s);
+    `${repoUrl}/issues/new?template=${CLAIM_TEMPLATE}&title=${encodeURIComponent("Claim: " + titel.slice(0, 120)).replace(/[()]/g, (c) => (c === "(" ? "%28" : "%29"))}&bron=${encodeURIComponent(bron)}`;
+  // Afkorten op een woordgrens, met … erachter.
+  const short = (s, n = 90) => {
+    if (s.length <= n) return s;
+    const kort = s.slice(0, n - 1), spatie = kort.lastIndexOf(" ");
+    return (spatie > n / 2 ? kort.slice(0, spatie) : kort).replace(/[\s,;:.–-]+$/, "") + "…";
+  };
+  // Anker zoals GitHub het van een kop maakt (zelfde regels als scripts/check-docs.mjs).
+  const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-");
+  // Claimlink met een titel die de bron noemt, zodat elke link herkenbaar is (ook voor een schermlezer).
+  const claimActie = (titel, url) => `[Claimen](${url} "Claimen: ${String(titel).replace(/"/g, "”")}")`;
+  const AUTOMATISCH = "*Automatisch bijgewerkt door het voortgangsscript. Pas deze pagina niet met de hand aan; de gegevens staan in `.github/voortgang/`.*";
   const esc = (s) => String(s).replace(/\|/g, "/");
   const nl = (n) => n.toLocaleString("nl-NL");
 
@@ -367,7 +377,25 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     }) }));
     const allKaders = kaderRows.flatMap((k) => k.items);
 
-    const statusLabel = { "in database": "✅ in database", "in bewerking": "🔄 in bewerking", ingeleverd: "📦 ingeleverd", open: "⬜ open", "toestemming nodig": "🔒 toestemming nodig", "niet openbaar": "🔒 niet openbaar", "mogelijk dubbel": "🔁 mogelijk dubbel" };
+    const statusLabel = { "in database": "✅ In database", "in bewerking": "🔄 In bewerking", ingeleverd: "📦 Ingeleverd", open: "⬜ Open", "toestemming nodig": "🔒 Toestemming nodig", "niet openbaar": "🔒 Niet openbaar", "mogelijk dubbel": "🔁 Mogelijk dubbel" };
+    const legenda = (extra = []) => [
+      "**Legenda**",
+      "",
+      "- ✅ In database: zit in de huidige database",
+      "- 🔄 In bewerking: iemand heeft de bron geclaimd",
+      "- 📦 Ingeleverd: wacht op controle door de beheerder",
+      "- ⬜ Open: je kunt hem claimen",
+      "- 🔒 Niet beschikbaar: niet openbaar, of eerst toestemming van de uitgever nodig",
+      "- 🔁 Mogelijk dubbel: lijkt hetzelfde als een ander rapport",
+      ...extra.map((e) => `- ${e}`),
+    ].join("\n");
+    // Actie bij een bron: claimen, de lopende claim, overleg of niets.
+    const actie = (b, titel, url) =>
+      b.status === "open" ? claimActie(titel, url)
+        : b.issue ? `[Claim van @${b.door}](${b.issue})`
+        : b.status === "toestemming nodig" ? `[Overleg](${repoUrl}/discussions)`
+        : b.status === "mogelijk dubbel" && b.dubbel_van ? `[Ander rapport](${b.dubbel_van})`
+        : "–";
     bestanden["docs/bijdragen/werklijst-wetten-en-kaders.md"] = [
       "# Werklijst wetten en kaders",
       "",
@@ -375,11 +403,15 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       "> **In het kort:** welke wetten, regels en normenkaders in Omnibus kunnen, wat er al in zit, en welke je kunt claimen.",
       "",
+      AUTOMATISCH,
+      "",
       "## Wat staat hier",
       "",
       "Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. Onder *Rechten* staat per groep waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.",
       "",
       "Mis je een bron? Stel hem voor in [Discussions](" + `${repoUrl}/discussions` + ").",
+      "",
+      legenda(),
       "",
       ...kaderRows.flatMap(({ g, items }) => [
         `## ${g.titel}`,
@@ -388,7 +420,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
         "",
         "| Bron | Code | Status | Actie |",
         "| --- | --- | --- | --- |",
-        ...items.map((b) => `| [${esc(b.titel)}](${b.link}) | \`${b.id}\` | ${statusLabel[b.status]}${b.door ? ` · @${b.door}` : ""} | ${b.status === "open" ? `[Claimen](${claimLink(b.titel, b.id)})` : b.issue ? `[Bekijk claim](${b.issue})` : b.status === "toestemming nodig" ? `[Overleg](${repoUrl}/discussions)` : ""} |`),
+        ...items.map((b) => `| [${esc(b.titel)}](${b.link}) | \`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
         "",
       ]),
       "## Samengevat",
@@ -398,8 +430,6 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "## Volgende stap",
       "",
       `Kies een open bron en klik op **Claimen**. Daarna volg je [een bron verwerken](bron-verwerken.md).`,
-      "",
-      "*Deze pagina wordt automatisch bijgewerkt. Pas haar niet met de hand aan; de gegevens staan in `.github/voortgang/`.*",
       "",
       "---",
       "",
@@ -420,11 +450,11 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     const maandNaam = (m) => new Date(`${m}-01T00:00:00Z`).toLocaleDateString("nl-NL", { month: "long", year: "numeric", timeZone: "UTC" });
     const tempo = bijdragen.length
       ? [
-          "| Maand | ✅ Verwerkt | 📦 Ingeleverd | |",
-          "| --- | ---: | ---: | --- |",
+          "| Maand | Verwerkt | Ingeleverd |",
+          "| --- | ---: | ---: |",
           ...[...perMaand.keys()].sort().reverse().slice(0, 12).map((m) => {
             const v = perMaand.get(m);
-            return `| ${maandNaam(m)} | ${v.verwerkt} | ${v.ingeleverd} | ${"▇".repeat(Math.min(v.verwerkt + v.ingeleverd, 30))} |`;
+            return `| ${maandNaam(m)} | ${v.verwerkt} | ${v.ingeleverd} |`;
           }),
           "",
           `**Bijdragers:** ${[...bijdragers].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([u, n]) => `@${u} (${n})`).join(" · ")}`,
@@ -451,26 +481,41 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       "<!-- paginatype: data -->",
       "",
-      "> **In het kort:** wat er al in de Omnibus-database zit, wie waaraan werkt, en welke bronnen nog open staan. Deze pagina werkt zichzelf bij.",
+      "> **In het kort:** wat er al in de Omnibus-database zit, wat je kunt claimen en wie waaraan werkt.",
+      "",
+      AUTOMATISCH,
       "",
       "## Zo staat het ervoor",
       "",
-      "| | ✅ In database | 🔄 In bewerking | 📦 Ingeleverd | ⬜ Open | 🔒 Niet beschikbaar |",
-      "| --- | ---: | ---: | ---: | ---: | ---: |",
-      `| **Aanbevolen rapporten** (Auditdienst Rijk, advies) | ${count(aanbevolen, "in database")} | ${count(aanbevolen, "in bewerking")} | ${count(aanbevolen, "ingeleverd")} | ${count(aanbevolen, "open")} | ${nietBeschikbaar(aanbevolen)} |`,
-      `| **Alle rapporten op de Rijksmap** | ${count(rows, "in database")} | ${count(rows, "in bewerking")} | ${count(rows, "ingeleverd")} | ${count(rows, "open")} | ${nietBeschikbaar(rows)} |`,
-      `| **Wetten en kaders** | ${count(allKaders, "in database")} | ${count(allKaders, "in bewerking")} | ${count(allKaders, "ingeleverd")} | ${count(allKaders, "open")} | ${nietBeschikbaar(allKaders)} |`,
-      `| **Onderzoeksmodellen** | ${verwerkt.modellen} | | | | |`,
+      `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in.`,
       "",
-      "🔒 *Niet beschikbaar*: het rapport is niet openbaar, lijkt dubbel met een ander rapport, of voor het kader is toestemming van de uitgever nodig.",
+      "| Status | Aanbevolen rapporten | Alle rapporten | Wetten en kaders |",
+      "| --- | ---: | ---: | ---: |",
+      ...[["✅ In database", "in database"], ["🔄 In bewerking", "in bewerking"], ["📦 Ingeleverd", "ingeleverd"], ["⬜ Open", "open"]]
+        .map(([label, st]) => `| ${label} | ${count(aanbevolen, st)} | ${count(rows, st)} | ${count(allKaders, st)} |`),
+      `| 🔒 Niet beschikbaar | ${nietBeschikbaar(aanbevolen)} | ${nietBeschikbaar(rows)} | ${nietBeschikbaar(allKaders)} |`,
       "",
-      `Database van ${verwerkt.database}.`,
+      legenda(["⚠️ achter een model: niet op de lijst met [aanbevolen modellen](bron-verwerken.md#welk-ai-model-gebruik-je)", "⏰ wacht langer dan 7 dagen op de beheerder"]),
+      "",
+      "## Waar kun je mee beginnen",
+      "",
+      "Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrapporten met veel bruikbare normen en toetspunten. Klik op **Claimen** om er een op je naam te zetten.",
+      "",
+      "| Bron | Datum | Status | Actie |",
+      "| --- | --- | --- | --- |",
+      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${r.datum} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
+      "",
+      "Meer kiezen:",
+      "",
+      `- [Alle ${aanbevolen.length} aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.`,
+      `- [Alle ${nl(rows.length)} rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren. Dit bestand toont de stand van de database; wie waaraan werkt, staat alleen op deze pagina.`,
+      "- [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.",
       "",
       "## Nu in bewerking",
       "",
       busy.length
-        ? ["| Bron | Door | Model | Sinds | Status |", "| --- | --- | --- | --- | --- |", ...busy.map((c) => `| [${esc(short(nameOf(c)))}](${linkOf(c)}) | @${c.user} | ${esc(c.model || "–")}${c.model && !isAanbevolen(c.model) ? " ⚠️" : ""} | ${c.since} | [${statusLabel[c.status]}](${c.url}) |`)].join("\n")
-        : "Nog niemand. Wees de eerste: kies hieronder een bron.",
+        ? ["| Bron | Claim | Sinds | Status |", "| --- | --- | --- | --- |", ...busy.map((c) => `| [${esc(short(nameOf(c)))}](${linkOf(c)}) | [#${c.number}](${c.url}) · @${c.user} · ${esc(c.model || "–")}${c.model && !isAanbevolen(c.model) ? " ⚠️" : ""} | ${c.since} | ${statusLabel[c.status]} |`)].join("\n")
+        : "Nog niemand. Kies hierboven een bron.",
       "",
       "## Wacht op de beheerder",
       "",
@@ -479,31 +524,17 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
             ...wachtend.map((c) => `| [${esc(short(nameOf(c)))}](${c.url}) | @${c.user} | ${c.ingeleverd.slice(0, 10)} | ${c.dagen} ${c.dagen === 1 ? "dag" : "dagen"}${c.dagen >= 7 ? " ⏰" : ""} |`)].join("\n")
         : "Er wacht nu niets op de beheerder.",
       "",
-      "## Waar kun je mee beginnen",
-      "",
-      "Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrapporten met veel bruikbare normen en toetspunten. Klik op **Claimen** om er een op je naam te zetten.",
-      "",
-      "| Rapport | Datum | Ministerie | |",
-      "| --- | --- | --- | --- |",
-      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) | ${r.datum} | ${esc(r.ministerie)} | [Claimen](${r.claimen}) |`),
-      "",
-      "Meer kiezen:",
-      "",
-      `- [Alle ${aanbevolen.length} aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.`,
-      `- [Alle ${nl(rows.length)} rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren. Dit bestand toont de stand van de database; wie waaraan werkt, staat alleen op deze pagina.`,
-      "- [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.",
-      "",
       "## Al in de database",
       "",
-      "<details><summary><b>" + inDb.length + " rapporten</b></summary>",
+      "<details><summary><b>Rapporten</b> · " + inDb.length + "</summary>",
       "",
-      "| Rapport | Datum | Ministerie |",
-      "| --- | --- | --- |",
-      ...inDb.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) | ${r.datum} | ${esc(r.ministerie)} |`),
+      "| Bron | Datum |",
+      "| --- | --- |",
+      ...inDb.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${r.datum} |`),
       "",
       "</details>",
       "",
-      "<details><summary><b>" + count(allKaders, "in database") + " wetten en kaders</b></summary>",
+      "<details><summary><b>Wetten en kaders</b> · " + count(allKaders, "in database") + "</summary>",
       "",
       ...allKaders.filter((k) => k.status === "in database").map((k) => `- ${k.titel}`),
       "",
@@ -519,9 +550,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       "## Volgende stap",
       "",
-      "Kies een bron en klik op **Claimen**. Hoe claimen, inleveren en vrijgeven werkt, staat in [meedoen](README.md). Een ⚠️ achter een model betekent dat het niet op de lijst met [aanbevolen modellen](bron-verwerken.md#welk-ai-model-gebruik-je) staat.",
-      "",
-      "*Automatisch bijgewerkt. De gegevens staan in `.github/voortgang/`; het script in `.github/scripts/voortgang.mjs`.*",
+      "Kies een bron en klik op **Claimen**. Hoe claimen, inleveren en vrijgeven werkt, staat in [meedoen](README.md).",
       "",
       "---",
       "",
@@ -533,12 +562,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     const perMin = new Map();
     for (const r of aanbevolen) (perMin.get(r.ministerie) || perMin.set(r.ministerie, []).get(r.ministerie)).push(r);
     const ministeries = [...perMin.keys()].sort((a, b) => perMin.get(b).length - perMin.get(a).length || a.localeCompare(b));
-    const actieVan = (r) => {
-      if (r.status === "open") return `[Claimen](${r.claimen})`;
-      if (r.status === "mogelijk dubbel") return `${statusLabel[r.status]} met [dit rapport](${r.dubbel_van})`;
-      if (r.issue) return `[${statusLabel[r.status]}](${r.issue})${r.door ? ` @${r.door}` : ""}`;
-      return statusLabel[r.status];
-    };
+    const ministerieKop = (m) => `${m} · ${count(perMin.get(m), "open")} open`;
     bestanden["docs/bijdragen/werklijst-aanbevolen.md"] = [
       "# Werklijst aanbevolen rapporten",
       "",
@@ -546,16 +570,30 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       `> **In het kort:** de ${aanbevolen.length} adviesrapporten van de Auditdienst Rijk op de Rijksmap, per ministerie. Ze leveren veel bruikbare normen en toetspunten op. Klik op **Claimen** om er een op je naam te zetten.`,
       "",
+      AUTOMATISCH,
+      "",
       `**Stand:** ${count(aanbevolen, "in database")} in de database · ${count(aanbevolen, "in bewerking") + count(aanbevolen, "ingeleverd")} in bewerking of ingeleverd · ${count(aanbevolen, "open")} open.`,
+      "",
+      legenda(),
+      "",
+      "## Per ministerie",
+      "",
+      "Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je het snelst en het best.",
+      "",
+      "| Ministerie | Open | Totaal |",
+      "| --- | ---: | ---: |",
+      ...ministeries.map((m) => `| [${esc(m)}](#${anker(ministerieKop(m))}) | ${count(perMin.get(m), "open")} | ${perMin.get(m).length} |`),
       "",
       ...ministeries.flatMap((m) => {
         const list = perMin.get(m).sort((a, b) => b.datum.localeCompare(a.datum));
         return [
+          `### ${ministerieKop(m)}`,
+          "",
           `<details><summary><b>${m}</b> · ${count(list, "open")} open van ${list.length}</summary>`,
           "",
-          "| Rapport | Datum | Status |",
-          "| --- | --- | --- |",
-          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap}) | ${r.datum} | ${actieVan(r)} |`),
+          "| Bron | Datum | Status | Actie |",
+          "| --- | --- | --- | --- |",
+          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap}) | ${r.datum} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
           "",
           "</details>",
           "",
@@ -563,13 +601,11 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       }),
       "## Samengevat",
       "",
-      "Kies een open rapport bij een ministerie dat je kent. Een rapport in je eigen vakgebied verwerk je het snelst en het best. Een 🔁 betekent dat het rapport waarschijnlijk dubbel in de Rijksmap staat; claim dan het andere rapport.",
+      "Kies een open rapport bij een ministerie dat je kent. Staat er 🔁 Mogelijk dubbel? Claim dan het andere rapport.",
       "",
       "## Volgende stap",
       "",
       `Na het claimen volg je [een bron verwerken](bron-verwerken.md). Alle ${nl(rows.length)} rapporten staan in [werklijst-rapporten.csv](werklijst-rapporten.csv).`,
-      "",
-      "*Automatisch bijgewerkt.*",
       "",
       "---",
       "",

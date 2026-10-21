@@ -425,3 +425,24 @@ test("het weekoverzicht noemt alleen namen en bronnen van de afgelopen week", as
   v = await draai(g);
   assert.equal(v.samenvatting(await v.loadClaims()), null, "een stille week geeft geen bericht");
 });
+
+test("gegenereerde pagina's volgen de bouwstenen: claimlinks met titel, geen lege koppen, kloppende ankers", async () => {
+  const g = nepGitHub();
+  const v = maakVoortgang({ data: data(), repo: "x/y", gh: g.gh, now: g.nu });
+  g.claim("anna", { bron: rapport("2026-open-rapport") });
+  const { bestanden } = v.build(await v.loadClaims());
+  for (const pad of ["voortgang.md", "werklijst-aanbevolen.md", "werklijst-wetten-en-kaders.md"]) {
+    const tekst = bestanden[`docs/bijdragen/${pad}`];
+    assert.match(tekst, /<!-- paginatype: data -->/, pad);
+    assert.match(tekst, /Automatisch bijgewerkt/, pad);
+    assert.doesNotMatch(tekst, /▇/, pad);
+    assert.doesNotMatch(tekst, /^\|\s*\|/m, `${pad}: lege kopcel`);
+    for (const [, titel] of tekst.matchAll(/\[Claimen\]\([^ )]+( "[^"]*")?\)/g)) assert.match(titel || "", /^ "Claimen: .+"$/, `${pad}: claimlink zonder titel`);
+    for (const regel of tekst.split("\n").filter((r) => r.startsWith("**Legenda"))) assert.ok(regel.split(/\s+/).length <= 25, `${pad}: legenda op één regel`);
+  }
+  const aanbevolen = bestanden["docs/bijdragen/werklijst-aanbevolen.md"];
+  const ankers = [...aanbevolen.matchAll(/\]\(#([^)]+)\)/g)].map((m) => m[1]);
+  const koppen = [...aanbevolen.matchAll(/^### (.+)$/gm)].map((m) => [...m[1].trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-"));
+  assert.ok(ankers.length > 0);
+  for (const a of ankers) assert.ok(koppen.includes(a), `anker #${a} zonder kop`);
+});

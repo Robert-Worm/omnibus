@@ -303,7 +303,7 @@ export function tabellen(ruw) {
 /** Tabelregels uit de bouwstenen. Fouten: lege kopcellen. Waarschuwingen: de rest. */
 export function tabelControle(rel, tekst) {
   const fouten = [], waarschuwingen = [];
-  if (/<!-- paginatype: data -->/.test(tekst) || rel === "CHANGELOG.md" || /^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) return { fouten, waarschuwingen };
+  if (rel === "CHANGELOG.md" || /^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) return { fouten, waarschuwingen };
   const woorden = (c) => c.replace(/\]\([^)]*\)/g, "]").replace(/`[^`]*`/g, "x").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
   for (const t of tabellen(tekst)) {
     const plek = `${rel}:${t.nr}`;

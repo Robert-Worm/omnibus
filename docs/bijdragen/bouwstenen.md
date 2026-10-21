@@ -54,7 +54,7 @@ Gebruik een tabel alleen voor informatie die je naast elkaar vergelijkt. Er zijn
 | Overzicht | `<Ding> \| Wat het is` | Begrippen, mappen, pagina's of opties uitleggen |
 | Leesroute | `Stap \| Lees \| Wat je daarna kunt` | De volgorde waarin je pagina's leest |
 | Status | `Onderdeel \| Status \| Toelichting` | Laten zien hoe ver iets is |
-| Werklijst | `Bron \| Datum \| Status \| Actie` | Bronnen die je kunt claimen of volgen |
+| Werklijst | `Bron \| Datum \| Status \| Actie` | Bronnen die je kunt claimen of volgen. Bij wetten en kaders staat `Code` in plaats van `Datum` |
 | Uitkomst | `Uitkomst \| Betekenis \| Wat je doet` | Meldingen of uitkomsten van een controle |
 
 **Regels voor elke tabel**

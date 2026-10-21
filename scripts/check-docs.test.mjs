@@ -194,5 +194,4 @@ test("tabellen volgen de bouwstenen", () => {
   assert.match(w, /a\.md:11: datum in een tabel als JJJJ-MM-DD/);
   assert.match(w, /a\.md:12: lege cel/);
   assert.doesNotMatch(w, /kolom "Stap"/, "stapnummers zijn geen hoeveelheden");
-  assert.deepEqual(tabelControle("docs/b.md", "<!-- paginatype: data -->\n" + fout), { fouten: [], waarschuwingen: [] }, "datapagina's volgen in #111");
 });
