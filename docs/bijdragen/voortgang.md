@@ -21,6 +21,10 @@ Database van 2026-10-19.
 | --- | --- | --- | --- | --- |
 | [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | @Robert-Worm | – | 2026-10-20 | [🔄 in bewerking](https://github.com/Robert-Worm/omnibus/issues/4) |
 
+## Wacht op de beheerder
+
+Er wacht nu niets op de beheerder.
+
 ## Waar kun je mee beginnen
 
 Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrapporten met veel bruikbare normen en toetspunten. Klik op **Claimen** om er een op je naam te zetten.
