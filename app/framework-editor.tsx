@@ -53,7 +53,7 @@ import ReportFrameworkAbout from './report-framework-about';
 import { cleanScopeDraft, admittedLines } from "@/lib/product-scope.mjs";
 import {makeProject,readProject,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
 import {serializeProject,parseProjectText,expandProject} from '@/lib/project-codec.mjs';
-import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue} from '@/lib/catalogue-runtime.mjs';
+import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
 import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {
   chooseReport,
@@ -91,6 +91,8 @@ import {WwkePointViewer} from './wwke-law-browser';
 import {buildingBlockViewer} from '@/lib/building-block-viewer.mjs';
 import reportPointCatalogue from '@/lib/report-point-catalogue.mjs';
 import {selectReportRows} from '@/lib/report-point-adapter.mjs';
+import {reportPointCounts} from '@/lib/report-point-counts.mjs';
+import DeferredDetails from './deferred-details';
 import LazyReportLibrary from "./lazy-report-library";
 import EvidenceLinks, { EvidenceDisplayContext } from "./evidence-links";
 import { referenceLabel, roleLabels } from "@/lib/report-reader.mjs";
@@ -98,7 +100,6 @@ import {lineEvidenceView} from '@/lib/evidence-presentation.mjs';
 import {
   sourceRelations,
   validateSourceItems,
-  visibleFrameworkLines,
 } from "@/lib/framework-source-items.mjs";
 
 import {
@@ -132,12 +133,12 @@ const restoreOptions = {
 export default function FrameworkEditor() {
   // Each catalogue publication supplies a current framework snapshot. Derived
   // framework data follows that snapshot instead of an implicit global read.
-  const [catalogueSnapshot,setCatalogueSnapshot]=useState(()=>({revision:catalogueRevision(),framework:baseFramework}));
+  const [catalogueSnapshot,setCatalogueSnapshot]=useState(()=>({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue}));
   const [contentNotice,setContentNotice]=useState('');
   const [contentFailure,setContentFailure]=useState(false);
   const contentAction=useRef<null|(()=>void)>(null);
   const contentRequest=useRef(0);
-  useEffect(()=>onCatalogueChange(()=>setCatalogueSnapshot({revision:catalogueRevision(),framework:baseFramework})),[]);
+  useEffect(()=>onCatalogueChange(()=>setCatalogueSnapshot({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue})),[]);
   function withContent(keys:string[], action:()=>void) {
     const request=++contentRequest.current;
     if(catalogueReady(keys)){setContentNotice('');setContentFailure(false);action();return;}
@@ -201,7 +202,7 @@ export default function FrameworkEditor() {
   const [exportGuideStatus, setExportGuideStatus] = useState<ExportGuideStatus | null>(null);
   const cancelNewProjectRef = useRef<HTMLButtonElement>(null);
   const [selected, setSelected] = useState(
-    admittedLines(framework)[0]?.id ?? framework.lines[0]?.id ?? '',
+    () => admittedLines(framework)[0]?.id ?? framework.lines[0]?.id ?? '',
   );
   const [reveal, setReveal] = useState<{ id: string; nonce: number }>();
   const revealCounter = useRef(0);
@@ -228,9 +229,9 @@ export default function FrameworkEditor() {
   const [reportViewReset,setReportViewReset]=useState(0);
   const [browseMode, setBrowseMode] = useState({ combined: false });
   const combinedView = browseMode.combined && workspace.openIds.length > 1;
-  const browseThemes = workspaces.filter((t) =>
+  const browseThemes = useMemo(()=>catalogueSnapshot.workspaces.filter((t) =>
     combinedView ? workspace.openIds.includes(t.id) : t.id === workspace.activeId,
-  );
+  ),[combinedView,workspace,catalogueSnapshot]);
   const browseKey = combinedView ? "all-open-themes" : (activeTheme?.id ?? page);
   const [reportChoices, setReportChoices] = useState({ excluded: [] as string[] });
   const choicesReady = modelsReady;
@@ -254,7 +255,7 @@ export default function FrameworkEditor() {
     ).length ?? 0;
   const [reportNotice, setReportNotice] = useState("");
   const reportIds = workspaceReportIds(workspace, workspaces);
-  const auditReportIds = selectedReportIds(framework, draft);
+  const auditReportIds = useMemo(()=>selectedReportIds(framework, draft),[framework,draft]);
   const [readerId, setReaderId] = useState(corpus[0]?.framework.report.id ?? "");
   const reader = corpus.find((c) => c.framework.report.id === readerId)!;
   const [projectStatus] = useState(createProjectStatus);
@@ -275,19 +276,19 @@ export default function FrameworkEditor() {
   const importRequest=useRef(0);
   const evidenceRef = useRef<HTMLElement>(null);
   const editable = page === "framework";
-  const allowedThemeIds = new Set(
-    browseThemeLines(framework, browseThemes, reportChoices.excluded).map((l: Line) => l.id),
-  );
-  const hiddenBrowseNorms =
-    browseThemeLines(framework, browseThemes, []).length - allowedThemeIds.size;
-  const visibleLines = (visibleFrameworkLines(framework, draft, page) as Line[]).filter(
-    (l) => editable || allowedThemeIds.has(l.id),
-  );
+  // Admission checks compare complete source snapshots. Reuse them while this
+  // immutable framework is unchanged; navigation must not revalidate every norm.
+  const admitted = useMemo(()=>admittedLines(framework) as Line[],[framework]);
+  const allBrowseLines = useMemo(()=>browseThemeLines(framework,browseThemes,[],admitted) as Line[],[framework,browseThemes,admitted]);
+  const browseLines = useMemo(()=>browseThemeLines(framework,browseThemes,reportChoices.excluded,admitted) as Line[],[framework,browseThemes,reportChoices.excluded,admitted]);
+  const hiddenBrowseNorms = allBrowseLines.length-browseLines.length;
+  const visibleLines = useMemo(()=>editable?admitted.filter(l=>draft.included.includes(l.id)):browseLines,[editable,admitted,draft.included,browseLines]);
   // Closed detail panels need no fallback report or embedded pilot norm.
   const line = visibleLines.find((l) => l.id === selected) ?? visibleLines[0] ?? framework.lines[0];
   const lineReport = line ? reportForLine(framework, line) : framework.report;
-  const viewDraft = editable ? draft : (initialDraft(framework) as Draft);
-  const evidenceView = line ? lineEvidenceView(framework,line,activeEvidence) : {direct:[],context:[],remaining:[],focused:null};
+  const sourceDraft = useMemo(()=>initialDraft(framework) as Draft,[framework]);
+  const viewDraft = editable ? draft : sourceDraft;
+  const evidenceView = useMemo(()=>line ? lineEvidenceView(framework,line,activeEvidence) : {direct:[],context:[],remaining:[],focused:null},[framework,line,activeEvidence]);
   const sourceEntries = evidenceView.direct;
   const projectRef = useRef<Project>(makeProject(draft,modelLibrary,workspace));
   const storeRef = useRef<ReturnType<typeof guardedProjectStore> | null>(null);
@@ -768,12 +769,7 @@ export default function FrameworkEditor() {
       setPointRequest(previous=>({id,field,nonce:previous.nonce+1}));
     }else if(field){openField(id,field);}else{openStructure(id);}
   }
-  const chosenPointIds=new Set((draft.investigation?.materials||[]).filter(m=>draft.included.includes(m.id)).map(m=>m.sourcePointId));
-  const pointCounts=Object.fromEntries(reportPointCatalogue.blocks.map(b=>{
-    const points=reportPointCatalogue.points.filter(p=>p.legacy_line_id===b.id);
-    return [b.id,{total:points.length,selected:points.filter(p=>chosenPointIds.has(p.id)).length,
-      legacySelected:draft.included.includes(b.id) || (chosenPointIds.has(b.id+'/TC-ALL') && !points.some(p=>p.id===b.id+'/TC-ALL'))}];
-  }));
+  const pointCounts=useMemo(()=>reportPointCounts(catalogueSnapshot.pointCatalogue,draft),[draft,catalogueSnapshot]);
   function showEvidence(id: string) {
     setDetailsOpen(true);
     setActiveEvidence(id);
@@ -1140,6 +1136,7 @@ export default function FrameworkEditor() {
           ) : ['risk-start','catalogue','processes'].includes(page) ? (
             <>
             <DiscoveryCatalogue views={discoveryViews}
+              onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map((report:string)=>'report:'+report));}}
               included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent([...new Set(ids.map(id=>'report:'+catalogueRouting.reports[id]))],()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
               guided={page==='risk-start'}
               area={page==='risk-start'?riskArea:undefined}
@@ -1262,7 +1259,7 @@ export default function FrameworkEditor() {
                   <nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:false}))}>Normen</button><button aria-pressed={aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:true}))}>Over dit kader</button></nav>
                   <div className="report-view-actions"><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
                 </div>}
-                {!editable&&<TabsContent value="about"><ReportFrameworkAbout title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Referentiekader'} workspaces={browseThemes} reports={corpus.filter(c=>browseThemes.some(t=>t.reportIds.includes(c.framework.report.id))).map(c=>c.framework)} lines={visibleLines} allLines={browseThemeLines(framework,browseThemes,[])} onChoice={openReportChoice} onRead={id=>{setReturnPage('topics');setReaderId(id);setReportEvidence(null);setReportPage(1);navigate('reader',id);}}/></TabsContent>}
+                {!editable&&<TabsContent value="about"><ReportFrameworkAbout title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Referentiekader'} workspaces={browseThemes} reports={corpus.filter(c=>browseThemes.some(t=>t.reportIds.includes(c.framework.report.id))).map(c=>c.framework)} lines={visibleLines} allLines={allBrowseLines} onChoice={openReportChoice} onRead={id=>{setReturnPage('topics');setReaderId(id);setReportEvidence(null);setReportPage(1);navigate('reader',id);}}/></TabsContent>}
                 <TabsContent value="framework" id="working-area">
                   {!editable && (combinedView ? hiddenBrowseNorms > 0 : hiddenReportCount > 0) && (
                     <div className="report-choice-summary">
@@ -1327,11 +1324,10 @@ export default function FrameworkEditor() {
                   {editable&&topicalPointRequest.pointId&&<TopicalLawBrowser key={`topical-viewer-${topicalPointRequest.nonce}`} sourceId={topicalPointRequest.sourceId} initialPointId={topicalPointRequest.pointId} viewerOnly draft={draft} disabled={!loaded} onChange={commit} navigate={()=>{}} onClose={()=>setTopicalPointRequest(p=>({...p,pointId:''}))}/>}
                   {editable&&admittedPointRequest.pointId&&<AdmittedLawBrowser key={`admitted-viewer-${admittedPointRequest.nonce}`} sourceId={admittedPointRequest.sourceId} initialPointId={admittedPointRequest.pointId} viewerOnly draft={draft} disabled={!loaded} onChange={commit} navigate={()=>{}} onClose={()=>setAdmittedPointRequest(p=>({...p,pointId:''}))}/>}
                   {editable&&wwkePointRequest.pointId&&<WwkePointViewer key={`wwke-viewer-${wwkePointRequest.nonce}`} pointId={wwkePointRequest.pointId} draft={draft} disabled={!loaded} onChange={commit} onClose={()=>setWwkePointRequest(p=>({...p,pointId:''}))}/>}
-                  <ControlObjectivePilot reportCorpus={corpus} key={`report-viewer-${pointRequest.nonce}`} request={pointRequest} onClose={()=>setPointRequest(p=>({...p,id:'',field:undefined,pointId:undefined}))} lines={editable?baseFramework.lines:visibleLines} draft={draft} disabled={!loaded} onChange={commit} onBuilder={()=>{setPointRequest(p=>({...p,id:''}));navigate('framework');}}/>
+                  {pointRequest.id&&<ControlObjectivePilot reportCorpus={corpus} key={`report-viewer-${pointRequest.nonce}`} request={pointRequest} onClose={()=>setPointRequest(p=>({...p,id:'',field:undefined,pointId:undefined}))} lines={editable?baseFramework.lines:visibleLines} draft={draft} disabled={!loaded} onChange={commit} onBuilder={()=>{setPointRequest(p=>({...p,id:''}));navigate('framework');}}/>}
                   <div hidden={visibleLines.length === 0}>
                     {editable ? (
-                      <details className="research-matrix-details">
-                        <summary>Bekijk alle gekozen bouwstenen</summary>
+                      <DeferredDetails className="research-matrix-details" summary="Bekijk alle gekozen bouwstenen">
                         <CompactMatrix
                           key={page}
                           viewKey="audit-selection"
@@ -1345,7 +1341,7 @@ export default function FrameworkEditor() {
                           onOpenField={openBuildingBlock}
                           selected={detailsOpen && line ? line.id : ""}
                         />
-                      </details>
+                      </DeferredDetails>
                     ) : (
                       <ReportNormBrowser key={browseKey} title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Normen'} lines={visibleLines} draft={draft} viewDraft={viewDraft} counts={pointCounts} viewKey={browseKey} disabled={!loaded} onChange={commit} onOpen={openPointViewer} onSelect={(ids,selected)=>commit(selectReportRows(draft,reportPointCatalogue,ids,selected) as Draft)} reveal={reveal} onRevealComplete={()=>setReveal(undefined)} resetRequest={activeReportView&&!combinedView?reportViewReset:0} onResetComplete={()=>setReportViewReset(0)}/>
                     )}
