@@ -22,12 +22,20 @@ register('data:text/javascript,' + encodeURIComponent(`
   return next(specifier,context);
  }
 `),import.meta.url);
-const {exportState}=await import('./export-state.ts');
+const {exportState,exportInputs}=await import('./export-state.ts');
 const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;};
 const framework=freeze({lines:[{id:'n1',title:'Norm'},{id:'n2',title:'Another norm'},{id:'q1',materialKind:'model-question'}]});
 const draft=freeze({title:'Mijn referentiekader',included:['n1','n2'],overrides:{},notes:{},
  investigation:{goal:{subject:'Synthetic process'},scope:'Whole process'},
  research:{questions:[{id:'q',text:'How?'}],links:[{question_id:'q',line_id:'n1'}]}});
+
+test('immediate export controls do not build or validate a workbook',()=>{
+ const inputs=exportInputs(framework,draft,{testingAspects:[]},[]);
+ assert.equal(Object.hasOwn(inputs,'preview'),false);
+ assert.equal(Object.hasOwn(inputs,'validation'),false);
+ assert.deepEqual(inputs.choices.testingAspects,[]);
+ assert.equal(exportState(framework,draft,{testingAspects:[]},[]).validation,'Choose testing aspects');
+});
 
 test('export defaults and validation remain tied to the complete selection',()=>{
  const state=exportState(framework,draft,{},[]);

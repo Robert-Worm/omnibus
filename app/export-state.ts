@@ -10,8 +10,8 @@ import type {Framework, Draft} from '../lib/framework-types';
 import type {LibraryModel} from './model-library';
 import type {InterviewSettingsValue} from './interview-settings';
 
-/** Pure export inputs and preview. Toolbar and preview-navigation state are not inputs. */
-export function exportState(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
+/** Immediate controls and validation inputs; never builds workbook worksheets. */
+export function exportInputs(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
   const get = <T,>(key: string, fallback: T): T => (config[key] as T) ?? fallback;
   const selection = scopedExportSelection(framework, draft);
   const selectedLines = framework.lines.filter(l => selection.included.includes(l.id));
@@ -48,14 +48,20 @@ export function exportState(framework: Framework, draft: Draft, config: Record<s
     excludedNorms:[...new Set([...selection.excludedNorms,...excludedNorms])], ...modelOptions,
     researchInterview:!modelBasis && profile === 'interview' ? interview : undefined,
     testingAspects:!modelBasis && profile === 'testing' && hasCriteria ? testScope : undefined, testingTerminology};
-  let preview: ReturnType<typeof creatorWorkbookModel> | null = null, validation = '';
-  try {
-    if (selectionError) throw new Error(selectionError);
-    preview = creatorWorkbookModel(framework, exportDraft, choices);
-  } catch (e) { validation = e instanceof Error ? e.message : 'Controleer de exportinstellingen.'; }
   const planningIssues = planningReview(framework, draft, exportedNormIds);
   return {selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
-    requiredFields, choices, preview, validation, planningIssues};
+    requiredFields, choices, selectionError, planningIssues};
+}
+
+/** Shared synchronous contract for background calculation and non-UI callers. */
+export function exportState(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
+  const inputs=exportInputs(framework,draft,config,models);
+  let preview: ReturnType<typeof creatorWorkbookModel> | null = null, validation = '';
+  try {
+    if(inputs.selectionError)throw new Error(inputs.selectionError);
+    preview=creatorWorkbookModel(framework,inputs.exportDraft,inputs.choices);
+  }catch(e){validation=e instanceof Error?e.message:'Controleer de exportinstellingen.';}
+  return {...inputs,preview,validation};
 }

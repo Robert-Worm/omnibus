@@ -4,6 +4,7 @@ import {register} from 'node:module';
 import {createFileEncoder} from './file-encoder.ts';
 import {parseProjectText,serializeProject} from '../lib/project-codec.mjs';
 import {workbookFileSnapshot} from '../lib/workbook-file-snapshot.mjs';
+import {workbookPreviewSnapshot} from '../lib/workbook-preview-snapshot.mjs';
 import {workbookPackage,zipStored} from '../lib/excel-package.mjs';
 
 register('data:text/javascript,'+encodeURIComponent(`
@@ -70,7 +71,7 @@ const book={title:'Fictief werkboek',meta:{exportedAt:oldDate},stylesXml:'<style
  definedNames:[{name:'Selected',ref:"'Register'!$A$2"}],sheets:[{
  name:'Register',widths:[20,30],rows:[['Norm','Datum'],[{formula:'1+1',value:2},new Date(oldDate)]],
  exportedAtCell:{row:2,column:1},merges:[],heights:{2:24},cellStyles:{},rowStyles:{},
- entries:[{render:()=>null}],viewer:{labels:['Norm']},detailRecords:[{get:()=>''}],
+ entries:[{row:2,endRow:2,pointId:'p1',title:'Test',get:()=>'',line:{source:'duplicated'},render:()=>null}],viewer:{labels:['Norm']},detailRecords:[{pointId:'p1',contents:['Exacte bron 🧭']}],
  } ]};
 
 test('download snapshot is cloneable and retains exact OOXML, formulas and source evidence',()=>{
@@ -85,4 +86,14 @@ test('download snapshot is cloneable and retains exact OOXML, formulas and sourc
  assert.deepEqual(snapshot.evidence,book.evidence);assert.deepEqual(snapshot.applicability,book.applicability);
  assert.throws(()=>workbookFileSnapshot(book,'bad date'),/exportdatum/);
  assert.throws(()=>workbookFileSnapshot({...book,sheets:[{...book.sheets[0],exportedAtCell:{row:1,column:1}}]}),/exportdatum/);
+});
+
+test('worker preview retains cells, detail navigation, entry ranges and exact file output',()=>{
+ const preview=structuredClone(workbookPreviewSnapshot(book));
+ assert.deepEqual(workbookPackage(preview),workbookPackage(book));
+ assert.deepEqual(preview.sheets[0].entries,[{row:2,endRow:2,pointId:'p1',lineId:undefined,templateId:undefined,title:'Test',parent:undefined}]);
+ assert.deepEqual(preview.sheets[0].detailRecords,book.sheets[0].detailRecords);
+ assert.deepEqual(preview.sheets[0].viewer,book.sheets[0].viewer);
+ assert.deepEqual(workbookPackage(workbookFileSnapshot(preview,newDate)),workbookPackage(workbookFileSnapshot(book,newDate)));
+ assert.equal(typeof book.sheets[0].entries[0].get,'function');
 });
