@@ -59,7 +59,7 @@ Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapp
 3. **Bouw je kader.** Schrijf je onderzoeksvragen en koppel de gekozen normen eraan.
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
 
-Wil je eerst het resultaat zien, zonder iets te installeren? Download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
+Wil je het meteen proberen? Open de [proefversie online](https://omnibus.sliplane.app). Of bekijk eerst het resultaat: download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
 
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 
@@ -72,15 +72,22 @@ Omnibus bestaat uit twee delen die je los downloadt:
 
 | Deel | Wat het is | Waar |
 | --- | --- | --- |
-| **De applicatie** | De code van Omnibus. Draait lokaal in je browser. | Deze repository |
+| **De applicatie** | De code van Omnibus. Draait lokaal in je browser. | Deze repository; vaste versies bij de [releases](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) |
 | **De database** | De inhoud: <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
 
-Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).
+Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).
 
 <a id="aan-de-slag"></a>
 ## Aan de slag
 
-Je hebt Git, Node 24 en ongeveer tien minuten nodig. In het kort:
+**Met Docker** zijn twee opdrachten genoeg; open daarna `http://localhost:8080`:
+
+```text
+docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0
+docker run --rm -p 8080:8080 omnibus
+```
+
+**Zonder Docker** heb je Git, Node 24 en ongeveer tien minuten nodig. In het kort:
 
 ```text
 git clone https://github.com/Robert-Worm/omnibus.git

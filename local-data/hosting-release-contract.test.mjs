@@ -134,6 +134,9 @@ test('hosting requires an explicit canonical HTTPS origin and a verified web pub
     ['empty origin', {publicOrigin:''}],
     ['null origin', {publicOrigin:null}],
     ['HTTP origin', {publicOrigin:`http://${publicHost}`}],
+    ['HTTP look-alike of localhost', {publicOrigin:'http://localhost.hostile.invalid:8080'}],
+    ['HTTP on a private address', {publicOrigin:'http://10.0.0.5:8080'}],
+    ['HTTP localhost with trailing slash', {publicOrigin:'http://localhost:8080/'}],
     ['origin with path', {publicOrigin:publicOrigin + '/private'}],
     ['origin with credentials', {publicOrigin:'https://user:'+`secret@${publicHost}`}],
     ['noncanonical trailing slash', {publicOrigin:publicOrigin + '/'}],
@@ -315,4 +318,15 @@ test('hosting admission budget is shared by content and probes; forwarded identi
     assert.equal(result.headers['access-control-allow-origin'], undefined);
   }
   assert.equal(logs.length, 0, 'normal admissions and budget rejections create no access/error log');
+});
+
+test('plain HTTP is accepted only for exact loopback origins of a local container', async () => {
+  const {createHostingPolicy} = await import('./hosting-policy.mjs');
+  for (const origin of ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost']) {
+    const policy = createHostingPolicy({publicOrigin:origin, listenHost:'0.0.0.0', webRoot:'/synthetic'});
+    assert.equal(policy.publicOrigin, origin);
+    assert.equal(policy.authority, new URL(origin).host);
+  }
+  for (const origin of ['http://LOCALHOST:8080', 'http://localhost:0', 'http://[::1]:8080', 'http://192.168.1.2:8080'])
+    assert.throws(() => createHostingPolicy({publicOrigin:origin, listenHost:'0.0.0.0', webRoot:'/synthetic'}), origin);
 });

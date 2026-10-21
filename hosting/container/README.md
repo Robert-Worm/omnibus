@@ -9,6 +9,19 @@
 3. **Controleren en verpakken.** De database wordt gecontroleerd (`VERIFIED_RUNTIME_DATABASE`), de app gebouwd en verpakt als runtimepakket.
 4. **Starten.** De image start als gewone gebruiker (UID 1000), met alle bestanden alleen-lezen, in openbare alleen-lezen modus.
 
+## Op je eigen computer draaien
+
+Heb je [Docker](https://www.docker.com/products/docker-desktop/)? Dan heb je verder niets nodig, ook geen kopie van de code:
+
+```text
+docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#main
+docker run --rm -p 8080:8080 omnibus
+```
+
+Open daarna `http://localhost:8080`. Het bouwen duurt de eerste keer een paar minuten; daarna start Omnibus in een paar seconden. Wil je een andere poort, bijvoorbeeld 3000? Gebruik `-p 3000:8080 -e PUBLIC_ORIGIN=http://localhost:3000`.
+
+Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adres is `https://` verplicht.
+
 ## Instellingen bij de host
 
 | Instelling | Waarde |
@@ -29,7 +42,7 @@ Pas `DATABASE_URL` en `DATABASE_SHA256` in de Dockerfile aan naar de nieuwe rele
 
 - **Links vanaf andere sites werken.** Wie op een link in een mail of zoekmachine klikt, krijgt de pagina. Andere sites kunnen de gegevens niet zelf opvragen en Omnibus niet in hun eigen pagina tonen; dat weigert de server.
 - **De database zit in de image.** Dat kan omdat hij openbaar is; een private database hoort hier nooit in. Zie de [besluitenlijst](../../docs/beheer/besluiten.md).
-- **Lokaal nabootsen** kan zonder Docker: voer de stappen uit de Dockerfile in dezelfde volgorde uit. Met Docker: `docker build -f hosting/container/Dockerfile -t omnibus .` en `docker run -p 8080:8080 -e PORT=8080 -e PUBLIC_ORIGIN=https://localhost omnibus`.
+- **Zonder Docker nabootsen** kan ook: voer de stappen uit de Dockerfile in dezelfde volgorde uit.
 
 ## Samengevat
 

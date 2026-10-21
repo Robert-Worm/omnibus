@@ -10,7 +10,9 @@ export function createHostingPolicy({publicOrigin,listenHost='127.0.0.1',webRoot
  if(typeof publicOrigin!=='string'||typeof webRoot!=='string'||!webRoot.trim())fail();
  let origin;
  try{origin=new URL(publicOrigin);}catch{fail();}
- if(origin.protocol!=='https:'||origin.origin!==publicOrigin||origin.username||origin.password||
+ // Plain HTTP only for a container on the user's own computer (docker run -p 8080:8080).
+ const loopbackHttp=origin.protocol==='http:'&&(origin.hostname==='localhost'||origin.hostname==='127.0.0.1');
+ if((origin.protocol!=='https:'&&!loopbackHttp)||origin.origin!==publicOrigin||origin.username||origin.password||
     origin.pathname!=='/'||origin.search||origin.hash||origin.port==='0')fail();
  const host=origin.hostname;
  const ip=isIP(host.startsWith('[')?host.slice(1,-1):host);

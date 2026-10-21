@@ -10,7 +10,22 @@
 | [Node.js 24.17](https://nodejs.org/) met npm 11.13 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
 | De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
 
+Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) hoort bij de [database van 19 oktober 2026](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-10-19); die combinatie is samen getest.
+
 Omnibus is getest op Windows en Linux (Ubuntu 24.04); macOS zou moeten werken, maar is niet getest. Je hebt geen account of internetverbinding nodig zodra alles is geïnstalleerd.
+
+## Snelste route: met Docker
+
+Heb je [Docker](https://www.docker.com/products/docker-desktop/)? Dan zijn twee opdrachten genoeg. Git, Node.js en de database-zip heb je dan niet nodig:
+
+```text
+docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0
+docker run --rm -p 8080:8080 omnibus
+```
+
+Open daarna `http://localhost:8080`. Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
+
+Liever zonder Docker, of wil je zelf aan de code werken? Volg dan de stappen hieronder.
 
 ## Stap voor stap
 
