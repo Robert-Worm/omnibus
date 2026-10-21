@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
+import {scanGitBlobs} from './git-blob-batches.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'code-snapshot.json'),'utf8'));
 const git=(args,options={})=>execFileSync('git',args,{cwd:root,maxBuffer:64*1024*1024,...options});
@@ -49,7 +50,6 @@ if(!index.length)throw Error('Stage the intended files before checking.');
 const commits=git(['rev-list','--all']).toString().trim().split('\n').filter(Boolean);
 // Read each historical tree, not only HEAD: renamed or deleted data must not hide.
 for(const commit of commits){for(const entry of git(['ls-tree','-r','-z',commit]).toString().split('\0').filter(Boolean)){const match=entry.match(/^(100644|100755) blob ([a-f0-9]+)\t(.+)$/s);if(!match)throw Error('Unsupported historical entry');checkPath(match[3]);ids.set(match[2],match[3]);}}
-const payload=git(['cat-file','--batch'],{input:[...ids.keys()].join('\n')+'\n'});let offset=0;
-for(const[id,label]of ids){const end=payload.indexOf(10,offset);const[actual,type,size]=payload.subarray(offset,end).toString().split(' ');if(actual!==id||type!=='blob')throw Error('Invalid Git object');const next=end+1+Number(size);checkText(payload.subarray(end+1,next),label,id);offset=next+1;}
+scanGitBlobs(ids,git,checkText);
 console.log(`Code boundary passed: ${index.length} staged/tracked files; ${commits.length} historical commits; ${ids.size} unique file versions.`);
-if(process.argv.includes('--test'))execFileSync(process.execPath,['--test',...manifest.codeTests],{cwd:root,stdio:'inherit'});
+if(process.argv.includes('--test'))execFileSync(process.execPath,['--test','scripts/git-blob-batches.test.mjs',...manifest.codeTests],{cwd:root,stdio:'inherit'});
