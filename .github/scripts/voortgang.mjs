@@ -83,4 +83,35 @@ for (const rel of MET_TELLINGEN) {
   const nieuw = werkTellingenBij(oud, tellingen, v.repoUrl);
   if (nieuw !== oud) writeFileSync(pad, nieuw);
 }
-console.log(JSON.stringify({ ...stats, tellingen, claims: claims.length, modus: token ? "schrijven" : offline ? "offline" : "alleen lezen" }));
+// Elke maandag (geplande run): een weekoverzicht in Discussions, alleen als er iets gebeurde.
+// Discussions kun je alleen via GraphQL maken. Een verborgen markering voorkomt dubbele berichten.
+let weekoverzicht = "niet gepland";
+if (token && process.env.GITHUB_EVENT_NAME === "schedule") {
+  const week = v.samenvatting(claims);
+  weekoverzicht = week ? await plaatsWeekoverzicht(week) : "niets gebeurd";
+}
+
+async function graphql(query, variables) {
+  const res = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables }),
+  });
+  const uit = await res.json();
+  if (!res.ok || uit.errors) throw new Error(`GraphQL: ${res.status} ${JSON.stringify(uit.errors || uit).slice(0, 200)}`);
+  return uit.data;
+}
+
+async function plaatsWeekoverzicht(week) {
+  const [owner, name] = repo.split("/");
+  const { repository } = await graphql(`query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id
+    discussionCategories(first:25){nodes{id slug}} discussions(first:10,orderBy:{field:CREATED_AT,direction:DESC}){nodes{body}}}}`, { owner, name });
+  if (repository.discussions.nodes.some((d) => d.body.includes(`<!-- omnibus:${week.sleutel} -->`))) return "al geplaatst";
+  const categorie = repository.discussionCategories.nodes.find((c) => c.slug === "general");
+  if (!categorie) return "geen categorie General";
+  await graphql(`mutation($r:ID!,$c:ID!,$t:String!,$b:String!){createDiscussion(input:{repositoryId:$r,categoryId:$c,title:$t,body:$b}){discussion{url}}}`,
+    { r: repository.id, c: categorie.id, t: week.titel, b: week.tekst });
+  return "geplaatst";
+}
+
+console.log(JSON.stringify({ ...stats, tellingen, claims: claims.length, weekoverzicht, modus: token ? "schrijven" : offline ? "offline" : "alleen lezen" }));

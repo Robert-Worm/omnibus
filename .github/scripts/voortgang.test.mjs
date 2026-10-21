@@ -364,3 +364,64 @@ test("je kunt hooguit vijf bronnen tegelijk claimen", async () => {
   await draai(g);
   assert.equal(g.issues.get(nieuw).state, "open");
 });
+
+test("ingeleverde claims staan bij 'wacht op de beheerder'; na 7 dagen één herinnering", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  await draai(g);
+  g.wacht(1);
+  g.reageer(n, "anna", "/inleveren");
+  let v = await draai(g);
+  let md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/voortgang.md"];
+  assert.match(md, /## Wacht op de beheerder\n\nDeze pakketten/);
+  assert.match(md, /\| @anna \| 2026-10-02 \| 0 dagen \|/);
+  g.wacht(6);
+  await draai(g);
+  assert.doesNotMatch(g.botTekst(n), /wacht al 7 dagen/);
+  g.wacht(1.1);
+  v = await draai(g);
+  await draai(g);
+  assert.equal(g.botTekst(n).match(/@x, dit pakket wacht al 7 dagen/g).length, 1);
+  md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/voortgang.md"];
+  assert.match(md, /\| 7 dagen ⏰ \|/);
+});
+
+test("geen herinnering als de beheerder al reageerde", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  g.reageer(n, "anna", "/inleveren");
+  await draai(g);
+  g.wacht(2);
+  g.reageer(n, "x", "Ik kijk er volgende week naar.", "OWNER");
+  g.wacht(10);
+  await draai(g);
+  assert.doesNotMatch(g.botTekst(n), /wacht al 7 dagen/);
+});
+
+test("zonder ingeleverde claims staat er dat niets wacht", async () => {
+  const g = nepGitHub();
+  const v = maakVoortgang({ data: data(), repo: "x/y", gh: g.gh, now: g.nu });
+  assert.match(v.build([]).bestanden["docs/bijdragen/voortgang.md"], /Er wacht nu niets op de beheerder\./);
+});
+
+test("het weekoverzicht noemt alleen namen en bronnen van de afgelopen week", async () => {
+  const g = nepGitHub();
+  const oud = g.claim("bram", { bron: rapport("2025-extra-1") });
+  g.wacht(10);
+  const a = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  g.reageer(a, "anna", "/inleveren\nGeheime toelichting die niet in het overzicht mag.");
+  const k = g.claim("cor", { bron: "WOO" });
+  let v = await draai(g);
+  const week = v.samenvatting(await v.loadClaims());
+  assert.equal(week.sleutel, "week-2026-10-11");
+  assert.match(week.titel, /Weekoverzicht tot 11 oktober 2026/);
+  assert.match(week.tekst, /### 📦 Ingeleverd \(1\)\n\n- Onderzoek naar het inkoopproces bij het ministerie · @anna · #2/);
+  assert.match(week.tekst, /### 🔄 Nieuw geclaimd \(2\)/);
+  assert.match(week.tekst, /Wet open overheid \(Woo\) · @cor · #3/);
+  assert.doesNotMatch(week.tekst, /bram|Geheime/);
+  assert.ok(week.tekst.startsWith("<!-- omnibus:week-2026-10-11 -->"));
+  assert.ok(oud && k);
+  g.wacht(8);
+  v = await draai(g);
+  assert.equal(v.samenvatting(await v.loadClaims()), null, "een stille week geeft geen bericht");
+});

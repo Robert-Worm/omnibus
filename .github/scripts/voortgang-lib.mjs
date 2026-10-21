@@ -103,6 +103,11 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   const dubbelVan = zoekDubbelingen(rapporten, { beoordeeld: dubbelingen.beoordeeld, inDatabase: (id) => Boolean(verwerkt.rapporten[id]) });
   const rijksmapUrl = (id) => `https://www.rijksmap.nl/rapport/${id}/`;
 
+  // Wanneer een claim is ingeleverd (datum van de eerste /inleveren), per issuenummer.
+  const ingeleverdOp = new Map();
+  const beheer = (c) => ["OWNER", "MEMBER", "COLLABORATOR"].includes(c.author_association);
+  const eigenaar = repo.split("/")[0];
+
   const comment = (n, body) => gh(`/issues/${n}/comments`, { method: "POST", body: JSON.stringify({ body }) });
   const addLabels = (n, labels) => gh(`/issues/${n}/labels`, { method: "POST", body: JSON.stringify({ labels }) });
   const closeIssue = (n, reason = "completed") => gh(`/issues/${n}`, { method: "PATCH", body: JSON.stringify({ state: "closed", state_reason: reason }) });
@@ -268,6 +273,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
           await once(`hulp-${c.id}`, "Die opdracht ken ik niet. Gebruik `/inleveren` als je klaar bent, of `/vrijgeven` als je stopt.");
         }
         if (!cmd || !mag) continue;
+        if (cmd === "inleveren" && !ingeleverdOp.has(n)) ingeleverdOp.set(n, c.created_at);
         if (cmd === "inleveren" && !claim.labels.includes("ingeleverd")) {
           await addLabels(n, ["ingeleverd"]); claim.labels.push("ingeleverd"); claim.status = "ingeleverd";
           await once(`inleveren-${c.id}`, "📦 Ingeleverd. De beheerder controleert het pakket en laat hier weten hoe het verdergaat. Zodra de bron in een nieuwe databaserelease zit, wordt deze claim gesloten.");
@@ -276,6 +282,15 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
         if (cmd === "vrijgeven") {
           await once(`vrijgeven-${c.id}`, "De bron is vrijgegeven en staat weer open in de werklijst. Bedankt voor het laten weten.");
           await closeIssue(n, "not_planned"); claim.open = false; break;
+        }
+      }
+
+      // 7. Wacht een ingeleverde claim al zeven dagen op de beheerder? Eén herinnering.
+      const sinds = ingeleverdOp.get(n);
+      if (claim.open && claim.labels.includes("ingeleverd") && sinds && claim.user !== eigenaar) {
+        const gereageerd = comments.some((c) => c.user.type !== "Bot" && c.user.login !== claim.user && beheer(c) && c.created_at > sinds);
+        if (!gereageerd && (now() - Date.parse(sinds)) / DAG >= 7) {
+          await once("wacht-op-beheerder", `@${eigenaar}, dit pakket wacht al 7 dagen op een controle. Wil je ernaar kijken, of hier laten weten wanneer dat lukt? Zie [pakket controleren](${repoUrl}/blob/main/docs/beheer/pakket-controleren.md).`);
         }
       }
     }
@@ -416,6 +431,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
 
     // Voortgang
     const busy = [...active.values()].sort((a, b) => a.since.localeCompare(b.since));
+    const wachtend = busy.filter((c) => c.status === "ingeleverd").map((c) => {
+      const ingeleverd = ingeleverdOp.get(c.number) || c.created;
+      return { ...c, ingeleverd, dagen: Math.max(0, Math.floor((now() - Date.parse(ingeleverd)) / DAG)) };
+    }).sort((a, b) => a.ingeleverd.localeCompare(b.ingeleverd));
     const nameOf = (c) => c.bron.soort === "rapport" ? rapportById.get(c.bron.id).titel : kaderById.get(c.bron.id).titel;
     const linkOf = (c) => c.bron.soort === "rapport" ? rijksmapUrl(c.bron.id) : kaderById.get(c.bron.id).link;
     const inDb = rows.filter((r) => r.status === "in database").sort((a, b) => b.datum.localeCompare(a.datum));
@@ -448,6 +467,13 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       busy.length
         ? ["| Bron | Door | Model | Sinds | Status |", "| --- | --- | --- | --- | --- |", ...busy.map((c) => `| [${esc(short(nameOf(c)))}](${linkOf(c)}) | @${c.user} | ${esc(c.model || "–")}${c.model && !isAanbevolen(c.model) ? " ⚠️" : ""} | ${c.since} | [${statusLabel[c.status]}](${c.url}) |`)].join("\n")
         : "Nog niemand. Wees de eerste: kies hieronder een bron.",
+      "",
+      "## Wacht op de beheerder",
+      "",
+      wachtend.length
+        ? ["Deze pakketten zijn ingeleverd en wachten op een controle. Na 7 dagen krijgt de beheerder een herinnering.", "", "| Bron | Door | Ingeleverd | Wacht |", "| --- | --- | --- | --- |",
+            ...wachtend.map((c) => `| [${esc(short(nameOf(c)))}](${c.url}) | @${c.user} | ${c.ingeleverd.slice(0, 10)} | ${c.dagen} ${c.dagen === 1 ? "dag" : "dagen"}${c.dagen >= 7 ? " ⏰" : ""} |`)].join("\n")
+        : "Er wacht nu niets op de beheerder.",
       "",
       "## Waar kun je mee beginnen",
       "",
@@ -548,7 +574,36 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     return { bestanden, tellingen, stats: { rapporten: rows.length, inDatabase: inDb.length, bezig: busy.length, dubbel: dubbelVan.size } };
   }
 
-  return { identify, loadClaims, ensureLabels, reconcile, build, dubbelVan, repoUrl };
+  /** Wekelijkse samenvatting: wat er de afgelopen zeven dagen gebeurde. Null als er niets gebeurde. */
+  function samenvatting(claims) {
+    const tot = now(), van = tot - 7 * DAG;
+    const binnen = (iso) => Boolean(iso) && Date.parse(iso) > van && Date.parse(iso) <= tot;
+    const naam = (c) => c.bron.soort === "rapport" ? rapportById.get(c.bron.id)?.titel : kaderById.get(c.bron.id)?.titel;
+    const geldig = claims.filter((c) => c.bron && !c.labels.includes("dubbel") && naam(c));
+    const geclaimd = geldig.filter((c) => binnen(c.created));
+    const ingeleverd = geldig.filter((c) => binnen(ingeleverdOp.get(c.number)));
+    const verwerktDezeWeek = geldig.filter((c) => c.labels.includes("verwerkt") && binnen(c.closed));
+    if (!geclaimd.length && !ingeleverd.length && !verwerktDezeWeek.length) return null;
+    const week = new Date(tot).toISOString().slice(0, 10);
+    const lijst = (titel, items) => items.length ? [`### ${titel} (${items.length})`, "", ...items.map((c) => `- ${naam(c)} · @${c.user} · #${c.number}`), ""] : [];
+    return {
+      sleutel: `week-${week}`,
+      titel: `Weekoverzicht tot ${new Date(tot).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}`,
+      tekst: [
+        mark(`week-${week}`),
+        "Wat er de afgelopen week in Omnibus gebeurde.",
+        "",
+        ...lijst("✅ Verwerkt in de database", verwerktDezeWeek),
+        ...lijst("📦 Ingeleverd", ingeleverd),
+        ...lijst("🔄 Nieuw geclaimd", geclaimd),
+        `Zelf meedoen? Kies een bron in de [voortgang](${docs("voortgang.md")}).`,
+        "",
+        "*Automatisch gemaakt door het claimsysteem.*",
+      ].join("\n"),
+    };
+  }
+
+  return { identify, loadClaims, ensureLabels, reconcile, build, samenvatting, dubbelVan, repoUrl };
 }
 
 // ---------- ingeleverd pakket controleren ----------
