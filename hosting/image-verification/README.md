@@ -26,20 +26,20 @@ Een aparte Linux-testcomputer met Node 24, Python 3 en Podman (zonder beheerrech
 
 <details><summary><b>Alle technische details en opdrachten</b></summary>
 
-Deze beheerhulp bouwt en controleert een echte image met uitsluitend fictieve gegevens. Zij hergebruikt de bestaande pakketmaker, Dockerfile-template en HTTP-controles. Je geeft geen echte database mee. Zonder argumenten toont de hulp alleen uitleg; zij installeert of repareert niets.
+Met deze hulp bouwt de beheerder een echte image en controleert hem. Daarbij gebruikt hij alleen fictieve gegevens; je geeft geen echte database mee. De hulp gebruikt de bestaande pakketmaker, de Dockerfile-template en de bestaande HTTP-controles. Start je hem zonder argumenten, dan toont hij alleen uitleg. Hij installeert en repareert niets.
 
-### Vereisten
+### Wat je nodig hebt
 
-- Een afzonderlijke Linux/amd64-testomgeving met Node 24 en Python 3.
-- Een bestaande rootless Podman-installatie, UID/GID `1000:1000`, cgroup v2, werkende overlayopslag en ondersteuning voor de resourcegrenzen.
-- Een afzonderlijk gecontroleerde officiële Node 24-patch voor `bookworm-slim`, vastgezet op de juiste SHA-256-digest. Herbeoordeel beveiligingsupdates vóór iedere vrijgave; een veranderlijke tag is onvoldoende.
-- Voldoende ruimte voor eigen imageopslag en een nieuwe private uitvoermap.
+- Een aparte testomgeving met Linux/amd64, Node 24 en Python 3.
+- Podman, al geïnstalleerd en zonder rootrechten (*rootless*). Verder: UID/GID `1000:1000`, cgroup v2, werkende overlay-opslag en ondersteuning voor grenzen aan geheugen, CPU en processen.
+- Een officiële Node 24-image op `bookworm-slim`, apart gecontroleerd en vastgezet op de juiste SHA-256-digest. Kijk vóór elke vrijgave of er beveiligingsupdates zijn. Een tag die kan veranderen is niet genoeg.
+- Genoeg ruimte voor eigen image-opslag en een nieuwe, privé uitvoermap.
 
-De helper staat geen rootcontainer, privileged mode, hostnetwerk of onbeperkte resources toe. Installatie en beheer van de testomgeving gebeuren afzonderlijk. Zie de officiële [Podman-instructies](https://podman.io/docs/installation).
+De hulp weigert een container als root, de *privileged* modus, het netwerk van de host en onbegrensde middelen. Je installeert en beheert de testomgeving zelf, apart van deze hulp. Zie de officiële [Podman-instructies](https://podman.io/docs/installation).
 
 ### Uitvoeren
 
-Vanuit de codecheckout, als gebruiker met UID/GID 1000:
+Vanuit je kopie van de code, als gebruiker met UID/GID 1000:
 
 ```sh
 node hosting/image-verification/verify-image.mjs --help
@@ -48,21 +48,25 @@ node hosting/image-verification/verify-image.mjs --run \
   --out /tmp/omnibus-iv-1
 ```
 
-Vervang de imageplaceholders vóór uitvoering. De oudermap moet bestaan en de uitvoermap moet nieuw zijn. Kies een kort pad: de helper begrenst de Podman-runroot, inclusief `/container-run`, op 50 bytes.
+Vul de plaatshouders voor de image eerst in. De bovenliggende map moet bestaan; de uitvoermap moet nieuw zijn. Kies een kort pad: de hulp staat voor de Podman-runroot, inclusief `/container-run`, hooguit 50 bytes toe.
 
-Alleen de genoemde officiële base-image wordt opgehaald, met lege registrycredentials en afzonderlijke lokale opslag. De daadwerkelijke build gebruikt `--pull=never --network=none`. Er wordt niets geüpload of op Sevalla ingericht. De eerste gebruikers-ID-omzetting van imagelagen kan enige tijd kosten; containervoorbereiding is begrensd op vijf minuten. De runtime-start- en shutdowncontroles blijven afzonderlijk begrensd.
+De hulp haalt alleen de genoemde officiële basis-image op. Dat gebeurt zonder inloggegevens voor de registry en met aparte lokale opslag. Het bouwen zelf gebruikt `--pull=never --network=none`. Er wordt niets geüpload en niets bij Sevalla ingericht.
+
+De eerste keer kan het omzetten van gebruikers-ID's in de imagelagen even duren. Het voorbereiden van de container mag hooguit vijf minuten duren. Voor starten en afsluiten gelden aparte tijdsgrenzen.
 
 ### Wat wordt gecontroleerd?
 
-- Platform, Node-versie, SQLite en UID/GID; root-eigendom en bytegelijkheid van het pakket, zonder schrijfrechten.
-- Alle geëxporteerde imagelagen: alleen de bedoelde applicatiebestanden en nergens de bewust uitgesloten fictieve canarytekst.
-- Een afzonderlijke alleen-lezen datamount: Linux moet een schrijvende open weigeren. Ontbrekende of ongeldige data en verkeerde pins moeten start weigeren.
-- Zestien bestaande HTTP-controles via één dynamische IPv4-loopbackpoort.
-- SIGTERM, afsluiten, opruimen van de eigen containers en bytegelijke synthetische data en instellingen na afloop.
+- **De basis:** platform, Node-versie, SQLite en UID/GID. De pakketbestanden zijn van root, byte voor byte gelijk, en niet schrijfbaar.
+- **Alle imagelagen:** er zitten alleen de bedoelde applicatiebestanden in. Een bewust weggelaten fictieve tekst (*canary*) mag nergens terugkomen.
+- **Een aparte schijf met data, alleen-lezen:** Linux moet weigeren als iets wil schrijven. Ontbrekende of ongeldige data en verkeerde pins moeten de start tegenhouden.
+- **Zestien bestaande HTTP-controles,** via één willekeurige IPv4-poort op de eigen computer.
+- **Afsluiten:** SIGTERM, netjes stoppen, de eigen containers opruimen, en daarna fictieve data en instellingen die byte voor byte gelijk zijn gebleven.
 
-Containers krijgen een alleen-lezen rootfs, geen capabilities, `no-new-privileges`, 512 MiB, één CPU en maximaal 128 processen. Alleen de HTTP-proef heeft rootless netwerk; de hostpoort bindt uitsluitend aan `127.0.0.1`. Gebruik de bewust vervuilde testcontext nooit als productiecontext.
+Elke container krijgt een alleen-lezen bestandssysteem, geen *capabilities*, `no-new-privileges`, 512 MiB geheugen, één CPU en hooguit 128 processen. Alleen de HTTP-proef krijgt netwerk, zonder rootrechten; de poort luistert alleen op `127.0.0.1`. De testcontext is bewust vervuild. Gebruik hem dus nooit als echte context.
 
-`result.json` begint met `passed: false`. Alleen volledige uitvoering met geslaagde opruiming kan dat veranderen. Bewaar resultaat, commandologs, `layers.log` en `image.docker.tar` privé, buiten Git. Elke run gebruikt een uniek containerlabel. Er is geen globale prune; images blijven in de eigen opslag staan. Bij harde uitval moet de operator uitsluitend deze run inspecteren en opruimen, met de opslagpaden uit de private logs.
+`result.json` begint met `passed: false`. Dat verandert alleen als alles is uitgevoerd én het opruimen lukte. Bewaar het resultaat, de logs van de opdrachten, `layers.log` en `image.docker.tar` privé, buiten Git.
+
+Elke run krijgt een eigen label voor zijn containers. De hulp ruimt niet alles in één keer op (geen *prune*); images blijven in de eigen opslag staan. Valt de run hard uit? Dan bekijkt en ruimt de operator alleen deze run op, met de opslagpaden uit de privélogs.
 
 ### Snelle tests zonder container
 
@@ -71,9 +75,9 @@ node --test --test-concurrency=1 --test-timeout=60000 hosting/image-verification
 python3 hosting/image-verification/inspect-layers.test.py
 ```
 
-Deze tests toetsen de helpers en de aansluiting van een [ontvangen back-up](../data-transfer/README.md) op het pakket. Zij vervangen geen echte imagebuild of mountproef.
+Deze tests controleren de hulpmiddelen. Ze controleren ook of een [ontvangen back-up](../data-transfer/README.md) aansluit op het pakket. Ze vervangen geen echte imagebuild of proef met een schijf.
 
-Een lokale imageproef bewijst geen bronrechten, kwetsbaarheidsvrijheid of werking op Sevalla. De [eerste diskvulling](../first-start/README.md), providerrechten, TLS/probes en herstelproef blijven aparte stappen van de [demo-vrijgavechecklist](../../docs/beheer/live-demo-checklist.md).
+Een imageproef op je eigen computer bewijst niet dat je de bronnen mag gebruiken, dat er geen kwetsbaarheden zijn, of dat het bij Sevalla werkt. De [eerste vulling van de schijf](../first-start/README.md), de rechten bij de hostingpartij, TLS en probes en de herstelproef blijven aparte stappen van de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
 
 </details>
 

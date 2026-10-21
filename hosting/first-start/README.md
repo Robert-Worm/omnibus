@@ -29,25 +29,31 @@ Alle opdrachten hieronder zijn voor de Linux-shell van de server.
 
 <details><summary><b>Alle technische details en opdrachten</b></summary>
 
-Deze voorgestelde beheerstart houdt een gecontroleerde container kort in leven zonder Omnibus, database of listener te starten. Het is geen bewezen Sevalla-bootstrapprocedure. Gebruik haar uitsluitend na providerbevestiging en toestemming van de beheerder. Voeg geen dummy database of fake healthserver toe.
+Dit is een voorstel voor de allereerste start op de server. Een gecontroleerde container blijft dan even draaien, zonder dat Omnibus, de database of een listener (een proces dat op een poort wacht) start. Zo kan de beheerder in die tijd de database neerzetten.
 
-### Providervoorwaarden
+Let op: dit is geen bewezen werkwijze bij Sevalla, de hostingpartij die eerst was onderzocht. Gebruik het alleen als de hostingpartij het bevestigt en de beheerder toestemming geeft. Voeg geen nep-database of nep-gezondheidsserver toe.
 
-De [Sevalla-webterminal](https://docs.sevalla.com/applications/web-terminal) vereist een draaiende, gereedstaande instantie. Het Files-menu kan bestanden overbrengen tot 100 MB per upload/download; daarvoor is updatebevoegdheid nodig. De ontvangen bestanden behoren aan de containergebruiker. Alleen leesrechten instellen op bestanden die dezelfde gebruiker bezit, is geen blijvende scheiding: die eigenaar kan zijn rechten herstellen.
+### Wat de hostingpartij moet bieden
 
-Laat vóór gebruik bevestigen:
+De [Sevalla-webterminal](https://docs.sevalla.com/applications/web-terminal) werkt alleen als er een instantie draait en gereed is. Via het Files-menu kun je bestanden tot 100 MB per upload of download overzetten. Daarvoor heb je updatebevoegdheid nodig.
 
-1. Of dezelfde image met één persistente disk, UID/GID `1000:1000`, HTTP/probes uit en zonder listener gereed wordt en terminaltoegang biedt.
-2. Hoe de beheerder ontvangt en daarna zowel bestanden als vervangbare bovenliggende mappen buiten de schrijfmacht van de runtime brengt.
-3. Welk beschermd ontvangstkanaal en welke operatorhulpmiddelen beschikbaar zijn, en hoe sessies en transfers worden beëindigd bij afbreken.
+De bestanden die binnenkomen, zijn van de containergebruiker. Alleen leesrechten zetten op bestanden van diezelfde gebruiker is geen blijvende scheiding. De eigenaar kan zijn rechten namelijk weer terugzetten.
 
-Een aanwezige operator moet bevoegd zijn de app op te schorten. De Node-timer hieronder beëindigt niet de herstartlus van het platform en trekt niet zelfstandig alle terminalsessies in. Zonder die beheerafspraken niet beginnen.
+Laat de hostingpartij vóór gebruik drie dingen bevestigen:
 
-### Kandidaatopdracht
+1. Of dezelfde image gereed wordt en een terminal biedt, met één vaste schijf, UID/GID `1000:1000`, HTTP en probes (gezondheidscontroles) uit, en zonder listener.
+2. Hoe de beheerder bestanden ontvangt. En hoe hij daarna zowel de bestanden als de vervangbare bovenliggende mappen buiten bereik van de app brengt, zodat de app er niet in kan schrijven.
+3. Welk beveiligd kanaal en welke hulpmiddelen er zijn om bestanden te ontvangen. En hoe sessies en overdrachten stoppen als iets wordt afgebroken.
 
-Gebruik dezelfde gecontroleerde image als voor de normale start. Controleer dat `node` de bedoelde Node 24 is en de shell geen achtergrondprocessen toevoegt. Controleer HTTP/probes en eventuele TCP-/private verbindingen vooraf. De standaardpakketmap is `/app/omnibus-runtime`; de afzonderlijke datamount hoort buiten die map en buiten de webroot.
+Er moet een operator aanwezig zijn die de app mag pauzeren. De Node-timer hieronder stopt niet de herstartlus van het platform. Hij sluit ook niet vanzelf alle terminalsessies. Begin niet zonder deze afspraken.
 
-Vervang `FIXED_UTC_DEADLINE` door één vaste UTC-tijd in `YYYY-MM-DDTHH:mm:ss.sssZ`, maximaal vijftien minuten vooruit. Bewaar dezelfde letterlijke eindtijd bij herstart; bereken geen nieuw tijdvenster in het commando.
+### De opdracht
+
+Gebruik dezelfde gecontroleerde image als bij de normale start. Controleer dat `node` echt Node 24 is, en dat de shell geen processen op de achtergrond toevoegt. Controleer vooraf HTTP, probes en eventuele TCP- of privéverbindingen.
+
+De pakketmap is standaard `/app/omnibus-runtime`. De aparte schijf met data hoort buiten die map en buiten de webroot.
+
+Vervang `FIXED_UTC_DEADLINE` door één vaste eindtijd in UTC, in de vorm `YYYY-MM-DDTHH:mm:ss.sssZ`. Die ligt hooguit vijftien minuten in de toekomst. Herstart de container, gebruik dan dezelfde eindtijd. Laat de opdracht geen nieuw tijdvenster berekenen.
 
 <!-- first-start-command -->
 ```sh
@@ -65,17 +71,20 @@ setTimeout(finish, left);
 ```
 <!-- /first-start-command -->
 
-De opdracht opent geen socket of database en schrijft geen uitvoer. Verkeerde identiteit of eindtijd geeft exitcode 64; eindtijd of TERM/INT geeft exitcode 0. Dit is geen harde tijdgarantie bij een bevroren proces of afwijkende systeemklok.
+De opdracht opent geen socket en geen database, en schrijft niets. Een verkeerde gebruiker of eindtijd geeft afsluitcode 64. De eindtijd of een TERM- of INT-signaal geeft afsluitcode 0. Dit is geen harde garantie: bij een vastgelopen proces of een verkeerde systeemklok kan het anders lopen.
 
 ### Van ontvangst naar de normale start
 
-Ontvang uitsluitend in een nieuwe, door de operator beheerde map. Verifieer bytes, hashes en pakketkoppeling met de [ontvangstcontrole](../data-transfer/README.md). De volledige checker is een operatorhulpmiddel en zit bewust niet in het runtimepakket.
+1. **Ontvang** alleen in een nieuwe map die de operator beheert.
+2. **Controleer** bytes, hashes en de koppeling met het pakket met de [ontvangstcontrole](../data-transfer/README.md). Die volledige controle is een hulpmiddel voor de operator; hij zit bewust niet in het runtimepakket.
+3. **Bewijs** dat de app de database en instellingen kan lezen, maar niet kan wijzigen of vervangen.
+4. **Sluit** de beheersessie.
+5. **Vervang** de tijdelijke opdracht bewust door de [normale pakketstart](../../docs/beheer/runtime-pakket.md). Gebruik dezelfde gecontroleerde release en publicatie, en een expliciete origin (het openbare adres). Start niet vanuit een terminal een tweede app-proces.
+6. **Open** de site pas voor publiek na de proeven op de server.
 
-Bewijs daarna dat de runtime kan lezen maar de database en instellingen niet kan wijzigen of vervangen. Sluit de beheersessie. Vervang de tijdelijke opdracht bewust door de [normale pakketstart](../../docs/beheer/runtime-pakket.md), met dezelfde geverifieerde release/publicatie en expliciete origin. Begin niet vanuit een terminal een tweede app-proces. Open pas publieke toegang na de hostproeven.
+**Fout, of eindtijd bereikt?** Houd de site dicht voor publiek, pauzeer de app en controleer dat instanties en sessies gestopt zijn. Bestaande data blijven staan; partials worden niet gebruikt. Een volgende poging vraagt een nieuw, bewust gekozen tijdvenster. Wil je terug naar een vorige versie? Gebruik de [herstelroute](../../docs/beheer/storingen-en-herstel.md).
 
-Bij fout of eindtijd: publieke toegang uit houden, app opschorten en gestopte instanties en sessies controleren. Bestaande data blijven behouden; partials blijven ongeactiveerd. Een volgende poging vraagt een nieuw bewust tijdvenster. Gebruik voor terugschakelen de [herstelroute](../../docs/beheer/storingen-en-herstel.md).
-
-### Lokale proef
+### Proef op je eigen computer
 
 Alleen op Linux, als UID/GID `1000:1000`, met Node 24 en een eigen tijdelijke map:
 
@@ -83,7 +92,7 @@ Alleen op Linux, als UID/GID `1000:1000`, met Node 24 en een eigen tijdelijke ma
 node --test --test-concurrency=1 --test-timeout=15000 hosting/first-start/rehearsal.test.mjs
 ```
 
-De proef voert het commando uit dit document uit en controleert de vaste eindtijd, signalen, afwezige sockets, databehoud, strikte startweigering en het eigenaarsrechtenprobleem. Zij bewijst geen providerterminal, diskrechten of daadwerkelijke overdracht.
+De proef voert de opdracht uit dit document uit. Hij controleert de vaste eindtijd, de signalen, dat er geen sockets open zijn, dat data blijven staan, dat een verkeerde start strikt wordt geweigerd, en het probleem met eigenaarsrechten. De proef bewijst niet hoe de terminal van de hostingpartij werkt, welke rechten de schijf heeft, of dat een echte overdracht lukt.
 
 </details>
 

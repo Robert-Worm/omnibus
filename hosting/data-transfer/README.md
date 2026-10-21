@@ -27,13 +27,16 @@ Klopt er iets niet, dan blijft alles staan zoals het was. Gebruik dan een nieuwe
 
 <details><summary><b>Alle technische details en opdrachten</b></summary>
 
-Deze lokale beheerhulp controleert een gesloten SQLite-back-up tegen vooraf vertrouwde hashes en het bijpassende runtimepakket. De hulp doet geen netwerkoverdracht, schrijft geen actieve instellingen en start de app niet. Gebruik haar pas nadat de beheerder de overdracht heeft toegestaan.
+Deze hulp is voor de beheerder, op de eigen computer. Hij controleert een gesloten SQLite-back-up. Hij vergelijkt die met hashes (controlegetallen) die je vooraf vertrouwt, en met het bijpassende runtimepakket.
+
+De hulp doet bewust weinig. Hij stuurt niets over het netwerk, schrijft geen actieve instellingen en start de app niet. Gebruik hem pas als de beheerder de overdracht heeft toegestaan.
 
 ### Eerst vastleggen
 
-- Maak een gesloten back-up met de bestaande [back-uproute](../../docs/beheer/storingen-en-herstel.md).
-- Leg de SHA-256 van de afgeronde back-up, de SHA-256 van het bijpassende `runtime-package.json`, de release en de publicatie afzonderlijk vast. Een hash uit dezelfde onbewezen inbox is geen onafhankelijk herkomstbewijs.
-- Gebruik aparte lokale afzender-, pakket- en ontvangermappen, exclusief beheerd door de operator. De ontvangende oudermap moet bestaan en buiten alle webroots liggen. Controleer vrije ruimte, rechten en dat niemand naar de invoer schrijft. Geen links, junctions, hardlinks naar de bron of netwerkpaden.
+- **Maak een gesloten back-up** met de bestaande [back-uproute](../../docs/beheer/storingen-en-herstel.md).
+- **Leg vier dingen apart vast:** de SHA-256 van de afgeronde back-up, de SHA-256 van het bijpassende `runtime-package.json`, de release en de publicatie. Neem een hash niet over uit dezelfde map waarin de back-up binnenkwam. Zo'n hash is geen onafhankelijk bewijs van herkomst.
+- **Gebruik aparte mappen** voor afzender, pakket en ontvanger. Alleen de operator beheert ze. De bovenliggende map van de ontvanger moet al bestaan en buiten elke webroot liggen.
+- **Controleer vooraf:** genoeg vrije ruimte, de juiste rechten, en dat niemand naar de invoer schrijft. Gebruik geen links, junctions, hardlinks naar de bron of netwerkpaden.
 
 ### Ontvangen
 
@@ -50,23 +53,37 @@ node hosting/data-transfer/receive-local-backup.mjs \
   --publication '<publicatie-hash>'
 ```
 
-Alle vier hashes moeten 64 kleine-letter-hextekens bevatten. De uitvoermap moet nieuw zijn. Bestaande bestanden worden niet vervangen.
+Elk van de vier hashes bestaat uit 64 tekens: cijfers en kleine letters a tot f. De uitvoermap moet nieuw zijn. Bestaande bestanden worden nooit vervangen.
 
-De hulp controleert de hashes en het pakket, kopieert naar `.catalogue.partial`, voert de bestaande volledige databasecontrole uit en controleert de hashes opnieuw. Pas daarna verschijnt `catalogue.sqlite` via een exclusief aangemaakte lokale hardlink; de partial-naam wordt verwijderd. Het bestandssysteem moet hardlinks ondersteunen. Er is geen zwakkere terugval naar overschrijven.
+Zo werkt de hulp, stap voor stap:
 
-Alleen afsluitcode 0 met `VERIFIED_LOCAL_RECEIPT` en de verwachte identiteiten levert een kandidaat op voor de afzonderlijke startcontrole. Een match verleent geen inhoudelijke goedkeuring. Houd de uitvoer privé.
+1. Hij controleert de hashes en het pakket.
+2. Hij kopieert de back-up naar `.catalogue.partial`.
+3. Hij voert de bestaande volledige databasecontrole uit en controleert de hashes opnieuw.
+4. Pas dan maakt hij `catalogue.sqlite` aan, via een nieuwe lokale hardlink. De naam met *partial* verdwijnt.
 
-Bij een fout blijven bron, pakket en bestaande doelen behouden. Nieuwe partials blijven beschikbaar voor inspectie; start ze niet. Gebruik voor een nieuwe poging een nieuwe map en vervang nooit een verwachte hash door de ontvangen hash.
+Het bestandssysteem moet hardlinks ondersteunen. Lukt dat niet, dan valt de hulp niet terug op overschrijven.
+
+**Wanneer is het gelukt?** Alleen bij afsluitcode 0, met `VERIFIED_LOCAL_RECEIPT` en de verwachte identiteiten. Dan heb je een kandidaat voor de aparte startcontrole. Een geslaagde controle is geen goedkeuring van de inhoud. Houd de uitvoer privé.
+
+**Ging er iets mis?** Bron, pakket en bestaande doelen blijven dan staan. Nieuwe partials blijven bewaard, zodat je ze kunt bekijken; start ze niet. Probeer opnieuw met een nieuwe map. Vervang nooit een verwachte hash door de hash die je ontving.
 
 ### Grenzen en tests
 
-Dit is geen transport-, encryptie- of ondertekeningssysteem. Het garandeert geen duurzaamheid bij stroomuitval en beschermt niet tegen een gelijktijdige aanvaller met dezelfde schrijfrechten. Afwezigheid van SQLite-sidecars bewijst niet dat niemand schrijft. Rechten, ontvangstkanaal en back-upbewaarplaats blijven beheerdersverantwoordelijkheden.
+Wat deze hulp níet doet:
+
+- Hij is geen systeem voor transport, versleuteling of ondertekening.
+- Hij garandeert niet dat alles bewaard blijft bij stroomuitval.
+- Hij beschermt niet tegen een aanvaller die tegelijk dezelfde schrijfrechten heeft.
+- Ontbrekende SQLite-sidecars (hulpbestanden naast de database) bewijzen niet dat niemand schrijft.
+
+Rechten, het ontvangstkanaal en de bewaarplaats van back-ups blijven de verantwoordelijkheid van de beheerder.
 
 ```sh
 node --test --test-concurrency=1 --test-timeout=120000 hosting/data-transfer/receive-local-backup.test.mjs
 ```
 
-De tests gebruiken alleen fictieve gegevens en tijdelijke mappen. De [imagecontrole](../image-verification/README.md) test ook de aansluiting van een ontvangen synthetische back-up op de pakketstart. Voor een echte host blijft de [eerste-startcontrole](../first-start/README.md) apart nodig.
+De tests gebruiken alleen fictieve gegevens en tijdelijke mappen. De [imagecontrole](../image-verification/README.md) test ook of een ontvangen fictieve back-up aansluit op de start van het pakket. Voor een echte server blijft de [eerste-startcontrole](../first-start/README.md) apart nodig.
 
 </details>
 
