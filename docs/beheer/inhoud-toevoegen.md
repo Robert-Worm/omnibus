@@ -29,7 +29,9 @@ flowchart LR
 
 Kopieer nooit private bestanden naar Git om een ontbrekende import op te lossen.
 
-## 1. Beoordeel de inhoud
+## Stap voor stap
+
+### 1. Beoordeel de inhoud
 
 Elke soort bron heeft eigen kwaliteitsvragen:
 
@@ -47,22 +49,16 @@ Hulp hierbij:
 
 Een AI-review is een hulpmiddel, geen menselijke goedkeuring. Twijfels blijven zichtbaar als HOLD.
 
-Bij een selecteerbare kadernorm horen een ingevuld doel, risico,
-beheersdoelstelling en beheersmaatregel. Staat een onderdeel niet letterlijk in
-de bron, werk het dan brongebonden uit vanuit het risico en benoem het als
-analytisch voorstel. Beoordeel ook deze afleidingen; alleen goedgekeurde normtekst
-is niet voldoende. Onvoldoende onderbouwing vraagt herstel vóór toelating,
-niet een leeg veld of standaardtekst. De flat-kaderpublisher controleert deze
-volledigheid bij nieuwe publicaties; bestaande publicaties blijven leesbaar.
+Bij een selecteerbare kadernorm horen een ingevuld doel, risico, beheersdoelstelling en beheersmaatregel. Staat een onderdeel niet letterlijk in de bron, werk het dan brongebonden uit vanuit het risico en benoem het als analytisch voorstel. Beoordeel ook deze afleidingen; alleen goedgekeurde normtekst is niet voldoende. Onvoldoende onderbouwing vraagt herstel vóór toelating, niet een leeg veld of standaardtekst. De flat-kaderpublisher controleert deze volledigheid bij nieuwe publicaties; bestaande publicaties blijven leesbaar.
 
-## 2. Controleer of het past
+### 2. Controleer of het past
 
 Past het pakket in de bestaande weergaven, zonder nieuwe code?
 
 - Rapporten gebruiken de bestaande rapportweergave; wetten en kaders de gedeelde kaderweergave (het CIO-ontwerp). Een andere titel of groep is gegevenswerk, geen reden voor een nieuwe weergave.
 - Een onbekend veld wordt niet stilletjes weggelaten. Past iets echt niet, dan blijft het pakket in HOLD tot de gedeelde code is aangepast en getest.
 
-## 3. Maak een nieuwe database en vergelijk
+### 3. Maak een nieuwe database en vergelijk
 
 Volg [database publiceren](database-publiceren.md). Belangrijk bij nieuwe inhoud:
 
@@ -70,7 +66,7 @@ Volg [database publiceren](database-publiceren.md). Belangrijk bij nieuwe inhoud
 - Gebruik bij de vergelijking `--expect-addition <soort>:<pakket-id>`, bijvoorbeeld `--expect-addition report:FGFIN25`. De vergelijking stopt dan als er iets anders verandert dan je verwacht.
 - Een onverwachte wijziging of verwijdering verklaar je eerst, voordat je verdergaat.
 
-## 4. Test in een aparte build
+### 4. Test in een aparte build
 
 ```text
 npm run build -- --settings <nieuwe-map>/local-build.json --out work/review-01
@@ -82,7 +78,9 @@ Controleer twee dingen:
 - **De nieuwe inhoud:** staat de bron in de catalogus, met de verwachte normen, toetspunten, bronpassages en beperkingen? Verschijnt een rapport onder de juiste thema's?
 - **Bestaand werk:** open een kopie van een bestaand project. Zijn selecties, vragen, eigen tekst, bronmarkeringen en de Excel-export nog hetzelfde? Het script `scripts/review-portable-runtime.mjs` helpt bij deze vergelijking.
 
-## 5. Neem in gebruik
+**Gelukt als:** de nieuwe inhoud er staat zoals verwacht, en het bestaande project niet is veranderd.
+
+### 5. Neem in gebruik
 
 Pas als beide controles goed zijn, kies je de nieuwe database. Bewaar de vorige database en build, zodat je kunt terugvallen. Daarna volgt [een release uitbrengen](database-publiceren.md#een-release-uitbrengen).
 

@@ -8,9 +8,11 @@
 
 | Stap | Lees | Wat je daarna kunt |
 | --- | --- | --- |
-| 1 | Deze pagina | Je weet hoe claimen, verwerken en inleveren werkt |
-| 2 | [Een bron verwerken](bron-verwerken.md) | Je maakt met een AI-skill een conceptpakket |
-| 3 | [Voortgang](voortgang.md) | Je kiest een open bron en claimt hem |
+| 1 · Claimen | [Voortgang](voortgang.md) | Je kiest een open bron en zet hem op je naam |
+| 2 · Verwerken | [Een bron verwerken](bron-verwerken.md) | Je maakt met een AI-skill een conceptpakket |
+| 3 · Inleveren | [Lever in](bron-verwerken.md#5-lever-in) | Je levert het pakket in bij je claim |
+
+Hoe die drie stappen samenhangen, lees je hieronder bij [zo werkt een bron verwerken](#zo-werkt-een-bron-verwerken).
 
 ## Manieren om te helpen
 
@@ -28,7 +30,7 @@
 flowchart LR
     A["⬜ Open"] -->|"1 · Claimen"| B["🔄 In bewerking<br/>op jouw naam"]
     B -->|"2 · Verwerken<br/>met een skill"| B
-    B -->|"3 · /inleveren"| C["📦 Ingeleverd"]
+    B -->|"3 · Inleveren<br/>met /inleveren"| C["📦 Ingeleverd"]
     C -->|"4 · Controle door<br/>de beheerder"| D["✅ In database"]
     B -->|"/vrijgeven"| A
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;

@@ -167,6 +167,8 @@ npm run data:check-runtime -- --settings local-data/runtime/local-build.json
 
 Situaties die je opzoekt, zoals storingen, nummer je niet: de lezer volgt ze niet op volgorde.
 
+**Wat de check bewaakt:** een stap als `## 1.`-kop, en een genummerde kop op een pagina die geen taakpagina is.
+
 <a id="kaarten"></a>
 **Kaarten.** Een situatie (een storing of een foutmelding) krijgt altijd dezelfde kaart: een kop, de melding in een codeblok, en dan deze vier vette woorden in deze volgorde:
 
@@ -184,7 +186,9 @@ Situaties die je opzoekt, zoals storingen, nummer je niet: de lezer volgt ze nie
 - Een codeblok heeft altijd een taal: `text` voor opdrachten die overal werken, `bash` of `powershell` als het verschilt, en verder `json` of `mermaid`.
 - Verschilt het per systeem? Geef beide, met precies deze labels: **Windows (PowerShell)** en **macOS en Linux (bash)**.
 - Een plaatshouder schrijf je als `<kleine-letters-met-streepjes>`, zonder aanhalingstekens eromheen.
-- Heeft een opdracht een npm-script? Schrijf dan `npm run …`. De check waarschuwt als dat niet zo is.
+- Heeft een opdracht een npm-script? Schrijf dan `npm run …`.
+
+**Wat de check bewaakt:** de taal van elk codeblok (ook buiten `docs/`), plaatshouders tussen aanhalingstekens, andere labels voor Windows en macOS, en `node scripts/…` waar een npm-script voor bestaat.
 
 ## Uitklapblokken
 

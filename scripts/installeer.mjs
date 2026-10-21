@@ -28,7 +28,7 @@ export function controleerNode(huidig, nodig) {
   const [a, b] = [deel(huidig), deel(nodig)];
   const goed = a[0] === b[0] ? (a[1] > b[1] || (a[1] === b[1] && a[2] >= b[2])) : a[0] > b[0];
   if (!goed) throw new Stop(`Je gebruikt Node.js ${huidig}; Omnibus heeft versie ${nodig} of hoger nodig.`,
-    `Installeer Node.js ${nodig} via https://nodejs.org/ en open daarna een nieuwe terminal.`, "#2-een-verkeerde-versie-van-nodejs");
+    `Installeer Node.js ${nodig} via https://nodejs.org/ en open daarna een nieuwe terminal.`, "#een-verkeerde-versie-van-nodejs");
   return true;
 }
 
@@ -69,14 +69,14 @@ export async function installeer({ starten = true } = {}) {
     rmSync(tijdelijk, { recursive: true, force: true });
     await haalDatabase({ url: DATABASE_URL, verwacht: DATABASE_SHA256, out: tijdelijk }).catch((fout) => {
       rmSync(tijdelijk, { recursive: true, force: true });
-      throw new Stop(`De database kon niet worden opgehaald: ${fout.message}.`, `Controleer je internetverbinding. Lukt het niet, download dan de zip zelf: ${DATABASE_URL} en pak hem uit in ${RUNTIME}.`, "#7-de-database-is-beschadigd");
+      throw new Stop(`De database kon niet worden opgehaald: ${fout.message}.`, `Controleer je internetverbinding. Lukt het niet, download dan de zip zelf: ${DATABASE_URL} en pak hem uit in ${RUNTIME}.`, "#de-database-is-beschadigd");
     });
     if (existsSync(path.join(root, RUNTIME))) rmSync(tijdelijk, { recursive: true, force: true });
     else renameSync(tijdelijk, path.join(root, RUNTIME));
     console.log("  Opgehaald; het controlegetal klopt.");
   }
   await draai(process.execPath, ["scripts/check-runtime-database.mjs", "--settings", SETTINGS], { stil: true }).catch(() => {
-    throw new Stop("De database haalt de controle niet.", `Verwijder de map ${RUNTIME} en start deze opdracht opnieuw; dan wordt de database opnieuw opgehaald.`, "#7-de-database-is-beschadigd");
+    throw new Stop("De database haalt de controle niet.", `Verwijder de map ${RUNTIME} en start deze opdracht opnieuw; dan wordt de database opnieuw opgehaald.`, "#de-database-is-beschadigd");
   });
   console.log("  Gecontroleerd: compleet en ongewijzigd.");
 
@@ -89,7 +89,7 @@ export async function installeer({ starten = true } = {}) {
   stap(5, "Omnibus starten");
   console.log(`  Open http://127.0.0.1:${PORT}/ in je browser. Stoppen doe je met Ctrl+C.\n`);
   await draai(npm.bestand, ["start", "--", "--settings", SETTINGS, "--port", String(PORT)], { shell: npm.shell }).catch(() => {
-    throw new Stop("Omnibus kon niet starten.", `Draait Omnibus al in een ander venster? Sluit dat, of start op een andere poort: npm start -- --settings ${SETTINGS} --port 4320`, "#8-omnibus-weigert-te-starten");
+    throw new Stop("Omnibus kon niet starten.", `Draait Omnibus al in een ander venster? Sluit dat, of start op een andere poort: npm start -- --settings ${SETTINGS} --port 4320`, "#omnibus-weigert-te-starten");
   });
 }
 

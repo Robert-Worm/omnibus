@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -194,4 +194,15 @@ test("tabellen volgen de bouwstenen", () => {
   assert.match(w, /a\.md:11: datum in een tabel als JJJJ-MM-DD/);
   assert.match(w, /a\.md:12: lege cel/);
   assert.doesNotMatch(w, /kolom "Stap"/, "stapnummers zijn geen hoeveelheden");
+});
+
+test("taakpagina's: stapkoppen, codeblokken, plaatshouders en systeemlabels volgen de bouwstenen", () => {
+  const goed = "<!-- paginatype: taak -->\n## Stap voor stap\n\n### 1. Haal de code op\n\n**Windows (PowerShell)**\n\n```powershell\nnpm run x -- --map <jouw-map>\n```\n\n**macOS en Linux (bash)**\n\n```bash\nnpm run x\n```\n";
+  assert.deepEqual(vormWaarschuwingen("docs/a.md", goed), []);
+  const fout = "<!-- paginatype: naslag -->\n## 1. Doe iets\n\n### 2. Een situatie\n\nWindows:\n\n```sh\nnpm run x -- --map \"<jouw-map>\"\n```\n\n```\nlos\n```\n";
+  const w = vormWaarschuwingen("docs/a.md", fout).join("\n");
+  for (const m of [/stap als ##-kop/, /genummerde kop buiten een taakpagina/, /systeemlabel "Windows:"/, /codeblok in "sh"/, /codeblok zonder taal/, /plaatshouder tussen aanhalingstekens/]) assert.match(w, m);
+  assert.deepEqual(vormWaarschuwingen("hosting/README.md", "## 1. Mag\n\n```text\nx \"<a>\"\n```\n"), [], "buiten docs/ alleen de codetaal");
+  assert.match(vormWaarschuwingen("hosting/README.md", "```sh\nx\n```\n").join(), /codeblok in "sh"/);
+  assert.deepEqual(vormWaarschuwingen("skills/x/SKILL.md", "```js\nx\n```\n"), []);
 });

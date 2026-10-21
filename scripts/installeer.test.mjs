@@ -7,7 +7,7 @@ import { DATABASE_SHA256, DATABASE_URL } from "./database-release.mjs";
 test("Node-versie: gelijk of nieuwer is goed, ouder stopt met uitleg", () => {
   for (const v of ["v24.17.0", "v24.18.1", "v25.0.0"]) assert.equal(controleerNode(v, "24.17.0"), true, v);
   for (const v of ["v24.16.9", "v22.22.0", "v20.0.0"]) {
-    assert.throws(() => controleerNode(v, "24.17.0"), (fout) => fout instanceof Stop && /nodejs\.org/.test(fout.oplossing) && fout.anker.startsWith("#2-"), v);
+    assert.throws(() => controleerNode(v, "24.17.0"), (fout) => fout instanceof Stop && /nodejs\.org/.test(fout.oplossing) && fout.anker === "#een-verkeerde-versie-van-nodejs", v);
   }
 });
 
@@ -25,7 +25,9 @@ test("de database van het installatiescript is dezelfde als in de Dockerfile", (
 test("elke verwijzing naar de hulppagina bestaat als kop", () => {
   const pagina = readFileSync(new URL("../docs/gebruiken/problemen-oplossen.md", import.meta.url), "utf8");
   const bron = readFileSync(new URL("./installeer.mjs", import.meta.url), "utf8");
-  for (const [, anker] of bron.matchAll(/"#(\d+-[a-z0-9-]+)"/g)) {
+  const verwijzingen = [...bron.matchAll(/"#([a-z][a-z0-9-]+)"/g)];
+  assert.ok(verwijzingen.length >= 3);
+  for (const [, anker] of verwijzingen) {
     const kop = pagina.split("\n").find((r) => r.startsWith("### ") && r.toLowerCase().replace(/^### /, "").replace(/[^a-z0-9 -]/g, "").replace(/ /g, "-") === anker);
     assert.ok(kop, anker);
   }

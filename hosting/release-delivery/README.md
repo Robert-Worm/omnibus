@@ -195,7 +195,7 @@ De stappen hieronder, met echte inhoud bij de release en de hostingpartij, zijn 
    De [ontvangsthulp](../data-transfer/README.md) controleert vier pins die je vooraf vertrouwt. Hij zet niets over via het netwerk en activeert niets. Het [voorstel voor de eerste start](../first-start/README.md) noemt de open vragen over de hostingpartij en de rechten. De precieze opdracht om over te zetten blijft open tot kanaal, toegangsbeheer en eerste toegang tot de schijf zijn bevestigd. Een download-URL of inloggegevens worden niet verzonnen.
 7. **Starten.** Na die voorwaarde en de gezamenlijke vrijgave van het inkomende verkeer: één instantie, de schijf op `/var/lib/omnibus`, een gekozen webpoort en één volledige startopdracht in het webproces bij Sevalla. Dit is een opdracht voor de Linux-shell van de hostingpartij, niet voor je eigen computer. Vul de vrijgegeven versie en origin in:
 
-   ```sh
+   ```bash
    exec node /app/omnibus-runtime/scripts/start-runtime-package.mjs --settings /var/lib/omnibus/releases/<publicatie-sha256>/local-build.json --public-origin https://<vrijgegeven-domein> --listen-host 0.0.0.0 --port "$PORT"
    ```
 

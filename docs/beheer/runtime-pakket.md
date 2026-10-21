@@ -34,7 +34,7 @@ Het runtimepakket bevat de gebouwde app en de server die alleen leest. Er zit ge
 
 Voer de opdrachten uit vanuit de map van de repository, met je eigen, private instellingen.
 
-Windows (PowerShell):
+**Windows (PowerShell)**
 
 ```powershell
 $settingsFile = (Resolve-Path local-data/runtime/local-build.json).Path
@@ -44,7 +44,7 @@ npm run build:runtime -- --settings $settingsFile
 npm run package:runtime -- --web-root runtime-build --database $buildSettings.database --out work/runtime-01
 ```
 
-macOS en Linux (bash):
+**macOS en Linux (bash)**
 
 ```bash
 settingsFile="$(cd "$(dirname local-data/runtime/local-build.json)" && pwd)/local-build.json"
@@ -61,11 +61,11 @@ Wat de opdrachten doen:
 Starten op Windows of Linux, vanuit de pakketmap:
 
 ```text
-node scripts/start-runtime-package.mjs --database "<absoluut-pad-naar-private.sqlite>" --port 4322
+node scripts/start-runtime-package.mjs --database <absoluut-pad-naar-private.sqlite> --port 4322
 ```
 
-- `npm start -- --database "<pad>" --port 4322` doet hetzelfde.
-- In plaats van `--database` kun je `--settings "<pad-naar-local-build.json>"` gebruiken. De start controleert dan ook de release en publicatie uit dat bestand.
+- `npm start -- --database <pad> --port 4322` doet hetzelfde.
+- In plaats van `--database` kun je `--settings <pad-naar-local-build.json>` gebruiken. De start controleert dan ook de release en publicatie uit dat bestand.
 - Bewaar instellingen en database **buiten** de pakketmap.
 - `npm install` is niet nodig: de server gebruikt alleen onderdelen die in Node zitten.
 - Ook dit pakket is lokale uitvoer: het geeft geen toestemming om inhoud te publiceren.
@@ -91,10 +91,10 @@ De server weigert onbekende of dubbele opties, afkortingen zoals `--host` en de 
 Voorbeeld om dit bewust op je eigen computer te proberen (vervang paden en controlegetallen door echte waarden):
 
 ```text
-node scripts/start-runtime-package.mjs --database "<apart-pad-naar-private.sqlite>" --release "<release-sha256>" --publication "<publicatie-sha256>" --public-origin https://omnibus.example.invalid --listen-host 127.0.0.1 --port 8080
+node scripts/start-runtime-package.mjs --database <apart-pad-naar-private.sqlite> --release <release-sha256> --publication <publicatie-sha256> --public-origin https://omnibus.example.invalid --listen-host 127.0.0.1 --port 8080
 ```
 
-Hetzelfde werkt voor `scripts/serve-database-web.mjs`, met daarbij `--web-root "<webbuild>"`. Het voorbeeldadres wordt alleen als instelling gebruikt; er wordt geen verbinding mee gemaakt. In de container luistert de server op `0.0.0.0`.
+Hetzelfde werkt voor `scripts/serve-database-web.mjs`, met daarbij `--web-root <webbuild>`. Het voorbeeldadres wordt alleen als instelling gebruikt; er wordt geen verbinding mee gemaakt. In de container luistert de server op `0.0.0.0`.
 
 De tests controleren dat opties goed worden gelezen, dat controlegetallen worden vergeleken en dat de juiste waarden worden doorgegeven. Een aparte test (`scripts/hosting-start-integration.test.mjs`) start beide echte opdrachten op de eigen computer en verwerkt echte verzoeken. Foutmeldingen bij het starten zijn kort en tonen geen ingevoerde waarden, bestandsinhoud of interne details.
 
@@ -122,7 +122,7 @@ Een tijdelijke blokkade van de database kan vanzelf overgaan. Is de database gew
 Deze controle test een draaiend pakket van buitenaf, vanuit de map van de repository. Hij start en wijzigt niets. Zonder opties toont hij alleen uitleg.
 
 ```text
-node scripts/hosting-acceptance.mjs --run --target http://127.0.0.1:8080 --public-origin https://omnibus.example.invalid --package "<geverifieerd-runtimepakket>" --release "<releasehash>" --publication "<publicatiehash>" --approved-resource "<hash-uit-het-pakketmanifest>" --excluded-resource "<hash-van-bestaande-maar-uitgesloten-resource>"
+node scripts/hosting-acceptance.mjs --run --target http://127.0.0.1:8080 --public-origin https://omnibus.example.invalid --package <geverifieerd-runtimepakket> --release <releasehash> --publication <publicatiehash> --approved-resource <hash-uit-het-pakketmanifest> --excluded-resource <hash-van-bestaande-maar-uitgesloten-resource>
 ```
 
 - Gebruik echte controlegetallen. De uitgesloten bron moet echt in de database staan maar niet in de webpublicatie; een verzonnen controlegetal bewijst niets.

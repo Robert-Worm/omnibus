@@ -60,7 +60,7 @@ De pakketmap is standaard `/app/omnibus-runtime`. De aparte schijf met data hoor
 Vervang `FIXED_UTC_DEADLINE` door één vaste eindtijd in UTC, in de vorm `YYYY-MM-DDTHH:mm:ss.sssZ`. Die ligt hooguit vijftien minuten in de toekomst. Herstart de container, gebruik dan dezelfde eindtijd. Laat de opdracht geen nieuw tijdvenster berekenen.
 
 <!-- first-start-command -->
-```sh
+```bash
 unset NODE_OPTIONS NODE_PATH || exit 64
 exec node -e '
 const text = process.argv[1], end = Date.parse(text), left = end - Date.now();
@@ -92,7 +92,7 @@ De opdracht opent geen socket en geen database, en schrijft niets. Een verkeerde
 
 Alleen op Linux, als UID/GID `1000:1000`, met Node 24 en een eigen tijdelijke map:
 
-```sh
+```bash
 node --test --test-concurrency=1 --test-timeout=15000 hosting/first-start/rehearsal.test.mjs
 ```
 

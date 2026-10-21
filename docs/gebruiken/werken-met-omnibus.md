@@ -17,7 +17,9 @@ Een paar begrippen:
 | **Bouwsteen** | Verzamelnaam voor alles wat je kunt kiezen: normen, toetspunten en modelvragen. |
 | **Bron** | Waar een bouwsteen vandaan komt: een rapport, een wet, een kader of een onderzoeksmodel. |
 
-## De vier stappen
+## Stap voor stap
+
+Omnibus werkt in vier stappen. De koppen hieronder volgen de stappen in Omnibus.
 
 ```mermaid
 flowchart LR
@@ -26,7 +28,7 @@ flowchart LR
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
-### 1. Onderzoeksrichting
+### 1. Kies je onderzoeksrichting
 
 Kies hoe je begint:
 
@@ -84,6 +86,8 @@ Kies een werkvorm voor je Excel-bestand:
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
 ![Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen](../images/stap-4-exporteer.png)
+
+**Gelukt als:** je Excel-bestand is gedownload.
 
 ## Je werk bewaren en delen
 

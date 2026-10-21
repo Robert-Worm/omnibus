@@ -2,52 +2,69 @@
 
 <!-- paginatype: taak -->
 
-> **In het kort:** je haalt de code op, downloadt de database, bouwt de applicatie en opent hem in je browser. Alles draait op je eigen computer.
+> **In het kort:** probeer Omnibus online, of zet hem op je eigen computer met Docker, met één opdracht of stap voor stap. Op je eigen computer draait alles lokaal.
 
-## Wat heb je nodig?
+## Kies je route
 
-| Wat | Waarom | Hoe controleer je het |
+| Route | Wat je nodig hebt | Tijd |
 | --- | --- | --- |
-| [Git](https://git-scm.com/) | Om de code op te halen | `git --version` |
-| [Node.js 24.17](https://nodejs.org/) met npm 11.13 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
-| De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
+| [Online proberen](#online-proberen) | Alleen een browser | 1 minuut |
+| [Met Docker](#met-docker) | Docker | 5 minuten |
+| [Met één opdracht](#met-één-opdracht) | Git en Node.js | 10 minuten |
+| [Stap voor stap](#stap-voor-stap) | Git, Node.js en de database-zip | 15 minuten |
 
-Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) hoort bij de [database van 19 oktober 2026](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-10-19); die combinatie is samen getest.
+Wil je Omnibus gewoon gebruiken? Kies dan Docker of één opdracht. De route *stap voor stap* is voor wie wil zien wat er gebeurt, of zelf aan de code werkt.
 
-Omnibus is getest op Windows en Linux (Ubuntu 24.04); macOS zou moeten werken, maar is niet getest. Je hebt geen account of internetverbinding nodig zodra alles is geïnstalleerd.
+Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) hoort bij de [database van 19 oktober 2026](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-10-19); die combinatie is samen getest. Omnibus is getest op Windows en Linux (Ubuntu 24.04); macOS zou moeten werken, maar is niet getest. Je hebt geen account of internetverbinding nodig zodra alles is geïnstalleerd.
 
-## Snelste route: met Docker
+## Online proberen
 
-Heb je [Docker](https://www.docker.com/products/docker-desktop/)? Dan zijn twee opdrachten genoeg. Git, Node.js en de database-zip heb je dan niet nodig:
+Open de [proefversie online](https://omnibus.sliplane.app). Je hoeft niets te installeren. Je werk blijft in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen.
+
+## Met Docker
+
+**Wat heb je nodig?** [Docker](https://www.docker.com/products/docker-desktop/). Git, Node.js en de database-zip heb je dan niet nodig.
 
 ```text
 docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0
 docker run --rm -p 8080:8080 omnibus
 ```
 
-Open daarna `http://localhost:8080`. Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
+Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
 
-## Zonder Docker: met één opdracht
+**Gelukt als:** je Omnibus ziet op `http://localhost:8080`.
 
-Heb je [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/)? Dan doet één opdracht de rest. Hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
+## Met één opdracht
 
-Windows (PowerShell):
+**Wat heb je nodig?** [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/). Eén opdracht doet de rest: hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
+
+**Windows (PowerShell)**
 
 ```powershell
 git clone https://github.com/Robert-Worm/omnibus.git; cd omnibus; node scripts/installeer.mjs
 ```
 
-macOS en Linux:
+**macOS en Linux (bash)**
 
 ```bash
 git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scripts/installeer.mjs
 ```
 
-Open daarna `http://127.0.0.1:4319/`. Gaat er iets mis, dan zegt de opdracht wat je moet doen. Een volgende keer start dezelfde opdracht Omnibus weer; wat al klaar is, slaat hij over.
+Gaat er iets mis, dan zegt de opdracht wat je moet doen. Een volgende keer start dezelfde opdracht Omnibus weer; wat al klaar is, slaat hij over.
 
-Wil je precies zien wat er gebeurt, of zelf aan de code werken? Volg dan de stappen hieronder.
+**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`.
 
 ## Stap voor stap
+
+Deze route is voor ontwikkelaars, of voor wie precies wil zien wat er gebeurt.
+
+**Wat heb je nodig?**
+
+| Wat | Waarom | Hoe controleer je het |
+| --- | --- | --- |
+| [Git](https://git-scm.com/) | Om de code op te halen | `git --version` |
+| [Node.js 24.17](https://nodejs.org/) met npm 11.13 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
+| De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
 
 ```mermaid
 flowchart LR
@@ -70,6 +87,8 @@ npm ci --ignore-scripts --no-audit --no-fund
 
 Dit duurt een paar minuten. npm haalt de bibliotheken op die Omnibus gebruikt.
 
+**Gelukt als:** npm eindigt zonder `ERR!`.
+
 ### 3. Pak de database uit
 
 Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) (10 MB; uitgepakt ongeveer 90 MB). Maak de map `local-data/runtime/` aan (die zit niet in Git) en pak de zip daarin uit:
@@ -83,6 +102,8 @@ Daar staan dan:
 - `catalogue.sqlite`: de database;
 - `local-build.json`: de instellingen, met twee controlegetallen (hashes) die bij deze database horen.
 
+**Gelukt als:** beide bestanden rechtstreeks in `local-data/runtime/` staan, niet in een extra map.
+
 ### 4. Controleer en bouw
 
 ```text
@@ -90,7 +111,9 @@ npm run data:check-runtime -- --settings local-data/runtime/local-build.json
 npm run build -- --settings local-data/runtime/local-build.json
 ```
 
-De eerste opdracht controleert of de database compleet en ongewijzigd is. Je ziet dan `VERIFIED_RUNTIME_DATABASE`. De tweede bouwt de applicatie.
+De eerste opdracht controleert of de database compleet en ongewijzigd is. De tweede bouwt de applicatie.
+
+**Gelukt als:** je na de eerste opdracht `VERIFIED_RUNTIME_DATABASE` ziet, en de tweede zonder foutmelding eindigt.
 
 ### 5. Start Omnibus
 
@@ -98,7 +121,9 @@ De eerste opdracht controleert of de database compleet en ongewijzigd is. Je zie
 npm start -- --settings local-data/runtime/local-build.json --port 4319
 ```
 
-Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`. Je ziet dan het startscherm:
+Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
+
+**Gelukt als:** je het startscherm ziet:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../images/omnibus-overview-donker.png">
@@ -114,10 +139,7 @@ Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
 
 ## Samengevat
 
-1. Code ophalen en installeren.
-2. Database-zip uitpakken in `local-data/runtime/`.
-3. Controleren, bouwen en starten.
-4. Openen op <http://127.0.0.1:4319/>.
+Kies je route. Online proberen kan direct, zonder installatie. Docker of één opdracht is de snelste weg naar Omnibus op je eigen computer. Stap voor stap is voor wie wil zien wat er gebeurt: code ophalen, installeren, de database uitpakken in `local-data/runtime/`, controleren, bouwen en starten.
 
 ## Volgende stap
 

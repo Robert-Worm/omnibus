@@ -45,7 +45,7 @@ De hulp doet bewust weinig. Hij stuurt niets over het netwerk, schrijft geen act
 
 Deze opdracht is voor de Linux- of macOS-shell op de server. Op Windows zet je alle delen op één regel, zonder de `\` aan het eind.
 
-```sh
+```bash
 node hosting/data-transfer/receive-local-backup.mjs \
   --from '<afzendermap>/backup.sqlite' \
   --package '<geverifieerd-runtimepakket>' \
@@ -82,7 +82,7 @@ Wat deze hulp níet doet:
 
 Rechten, het ontvangstkanaal en de bewaarplaats van back-ups blijven de verantwoordelijkheid van de beheerder.
 
-```sh
+```bash
 node --test --test-concurrency=1 --test-timeout=120000 hosting/data-transfer/receive-local-backup.test.mjs
 ```
 

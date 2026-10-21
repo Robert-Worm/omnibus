@@ -69,9 +69,11 @@ Bewaar de **manifesthash** die `content:prepare` toont apart, buiten het pakket.
 npm run content:intake -- <map>/intake.json --expect-sha256 <bewaarde-manifesthash>
 ```
 
+**Gelukt als:** `content:intake` eindigt met `FILES_VERIFIED_REVIEW_REQUIRED`.
+
 ### 4. Lees de uitkomst
 
-| Uitkomst | Betekenis | Volgende stap |
+| Uitkomst | Betekenis | Wat je doet |
 | --- | --- | --- |
 | `FILES_VERIFIED_REVIEW_REQUIRED` | Bestanden compleet en ongewijzigd | [Inhoud beoordelen](inhoud-toevoegen.md) |
 | `HOLD` | Er ontbreekt iets of er is iets gewijzigd | Zie hieronder |

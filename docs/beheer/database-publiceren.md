@@ -4,7 +4,13 @@
 
 > **In het kort:** je maakt een nieuwe database in de private verwerkingsomgeving. Je vergelijkt en test hem, en brengt hem uit als zip bij een GitHub-release. De huidige database blijft staan tot je bewust overstapt.
 
-## Het hele traject
+## Wat heb je nodig?
+
+- De **private verwerkingsomgeving**: een schone checkout van de broncode, met de broncollectie, reviewdossiers en Python. Deze omgeving staat niet op GitHub.
+- Een **goedgekeurde bronrelease** (een hash van 64 tekens) en de bijbehorende **commit** (40 tekens).
+- Node 24.17 en deze repository, met geïnstalleerde onderdelen.
+
+## Stap voor stap
 
 ```mermaid
 flowchart LR
@@ -12,44 +18,42 @@ flowchart LR
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
-## Wat heb je nodig?
-
-- De **private verwerkingsomgeving**: een schone checkout van de broncode, met de broncollectie, reviewdossiers en Python. Deze omgeving staat niet op GitHub.
-- Een **goedgekeurde bronrelease** (een hash van 64 tekens) en de bijbehorende **commit** (40 tekens).
-- Node 24.17 en deze repository, met geïnstalleerde onderdelen.
-
-## 1. Leg de instellingen vast
+### 1. Leg de instellingen vast
 
 Maak buiten Git een `publication-settings.json`:
 
 ```json
 {
-  "sourceRoot": "<private-verwerkingscheckout>",
-  "sourceDatabase": "<private-brondatabase.sqlite>",
-  "sourceCommit": "<40-tekens-commit>",
-  "release": "<64-tekens-bronrelease>"
+  "sourceRoot": <private-verwerkingscheckout>,
+  "sourceDatabase": <private-brondatabase.sqlite>,
+  "sourceCommit": <40-tekens-commit>,
+  "release": <64-tekens-bronrelease>
 }
 ```
 
 Relatieve paden gelden vanaf de map van dit bestand. Gebruik UTF-8 (UTF-16 werkt niet).
 
-## 2. Doe de voorcontrole
+### 2. Doe de voorcontrole
 
 ```text
-npm run data:publish-runtime -- --settings "<publication-settings.json>" --out "work/publication-01" --check
+npm run data:publish-runtime -- --settings <publication-settings.json> --out "work/publication-01" --check
 ```
 
 Dit controleert alleen of de invoer klopt: schone commit, bronrelease, bestanden en een nieuwe uitvoermap. Er wordt niets gemaakt.
 
-## 3. Publiceer
+**Gelukt als:** de voorcontrole zonder foutmelding eindigt.
+
+### 3. Publiceer
 
 ```text
-npm run data:publish-runtime -- --settings "<publication-settings.json>" --out "work/publication-01"
+npm run data:publish-runtime -- --settings <publication-settings.json> --out "work/publication-01"
 ```
 
 De opdracht draait de bestaande reviewcontroles, maakt de nieuwe database en controleert hem volledig. Pas als alles slaagt, verschijnen `publication-receipt.json` en `local-build.json` in de uitvoermap. Er is geen optie om controles over te slaan.
 
-## 4. Vergelijk met de huidige database
+**Gelukt als:** `publication-receipt.json` en `local-build.json` allebei in de uitvoermap staan.
+
+### 4. Vergelijk met de huidige database
 
 ```text
 npm run data:compare-runtime -- --before local-data/runtime/local-build.json --after work/publication-01/local-build.json
@@ -61,14 +65,16 @@ Je ziet welke pakketten en documenten zijn toegevoegd, gewijzigd of verwijderd. 
 npm run data:compare-runtime -- --before local-data/runtime/local-build.json --after work/publication-01/local-build.json --expect-addition report:FGFIN25
 ```
 
-| Uitkomst | Betekenis |
-| --- | --- |
-| `MATCH` | Precies de verwachte toevoegingen, verder niets veranderd |
-| `HOLD` | Er is iets anders veranderd. Verklaar dat eerst. |
+| Uitkomst | Betekenis | Wat je doet |
+| --- | --- | --- |
+| `MATCH` | Precies de verwachte toevoegingen, verder niets veranderd | Ga verder met de testbuild |
+| `HOLD` | Er is iets anders veranderd | Verklaar dat eerst |
 
 `MATCH` keurt de inhoud niet goed; het bevestigt alleen dat er niets onverwachts is veranderd.
 
-## 5. Test in een aparte build
+**Gelukt als:** je `MATCH` ziet.
+
+### 5. Test in een aparte build
 
 ```text
 npm run build -- --settings work/publication-01/local-build.json --out work/review-01
@@ -77,8 +83,10 @@ npm start -- --settings work/publication-01/local-build.json --web-root work/rev
 
 Controleer de nieuwe inhoud en een kopie van een bestaand project. Zie [inhoud toevoegen, stap 4](inhoud-toevoegen.md#4-test-in-een-aparte-build).
 
+**Gelukt als:** de nieuwe inhoud klopt en de kopie van het bestaande project onveranderd werkt.
+
 <a id="een-release-uitbrengen"></a>
-## 6. Een release uitbrengen
+### 6. Een release uitbrengen
 
 Als de nieuwe database is goedgekeurd, open je een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml). Daarin staan alle stappen, van controle tot aankondiging, om af te vinken. In het kort:
 
@@ -111,8 +119,8 @@ De foutmelding noemt de stap waar het misging. Bewaar de melding en gebruik de m
 Probeer daarna opnieuw, **met een nieuwe uitvoermap**:
 
 ```text
-npm run data:publish-runtime -- --settings "<publication-settings.json>" --out "work/publication-02" --check
-npm run data:publish-runtime -- --settings "<publication-settings.json>" --out "work/publication-02"
+npm run data:publish-runtime -- --settings <publication-settings.json> --out "work/publication-02" --check
+npm run data:publish-runtime -- --settings <publication-settings.json> --out "work/publication-02"
 ```
 
 Alleen `publication-receipt.json` zonder `local-build.json` is geen geslaagde publicatie. Hervatten of handmatig aanvullen kan niet.
@@ -122,7 +130,7 @@ Alleen `publication-receipt.json` zonder `local-build.json` is geen geslaagde pu
 Om een database over te zetten naar een andere computer:
 
 ```text
-npm run data:runtime-backup -- --from "<absoluut-pad/catalogue.sqlite>" --to "<nieuw-bestand.sqlite>" --release "<bronrelease>" --publication "<runtimepublicatie>"
+npm run data:runtime-backup -- --from <absoluut-pad/catalogue.sqlite> --to <nieuw-bestand.sqlite> --release <bronrelease> --publication <runtimepublicatie>
 ```
 
 De opdracht maakt een gecontroleerde kopie en weigert een bestaand doelbestand. Kopieer een SQLite-bestand dat in gebruik is nooit met de verkenner.

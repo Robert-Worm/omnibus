@@ -279,6 +279,33 @@ export function meldingWaarschuwingen(rel, ruw) {
   return uit;
 }
 
+/** Vorm van taakpagina's (docs/bijdragen/bouwstenen.md#stappen en #opdrachten): stapkoppen, codeblokken, plaatshouders en systeemlabels. */
+export const CODETALEN = ["text", "bash", "powershell", "json", "mermaid"];
+export const SYSTEEMLABELS = ["**Windows (PowerShell)**", "**macOS en Linux (bash)**"];
+export function vormWaarschuwingen(rel, ruw) {
+  if (rel === "CHANGELOG.md" || rel.startsWith("skills/")) return [];
+  const docs = rel.startsWith("docs/"), type = ruw.match(/<!-- paginatype: (\w+) -->/)?.[1];
+  const uit = [], waar = (i) => `${rel}:${i + 1}`;
+  let inCode = false;
+  ruw.split("\n").forEach((regel, i) => {
+    const hek = regel.match(/^\s*```\s*([\w-]*)/);
+    if (hek) {
+      if (!inCode && !CODETALEN.includes(hek[1])) uit.push(`${waar(i)}: codeblok ${hek[1] ? `in "${hek[1]}"` : "zonder taal"}; gebruik ${CODETALEN.join(", ")}`);
+      inCode = !inCode;
+      return;
+    }
+    if (!docs) return;
+    if (inCode) {
+      if (/(["'])<[^>\s]+>\1/.test(regel)) uit.push(`${waar(i)}: plaatshouder tussen aanhalingstekens; schrijf <zo-een-plaatshouder>`);
+      return;
+    }
+    if (/^## \d+\. /.test(regel)) uit.push(`${waar(i)}: stap als ##-kop; zet stappen als ### onder ## Stap voor stap`);
+    else if (type !== "taak" && /^#{3,4} \d+\. /.test(regel)) uit.push(`${waar(i)}: genummerde kop buiten een taakpagina; situaties nummer je niet`);
+    if (/^(\*\*)?(Windows|macOS)\b.{0,30}(:|\*\*)\s*$/.test(regel) && !SYSTEEMLABELS.includes(regel.trim())) uit.push(`${waar(i)}: systeemlabel "${regel.trim()}"; gebruik ${SYSTEEMLABELS.join(" of ")}`);
+  });
+  return uit;
+}
+
 // Statuslabels uit de bouwstenen (docs/bijdragen/bouwstenen.md#statuslabels).
 export const STATUSLABELS = ["✅ Klaar", "✅ In database", "🔄 Bezig", "🔄 In bewerking", "📦 Ingeleverd", "⬜ Open", "⬜ Gepland",
   "🔒 Niet beschikbaar", "🔒 Niet openbaar", "🔒 Toestemming nodig", "🔁 Mogelijk dubbel", "➖ Niet van toepassing"];
@@ -365,6 +392,7 @@ export function controleer(root) {
     waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
     waarschuwingen.push(...opdrachtWaarschuwingen(rel, tekst, scripts));
     waarschuwingen.push(...meldingWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...vormWaarschuwingen(rel, tekst));
     const tabel = tabelControle(rel, tekst);
     meldingen.push(...tabel.fouten);
     waarschuwingen.push(...tabel.waarschuwingen);

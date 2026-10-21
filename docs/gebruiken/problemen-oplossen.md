@@ -10,7 +10,7 @@ Zoek met `Ctrl+F` naar een stukje van de melding die je ziet. De meldingen zijn 
 
 ## De meldingen
 
-### 1. Git of npm wordt niet herkend
+### Git of npm wordt niet herkend
 
 ```text
 'git' is not recognized as an internal or external command
@@ -22,7 +22,7 @@ bash: node: command not found
 
 **Wat je doet:** installeer [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/). Sluit daarna je terminal en open hem opnieuw. Controleer met `git --version` en `node --version`.
 
-### 2. Een verkeerde versie van Node.js
+### Een verkeerde versie van Node.js
 
 ```text
 npm warn EBADENGINE Unsupported engine
@@ -33,7 +33,7 @@ No such built-in module: node:sqlite
 
 **Wat je doet:** installeer Node.js 24.17 en controleer met `node --version`. Gebruik je `nvm`? Typ dan `nvm use` in de map van Omnibus.
 
-### 3. De opdracht vraagt om instellingen
+### De opdracht vraagt om instellingen
 
 ```text
 Error: Usage: build:database -- --settings <local-build.json> OR ...
@@ -43,7 +43,7 @@ Error: Usage: build:database -- --settings <local-build.json> OR ...
 
 **Wat je doet:** typ de opdracht precies zoals in [installeren](installeren.md#4-controleer-en-bouw), met `-- --settings local-data/runtime/local-build.json` erachter.
 
-### 4. Het instellingenbestand wordt niet gevonden
+### Het instellingenbestand wordt niet gevonden
 
 ```text
 Runtime database check failed: ENOENT: no such file or directory, stat '.../local-data/runtime/local-build.json'
@@ -53,7 +53,7 @@ Runtime database check failed: ENOENT: no such file or directory, stat '.../loca
 
 **Wat je doet:** zet `catalogue.sqlite` en `local-build.json` rechtstreeks in `local-data/runtime/`. Zorg ook dat je terminal in de map van Omnibus staat.
 
-### 5. Het instellingenbestand is ongeldig
+### Het instellingenbestand is ongeldig
 
 ```text
 Runtime database check failed: Invalid database settings: expected database, release and publication only.
@@ -63,7 +63,7 @@ Runtime database check failed: Invalid database settings: expected database, rel
 
 **Wat je doet:** pak het bestand opnieuw uit de zip. Pas het niet aan.
 
-### 6. Database en instellingen horen niet bij elkaar
+### Database en instellingen horen niet bij elkaar
 
 ```text
 Runtime database check failed: Invalid runtime publication: unknown release
@@ -73,7 +73,7 @@ Runtime database check failed: Invalid runtime publication: unknown release
 
 **Wat je doet:** pak beide bestanden opnieuw uit dezelfde zip. Pas nooit zelf een controlegetal aan.
 
-### 7. De database is beschadigd
+### De database is beschadigd
 
 ```text
 Runtime database check failed: Release content verification failed: package contents
@@ -83,7 +83,7 @@ Runtime database check failed: Release content verification failed: package cont
 
 **Wat je doet:** download de zip opnieuw bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) en pak hem opnieuw uit. Blijft de melding? Meld het dan; dan is er mogelijk iets mis met de release.
 
-### 8. Omnibus weigert te starten
+### Omnibus weigert te starten
 
 ```text
 Preview start refused. Check explicit start options, the pinned database, web build and port.
@@ -93,7 +93,7 @@ Preview start refused. Check explicit start options, the pinned database, web bu
 
 **Wat je doet:** sluit andere terminals waarin Omnibus draait, of kies een andere poort met `--port 4320`. Heb je nog niet gebouwd? Voer dan eerst [stap 4](installeren.md#4-controleer-en-bouw) uit.
 
-### 9. De browser toont "Host not allowed"
+### De browser toont "Host not allowed"
 
 ```text
 {"error":"Host not allowed"}
@@ -103,7 +103,7 @@ Preview start refused. Check explicit start options, the pinned database, web bu
 
 **Wat je doet:** open precies het adres dat in de terminal staat. Met Docker is het juist `http://localhost:8080/`, niet `127.0.0.1:8080`. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
 
-### 10. Mijn project is weg
+### Mijn project is weg
 
 **Wat het betekent:** elk adres en elke poort heeft eigen opslag in de browser. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
 

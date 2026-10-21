@@ -25,27 +25,32 @@ flowchart LR
 
 De koppeling gebruikt **MCP** (Model Context Protocol), een standaard waarmee AI-assistenten hulpmiddelen kunnen gebruiken. Omnibus start geen AI-model en heeft geen abonnement nodig; dat regelt je AI-assistent zelf.
 
-## Koppelen in drie stappen
+## Stap voor stap
 
-1. **Installeer Omnibus** volgens [installeren](installeren.md).
-2. **Bereid de koppeling voor:**
+### 1. Installeer Omnibus
 
-   ```text
-   npm run build:agent -- --settings local-data/runtime/local-build.json
-   ```
+Volg [installeren](installeren.md).
 
-3. **Voeg Omnibus toe in je AI-assistent**, bij de MCP-instellingen:
+### 2. Bereid de koppeling voor
 
-   | Instelling | Waarde |
-   | --- | --- |
-   | Naam | `Omnibus` |
-   | Verbinding | STDIO (lokaal proces) |
-   | Programma | het pad naar Node op je computer |
-   | Argument | het pad naar `agent-tools/server.mjs` in je Omnibus-map |
+```text
+npm run build:agent -- --settings local-data/runtime/local-build.json
+```
 
-   De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste paden voor jouw computer zien.
+### 3. Voeg Omnibus toe in je AI-assistent
 
-   ![Het venster AI koppelen: drie stappen om Omnibus in je AI-app te koppelen, met een knop om de instelling te kopiëren](../images/ai-koppelen.png)
+Doe dit bij de MCP-instellingen van je assistent:
+
+| Instelling | Waarde |
+| --- | --- |
+| Naam | `Omnibus` |
+| Verbinding | STDIO (lokaal proces) |
+| Programma | het pad naar Node op je computer |
+| Argument | het pad naar `agent-tools/server.mjs` in je Omnibus-map |
+
+De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste paden voor jouw computer zien.
+
+![Het venster AI koppelen: drie stappen om Omnibus in je AI-app te koppelen, met een knop om de instelling te kopiëren](../images/ai-koppelen.png)
 
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 

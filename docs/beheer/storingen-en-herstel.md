@@ -40,15 +40,15 @@ Voer de opdrachten uit vanuit de map van de repository, met Node 24 en je eigen 
 2. **Maak de back-up.** Kopieer een database die open is nooit met een gewone bestandskopie: die kan half zijn. Gebruik:
 
    ```text
-   npm run data:runtime-backup -- --from "<bron.sqlite>" --to "<nieuwe-map>/backup.sqlite" --release <releasehash> --publication <publicatiehash>
+   npm run data:runtime-backup -- --from <bron.sqlite> --to "<nieuwe-map>/backup.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 
    De opdracht controleert eerst of de database heel is, of alle verwijzingen kloppen en of de bronnen en controlegetallen overeenkomen. Bestaat het doelbestand al, of staan er nog hulpbestanden van SQLite (`-wal`, `-shm`, `-journal`), dan stopt hij. Gebruik een map die alleen jij beheert.
-3. **Bewaar het controlegetal** van de back-up apart, bijvoorbeeld in PowerShell met `Get-FileHash -Algorithm SHA256 -LiteralPath "<backup.sqlite>"` of op macOS/Linux met `shasum -a 256 "<backup.sqlite>"`. Zet back-up en pakket op een andere, beschermde plek. De opdracht versleutelt en uploadt niets; een back-up op dezelfde schijf beschermt niet tegen schijfverlies.
+3. **Bewaar het controlegetal** van de back-up apart, bijvoorbeeld in PowerShell met `Get-FileHash -Algorithm SHA256 -LiteralPath <backup.sqlite>` of op macOS/Linux met `shasum -a 256 <backup.sqlite>`. Zet back-up en pakket op een andere, beschermde plek. De opdracht versleutelt en uploadt niets; een back-up op dezelfde schijf beschermt niet tegen schijfverlies.
 4. **Herstel naar een nieuw bestand.** Controleer eerst het controlegetal van de back-up tegen wat je bewaarde. Klopt het niet, gebruik de back-up dan niet; reken nooit een nieuw verwacht getal uit. Herstel en controleer daarna:
 
    ```text
-   npm run data:runtime-backup -- --from "<backup.sqlite>" --to "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
+   npm run data:runtime-backup -- --from <backup.sqlite> --to "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
    npm run data:check-runtime -- --database "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 

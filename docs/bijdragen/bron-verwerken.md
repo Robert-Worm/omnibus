@@ -61,6 +61,8 @@ Geef je assistent een opdracht als:
 
 De skill leest het hele document, stelt normen en toetspunten voor en legt bij elk punt vast waar het in de bron staat. Dit kan even duren.
 
+**Gelukt als:** je assistent een map met het conceptpakket heeft gemaakt.
+
 ### 4. Controleer het resultaat
 
 Loop het resultaat zelf na. Let vooral op:
@@ -78,6 +80,8 @@ Wil je een tweede mening? De skill [`omnibus-review-audit-quality`](../../skills
 3. Schrijf in dezelfde reactie, **op een eigen regel**, `/inleveren`. Zet erbij wat goed ging en waar je twijfelt.
 
 Binnen een paar minuten kijkt een automatische controle in je zip. Is hij te openen? Staan de belangrijkste onderdelen erin? Zitten er geen programma's of scripts in? Je ziet het resultaat als reactie bij je claim. Wat er daarna gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
+
+**Gelukt als:** de uitkomst van de automatische controle als reactie bij je claim staat.
 
 ## Wat lever je in?
 

@@ -44,7 +44,7 @@ De hulp weigert een container als root, de *privileged* modus, het netwerk van d
 
 Vanuit je kopie van de code, als gebruiker met UID/GID 1000:
 
-```sh
+```bash
 node hosting/image-verification/verify-image.mjs --help
 node hosting/image-verification/verify-image.mjs --run \
   --node-image 'node:24.<minor>.<patch>-bookworm-slim@sha256:<geverifieerde-digest>' \
@@ -73,7 +73,7 @@ Elke run krijgt een eigen label voor zijn containers. De hulp ruimt niet alles i
 
 ### Snelle tests zonder container
 
-```sh
+```bash
 node --test --test-concurrency=1 --test-timeout=60000 hosting/image-verification/verify-image.test.mjs
 python3 hosting/image-verification/inspect-layers.test.py
 ```
