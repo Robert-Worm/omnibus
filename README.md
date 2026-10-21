@@ -47,20 +47,12 @@ Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapp
 <a id="zo-werkt-het"></a>
 ## Zo werkt het
 
-```mermaid
-flowchart LR
-    A["1 · Onderzoeksrichting<br/>Begin met een vraag<br/>of met signalen"] --> B["2 · Verzamel<br/>Kies normen uit rapporten,<br/>wetten en kaders"]
-    B --> C["3 · Bouw je kader<br/>Koppel de normen<br/>aan je onderzoeksvragen"]
-    C --> D["4 · Exporteer<br/>Download je kader<br/>als Excel-werkdocument"]
-    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
-```
+![Rondleiding van 25 seconden, met bovenin een voortgangsbalk die de vier stappen volgt: een onderzoeksrichting kiezen, normen uit het CIO-stelsel selecteren, een centrale vraag met zes bouwstenen maken en het kader als Excel exporteren](docs/images/rondleiding.gif)
 
 1. **Onderzoeksrichting.** Begin vanuit een vraag van je opdrachtgever, of vanuit signalen en zorgen.
 2. **Verzamel.** Blader door rapporten, wetten, kaders en onderzoeksmodellen. Kies losse toetspunten, een norm of een hele groep.
 3. **Bouw je kader.** Schrijf je onderzoeksvragen en koppel de gekozen normen eraan.
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
-
-![Rondleiding van 25 seconden: een onderzoeksrichting kiezen, normen uit het CIO-stelsel selecteren, een centrale vraag met zes bouwstenen maken en het kader als Excel exporteren](docs/images/rondleiding.gif)
 
 Wil je eerst het resultaat zien, zonder iets te installeren? Download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
 
