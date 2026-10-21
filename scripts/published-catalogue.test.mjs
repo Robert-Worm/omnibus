@@ -47,6 +47,26 @@ await test('code resolves only known modules; database values remain data, not e
     'Agent reader and content imports must resolve to one module on Windows');
 });
 
+await test('workers share the pinned read-only catalogue but only the main build emits a release manifest',async t=>{
+  const options=fixture(t),assets=[];
+  const main=publishedCataloguePlugin(options);
+  await main.buildStart();
+  main.generateBundle.call({emitFile:asset=>assets.push(asset)});
+  assert.equal(assets.length,1);
+  assert.equal(assets[0].fileName,'omnibus-release.json');
+  const manifest=JSON.parse(assets[0].source);
+  assert.equal(manifest.publication,options.publication);
+  assert.equal(manifest.contract,runtimeContractHash);
+  const worker=publishedCataloguePlugin({...options,emitManifest:false});
+  await worker.buildStart();
+  worker.generateBundle.call({emitFile:()=>assert.fail('Worker must not duplicate the runtime manifest')});
+  const importer=join(root,'app/preview-calculator.worker.ts');
+  const id=worker.resolveId('omnibus-data:lib/cio-content.mjs',importer);
+  assert.equal(worker.load(id),main.load(id));
+  await assert.rejects(publishedCataloguePlugin({...options,emitManifest:false,
+    publication:'f'.repeat(64)}).buildStart(),/missing or changed publication/);
+});
+
 await test('preview validates the publication, serves the app and cannot write or expose the database',async t=>{
   const options=fixture(t),webRoot=join(options.dir,'web');
   mkdirSync(join(webRoot,'assets'),{recursive:true});

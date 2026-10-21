@@ -17,9 +17,9 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
 
 /** Build code against an already published database. Never imports author files.
  * @param {{release?:string, publication?:string, databasePath?:string,
- * transportModule?:string, reportOverviews?:boolean, runtimeTarget?:'local-preview'|'portable-local'}} options
+ * transportModule?:string, reportOverviews?:boolean, emitManifest?:boolean, runtimeTarget?:'local-preview'|'portable-local'}} options
  */
-export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, runtimeTarget='local-preview'} = {}) {
+export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, emitManifest=true, runtimeTarget='local-preview'} = {}) {
   let content, overviews;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
@@ -87,6 +87,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       return lines.join('\n');
     },
     generateBundle() {
+      if(!emitManifest)return;
       this.emitFile({type:'asset',fileName:'omnibus-release.json',source:quote({
         schema:1,release,publication,contract:runtimeContractHash,runtimeTarget,
         scope:'catalogue-norms-sources-and-models-on-demand',...content.summary,

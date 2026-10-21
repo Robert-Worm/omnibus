@@ -11,7 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {workbookFileSnapshot} from '@/lib/workbook-file-snapshot.mjs';
 import {downloadFile,useFileDownload} from './file-download';
 import { excelMime, exportFields, workbookStyles, columnName } from "@/lib/excel-model.mjs";
-import { exportState } from './export-state';
+import { exportInputs } from './export-state';
+import {useExportPreview} from './use-export-preview';
 import type {WorkbookPreviewStyle} from '@/lib/workbook-preview-types';
 import { exportPresets } from "@/lib/export-profiles.mjs";
 import type { LibraryModel } from "./model-library";
@@ -33,6 +34,7 @@ export default function ExportCreator({
   models,
   onSettingsChange,
   onGuidanceChange,
+  active=true,
 }: {
   framework: Framework;
   draft: Draft;
@@ -41,6 +43,7 @@ export default function ExportCreator({
   models: LibraryModel[];
   onSettingsChange?: (settings: Record<string, unknown>) => void;
   onGuidanceChange?: (status: ExportGuideStatus) => void;
+  active?:boolean;
 }) {
   const {busy,error:fileError} = useFileDownload();
   const [error, setError] = useState(""),
@@ -69,8 +72,12 @@ export default function ExportCreator({
     selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
-    requiredFields, choices, preview, validation, planningIssues,
-  } = useMemo(() => exportState(framework, draft, config, models), [framework, draft, config, models]);
+    requiredFields, choices, selectionError, planningIssues,
+  } = useMemo(() => exportInputs(framework, draft, config, models), [framework, draft, config, models]);
+  const request=useMemo(()=>({framework,draft,config,models}),[framework,draft,config,models]);
+  const calculation=useExportPreview(request,active&&!disabled);
+  const {preview,ready}=calculation;
+  const validation=selectionError||calculation.validation;
   const questions = choices.questions;
   const setBasis = setting('basis', basis), setTestScope = setting('testingAspects', testScope);
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
@@ -124,7 +131,7 @@ export default function ExportCreator({
     setError("");
   }
   async function save() {
-    if(busy)return;
+    if(busy||!ready)return;
     setError("");
     setSaved(false);
     try {
@@ -522,7 +529,7 @@ export default function ExportCreator({
             </details>
           </section>
         </div>
-        <aside id="guide-export-preview" tabIndex={-1} className="creator-preview creator-card" aria-label="Exportvoorbeeld">
+        <aside id="guide-export-preview" tabIndex={-1} className="creator-preview creator-card" aria-label="Exportvoorbeeld" aria-busy={!ready}>
           <div className="creator-preview-heading">
             <FileSpreadsheet size={22} />
             <h2>Je export</h2>
@@ -619,13 +626,14 @@ export default function ExportCreator({
           )}
           {validation && !missingInput.some(item=>/^(interview-level|testing-aspect)-/.test(item.id)) && <output id="guide-export-check" tabIndex={-1} className="creator-help">{validation}</output>}
           {(error || fileError) && <p role="alert">{error || fileError}</p>}
+          {calculation.failed && <Button variant="outline" onClick={calculation.retry}>Opnieuw proberen</Button>}
           {!!missingInput.length && <output id="export-missing-input" className="export-input-guidance" data-status-block=""><strong>Nog nodig voor je Excelbestand</strong>{missingInput.map(item=><Button key={item.id} variant="link" onClick={()=>{const input=document.getElementById(item.id);const target=input?.getAttribute('aria-hidden')==='true' ? input.parentElement?.querySelector<HTMLElement>('[role="checkbox"]') : input;target?.scrollIntoView({block:'center',behavior:'smooth'});target?.focus({preventScroll:true});}}>{item.label} →</Button>)}</output>}
           <Button
             className="creator-download"
             aria-describedby={missingInput.length ? 'export-missing-input' : undefined}
             disabled={
               disabled ||
-              busy ||
+              busy || !ready ||
               !!validation ||
               !meta.version.trim() ||
               (count === 0 &&
@@ -649,7 +657,7 @@ export default function ExportCreator({
           {!modelBasis && (
             <Button
               variant="ghost"
-              disabled={disabled || busy || !!validation || !exportedNormIds.length}
+              disabled={disabled || busy || !ready || !!validation || !exportedNormIds.length}
               onClick={() => {try {onMarkdown(exportDraft, choices);}catch(e){setError(e instanceof Error ? e.message : 'Tekstexport is niet gelukt.');}}}
             >
               {profile === 'interview' ? 'Deze interviewselectie' : profile === 'risk' ? 'Deze risicoselectie' : 'Deze normselectie'} als tekst (.md)
