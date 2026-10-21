@@ -3,7 +3,7 @@
 > **In het kort:** een voorstel voor de allereerste start bij de hostingpartij. De server draait dan even zonder Omnibus, zodat de database er veilig op kan. Dit is nog niet bij de hostingpartij bewezen.
 
 > [!NOTE]
-> Dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
+> **Stand:** dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
 
 ## Waarom is dit nodig?
 
@@ -11,11 +11,11 @@ Omnibus start alleen als de database er al staat. Maar bij de hostingpartij kun 
 
 ## Waar staat dit?
 
-| Onderdeel | Status |
-| --- | --- |
-| Tijdelijk startproces en lokale proef | ✅ Klaar en getest op Linux |
-| Bevestiging door de hostingpartij | ⬜ Nog niet gevraagd |
-| Toestemming van de beheerder om het te gebruiken | ⬜ Nog niet gegeven |
+| Onderdeel | Status | Toelichting |
+| --- | --- | --- |
+| Tijdelijk startproces en lokale proef | ✅ Klaar | Getest op Linux |
+| Bevestiging door de hostingpartij | ⬜ Open | Nog niet gevraagd |
+| Toestemming van de beheerder om het te gebruiken | ⬜ Open | Nog niet gegeven |
 
 ## Hoe werkt het?
 
@@ -34,7 +34,8 @@ Alle opdrachten hieronder zijn voor de Linux-shell van de server.
 
 Dit is een voorstel voor de allereerste start op de server. Een gecontroleerde container blijft dan even draaien, zonder dat Omnibus, de database of een listener (een proces dat op een poort wacht) start. Zo kan de beheerder in die tijd de database neerzetten.
 
-Let op: dit is geen bewezen werkwijze bij Sevalla, de hostingpartij die eerst was onderzocht. Gebruik het alleen als de hostingpartij het bevestigt en de beheerder toestemming geeft. Voeg geen nep-database of nep-gezondheidsserver toe.
+> [!WARNING]
+> **Let op:** dit is geen bewezen werkwijze bij Sevalla, de hostingpartij die eerst was onderzocht. Gebruik het alleen als de hostingpartij het bevestigt en de beheerder toestemming geeft. Voeg geen nep-database of nep-gezondheidsserver toe.
 
 ### Wat de hostingpartij moet bieden
 

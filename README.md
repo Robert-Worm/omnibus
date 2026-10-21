@@ -73,7 +73,7 @@ Wil je het meteen proberen? Open de [proefversie online](https://omnibus.sliplan
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 
 > [!NOTE]
-> Een norm kiezen betekent niet dat hij juridisch geldt voor de organisatie, of dat de organisatie eraan voldoet. Dat oordeel blijft bij jou als onderzoeker.
+> **Goed om te weten:** een norm kiezen betekent niet dat hij juridisch geldt voor de organisatie, of dat de organisatie eraan voldoet. Dat oordeel blijft bij jou als onderzoeker.
 
 ## Wat zit erin?
 

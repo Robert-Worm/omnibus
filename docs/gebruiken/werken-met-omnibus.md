@@ -1,5 +1,7 @@
 # Werken met Omnibus
 
+<!-- paginatype: taak -->
+
 > **In het kort:** Omnibus leidt je in vier stappen van een onderzoeksvraag naar een referentiekader in Excel. Je kunt steeds terug naar een eerdere stap; je werk blijft bewaard.
 
 ## Wat maak je?

@@ -1,5 +1,7 @@
 # Omnibus installeren
 
+<!-- paginatype: taak -->
+
 > **In het kort:** je haalt de code op, downloadt de database, bouwt de applicatie en opent hem in je browser. Alles draait op je eigen computer.
 
 ## Wat heb je nodig?

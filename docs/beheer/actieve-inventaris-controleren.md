@@ -1,5 +1,7 @@
 # Actieve inventaris controleren
 
+<!-- paginatype: taak -->
+
 > **In het kort:** een extra controle bij een nieuwe database. Bevat hij precies de goedgekeurde pakketten en documenten? En komt er niets terug dat eerder is verwijderd?
 
 Bij een nieuwe publicatie wil je voorkomen dat eerder verwijderde pakketten of documenten ongemerkt terugkomen. Deze optionele beheercontrole vergelijkt de gekozen publicatie met een vooraf beoordeelde inventaris. Zij verandert niets aan de database en start geen upload of activatie.

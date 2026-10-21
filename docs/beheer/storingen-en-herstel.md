@@ -1,5 +1,7 @@
 # Storingen en herstel
 
+<!-- paginatype: taak -->
+
 > **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Dit gaat vooral over je eigen computer. De proefversie online herstel je door de vorige werkende commit opnieuw uit te rollen.
 
 ## Bij een storing, in het kort

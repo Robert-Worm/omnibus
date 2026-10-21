@@ -1,5 +1,7 @@
 # Problemen bij installeren en starten
 
+<!-- paginatype: naslag -->
+
 > **In het kort:** de meldingen die je het vaakst ziet bij het installeren en starten van Omnibus. Per melding: hoe hij eruitziet, wat hij betekent en wat je doet.
 
 ## Zo gebruik je deze pagina

@@ -22,8 +22,26 @@ export function schermWaarschuwingen(stand, versie) {
   return oud.length ? [`docs/images: ${oud.length} ${oud.length === 1 ? "afbeelding hoort" : "afbeeldingen horen"} bij een oudere versie dan ${versie}: ${oud.join(", ")}; ${opdracht}`] : [];
 }
 
-// Pagina's die geen gewone uitlegpagina zijn en daarom geen "Samengevat" hebben.
-const ZONDER_SAMENGEVAT = new Set(["docs/README.md", "docs/begrippen.md"]);
+// Paginatypen (zie docs/bijdragen/bouwstenen.md#paginatypen). Elke pagina in docs/ noemt haar
+// type in een verborgen regel: <!-- paginatype: taak -->.
+export const PAGINATYPEN = ["start", "taak", "naslag", "data", "logboek"];
+
+/** Meldingen voor de verplichte onderdelen van het paginatype. */
+export function paginatypeMeldingen(ruw) {
+  const tekst = ruw.replace(/^ *```[\s\S]*?^ *```/gm, "");
+  const types = [...tekst.matchAll(/<!-- paginatype: ([\w-]+) -->/g)].map((m) => m[1]);
+  if (types.length !== 1) return [types.length ? "noemt meer dan één paginatype" : `mist het paginatype (<!-- paginatype: ${PAGINATYPEN.join(" | ")} -->)`];
+  const [type] = types;
+  if (!PAGINATYPEN.includes(type)) return [`onbekend paginatype "${type}"; kies uit ${PAGINATYPEN.join(", ")}`];
+  const heeftSamengevat = /^## Samengevat$/m.test(tekst);
+  const uit = [];
+  if (type === "start" && heeftSamengevat) uit.push('startpagina zonder "## Samengevat" (zie de bouwstenen)');
+  if (type === "taak" && !heeftSamengevat) uit.push('mist de kop "## Samengevat"');
+  if (type === "taak" && !/^(#{2,3} \d+\. |\d+\. )/m.test(tekst)) uit.push("taakpagina zonder genummerde stappen");
+  if (type === "data" && !/automatisch bijgewerkt/i.test(tekst)) uit.push('datapagina zonder de regel "Automatisch bijgewerkt"');
+  if (type === "logboek" && !/^\|.+\|\s*$/m.test(tekst)) uit.push("logboek zonder tabel");
+  return uit;
+}
 
 const FOOTER = /^\[↑ (Wegwijzer|Terug naar Omnibus)\]\(([^)]+)\)/;
 
@@ -115,7 +133,7 @@ export function controleerBestand(root, rel, { nvmrc, scripts }) {
   const isDocs = rel.startsWith("docs/");
   if ((isDocs || (isReadme && rel !== "README.md")) && !/^> \*\*In het kort:\*\*/m.test(tekst)) meld(0, 'mist het blok "> **In het kort:**" bovenaan');
   if (isDocs) {
-    if (!ZONDER_SAMENGEVAT.has(rel) && !/^## Samengevat$/m.test(tekst)) meld(0, 'mist de kop "## Samengevat"');
+    for (const m of paginatypeMeldingen(tekst)) meld(0, m);
     if (!/^## Volgende stap$/m.test(tekst)) meld(0, 'mist de kop "## Volgende stap"');
     const laatste = regels.filter((r) => r.trim()).at(-1) ?? "";
     const f = FOOTER.exec(laatste);
@@ -241,6 +259,26 @@ export function opdrachtWaarschuwingen(rel, tekst, scripts) {
   return uit;
 }
 
+/** Meldingen (GitHub-alerts) volgens de bouwstenen: vaste typen, een vet Nederlands woord vooraan, niet gestapeld. */
+export function meldingWaarschuwingen(rel, ruw) {
+  if (rel === "CHANGELOG.md" || /^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) return [];
+  const regels = ruw.replace(/^ *```[\s\S]*?^ *```/gm, (b) => b.replace(/[^\n]/g, "")).split("\n");
+  const uit = [], waar = (i) => `${rel}:${i + 1}`;
+  let vorigeEinde = -10;
+  regels.forEach((regel, i) => {
+    if (/^#{1,6} Let op\b/.test(regel)) uit.push(`${waar(i)}: kop "Let op"; maak er een melding van of gebruik "Goed om te weten"`);
+    if (/^(Let op:|\*\*Nooit doen:\*\*)/.test(regel)) uit.push(`${waar(i)}: losse waarschuwing; maak er een melding ([!WARNING]) van`);
+    const m = regel.match(/^> \[!(\w+)\]\s*$/);
+    if (!m) return;
+    if (!["NOTE", "TIP", "IMPORTANT", "WARNING"].includes(m[1])) uit.push(`${waar(i)}: melding [!${m[1]}] wordt niet gebruikt`);
+    if (!/^> \*\*[^*]+:\*\* /.test(regels[i + 1] || "")) uit.push(`${waar(i)}: begin een melding met een vet Nederlands woord, zoals **Let op:**`);
+    if (i - vorigeEinde <= 2) uit.push(`${waar(i)}: twee meldingen direct onder elkaar`);
+    let j = i + 1; while (j < regels.length && regels[j].startsWith(">")) j++;
+    vorigeEinde = j - 1;
+  });
+  return uit;
+}
+
 export function markdownBestanden(root) {
   const uit = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "*.md"], { cwd: root, encoding: "utf8" });
   return uit.split("\n").filter((f) => f && existsSync(path.join(root, f)));
@@ -278,6 +316,7 @@ export function controleer(root) {
     const tekst = readFileSync(path.join(root, rel), "utf8");
     waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
     waarschuwingen.push(...opdrachtWaarschuwingen(rel, tekst, scripts));
+    waarschuwingen.push(...meldingWaarschuwingen(rel, tekst));
     lang.push(...zinWaarschuwingen(rel, tekst));
   }
   const release = path.join(root, "lib", "product-release.mjs");

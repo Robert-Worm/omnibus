@@ -1,5 +1,7 @@
 # Werklijst aanbevolen rapporten
 
+<!-- paginatype: data -->
+
 > **In het kort:** de 542 adviesrapporten van de Auditdienst Rijk op de Rijksmap, per ministerie. Ze leveren veel bruikbare normen en toetspunten op. Klik op **Claimen** om er een op je naam te zetten.
 
 **Stand:** 27 in de database · 1 in bewerking of ingeleverd · 512 open.

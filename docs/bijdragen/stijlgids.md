@@ -1,8 +1,10 @@
 # Stijlgids voor de documentatie
 
+<!-- paginatype: naslag -->
+
 <!-- check-docs: geen-woordcontrole -->
 
-> **In het kort:** zo schrijf je een pagina die past bij de rest van Omnibus: dezelfde opbouw, dezelfde woorden, dezelfde schema's. De belangrijkste regels controleert `npm run check:docs` automatisch.
+> **In het kort:** zo schrijf je een pagina die past bij de rest van Omnibus. Deel 1, deze pagina, gaat over taal, woorden en schema's. Deel 2, de [bouwstenen](bouwstenen.md), gaat over de opbouw: paginatypen, tabellen, statuslabels en meldingen. De belangrijkste regels controleert `npm run check:docs` automatisch.
 
 ## Voor wie schrijf je?
 
@@ -10,22 +12,7 @@ Voor een auditor of onderzoeker zonder technische achtergrond, die de pagina é�
 
 ## Opbouw van een pagina
 
-Elke pagina in `docs/` heeft dezelfde vier delen:
-
-| Deel | Wat erin staat |
-| --- | --- |
-| `> **In het kort:**` | Direct onder de titel: in één of twee zinnen wat je hier leert of doet |
-| De uitleg | Koppen met `##`, in de volgorde waarin de lezer ze nodig heeft |
-| `## Samengevat` | De kern in een paar zinnen of een korte lijst |
-| `## Volgende stap` | Eén duidelijke link naar wat de lezer hierna doet |
-
-Daarna volgt een lijn (`---`) en de navigatieregel:
-
-```text
-[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)
-```
-
-Een `README.md` in een map begint ook met *In het kort*. De wegwijzer en de begrippenlijst hebben geen *Samengevat*.
+Elke pagina in `docs/` is van een vast type, zoals een taakpagina of een naslagpagina. Elk type heeft een vaste volgorde: *In het kort* bovenaan, *Volgende stap* en de navigatieregel onderaan. Welke onderdelen er per type tussen staan, lees je bij de [paginatypen](bouwstenen.md#paginatypen).
 
 ## Toon en taal
 
@@ -102,29 +89,22 @@ classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 - Houd een schema klein: hooguit zes vakken op een rij. Meer nodig? Splits het.
 - Zet onder het schema dezelfde stappen als genummerde lijst. Niet iedereen kan het schema zien.
 
-## Statusiconen
+## Statuslabels
 
-| Icoon | Betekenis |
-| --- | --- |
-| ✅ | Klaar, of in de database |
-| 🔄 | Bezig, of in bewerking |
-| 📦 | Ingeleverd, wacht op controle |
-| ⬜ | Gepland, of open |
-| 🔒 | Niet beschikbaar: niet openbaar, of toestemming nodig |
-| 🔁 | Mogelijk dubbel met een ander rapport |
-| ⚠️ | Let op |
+Een status is altijd icoon plus woord, zoals ✅ Klaar of ⬜ Open. De vaste lijst staat bij de [statuslabels](bouwstenen.md#statuslabels).
 
-## Tabellen, opdrachten en links
+## Tabellen, opdrachten, meldingen en links
 
-- **Tabellen** voor keuzes en overzichten ("Je wilt… / Lees"). Hooguit vier kolommen.
-- **Opdrachten** in een codeblok met één taal per blok: `text` voor opdrachten die overal werken, `powershell` of `bash` als het verschilt. Geef dan beide.
+- **Tabellen** volgen een van de zes [vaste vormen](bouwstenen.md#tabellen). Hooguit vier kolommen.
+- **Opdrachten** volgen de regels bij [opdrachten](bouwstenen.md#opdrachten): altijd een taal, en bij verschil per systeem beide varianten.
+- **Meldingen** zoals waarschuwingen en tips volgen de regels bij [meldingen](bouwstenen.md#meldingen).
 - **De installatieopdracht** is altijd `npm ci --ignore-scripts --no-audit --no-fund`.
 - **Links** binnen de repository zijn relatief (`../begrippen.md`). Link naar een kop met een anker (`#volgende-stap`); de controle meldt kapotte ankers.
 - **Afbeeldingen** krijgen een beschrijvende alt-tekst en staan in `docs/images/`. Schermafbeeldingen van de applicatie maak je met `npm run docs:screenshots`, niet met de hand; zie [schermafbeeldingen vernieuwen](ontwikkelen.md#schermafbeeldingen-vernieuwen).
 
 ## Samengevat
 
-Vier vaste delen per pagina, korte zinnen met *je*, vaste woorden, getallen tussen markeringen en schema's in de vaste kleuren. Draai `npm run check:docs` voordat je iets instuurt.
+Korte zinnen met *je*, vaste woorden, getallen tussen markeringen en schema's in de vaste kleuren. Voor de opbouw gebruik je de [bouwstenen](bouwstenen.md). Draai `npm run check:docs` voordat je iets instuurt.
 
 ## Volgende stap
 

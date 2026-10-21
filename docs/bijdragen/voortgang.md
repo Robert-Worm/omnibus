@@ -1,5 +1,7 @@
 # Voortgang
 
+<!-- paginatype: data -->
+
 > **In het kort:** wat er al in de Omnibus-database zit, wie waaraan werkt, en welke bronnen nog open staan. Deze pagina werkt zichzelf bij.
 
 ## Zo staat het ervoor

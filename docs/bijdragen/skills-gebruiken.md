@@ -1,5 +1,7 @@
 # Skills gebruiken met je AI-assistent
 
+<!-- paginatype: taak -->
+
 > **In het kort:** de Omnibus-skills werken met elke AI-assistent die een map met instructies kan lezen. Hier staat per assistent hoe je een skill installeert en gebruikt: Codex, Claude Code, de Claude-app en ChatGPT.
 
 ## Welke assistent past bij jou?

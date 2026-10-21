@@ -1,5 +1,7 @@
 # Meedoen
 
+<!-- paginatype: start -->
+
 > **In het kort:** de belangrijkste manier om te helpen is een bron verwerken: een rapport, wet of kader omzetten naar normen en toetspunten. Je zet de bron op je naam (check-out), verwerkt hem met een AI-skill en levert hem in (check-in).
 
 ## Begin hier
@@ -60,10 +62,6 @@ Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikba
 - **Wees eerlijk over twijfels.** Een onzekere norm met een duidelijke vraag is beter dan een stellige fout.
 - **Respectvol samenwerken.** Zie de [gedragscode](../../CODE_OF_CONDUCT.md).
 - Wat je bijdraagt valt onder dezelfde [licentie](../../LICENSE) als het project.
-
-## Samengevat
-
-Claim een bron, verwerk hem met een skill, lever hem in. De voortgang werkt zichzelf bij, zodat iedereen ziet wie waaraan werkt.
 
 ## Volgende stap
 

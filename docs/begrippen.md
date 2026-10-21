@@ -1,5 +1,7 @@
 # Begrippen
 
+<!-- paginatype: naslag -->
+
 <!-- check-docs: geen-woordcontrole -->
 
 > **In het kort:** de woorden die je in Omnibus en in deze documentatie tegenkomt, in gewone taal uitgelegd.

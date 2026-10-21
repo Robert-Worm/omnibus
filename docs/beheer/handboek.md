@@ -1,5 +1,7 @@
 # Beheerhandboek
 
+<!-- paginatype: naslag -->
+
 > **In het kort:** welke taken de beheerder heeft, hoe vaak, hoe lang ze duren en waar de uitleg staat. Begin hier als je het beheer overneemt.
 
 ## Wat doet de beheerder?

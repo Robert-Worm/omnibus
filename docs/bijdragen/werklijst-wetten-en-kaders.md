@@ -1,5 +1,7 @@
 # Werklijst wetten en kaders
 
+<!-- paginatype: data -->
+
 > **In het kort:** welke wetten, regels en normenkaders in Omnibus kunnen, wat er al in zit, en welke je kunt claimen.
 
 ## Wat staat hier

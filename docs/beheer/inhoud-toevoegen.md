@@ -1,5 +1,7 @@
 # Inhoud toevoegen
 
+<!-- paginatype: taak -->
+
 > **In het kort:** na een geslaagde pakketcontrole beoordeel je de inhoud en zet je hem in de private verwerkingsomgeving. Daarna test je of hij goed in de applicatie verschijnt. Pas daarna kies je bewust voor de nieuwe versie.
 
 ## Van pakket naar applicatie

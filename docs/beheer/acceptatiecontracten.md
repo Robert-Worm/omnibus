@@ -1,5 +1,7 @@
 # Acceptatiecontracten
 
+<!-- paginatype: naslag -->
+
 <!-- check-docs: codes-uitgelegd -->
 
 > **In het kort:** de afspraken waaraan Omnibus moet blijven voldoen, ook na een wijziging. Elke afspraak heeft een code (K04, K05, …) die in tests en reviews terugkomt.

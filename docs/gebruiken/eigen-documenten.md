@@ -1,16 +1,18 @@
 # Eigen documenten gebruiken
 
+<!-- paginatype: taak -->
+
 > **In het kort:** je kunt een eigen rapport, wet of kader omzetten naar bouwstenen voor Omnibus met een AI-skill. Er is nog geen knop om een pdf direct in de applicatie te laden; dat staat bovenaan de [routekaart](../routekaart.md).
 
 ## Wat kan nu wel, en wat nog niet?
 
-| | Nu | Later |
+| Onderdeel | Status | Toelichting |
 | --- | --- | --- |
-| De meegeleverde database gebruiken | ✅ | |
-| Een eigen document omzetten naar normen en toetspunten, met een AI-skill | ✅ | |
-| Dat document openbaar toevoegen aan de database | ✅ via [meedoen](../bijdragen/README.md) | |
-| Een eigen document direct in Omnibus laden | | 🔜 [routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
-| Een eigen, private database naast de openbare koppelen | | 🔜 [routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
+| De meegeleverde database gebruiken | ✅ Klaar | – |
+| Een eigen document omzetten naar normen en toetspunten, met een AI-skill | ✅ Klaar | – |
+| Dat document openbaar toevoegen aan de database | ✅ Klaar | Via [meedoen](../bijdragen/README.md) |
+| Een eigen document direct in Omnibus laden | ⬜ Gepland | [Routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
+| Een eigen, private database naast de openbare koppelen | ⬜ Gepland | [Routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
 
 ## Hoe zet je een document om?
 
@@ -34,10 +36,12 @@ Zo ziet een verwerkte bron er straks uit in Omnibus: links de norm en het toetsp
 
 Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bijdragen/bron-verwerken.md). De beheerder controleert het en neemt het op in de volgende database.
 
-## Let op
+## Goed om te weten
+
+> [!WARNING]
+> **Let op:** zet geen vertrouwelijke documenten in GitHub, in een issue of in een pull request.
 
 - **Rechten.** Openbaar beschikbaar is niet hetzelfde als vrij te gebruiken. Wetten en Europese regels mag je gebruiken; voor ISO, COBIT en vergelijkbare normen heb je toestemming van de uitgever nodig. Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
-- **Vertrouwelijkheid.** Zet geen vertrouwelijke documenten in GitHub, in een issue of in een pull request.
 - **AI in de cloud.** Gebruik je een AI-dienst in de cloud, dan verlaat het document je computer. Controleer of dat mag volgens het beleid van je organisatie.
 - **AI maakt fouten.** AI kan verplichtingen verkeerd lezen of uitzonderingen missen. Controleer de bronpassages altijd zelf. Een score of technische controle is geen juridisch advies.
 

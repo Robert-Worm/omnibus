@@ -1,5 +1,7 @@
 # Checklist live demo
 
+<!-- paginatype: logboek -->
+
 > **In het kort:** wat er nog moet gebeuren voor een online demo. Per stap: wie het doet, wanneer, en wanneer het klaar is. Doel: een werkende demo op **1 december 2026**.
 
 ## Waar staat het?

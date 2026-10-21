@@ -1,5 +1,7 @@
 # Runtimepakket
 
+<!-- paginatype: taak -->
+
 > **In het kort:** een runtimepakket is Omnibus zonder ontwikkelomgeving: de gebouwde app plus de lokale server. Handig om Omnibus naar een andere computer over te zetten, en de basis van de online versie.
 
 ## Wanneer gebruik je dit?
@@ -98,7 +100,8 @@ De tests controleren dat opties goed worden gelezen, dat controlegetallen worden
 
 `runtime-package.json` is de inhoudsopgave van het pakket: elk bestand met zijn grootte en controlegetal, plus de release, publicatie en code. Ontbreekt er een bestand, is er een veranderd of toegevoegd, of klopt een pad niet, dan start het pakket niet. Databases, originele documenten, geheimen, tests en ontwikkelbestanden gaan nooit mee. De database staat buiten het pakket en wordt alleen gelezen.
 
-Let op: de inhoudsopgave ziet ongewenste wijzigingen, maar is geen handtekening. Wie pakket én inhoudsopgave kan aanpassen, kan nieuwe controlegetallen maken. Ontvang het pakket en de verwachte controlegetallen daarom via een vertrouwd kanaal. Pak een nieuwe versie altijd uit in een nieuwe map en test die, voordat je de oude vervangt.
+> [!WARNING]
+> **Let op:** de inhoudsopgave ziet ongewenste wijzigingen, maar is geen handtekening. Wie pakket én inhoudsopgave kan aanpassen, kan nieuwe controlegetallen maken. Ontvang het pakket en de verwachte controlegetallen daarom via een vertrouwd kanaal. Pak een nieuwe versie altijd uit in een nieuwe map en test die, voordat je de oude vervangt.
 
 De server luistert pas als pakket en database gecontroleerd zijn. `GET /api/v1/health` laat zien in welke modus hij draait: `local-read-only` of `public-read-only`. Bij afsluiten krijgen lopende verzoeken nog vijf seconden. Projecten in de browser horen bij het adres waarop ze gemaakt zijn; neem ze mee met **Bewaar project** en **Open project**.
 

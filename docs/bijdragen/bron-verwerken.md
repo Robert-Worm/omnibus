@@ -1,5 +1,7 @@
 # Een bron verwerken
 
+<!-- paginatype: taak -->
+
 > **In het kort:** je laat een AI-assistent met een Omnibus-skill een rapport, wet of kader omzetten naar normen en toetspunten. Jij controleert het resultaat en levert het in bij je claim als **concept**. De beheerder maakt het af en neemt het op in de database.
 
 ## Wat heb je nodig?

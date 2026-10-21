@@ -1,5 +1,7 @@
 # Routekaart
 
+<!-- paginatype: naslag -->
+
 > **In het kort:** Omnibus werkt op je eigen computer en als proefversie online, met een openbare database. Vanaf hier lopen vier paden naast elkaar. Een online versie, AI die rechtstreeks met de database werkt, eigen databases bouwen en samen de openbare database laten groeien.
 
 Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Ideeën en reacties zijn welkom in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).

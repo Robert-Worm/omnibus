@@ -1,5 +1,7 @@
 # Ontwikkelen aan Omnibus
 
+<!-- paginatype: taak -->
+
 > **In het kort:** zo zet je een ontwikkelomgeving op, draai je de tests en controleer je je wijziging voordat je een pull request maakt. De tests werken zonder database.
 
 ## Wat heb je nodig?
@@ -58,7 +60,7 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Links en ankers | Elk gelinkt bestand bestaat; elk `#anker` hoort bij een kop of een `<a id>` op die pagina |
 | Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de GitHub-workflows |
 | Installatieopdracht | In codeblokken en GitHub-workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
-| Paginapatroon | Elke pagina in `docs/` heeft *In het kort*, *Samengevat* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Elke `README.md` in een map heeft *In het kort*. |
+| Paginapatroon | Elke pagina in `docs/` noemt haar [paginatype](bouwstenen.md#paginatypen), heeft *In het kort* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Per type gelden extra onderdelen, zoals *Samengevat* op een taakpagina. Elke `README.md` in een map heeft *In het kort*. |
 
 Daarnaast geeft de controle waarschuwingen. Die laten de controle niet mislukken. Ze gaan over woorden uit de stijlgids, zinnen van meer dan 25 woorden in `docs/` en verouderde schermafbeeldingen.
 

@@ -371,6 +371,8 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     bestanden["docs/bijdragen/werklijst-wetten-en-kaders.md"] = [
       "# Werklijst wetten en kaders",
       "",
+      "<!-- paginatype: data -->",
+      "",
       "> **In het kort:** welke wetten, regels en normenkaders in Omnibus kunnen, wat er al in zit, en welke je kunt claimen.",
       "",
       "## Wat staat hier",
@@ -446,6 +448,8 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
 
     bestanden["docs/bijdragen/voortgang.md"] = [
       "# Voortgang",
+      "",
+      "<!-- paginatype: data -->",
       "",
       "> **In het kort:** wat er al in de Omnibus-database zit, wie waaraan werkt, en welke bronnen nog open staan. Deze pagina werkt zichzelf bij.",
       "",
@@ -537,6 +541,8 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     };
     bestanden["docs/bijdragen/werklijst-aanbevolen.md"] = [
       "# Werklijst aanbevolen rapporten",
+      "",
+      "<!-- paginatype: data -->",
       "",
       `> **In het kort:** de ${aanbevolen.length} adviesrapporten van de Auditdienst Rijk op de Rijksmap, per ministerie. Ze leveren veel bruikbare normen en toetspunten op. Klik op **Claimen** om er een op je naam te zetten.`,
       "",

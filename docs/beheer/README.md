@@ -1,5 +1,7 @@
 # Beheer
 
+<!-- paginatype: start -->
+
 > **In het kort:** de beheerder controleert ingeleverde bronnen, neemt ze op in een nieuwe database en brengt die uit als release. Deze pagina geeft het overzicht; de details staan in de pagina's eronder.
 
 ## Begin hier
@@ -53,10 +55,6 @@ flowchart TD
 - **Nooit een hash aanpassen** om een controle te laten slagen.
 - **Databases, bronarchieven en reviewdossiers blijven buiten Git.** Alleen de openbare database gaat als zip in een release.
 - **Niets publiceren zonder bewust besluit** van de beheerder.
-
-## Samengevat
-
-Controleren, beoordelen, publiceren, uitbrengen, claims sluiten. Bij twijfel: HOLD.
 
 ## Volgende stap
 

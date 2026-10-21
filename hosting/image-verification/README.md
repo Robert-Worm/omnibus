@@ -3,15 +3,15 @@
 > **In het kort:** dit hulpmiddel bouwt de image op je eigen testcomputer en controleert hem, alleen met fictieve gegevens. Zo weet je dat de image klopt voordat hij online gaat.
 
 > [!NOTE]
-> Dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
+> **Stand:** dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
 
 ## Waar staat dit?
 
-| Onderdeel | Status |
-| --- | --- |
-| Hulpmiddel om de image te bouwen en te controleren | ✅ Klaar en getest |
-| Proef met een echte database | ⬜ Bewust niet: dit hulpmiddel gebruikt alleen fictieve gegevens |
-| Werking bij de hostingpartij | ⬜ Valt hier buiten; zie de [checklist live demo](../../docs/beheer/live-demo-checklist.md) |
+| Onderdeel | Status | Toelichting |
+| --- | --- | --- |
+| Hulpmiddel om de image te bouwen en te controleren | ✅ Klaar | Getest |
+| Proef met een echte database | ➖ Niet van toepassing | Dit hulpmiddel gebruikt alleen fictieve gegevens |
+| Werking bij de hostingpartij | ➖ Niet van toepassing | Hoort bij de [checklist live demo](../../docs/beheer/live-demo-checklist.md) |
 
 ## Wat wordt er gecontroleerd?
 

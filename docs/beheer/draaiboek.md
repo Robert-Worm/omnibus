@@ -1,5 +1,7 @@
 # Storingsdraaiboek
 
+<!-- paginatype: naslag -->
+
 > **In het kort:** de zes situaties die het vaakst misgaan. Per situatie: hoe je het herkent, wat je eerst doet, hoe je herstelt en wat je daarna regelt.
 
 ## Zo gebruik je dit draaiboek

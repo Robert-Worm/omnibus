@@ -1,5 +1,7 @@
 # Omnibus gebruiken
 
+<!-- paginatype: start -->
+
 > **In het kort:** voor auditors en onderzoekers die met Omnibus een referentiekader willen maken. Lees deze drie pagina's in deze volgorde.
 
 ## Begin hier
@@ -21,10 +23,6 @@ Eerst proberen, zonder te installeren? Open de [proefversie online](https://omni
 | Met je eigen documenten werken | [Eigen documenten](eigen-documenten.md) |
 | Je AI-assistent laten meezoeken | [AI-koppeling](ai-koppeling.md) |
 | Een woord opzoeken | [Begrippen](../begrippen.md) |
-
-## Samengevat
-
-Installeren, de vier stappen leren en de veelgestelde vragen lezen: dan kun je zelfstandig aan de slag.
 
 ## Volgende stap
 

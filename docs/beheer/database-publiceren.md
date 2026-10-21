@@ -1,5 +1,7 @@
 # Database publiceren
 
+<!-- paginatype: taak -->
+
 > **In het kort:** je maakt een nieuwe database in de private verwerkingsomgeving. Je vergelijkt en test hem, en brengt hem uit als zip bij een GitHub-release. De huidige database blijft staan tot je bewust overstapt.
 
 ## Het hele traject
@@ -94,7 +96,7 @@ Als de nieuwe database is goedgekeurd, open je een [checklist voor de databasere
 6. **Sluit de verwerkte claims** met het label **verwerkt**.
 
 > [!NOTE]
-> Aantallen in de documentatie staan tussen onzichtbare markeringen, zoals `<!--n:rapporten-->27<!--/n-->`. Het voortgangsscript vult ze in. Pas het getal niet met de hand aan; gebruik een markering als je een aantal ergens nieuw noemt. Beschikbaar: `rapporten`, `kaders`, `modellen`, `alle`, `aanbevolen` en `aanbevolenInDatabase`.
+> **Goed om te weten:** aantallen in de documentatie staan tussen onzichtbare markeringen, zoals `<!--n:rapporten-->27<!--/n-->`. Het voortgangsscript vult ze in. Pas het getal niet met de hand aan; gebruik een markering als je een aantal ergens nieuw noemt. Beschikbaar: `rapporten`, `kaders`, `modellen`, `alle`, `aanbevolen` en `aanbevolenInDatabase`.
 
 ## Herstellen na een publicatiefout
 

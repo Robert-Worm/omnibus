@@ -1,5 +1,7 @@
 # Veelgestelde vragen
 
+<!-- paginatype: naslag -->
+
 > **In het kort:** korte antwoorden op de vragen die nieuwkomers het vaakst stellen, over wat Omnibus is, installeren, meedoen, rechten en AI. Elk antwoord linkt naar de pagina met de volledige uitleg.
 
 ## Over Omnibus

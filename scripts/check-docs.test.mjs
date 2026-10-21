@@ -3,12 +3,12 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, opdrachtWaarschuwingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
 const goed = (extra = "") =>
-  `# Titel\n\n> **In het kort:** uitleg.\n\n## Uitleg\n${extra}\n## Samengevat\n\nKort.\n\n## Volgende stap\n\nVerder.\n\n${VOET}`;
+  `# Titel\n\n<!-- paginatype: naslag -->\n\n> **In het kort:** uitleg.\n\n## Uitleg\n${extra}\n## Samengevat\n\nKort.\n\n## Volgende stap\n\nVerder.\n\n${VOET}`;
 
 function maakRepo(bestanden) {
   const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
@@ -79,7 +79,7 @@ test("ontbrekende onderdelen van het paginapatroon worden gemeld", () => {
   try {
     const m = controleerBestand(root, "docs/a/pagina.md", { nvmrc: NVMRC }).join("\n");
     assert.match(m, /In het kort/);
-    assert.match(m, /Samengevat/);
+    assert.match(m, /paginatype/);
     assert.match(m, /Volgende stap/);
     assert.match(m, /navigatieregel/);
   } finally {
@@ -146,4 +146,30 @@ test("een opdracht met een npm-script hoort als npm run in docs/ te staan", () =
     ['docs/a.md:1: gebruik "npm run check:links" in plaats van "node scripts/check-links.mjs"']);
   assert.deepEqual(opdrachtWaarschuwingen("docs/a.md", "node scripts/start-runtime-package.mjs", scripts), []);
   assert.deepEqual(opdrachtWaarschuwingen("hosting/README.md", "node scripts/check-links.mjs", scripts), []);
+});
+
+test("elk paginatype heeft zijn eigen verplichte onderdelen", () => {
+  const t = (type, rest = "") => `# T\n\n<!-- paginatype: ${type} -->\n\n${rest}`;
+  assert.match(paginatypeMeldingen("# T\n")[0], /mist het paginatype/);
+  assert.match(paginatypeMeldingen(t("blog"))[0], /onbekend paginatype "blog"/);
+  assert.match(paginatypeMeldingen(t("start", "## Samengevat\n"))[0], /startpagina zonder/);
+  assert.deepEqual(paginatypeMeldingen(t("start", "| a | b |\n")), []);
+  assert.deepEqual(paginatypeMeldingen(t("taak", "### 1. Doe iets\n\n## Samengevat\n")), []);
+  assert.deepEqual(paginatypeMeldingen(t("taak", "Uitleg.\n")), ['mist de kop "## Samengevat"', "taakpagina zonder genummerde stappen"]);
+  assert.match(paginatypeMeldingen(t("data", "Lijst.\n"))[0], /Automatisch bijgewerkt/);
+  assert.match(paginatypeMeldingen(t("logboek", "Geen tabel.\n"))[0], /zonder tabel/);
+  assert.deepEqual(paginatypeMeldingen(t("naslag", "```text\n<!-- paginatype: taak -->\n```\n")), [], "voorbeelden in codeblokken tellen niet");
+});
+
+test("meldingen volgen de bouwstenen", () => {
+  const goedeMelding = "> [!WARNING]\n> **Nooit:** iets onomkeerbaars.\n";
+  assert.deepEqual(meldingWaarschuwingen("docs/a.md", goedeMelding), []);
+  const fout = ["## Let op", "", "Let op: los.", "", "> [!CAUTION]", "> **Let op:** x", "", "> [!NOTE]", "> Geen vet woord."].join("\n");
+  const w = meldingWaarschuwingen("docs/a.md", fout).join("\n");
+  assert.match(w, /a\.md:1: kop "Let op"/);
+  assert.match(w, /a\.md:3: losse waarschuwing/);
+  assert.match(w, /a\.md:5: melding \[!CAUTION\]/);
+  assert.match(w, /a\.md:8: begin een melding met een vet Nederlands woord/);
+  assert.match(w, /a\.md:8: twee meldingen direct onder elkaar/);
+  assert.deepEqual(meldingWaarschuwingen("docs/a.md", "```text\n> [!CAUTION]\n```\n"), [], "voorbeelden tellen niet");
 });

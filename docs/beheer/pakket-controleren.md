@@ -1,5 +1,7 @@
 # Pakket controleren
 
+<!-- paginatype: taak -->
+
 > **In het kort:** met twee opdrachten controleer je of een ingeleverd pakket compleet is en of de bestanden ongewijzigd zijn aangekomen. De controle schrijft niets naar de database en keurt de inhoud niet goed.
 
 ## Wat is een pakket?
@@ -88,7 +90,8 @@ Bij een HOLD geeft de controle een `diagnostic` met de oorzaak, een herstelactie
 
 `location: "files[1]"` betekent het tweede bestand in de lijst; `$` is het hele manifest.
 
-**Nooit doen:** checksums opnieuw berekenen om een afgekeurd pakket te laten slagen, bewijsstukken weglaten, of het ontvangen manifest aanpassen. Een inhoudelijke correctie krijgt een nieuwe pakketversie in een nieuwe map.
+> [!WARNING]
+> **Nooit:** checksums opnieuw berekenen om een afgekeurd pakket te laten slagen, bewijsstukken weglaten, of het ontvangen manifest aanpassen. Een inhoudelijke correctie krijgt een nieuwe pakketversie in een nieuwe map.
 
 ## Welke rollen zijn verplicht?
 

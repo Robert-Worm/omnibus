@@ -1,5 +1,7 @@
 # Wegwijzer
 
+<!-- paginatype: start -->
+
 > **In het kort:** alle documentatie van Omnibus, ingedeeld naar wat je wilt doen. Kies hieronder je route.
 
 ```mermaid

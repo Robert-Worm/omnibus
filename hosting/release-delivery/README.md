@@ -4,13 +4,13 @@
 
 ## Waar staat dit?
 
-| Onderdeel | Status |
-| --- | --- |
-| Het runtimepakket in een image zetten | ✅ Lokaal getest met fictieve gegevens |
-| De image controleren | ✅ Zie de [imagecontrole](../image-verification/README.md) |
-| De database veilig op de server krijgen | 🔄 Hulpmiddel klaar ([ontvangen](../data-transfer/README.md)); de route bij de hostingpartij is nog niet bevestigd |
-| De eerste start op de server | ⬜ Voorstel klaar ([eerste start](../first-start/README.md)); wacht op bevestiging van de hostingpartij |
-| Online | ➖ Niet via deze route: de proefversie draait via de eenvoudigere [container-route](../container/README.md) bij Sliplane |
+| Onderdeel | Status | Toelichting |
+| --- | --- | --- |
+| Het runtimepakket in een image zetten | ✅ Klaar | Lokaal getest met fictieve gegevens |
+| De image controleren | ✅ Klaar | Zie de [imagecontrole](../image-verification/README.md) |
+| De database veilig op de server krijgen | 🔄 Bezig | Hulpmiddel klaar ([ontvangen](../data-transfer/README.md)); de route bij de hostingpartij is nog niet bevestigd |
+| De eerste start op de server | ⬜ Open | Voorstel klaar ([eerste start](../first-start/README.md)); wacht op de hostingpartij |
+| Online | ➖ Niet van toepassing | De proefversie draait via de [container-route](../container/README.md) bij Sliplane |
 
 ## Hoe werkt het?
 
@@ -42,7 +42,7 @@ Hieronder staan de onderbouwing, de opdrachten (voor Windows én voor macOS/Linu
 <details><summary><b>Alle technische details en opdrachten</b></summary>
 
 > [!NOTE]
-> Deze route is uitgewerkt voor Sevalla, met de database op een aparte schijf. De proefversie gebruikt nu de eenvoudigere [container-route](../container/README.md) bij Sliplane. Deze route blijft nodig zodra er een niet-openbare database online moet.
+> **Stand:** deze route is uitgewerkt voor Sevalla, met de database op een aparte schijf. De proefversie gebruikt nu de eenvoudigere [container-route](../container/README.md) bij Sliplane. Deze route blijft nodig zodra er een niet-openbare database online moet.
 
 **De aanbevolen route in het kort:**
 
@@ -105,7 +105,8 @@ Het instellingenbestand bij elke database bevat alleen dit:
 
 Dit voorbeeld werkt pas als je beide plaatshouders hebt ingevuld.
 
-Let op: dit zijn allemaal **verschillende** identiteiten: de releasepin, de publicatiepin, de hash van het runtimecontract, de hash van het SQLite-bestand, de hash van `runtime-package.json` en de uiteindelijke image-digest. Leg vast hoe ze bij de beoordeelde codecommit horen, buiten Git. De hash van het pakketmanifest is geen digitale handtekening. De hulp voor de context beoordeelt geen inhoud en scant de basis-image niet.
+> [!NOTE]
+> **Goed om te weten:** dit zijn allemaal **verschillende** identiteiten: de releasepin, de publicatiepin, de hash van het runtimecontract, de hash van het SQLite-bestand, de hash van `runtime-package.json` en de uiteindelijke image-digest. Leg vast hoe ze bij de beoordeelde codecommit horen, buiten Git. De hash van het pakketmanifest is geen digitale handtekening. De hulp voor de context beoordeelt geen inhoud en scant de basis-image niet.
 
 ### Stappen voor de operator, alleen met toestemming
 

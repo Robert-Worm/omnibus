@@ -1,5 +1,7 @@
 # Je eigen AI-assistent koppelen
 
+<!-- paginatype: taak -->
+
 > **In het kort:** je kunt een AI-assistent (zoals Codex of Claude) laten zoeken in Omnibus en een onderzoeksopzet laten voorbereiden. Dat gaat via een lokale koppeling op je eigen computer. Jij geeft akkoord voordat er iets wordt opgeslagen.
 
 ## Wat kan je AI-assistent dan?
@@ -47,14 +49,12 @@ De koppeling gebruikt **MCP** (Model Context Protocol), een standaard waarmee AI
 
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 
-## Let op
+## Goed om te weten
 
-**Nieuwe collectie geïnstalleerd?** Bereid de koppeling opnieuw voor met dezelfde
-database-instellingen als de website. Controleer dat je AI-assistent naar deze
-installatie verwijst en herstart de MCP-verbinding. Anders kan hij nog de vorige
-collectie gebruiken. Zie de [technische controle](../../agent-tools/README.md#browser-en-mcp-na-een-nieuwe-collectie-gelijkzetten).
+> [!WARNING]
+> **Let op:** wat je deelt, gaat naar je AI-dienst. Werkt je assistent in de cloud, dan gelden de voorwaarden van die dienst. Deel alleen wat je mag delen.
 
-- **Wat je deelt, gaat naar je AI-dienst.** Werkt je assistent in de cloud, dan gelden de voorwaarden van die dienst. Deel alleen wat je mag delen.
+- **Nieuwe collectie geïnstalleerd?** Bereid de koppeling opnieuw voor met dezelfde database-instellingen als de website. Controleer dat je AI-assistent naar deze installatie verwijst en herstart de MCP-verbinding. Anders kan hij nog de vorige collectie gebruiken. Zie de [technische controle](../../agent-tools/README.md#browser-en-mcp-na-een-nieuwe-collectie-gelijkzetten).
 - **Alleen lokaal.** De koppeling werkt niet met AI-diensten die alleen een internetadres accepteren.
 - **Controleer het voorstel.** De assistent kiest bouwstenen op basis van zoekresultaten. Beoordeel zelf of ze passen.
 
