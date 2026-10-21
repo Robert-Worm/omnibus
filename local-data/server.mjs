@@ -105,7 +105,13 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   if((hosting.publicMode?req.headers.origin!==undefined:req.headers.origin)&&req.headers.origin!==expectedOrigin)
    return reply(403,{error:'Origin not allowed'});
   const fetchSite=req.headers['sec-fetch-site'];
-  if(hosting.publicMode?(fetchSite||'').split(',').some(value=>value.trim()==='cross-site'):fetchSite==='cross-site')
+  // Public mode: a visitor following a link from another site (mail, search) opens the
+  // page as a top-level document. Allow only that single GET navigation outside /api/;
+  // everything the page then loads is same-origin, and cross-site API reads stay refused.
+  const publicNavigation=hosting.publicMode&&req.method==='GET'&&req.headers.origin===undefined&&
+   req.headers['sec-fetch-mode']==='navigate'&&req.headers['sec-fetch-dest']==='document'&&
+   fetchSite==='cross-site'&&!(req.url||'').startsWith('/api/');
+  if(!publicNavigation&&(hosting.publicMode?(fetchSite||'').split(',').some(value=>value.trim()==='cross-site'):fetchSite==='cross-site'))
    return reply(403,{error:'Cross-site request not allowed'});
   if(expectation)return reply(417,{error:'Expectation not allowed'});
   if(req.method!=='GET'){res.setHeader('Allow','GET');res.setHeader('Connection','close');return reply(405,{error:'Read-only API'});}

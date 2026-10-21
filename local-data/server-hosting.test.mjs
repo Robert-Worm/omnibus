@@ -184,6 +184,19 @@ test('public HTTP uses only its fixed origin while preserving read and response 
    ['Host',authority,'Sec-Fetch-Site','same-origin','Sec-Fetch-Site','cross-site']]){
    const crossSite=await request(app,{headers});assert.equal(crossSite.status,403);cors(crossSite);
   }
+  const navigate={'Sec-Fetch-Site':'cross-site','Sec-Fetch-Mode':'navigate','Sec-Fetch-Dest':'document'};
+  const opened=await request(app,{path:'/',headers:{Host:authority,...navigate}});
+  assert.equal(opened.status,200,'a link from another site opens the start page');
+  for(const [path,headers] of [
+   ['/api/v1/health',{Host:authority,...navigate}],
+   [f.contentPath,{Host:authority,...navigate}],
+   ['/',{Host:authority,...navigate,'Sec-Fetch-Dest':'iframe'}],
+   ['/',{Host:authority,...navigate,'Sec-Fetch-Mode':'cors'}],
+   ['/',{Host:authority,...navigate,Origin:publicOrigin}],
+   ['/',['Host',authority,'Sec-Fetch-Site','cross-site','Sec-Fetch-Mode','navigate','Sec-Fetch-Mode','navigate','Sec-Fetch-Dest','document']],
+   ['/',{Host:'localhost:'+app.server.address().port,...navigate}]]){
+   const refused=await request(app,{path,headers});assert.equal(refused.status,403,path+' '+JSON.stringify(headers));
+  }
  });
 
  await t.test('forwarded headers and probe aliases never grant access or choose correlation IDs',async()=>{
