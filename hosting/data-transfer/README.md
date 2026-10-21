@@ -2,6 +2,9 @@
 
 > **In het kort:** dit hulpmiddel controleert een database op de server tegen vooraf vastgelegde controlegetallen. Het verplaatst zelf niets en start Omnibus niet.
 
+> [!NOTE]
+> Dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
+
 ## Waar staat dit?
 
 | Onderdeel | Status |

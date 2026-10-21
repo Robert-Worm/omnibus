@@ -2,6 +2,9 @@
 
 > **In het kort:** een voorstel voor de allereerste start bij de hostingpartij. De server draait dan even zonder Omnibus, zodat de database er veilig op kan. Dit is nog niet bij de hostingpartij bewezen.
 
+> [!NOTE]
+> Dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
+
 ## Waarom is dit nodig?
 
 Omnibus start alleen als de database er al staat. Maar bij de hostingpartij kun je pas bestanden neerzetten als de server al draait. Dit voorstel lost dat op: de server start eerst een klein, tijdelijk proces dat niets doet en vanzelf stopt. In die tijd zet de beheerder de database neer.

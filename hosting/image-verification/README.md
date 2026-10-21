@@ -2,6 +2,9 @@
 
 > **In het kort:** dit hulpmiddel bouwt de image op je eigen testcomputer en controleert hem, alleen met fictieve gegevens. Zo weet je dat de image klopt voordat hij online gaat.
 
+> [!NOTE]
+> Dit hoort bij de uitgebreide route, met de database op een aparte schijf. Die ligt klaar voor een niet-openbare database. De proefversie online gebruikt de eenvoudigere [container-route](../container/README.md).
+
 ## Waar staat dit?
 
 | Onderdeel | Status |
@@ -50,7 +53,7 @@ node hosting/image-verification/verify-image.mjs --run \
 
 Vul de plaatshouders voor de image eerst in. De bovenliggende map moet bestaan; de uitvoermap moet nieuw zijn. Kies een kort pad: de hulp staat voor de Podman-runroot, inclusief `/container-run`, hooguit 50 bytes toe.
 
-De hulp haalt alleen de genoemde officiële basis-image op. Dat gebeurt zonder inloggegevens voor de registry en met aparte lokale opslag. Het bouwen zelf gebruikt `--pull=never --network=none`. Er wordt niets geüpload en niets bij Sevalla ingericht.
+De hulp haalt alleen de genoemde officiële basis-image op. Dat gebeurt zonder inloggegevens voor de registry en met aparte lokale opslag. Het bouwen zelf gebruikt `--pull=never --network=none`. Er wordt niets geüpload en niets bij een hostingpartij ingericht.
 
 De eerste keer kan het omzetten van gebruikers-ID's in de imagelagen even duren. Het voorbereiden van de container mag hooguit vijf minuten duren. Voor starten en afsluiten gelden aparte tijdsgrenzen.
 
@@ -77,7 +80,7 @@ python3 hosting/image-verification/inspect-layers.test.py
 
 Deze tests controleren de hulpmiddelen. Ze controleren ook of een [ontvangen back-up](../data-transfer/README.md) aansluit op het pakket. Ze vervangen geen echte imagebuild of proef met een schijf.
 
-Een imageproef op je eigen computer bewijst niet dat je de bronnen mag gebruiken, dat er geen kwetsbaarheden zijn, of dat het bij Sevalla werkt. De [eerste vulling van de schijf](../first-start/README.md), de rechten bij de hostingpartij, TLS en probes en de herstelproef blijven aparte stappen van de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
+Een imageproef op je eigen computer bewijst niet dat je de bronnen mag gebruiken, dat er geen kwetsbaarheden zijn, of dat het bij een hostingpartij werkt. De [eerste vulling van de schijf](../first-start/README.md), de rechten bij de hostingpartij, TLS en probes en de herstelproef blijven aparte stappen van de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
 
 </details>
 
