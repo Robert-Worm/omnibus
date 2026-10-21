@@ -44,7 +44,7 @@ Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikba
 
 ## Afspraken
 
-- **Eén bron tegelijk.** Claim pas een volgende als je de vorige hebt ingeleverd.
+- **Hooguit vijf bronnen tegelijk.** Zo kun je bronnen naast elkaar verwerken, zonder dat er veel op jouw naam blijft liggen. Een zesde claim wordt gesloten, met uitleg.
 - **Blijf in contact.** Na 30 dagen zonder reactie krijg je een herinnering; na 60 dagen komt de bron automatisch weer vrij.
 - **Geen vertrouwelijk materiaal** in issues, reacties of pull requests.
 - **Wees eerlijk over twijfels.** Een onzekere norm met een duidelijke vraag is beter dan een stellige fout.

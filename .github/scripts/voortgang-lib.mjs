@@ -4,6 +4,7 @@
 
 export const VOET = "[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
 const DAG = 24 * 60 * 60 * 1000;
+export const MAX_CLAIMS = 5;
 const CLAIM_TEMPLATE = "bron-claimen.yml";
 const COMMAND = /^\s*\/(inleveren|vrijgeven)\b/im;
 const mark = (key) => `<!-- omnibus:${key} -->`;
@@ -221,6 +222,14 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
         await once("mogelijk-dubbel", `Let op: dit rapport lijkt hetzelfde als [${o.titel}](${rijksmapUrl(o.id)}) (${o.datum}). Verwerk bij voorkeur dat rapport en noem het in je toelichting. De beheerder kijkt mee.`);
       }
 
+      // Hooguit MAX_CLAIMS bronnen tegelijk in bewerking per persoon.
+      const andere = claims.filter((c) => c.open && c.user === claim.user && c.number < n && c.status === "in bewerking" && c.bron && !c.labels.includes("dubbel"));
+      if (andere.length >= MAX_CLAIMS && !heeft("welkom")) {
+        await once("te-veel", `Je werkt al aan ${andere.length} bronnen (#${andere.map((c) => c.number).join(", #")}). Je kunt er [hooguit ${MAX_CLAIMS} tegelijk](${docs("README.md#afspraken")}) op je naam hebben. Lever er eerst een in, of geef er een vrij met \`/vrijgeven\`, en claim deze bron daarna opnieuw.`);
+        await closeIssue(n, "not_planned"); claim.open = false;
+        continue;
+      }
+
       // 3. Herinneren en verlopen (alleen claims die nog in bewerking zijn)
       if (claim.status === "in bewerking") {
         const eigen = comments.filter((c) => c.user.login === claim.user).map((c) => Date.parse(c.created_at));
@@ -249,8 +258,6 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
         "- Klaar? Schrijf `/inleveren` in een reactie, met een korte toelichting.",
         "- Lukt het toch niet? Schrijf `/vrijgeven`. Dan komt de bron weer vrij voor iemand anders.",
       ].join("\n"));
-      const andere = claims.filter((c) => c.open && c.user === claim.user && c.number < n && c.status === "in bewerking" && c.bron && !c.labels.includes("dubbel"));
-      if (andere.length) await once("tweede", `Je werkt ook nog aan #${andere.map((c) => c.number).join(", #")}. Lever die bij voorkeur eerst in: [één bron tegelijk](${docs("README.md#afspraken")}).`);
 
       // 6. Opdrachten in reacties: /inleveren en /vrijgeven
       for (const c of comments) {

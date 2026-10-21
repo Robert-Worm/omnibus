@@ -9,6 +9,7 @@ const START = Date.parse("2026-10-01T09:00:00Z");
 
 const rapportenCsv = [
   "id;datum;titel;ministerie;onderdeel;bron;auteur;aanbevolen;openbaar;url",
+  ...[1, 2, 3, 4, 5, 6].map((i) => `2025-extra-${i};2025-0${i}-01;Extra onderzoek nummer ${i} naar thema ${"abcdef"[i - 1]};BZK;DGOO;Auditdienst Rijk;Auditdienst Rijk;ja;ja;https://example.org/x${i}`),
   "2026-open-rapport;2026-03-01;Onderzoek naar het inkoopproces bij het ministerie;Financiën;DGRB;Auditdienst Rijk;Auditdienst Rijk;ja;ja;https://example.org/1",
   "2026-in-db;2026-02-01;Onderzoek naar informatiebeveiliging bij de dienst;Financiën;DGRB;Auditdienst Rijk;Auditdienst Rijk;ja;ja;https://example.org/2",
   "2026-geheim;2026-01-01;Vertrouwelijk onderzoek naar de uitvoering;Defensie;CLAS;Auditdienst Rijk;Auditdienst Rijk;ja;nee;https://example.org/3",
@@ -342,4 +343,24 @@ test("/inleveren zonder zip krijgt uitleg; een kapotte zip een nette melding", a
   g.reageer(n, "anna", "Nieuwe versie https://github.com/user-attachments/files/10/pakket.zip\n/inleveren");
   await draai(g, download);
   assert.match(g.botTekst(n), /Ik kon de zip niet lezen/);
+});
+
+test("je kunt hooguit vijf bronnen tegelijk claimen", async () => {
+  const g = nepGitHub();
+  const nummers = [1, 2, 3, 4, 5, 6].map((i) => g.claim("anna", { bron: rapport(`2025-extra-${i}`) }));
+  await draai(g);
+  for (const n of nummers.slice(0, 5)) {
+    assert.equal(g.issues.get(n).state, "open");
+    assert.match(g.botTekst(n), /Dank je, @anna/);
+  }
+  const zesde = nummers[5];
+  assert.equal(g.issues.get(zesde).state, "closed");
+  assert.match(g.botTekst(zesde), /hooguit 5 tegelijk/);
+  assert.doesNotMatch(g.botTekst(zesde), /Dank je/);
+  // Na inleveren van één bron mag er weer een bij.
+  g.reageer(nummers[0], "anna", "/inleveren");
+  await draai(g);
+  const nieuw = g.claim("anna", { bron: rapport("2025-extra-6") });
+  await draai(g);
+  assert.equal(g.issues.get(nieuw).state, "open");
 });
