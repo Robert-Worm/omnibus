@@ -6,8 +6,21 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { formatProductVersion } from "../lib/product-release.mjs";
 
 export const INSTALL = "npm ci --ignore-scripts --no-audit --no-fund";
+
+/**
+ * Horen de schermafbeeldingen bij de huidige versie van de applicatie? `stand` is de inhoud
+ * van docs/images/schermafbeeldingen.txt (of null), `versie` de huidige productversie.
+ */
+export function schermWaarschuwingen(stand, versie) {
+  const opdracht = "vernieuw ze met npm run docs:screenshots -- --settings <local-build.json>";
+  if (stand === null) return [`docs/images: er is nog niet vastgelegd bij welke versie de schermafbeeldingen horen; ${opdracht}`];
+  const regels = stand.split("\n").map((r) => r.trim()).filter((r) => r && !r.startsWith("#")).map((r) => r.split(/\s+/));
+  const oud = regels.filter(([, v]) => v !== versie).map(([b, v]) => `${b} (${v})`);
+  return oud.length ? [`docs/images: ${oud.length} ${oud.length === 1 ? "afbeelding hoort" : "afbeeldingen horen"} bij een oudere versie dan ${versie}: ${oud.join(", ")}; ${opdracht}`] : [];
+}
 
 // Pagina's die geen gewone uitlegpagina zijn en daarom geen "Samengevat" hebben.
 const ZONDER_SAMENGEVAT = new Set(["docs/README.md", "docs/begrippen.md"]);
@@ -248,6 +261,12 @@ export function controleer(root) {
     const tekst = readFileSync(path.join(root, rel), "utf8");
     waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
     lang.push(...zinWaarschuwingen(rel, tekst));
+  }
+  const release = path.join(root, "lib", "product-release.mjs");
+  const nummer = existsSync(release) && readFileSync(release, "utf8").match(/PRODUCT_RELEASE_NUMBER\s*=\s*(\d+)/)?.[1];
+  if (nummer) {
+    const stand = path.join(root, "docs", "images", "schermafbeeldingen.txt");
+    waarschuwingen.push(...schermWaarschuwingen(existsSync(stand) ? readFileSync(stand, "utf8") : null, formatProductVersion(Number(nummer))));
   }
   return { meldingen, waarschuwingen, lang };
 }

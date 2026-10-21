@@ -60,7 +60,24 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Installatieopdracht | In codeblokken en GitHub-workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
 | Paginapatroon | Elke pagina in `docs/` heeft *In het kort*, *Samengevat* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Elke `README.md` in een map heeft *In het kort*. |
 
-Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit. Hoe je een pagina opbouwt en welke woorden je gebruikt, staat in de [stijlgids](stijlgids.md).
+Daarnaast geeft de controle waarschuwingen. Die laten de controle niet mislukken. Ze gaan over woorden uit de stijlgids, zinnen van meer dan 25 woorden in `docs/` en verouderde schermafbeeldingen.
+
+Een melding noemt het bestand en het regelnummer. Pas de tekst aan; schakel de controle niet uit.
+
+### Schermafbeeldingen vernieuwen
+
+Heb je de schermen veranderd? Maak dan alle schermafbeeldingen in `docs/images/` en de rondleiding opnieuw, met één opdracht. Het script gebruikt de openbare database en steeds hetzelfde fictieve onderzoek naar de CIO-functie.
+
+Installeer eerst Playwright, alleen voor jezelf: `npm install --no-save playwright` en daarna `npx playwright install chromium`. Het hoort bewust niet bij de vaste onderdelen van Omnibus. Daarna:
+
+```text
+npm run build -- --settings local-data/runtime/local-build.json
+npm run docs:screenshots -- --settings local-data/runtime/local-build.json
+```
+
+Voor de rondleiding (GIF) is ook [ffmpeg](https://ffmpeg.org/) nodig; zonder ffmpeg slaat het script alleen de GIF over. Wil je een paar afbeeldingen? Gebruik `--alleen stap-2-verzamel,rondleiding`. Het script legt in `docs/images/schermafbeeldingen.txt` vast bij welke versie de afbeeldingen horen. Bekijk de afbeeldingen voordat je ze commit.
+
+Externe links controleer je met `npm run check:links`. Dat gebeurt ook elke maandag automatisch. Hoe je een pagina opbouwt en welke woorden je gebruikt, staat in de [stijlgids](stijlgids.md).
 
 ## Een pull request maken
 

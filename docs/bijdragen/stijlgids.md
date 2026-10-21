@@ -120,7 +120,7 @@ classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 - **Opdrachten** in een codeblok met één taal per blok: `text` voor opdrachten die overal werken, `powershell` of `bash` als het verschilt. Geef dan beide.
 - **De installatieopdracht** is altijd `npm ci --ignore-scripts --no-audit --no-fund`.
 - **Links** binnen de repository zijn relatief (`../begrippen.md`). Link naar een kop met een anker (`#volgende-stap`); de controle meldt kapotte ankers.
-- **Afbeeldingen** krijgen een beschrijvende alt-tekst en staan in `docs/images/`.
+- **Afbeeldingen** krijgen een beschrijvende alt-tekst en staan in `docs/images/`. Schermafbeeldingen van de applicatie maak je met `npm run docs:screenshots`, niet met de hand; zie [schermafbeeldingen vernieuwen](ontwikkelen.md#schermafbeeldingen-vernieuwen).
 
 ## Samengevat
 
