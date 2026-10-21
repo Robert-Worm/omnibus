@@ -12,6 +12,8 @@ import { defaultProfile, profileActive, rankForProfile } from "@/lib/audit-relev
 import { normId, filterSubjects, subjectOptions } from "@/lib/norm-navigation.mjs";
 import FullTextPreview from "./full-text-preview";
 import DeferredMatrixRows from './deferred-matrix-rows';
+import DeferredViewerSection from './deferred-viewer-section';
+import {viewerRowBatches} from '@/lib/viewer-rendering.mjs';
 import { fieldIncluded } from "@/lib/research-plan.mjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +65,7 @@ export default function CompactMatrix({
   showSubjectSuggestions = true,
   columnBasis,
   embedded = false,
-  deferRows = false,
+  deferRows = true,
   showProvenance = true,
   initialTextDensity = 'comfortable',
   textDensity,
@@ -279,8 +281,9 @@ export default function CompactMatrix({
   const allPage = selectableRows(rows).length > 0 && selectableRows(rows).every((l) => rowAll(l.id));
   const somePage = rows.some((l) => rowSome(l.id));
   const keys = (Object.keys(labels) as ElementKey[]).filter((k) => columns.includes(k));
-  const rowBatchSize=deferRows?8:Math.max(1,rows.length);
-  const rowBatches=Array.from({length:Math.ceil(rows.length/rowBatchSize)},(_,i)=>rows.slice(i*rowBatchSize,(i+1)*rowBatchSize));
+  const deferPresentation=deferRows&&!query&&!selectedOnly&&!view.group&&!view.subjects.length&&!reveal&&view.top===0;
+  // Keep batch identity stable when scrolling or revealing forces eager mounting.
+  const rowBatches=viewerRowBatches(rows,deferRows);
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
   useEffect(()=>{
     const element=scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
@@ -469,9 +472,11 @@ export default function CompactMatrix({
           </Button>
         </output>
       )}
-      {groupLines&&!embedded?<div className="matrix-group-stack" ref={scroller}>{groupLines(filtered).map(group=><section className="matrix-browse-group" key={group.id} data-report-group={group.id}>
+      {groupLines&&!embedded?<div className="matrix-group-stack" ref={scroller}>{groupLines(filtered).map((group,index)=><section className="matrix-browse-group" key={group.id} data-report-group={group.id}>
         <header><h3>{group.title}</h3><span>{countLabel(group.lines.length,'onderdelen')}</span></header>
-        <CompactMatrix lines={group.lines} draft={draft} viewDraft={viewDraft} disabled={disabled} onChange={onChange} onOpen={onOpen} onOpenField={onOpenField} onOpenReport={onOpenReport} selected={selected||view.lastId} viewKey={`${viewKey}-group-${group.id}`} embedded combineIdentity={!descriptiveTitles} descriptiveTitles={descriptiveTitles} subjectColumnLabel={subjectColumnLabel} showProvenance={showProvenance} initialColumns={columns} columnOptions={availableColumns} textDensity={density} pointChoices={pointChoices} pointSelection={pointSelection}/>
+        <DeferredViewerSection count={group.lines.length} immediate={index===0||!deferPresentation}>
+        <CompactMatrix lines={group.lines} draft={draft} viewDraft={viewDraft} disabled={disabled} onChange={onChange} onOpen={onOpen} onOpenField={onOpenField} onOpenReport={onOpenReport} selected={selected||view.lastId} viewKey={`${viewKey}-group-${group.id}`} embedded deferRows={deferPresentation} combineIdentity={!descriptiveTitles} descriptiveTitles={descriptiveTitles} subjectColumnLabel={subjectColumnLabel} showProvenance={showProvenance} initialColumns={columns} columnOptions={availableColumns} textDensity={density} pointChoices={pointChoices} pointSelection={pointSelection}/>
+        </DeferredViewerSection>
       </section>)}</div>:<div
         className={`compact-table identified-table${combineIdentity ? ' combined-identity-table' : ''}${descriptiveTitles&&!combineIdentity?' matrix-explained-table':''}`}
         ref={scroller}
@@ -502,7 +507,7 @@ export default function CompactMatrix({
             </TableRow>
           </TableHeader>
           {rowBatches.map((chunk,batch)=>{
-           return <DeferredMatrixRows key={batch} immediate={!deferRows||batch===0||Boolean(reveal)||view.top>0} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
+           return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
             {chunk.map((l) => (
               <TableRow
                 key={l.id}

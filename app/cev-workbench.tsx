@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { RefreshCw, X } from "lucide-react";
 import { questionFormulations, cycleQuestionFormulation } from "@/lib/content-adapters/question-formulations.mjs";
 import { activeIntegrityModel } from '@/lib/cev-active.mjs';
+import DeferredViewerSection from './deferred-viewer-section';
 import { hasReviewedQuestion, initialModelLibrary } from '@/lib/model-library.mjs';
 import { practiceQuestionRevision } from '@/lib/content-adapters/interview-practice-review.mjs';
 import { questionWorkbenchPresentation } from '@/lib/content-adapters/research-models.mjs';
@@ -253,7 +254,7 @@ export default function CevWorkbench({
               Bewijssuggesties tonen
             </label>
           </div>
-          {questions.map((q) => {
+          {questions.map((q,index) => {
             const indicator = item.indicators?.find((i) => i.id === q.indicatorId);
             const included = model.selected && item.included && indicator?.included && chosenQuestionLevels(model,q).includes(level);
             const wording = contextualQuestion(q.variants?.[level] ?? "", subject);
@@ -263,7 +264,8 @@ export default function CevWorkbench({
             // Editing a supplied question also sets origin=user; those questions remain protected.
             const ownQuestion=q.origin==='user'&&!reviewedModels.find(m=>m.id===model.id)?.items.some(i=>i.questions?.some(original=>original.id===q.id));
             return (
-              <article key={q.id} className={"cev-question" + (included ? " is-chosen" : "")}>
+              <DeferredViewerSection key={q.id} immediate={index<4||Boolean(indicatorId||onlySelected||editing===q.id)} label={`Toon vraag: ${q.title}`}>
+              <article className={"cev-question" + (included ? " is-chosen" : "")}>
                 <div className="cev-question-heading">
                 <label className="cev-question-choice" htmlFor={q.id + "-choose"}>
                   <Checkbox
@@ -383,6 +385,7 @@ export default function CevWorkbench({
                   </div>
                 )}
               </article>
+              </DeferredViewerSection>
             );
           })}
           {!questions.length && (

@@ -1,0 +1,2 @@
+.viewer-section-placeholder { min-height:16rem; display:grid; place-items:center; color:var(--rm-muted); }
+.viewer-section-placeholder > button { max-width:100%; height:auto; min-height:2rem; white-space:normal; overflow-wrap:anywhere; }

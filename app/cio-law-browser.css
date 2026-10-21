@@ -176,4 +176,3 @@
 .law-focused-body .cio-approach>.cio-notice h4{font-size:.76rem}.law-focused-body .cio-approach>.cio-notice p{font-size:.72rem}
 @media(max-width:700px){.law-focused-body .law-context-grid,.law-choice-grid,.law-focused-body .cio-phase-grid{grid-template-columns:1fr}.law-flow .law-context-card:not(:last-child)::after{display:none}.law-detail-body.law-focused-body{padding:.75rem}.law-point-switcher button{max-width:80vw;white-space:normal}.law-browser .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{max-height:330px}}
 @media(min-width:701px) and (max-width:1100px){.law-focused-body .law-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.law-flow .law-context-card:nth-child(2)::after{display:none}}
-.report-group-placeholder { min-height:16rem; display:grid; place-items:center; color:var(--rm-muted); }

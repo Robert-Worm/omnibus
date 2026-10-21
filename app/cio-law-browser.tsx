@@ -15,7 +15,7 @@ import {cioControlMeasureFor} from '@/lib/cio-content.mjs';
 import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
 import {closeFoundation} from '@/lib/foundation-workspace.mjs';
 import CompactMatrix from './compact-matrix';
-import DeferredReportGroup from './deferred-report-group';
+import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
 import {lawCountText} from '@/lib/law-view-counts.mjs';
@@ -130,11 +130,11 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
     const ids=unique(group.allRows.flatMap(r=>r.pointIds)),groupState=select(draft,ids),hold=ids.length-groupState.total;
     return <section className="law-group" key={group.id} data-law-group={group.id} aria-labelledby={`law-group-${group.id}`}>
      <header className="law-group-heading"><div><p className="law-group-location">{adapter?'':groupLocation(group.allRows,pointMap,recordMap)}</p><h3 id={`law-group-${group.id}`}>{group.title}</h3><p className="law-group-count">{groupState.selected} van {countLabel(groupState.total,'toetspunten')} gekozen{hold>0&&` · ${hold} nog niet selecteerbaar`}{group.visibleRows.length<group.allRows.length&&` · ${group.visibleRows.length} van ${countLabel(group.allRows.length,'normen')} zichtbaar`}</p></div><label className="law-select-group" htmlFor={`law-group-all-${group.id}`}><Checkbox id={`law-group-all-${group.id}`} checked={groupState.all} indeterminate={groupState.partial} disabled={disabled||!groupState.total} aria-label={`Selecteer hele groep ${group.title}, ${countLabel(groupState.total,'toetspunten')}`} onCheckedChange={value=>choose(ids,value===true)}/><span>Selecteer hele groep<small>{countLabel(groupState.total,'toetspunten')}</small></span></label></header>
-     <DeferredReportGroup count={group.visibleRows.length} immediate={index===0||Boolean(query||view.group||view.selectedOnly)}>
+     <DeferredViewerSection count={group.visibleRows.length} immediate={index===0||Boolean(query||view.group||view.selectedOnly)}>
      <CompactMatrix lines={group.visibleRows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={`${adapter?.sourceId||'cio'}-group-${group.id}-v2`} embedded deferRows={!query&&!view.group&&!view.selectedOnly} descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity}
       initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]}
       onOpen={open} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:open,onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
-     </DeferredReportGroup>
+     </DeferredViewerSection>
     </section>;
    })}</div>
    {!groups.length&&<section className="law-empty"><h3>Geen normen gevonden</h3><p>Pas je zoekterm of filters aan om de onderdelen van dit kader weer te zien.</p><Button variant="outline" onClick={resetFilters}>Alle normen tonen</Button></section>}

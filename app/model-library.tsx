@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import ModelVariable from "./model-variable";
+import DeferredViewerSection from './deferred-viewer-section';
 import CevWorkbench from "./cev-workbench";
 import ModelIntroduction from './model-introduction';
 import ModelInformation from './model-information';
@@ -275,7 +276,8 @@ export default function ModelLibrary({
                 {current.kind === "kaptein" ? "Dimensiekeuze wissen" : "Keuze wissen"}
               </Button>
             </div>
-            {current.items.map((i) =>
+            {current.items.map((i,index) => <DeferredViewerSection key={current.id+':'+i.id} immediate={index<4} label={`Toon ${i.title||'variabele'}`}>
+             {
               i.indicators ? (
                 <ModelVariable
                   key={i.id}
@@ -459,7 +461,8 @@ export default function ModelLibrary({
                     </>
                   )}
                 </details>
-              ),
+              )}
+              </DeferredViewerSection>,
             )}
             {current.kind === "own" && (
               <Button
