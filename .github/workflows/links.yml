@@ -1,0 +1,38 @@
+name: Externe links controleren
+
+# Controleert elke maandag de externe links in README.md en docs/ (ook de werklijsten).
+# Kapotte links komen in één issue met het label 'kapotte-links'; dat sluit vanzelf
+# als alles weer werkt. Zie scripts/check-links.mjs.
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: links
+  cancel-in-progress: false
+
+jobs:
+  links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Node instellen
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.17.0'
+          package-manager-cache: false
+      - name: Tests van de linkcontrole
+        run: node --test scripts/check-links.test.mjs
+      - name: Links controleren en het issue bijwerken
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/check-links.mjs --issue

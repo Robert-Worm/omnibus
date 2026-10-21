@@ -27,7 +27,7 @@ flowchart LR
 | Lees de wekelijkse samenvatting | Je ziet in één keer wat er is geclaimd, ingeleverd en verwerkt | Het bericht in Discussions, elke maandag |
 | Controleer ingeleverde pakketten | Zo blijft de wachttijd voor bijdragers kort | [Pakket controleren](pakket-controleren.md) |
 | Bekijk beveiligingsmeldingen | Kwetsbare onderdelen of gelekte sleutels wil je snel weten | Tabblad *Security* op GitHub; zie [SECURITY.md](../../SECURITY.md) |
-| Bekijk de linkcontrole | Een kapotte link naar een wet of rapport maakt de uitleg onbetrouwbaar | Het issue *Kapotte externe links*, als de wekelijkse controle er een heeft gemaakt |
+| Bekijk de linkcontrole | Een kapotte link naar een wet of rapport maakt de uitleg onbetrouwbaar | Het issue met het label [kapotte-links](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aopen+label%3Akapotte-links), als de controle van maandag er een heeft gemaakt. Zelf draaien: `node scripts/check-links.mjs` |
 
 ## Per databaserelease (± 2 tot 4 uur)
 
