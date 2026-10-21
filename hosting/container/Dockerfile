@@ -13,7 +13,7 @@
 # Een nieuwe database? Pas DATABASE_URL en DATABASE_SHA256 hieronder aan (of geef ze
 # mee als build-argument) en bouw opnieuw.
 
-FROM node:24.17.0-bookworm-slim AS bouw
+FROM node:26.11.1-bookworm-slim AS bouw
 WORKDIR /bron
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
@@ -25,7 +25,7 @@ RUN node scripts/fetch-release-database.mjs --url "$DATABASE_URL" --sha256 "$DAT
  && npm run build:runtime -- --settings /database/local-build.json \
  && npm run package:runtime -- --web-root runtime-build --database /database/catalogue.sqlite --out /pakket
 
-FROM node:24.17.0-bookworm-slim
+FROM node:26.11.1-bookworm-slim
 ENV NODE_ENV=production
 # Standaard voor gebruik op je eigen computer; een host zet hier het openbare https-adres.
 # Een andere poort lokaal (-p 3000:8080)? Geef dan PUBLIC_ORIGIN=http://localhost:3000 mee.
