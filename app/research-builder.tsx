@@ -131,7 +131,7 @@ export default function ResearchBuilder({
   const [subquestionDetail,setSubquestionDetail]=useState<'broad'|'specific'>('specific');
   const [subFormulations,setSubFormulations]=useState<Record<string,{base:string;text:string}>>({});
   const proposalContext = { themeIds, framework, models, direction };
-  const proposals = centralProposals(draft, proposalContext);
+  const proposals = useMemo(()=>centralProposals(draft,{themeIds,framework,models,direction}),[draft,themeIds,framework,models,direction]);
   const starts=useMemo(()=>rankedQuestionStarts(draft,{themeIds,framework,models,direction,targetId:centralTarget,includeAccepted:true}),[draft,themeIds,framework,models,direction,centralTarget]);
   function pickProposal(p: typeof proposals[number]) {
     if(startRoute==='choice'&&chosenProposalKey===p.key&&firstText.trim()&&!ownCentral){setStartRoute('suggested');setFocusId('__composer__');return;}
