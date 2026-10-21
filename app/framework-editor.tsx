@@ -59,6 +59,7 @@ import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
 import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
+import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
 import {
   chooseReport,
   reportEnabled,
@@ -913,6 +914,7 @@ export default function FrameworkEditor() {
             <FoundationCatalogue
               onPrepareSource={id=>{void prefetchCatalogue(['foundation:'+id]);}}
               prepareSources={(ids,action)=>withContent(ids.map(id=>'foundation:'+id),action)}
+              prepareSearch={ids=>withContent(foundationSearchKeys(ids),()=>{})}
               sourceScope={page==='risk-start'?(riskArea==='laws'?'laws':'frameworks'):foundationCatalogueScope}
               onSourceScopeChange={page==='risk-start'?undefined:setFoundationCatalogueScope}
               guided={page==='risk-start'}

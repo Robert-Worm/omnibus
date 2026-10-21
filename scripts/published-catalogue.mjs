@@ -4,7 +4,7 @@ import {CatalogueRepository} from '../local-data/repository.mjs';
 import {readRuntimePublication,validateRuntimeModules} from '../local-data/runtime-publication.mjs';
 import {runtimeContract} from '../lib/runtime-contract.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
-import {buildReportOverviews} from './build-report-overviews.mjs';
+import {buildCatalogueOverviews} from './build-catalogue-overviews.mjs';
 import {validCodeRevision} from './build-code-revision.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
@@ -22,7 +22,7 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
  */
 export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
   if(codeRevision && !validCodeRevision(codeRevision))throw Error('Invalid explicit code revision.');
-  let content, overviews;
+  let content, overviews, foundationSearch;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
     name:'omnibus-published-catalogue', enforce:'pre',
@@ -33,10 +33,14 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
         content = readRuntimePublication(repository, {release,publication,contract:runtimeContractHash});
       } finally { repository.close(); }
       validateRuntimeModules(content, runtimeContract);
-      if(reportOverviews)overviews=await buildReportOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
+      if(reportOverviews){
+        const projections=await buildCatalogueOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
+        overviews=projections.reports;foundationSearch=projections.foundationSearch;
+      }
     },
     resolveId(source, importer) {
       if(source.startsWith('omnibus-report-overview:'))return virtualPrefix+source;
+      if(source.startsWith('omnibus-foundation-search:'))return virtualPrefix+source;
       if (source.startsWith(dataPrefix)) {
         const id = source.slice(dataPrefix.length);
         if (!Object.hasOwn(runtimeContract,id)) throw Error('Unknown runtime data module: '+id);
@@ -46,6 +50,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       const absolute = source.startsWith('@/') ? resolve(root,source.slice(2)) : resolve(dirname(importer),source);
       const id = moduleId(absolute);
       if(id==='lib/report-overview-resources.mjs'&&reportOverviews)return virtualPrefix+'overview-resources';
+      if(id==='lib/foundation-search-resources.mjs'&&reportOverviews)return virtualPrefix+'foundation-search-resources';
       if (id === 'lib/database-source-client.mjs' && transportModule) return resolve(transportModule).replaceAll('\\','/');
       if (id === 'lib/application-mode.mjs') return virtualPrefix+'mode';
       const entry = runtimeContract[id];
@@ -61,6 +66,13 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
         const key=id.slice((virtualPrefix+'omnibus-report-overview:').length);
         if(!Object.hasOwn(overviews??{},key))throw Error('Unknown report overview');
         return `export default JSON.parse(${code(quote(overviews[key]))});`;
+      }
+      if(id===virtualPrefix+'foundation-search-resources')return 'export default {'+Object.keys(foundationSearch).map(key=>
+        `${code(key)}:()=>import(${code('omnibus-foundation-search:'+key)}).then(m=>m.default)`).join(',')+'};';
+      if(id.startsWith(virtualPrefix+'omnibus-foundation-search:')){
+        const key=id.slice((virtualPrefix+'omnibus-foundation-search:').length);
+        if(!Object.hasOwn(foundationSearch??{},key))throw Error('Unknown foundation search index');
+        return `export default JSON.parse(${code(quote(foundationSearch[key]))});`;
       }
       if (id === virtualPrefix+'mode') return 'export const databaseSourcesEnabled=true;';
       const key = id.slice(virtualPrefix.length,-4);

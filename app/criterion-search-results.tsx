@@ -10,11 +10,12 @@ let index:ReturnType<typeof criterionIndex>;
 const searchIndex = () => index ?? (index = criterionIndex(preparedFoundationItems, foundations));
 type SearchMatch={matchInCriterion:boolean;source:{id:string;title:string};item:{id:string;originKey:string;sourceId:string;title:string;auditNorm?:string;body?:string;groupTitle?:string;topic?:string;auditRole?:string;effectiveStatus?:string}};
 
-export default function CriterionSearchResults({query,sourceIds,page,onPage,onOpen,disabled,selectedKeys,onChoose,matches:providedMatches,corrections=[]}:{
+export default function CriterionSearchResults({query,sourceIds,page,onPage,onOpen,disabled,selectedKeys,onChoose,matches:providedMatches,corrections=[],scopeProvisions=sourceScopeProvisions}:{
   query:string;sourceIds:string[];page:number;onPage:(page:number)=>void;
   onOpen:(sourceId:string,criterionId:string)=>void;disabled:boolean;
   selectedKeys:string[];onChoose:(originKey:string,include:boolean)=>void;
   matches?:SearchMatch[];corrections?:string[];
+  scopeProvisions?:(sourceId:string)=>{count:number;titles:string[]};
 }) {
   const matches:SearchMatch[] = providedMatches ?? (query.trim() ? searchCriteria(searchIndex(),query,sourceIds) : []);
   const last=Math.max(0,Math.ceil(matches.length/20)-1), current=Math.min(page,last);
@@ -27,8 +28,8 @@ export default function CriterionSearchResults({query,sourceIds,page,onPage,onOp
     {!matches.length && <p>Geen normen gevonden binnen deze zoekterm en filters. Probeer een ander woord of wis de filters.</p>}
     {groups.map(group=><section key={group.id} className="criterion-search-source">
       <h3>{group.rows[0].source.title}</h3>
-      {sourceScopeProvisions(group.id).count > 0 && <p className="source-scope-note">
-        Afbakening ({sourceScopeProvisions(group.id).count}) · {sourceScopeProvisions(group.id).titles[0]}.
+      {scopeProvisions(group.id).count > 0 && <p className="source-scope-note">
+        Afbakening ({scopeProvisions(group.id).count}) · {scopeProvisions(group.id).titles[0]}.
         Bepaal eerst of deze bron voor jouw organisatie geldt.
       </p>}
       {group.rows.map(({item,matchInCriterion})=><article key={item.originKey}>

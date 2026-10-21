@@ -8,6 +8,7 @@ import {CatalogueHeader,SourceChoices} from './catalogue-navigation';
 import {scopeFoundationSources} from '@/lib/catalogue-directory.mjs';
 import CriterionSearchResults from './criterion-search-results';
 import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
+import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
 import { chooseFoundationSource, chooseFoundationItems, preparedFoundationItems, foundationSelection, sourceNarrowing } from '@/lib/foundation-workspace.mjs';
 import { useState } from "react";
 import {
@@ -46,7 +47,7 @@ import type { Draft } from "@/lib/framework-types";
 import './viewer-readability.css';
 
 // Creating this closure is cheap; the corpus search index is built on first search.
-const searchCatalogue=createCatalogueSearch(preparedFoundationItems,foundations);
+const searchCatalogue=createCatalogueSearch(foundationSearchItems,foundations);
 
 export function InvestigationNavigation({
   page,
@@ -370,6 +371,7 @@ export function FoundationCatalogue({
   sourceScope = 'laws',
   onSourceScopeChange,
   prepareSources = (_ids,action)=>action(),
+  prepareSearch = (ids)=>prepareSources(ids,()=>{}),
 }: {
   draft: Draft;
   onChange: (d: Draft) => void;
@@ -387,6 +389,7 @@ export function FoundationCatalogue({
   sourceScope?:'all'|'laws'|'frameworks';
   onSourceScopeChange?:(value:'laws'|'frameworks')=>void;
   prepareSources?:(ids:string[],action:()=>void)=>void;
+  prepareSearch?:(ids:string[])=>void;
 }) {
   const wb = validateInvestigation(draft.investigation);
   const [sourceArea,setLocalSourceArea]=useState<'laws'|'frameworks'>('laws');
@@ -422,8 +425,8 @@ export function FoundationCatalogue({
   const filtered: typeof foundations = query.trim() ? search.sources : browseSources;
   function changeSearch(value:string) {
     setQuery(value);onSearchQuery?.(value);setCriteriaPage(0);setPage(0);
-    // Keep typing responsive while the searchable norm packages arrive.
-    if(value.trim())prepareSources(scopedSources.map((s:{id:string})=>s.id),()=>{});
+    // Search needs display text, not every source's tests and evidence snapshots.
+    if(value.trim())prepareSearch(scopedSources.map((s:{id:string})=>s.id));
   }
   const available = (id: string) => foundationSelection(draft,id).total;
   const sourcePageSize=query.trim()?5:10;
@@ -511,12 +514,15 @@ export function FoundationCatalogue({
         </Button>
       </div>}
       {query.trim() && <CriterionSearchResults query={query} matches={search.criteria} corrections={search.criterionCorrections}
+        scopeProvisions={foundationSearchScope}
         selectedKeys={wb.materials.filter((m:{id:string})=>draft.included.includes(m.id)).map((m:{originKey:string})=>m.originKey)}
-        onChoose={(key,include)=>{try {
+        onChoose={(key,include)=>{
+          const hit=search.criteria.find((row:{item:{originKey:string;sourceId:string}})=>row.item.originKey===key);if(!hit)return;
+          prepareSources([hit.item.sourceId],()=>{try {
           const item=preparedFoundationItems.find(p=>p.originKey===key);if(!item)return;
           const opened={...draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,item.sourceId])]}};
           onChange(chooseFoundationItems(opened,[item],include) as Draft);setSearchError('');
-        }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}}}
+        }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});}}
         sourceIds={browseSources.map(s=>s.id)}
         page={criteriaPage} onPage={setCriteriaPage} disabled={disabled}
         onOpen={(id,criterionId)=>{if(!wb.sourceIds.includes(id)) toggle(id,true);onCriteria(id,criterionId);}}/>}
