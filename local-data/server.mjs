@@ -151,9 +151,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    if(staticWeb?.serve(u.pathname,req,res))return;
    const limit=q.has('limit')?Number(q.get('limit')):25,offset=q.has('offset')?Number(q.get('offset')):0;
    const release=q.get('release');let match;
-   if((u.pathname==='/api/v1/health'||u.pathname==='/api/v1/ready')&&req.url.includes('?'))
+   if(['/api/v1/health','/api/v1/ready','/api/v1/version'].includes(u.pathname)&&req.url.includes('?'))
     return reply(400,{error:'Invalid request'});
    if(u.pathname==='/api/v1/health')return reply(200,{status:'ok',mode:hosting.mode,schema:1});
+   if(u.pathname==='/api/v1/version')
+    return reply(staticWeb?200:404,staticWeb?.version??{error:'Not found'});
    if(u.pathname==='/api/v1/ready'){
     if(!readiness)return reply(404,{error:'Not found'});
     const state=readiness.probe();

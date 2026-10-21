@@ -10,6 +10,19 @@ import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
 const types = { '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.woff2': 'font/woff2', '.json': 'application/json; charset=utf-8', '.html': 'text/html; charset=utf-8' };
 
+/** Identify served bytes, not readiness. Only allowlisted hashes leave the server. */
+export function publicBuildIdentity(manifest, files) {
+  const revision = manifest.codeRevision ?? null;
+  if (revision !== null && (typeof revision !== 'string' || !/^[a-f0-9]{40}$/.test(revision)))
+    throw Error('Invalid web code revision');
+  const entries = [...files].map(([url, file]) => [url, file.sha256])
+    .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+  return Object.freeze({ schema: 1,
+    code: Object.freeze({ revision, webSha256: createHash('sha256').update(JSON.stringify(entries)).digest('hex') }),
+    data: Object.freeze({ release: manifest.release, publication: manifest.publication }),
+  });
+}
+
 // Only the explicit compiled output is served. No source checkout, PDFs,
 // directories, database, environment files, symlinks or arbitrary paths.
 export function createStaticWeb(root, repository) {
@@ -20,7 +33,8 @@ export function createStaticWeb(root, repository) {
     if (stat.isSymbolicLink() || !stat.isFile()) throw Error('Invalid public build file');
     if (!types[extname(path)]) return;
     const bytes = readFileSync(path);
-    files.set(url, { path, type: types[extname(path)], etag: 'W/"' + createHash('sha256').update(bytes).digest('hex') + '"' });
+    const sha256 = createHash('sha256').update(bytes).digest('hex');
+    files.set(url, { path, sha256, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
   }
   const manifest = JSON.parse(readFileSync(join(root, 'omnibus-release.json'), 'utf8'));
   if (manifest.schema !== 1 || manifest.contract !== runtimeContractHash)
@@ -42,6 +56,7 @@ export function createStaticWeb(root, repository) {
     }
   }
   walk(join(root, 'assets'));
+  const version = publicBuildIdentity(manifest, files);
   const serve = (pathname, req, res) => {
     const file = files.get(pathname);
     if (!file) return false;
@@ -63,6 +78,6 @@ export function createStaticWeb(root, repository) {
     } else pipeline(stream, res, () => {});
     return true;
   };
-  return { serve, readScope, pins: Object.freeze({ release: manifest.release,
+  return { serve, readScope, version, pins: Object.freeze({ release: manifest.release,
     publication: manifest.publication, contract: manifest.contract }) };
 }

@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { mkdirSync } from "node:fs";
+import { buildCodeRevision } from "./build-code-revision.mjs";
 import { parseDatabaseBuildArgs, readDatabaseSettings } from "./database-build-options.mjs";
 import {
   compareRuntimePublications,
@@ -51,6 +52,7 @@ export function parseWebBuildArgs(args) {
 export function buildDatabase(args, { portable = false } = {}) {
   const { release, publication, database, out, comparison } = parseWebBuildArgs(args);
   const cwd = fileURLToPath(new URL("../", import.meta.url));
+  const codeRevision = buildCodeRevision(cwd, process.env.OMNIBUS_CODE_REVISION);
   if (comparison) {
     const result = compareRuntimePublications({
       ...comparison,
@@ -83,6 +85,7 @@ export function buildDatabase(args, { portable = false } = {}) {
         OMNIBUS_DATABASE_PATH: database,
         OMNIBUS_PORTABLE_RUNTIME: portable ? "1" : "0",
         OMNIBUS_BUILD_OUTPUT: out ?? "",
+        OMNIBUS_CODE_REVISION: codeRevision ?? "",
       },
     },
   );

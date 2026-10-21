@@ -5,6 +5,7 @@ import {readRuntimePublication,validateRuntimeModules} from '../local-data/runti
 import {runtimeContract} from '../lib/runtime-contract.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 import {buildReportOverviews} from './build-report-overviews.mjs';
+import {validCodeRevision} from './build-code-revision.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -17,9 +18,10 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
 
 /** Build code against an already published database. Never imports author files.
  * @param {{release?:string, publication?:string, databasePath?:string,
- * transportModule?:string, reportOverviews?:boolean, emitManifest?:boolean, runtimeTarget?:'local-preview'|'portable-local'}} options
+ * transportModule?:string, reportOverviews?:boolean, emitManifest?:boolean, codeRevision?:string, runtimeTarget?:'local-preview'|'portable-local'}} options
  */
-export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, emitManifest=true, runtimeTarget='local-preview'} = {}) {
+export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
+  if(codeRevision && !validCodeRevision(codeRevision))throw Error('Invalid explicit code revision.');
   let content, overviews;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
@@ -89,7 +91,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
     generateBundle() {
       if(!emitManifest)return;
       this.emitFile({type:'asset',fileName:'omnibus-release.json',source:quote({
-        schema:1,release,publication,contract:runtimeContractHash,runtimeTarget,
+        schema:1,release,publication,contract:runtimeContractHash,runtimeTarget,codeRevision:codeRevision||null,
         scope:'catalogue-norms-sources-and-models-on-demand',...content.summary,
         resources:Object.keys(content.refs).length,
         contentBytes:Object.values(content.refs).reduce((n,r)=>n+r.bytes,0),refs:content.refs,

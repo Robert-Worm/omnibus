@@ -49,7 +49,7 @@ await test('code resolves only known modules; database values remain data, not e
 
 await test('workers share the pinned read-only catalogue but only the main build emits a release manifest',async t=>{
   const options=fixture(t),assets=[];
-  const main=publishedCataloguePlugin(options);
+  const main=publishedCataloguePlugin({...options,codeRevision:'a'.repeat(40)});
   await main.buildStart();
   main.generateBundle.call({emitFile:asset=>assets.push(asset)});
   assert.equal(assets.length,1);
@@ -57,6 +57,8 @@ await test('workers share the pinned read-only catalogue but only the main build
   const manifest=JSON.parse(assets[0].source);
   assert.equal(manifest.publication,options.publication);
   assert.equal(manifest.contract,runtimeContractHash);
+  assert.equal(manifest.codeRevision,'a'.repeat(40));
+  assert.throws(()=>publishedCataloguePlugin({...options,codeRevision:'main'}),/Invalid explicit code revision/);
   const worker=publishedCataloguePlugin({...options,emitManifest:false});
   await worker.buildStart();
   worker.generateBundle.call({emitFile:()=>assert.fail('Worker must not duplicate the runtime manifest')});
