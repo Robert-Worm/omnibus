@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, slug, woordWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -117,4 +117,25 @@ test("woordkeuze geeft waarschuwingen, niet in code of met een uitzondering", ()
   assert.ok(w.some((x) => /EP13-S01/.test(x)));
   assert.deepEqual(woordWaarschuwingen("docs/a.md", "Een GitHub-workflow draait."), []);
   assert.deepEqual(woordWaarschuwingen("docs/a.md", "<!-- check-docs: geen-woordcontrole -->\nworkflow"), []);
+});
+
+test("lange zinnen in docs/ geven een waarschuwing, code en tabellen worden goed gesplitst", () => {
+  const lang = Array.from({ length: MAX_WOORDEN + 1 }, (_, i) => `woord${i}`).join(" ") + ".";
+  const kort = "Dit is kort. En dit ook!";
+  assert.equal(zinWaarschuwingen("docs/a.md", lang).length, 1);
+  assert.equal(zinWaarschuwingen("README.md", lang).length, 0, "alleen docs/");
+  assert.equal(zinWaarschuwingen("docs/a.md", kort).length, 0);
+  assert.equal(zinWaarschuwingen("docs/a.md", "```text\n" + lang + "\n```\n").length, 0, "codeblok telt niet");
+  assert.equal(zinWaarschuwingen("docs/a.md", "| " + kort + " | " + kort + " |").length, 0, "tabelcellen apart");
+  assert.equal(zinWaarschuwingen("docs/a.md", "<!-- check-docs: geen-woordcontrole -->\n" + lang).length, 0);
+  // Een vraag in vet, met het antwoord op de volgende regel, zijn twee zinnen.
+  assert.equal(zinnen("**Wat is het?**\nEen hulpmiddel.").length, 2);
+  // Een alinea over twee regels is één zin; het regelnummer is dat van het begin.
+  const z = zinnen("Kop\n\nEen zin die\ndoorloopt.");
+  assert.deepEqual(z.at(-1), { nr: 3, zin: "Een zin die doorloopt.", woorden: 4 });
+});
+
+test("formele woorden uit de stijlgids geven een waarschuwing", () => {
+  const w = woordWaarschuwingen("docs/a.md", "Indien nodig, middels de knop, teneinde te starten.");
+  assert.equal(w.length, 3);
 });

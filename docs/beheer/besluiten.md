@@ -25,7 +25,7 @@ Een besluit geldt tot er een nieuw besluit is dat het vervangt. Wil je een beslu
 
 ## Samengevat
 
-Twaalf besluiten bepalen nu hoe Omnibus werkt: lokaal en zonder account, database apart, één woord voor het resultaat, voortgang op GitHub en hooguit vijf claims per persoon.
+Twaalf besluiten bepalen nu hoe Omnibus werkt. Kort gezegd: geen account, de database apart, één woord voor het resultaat en voortgang op GitHub. Verder hooguit vijf claims per persoon en een vaste prijs online.
 
 ## Volgende stap
 

@@ -132,6 +132,12 @@ export const TE_VERMIJDEN = [
   [/\bbundles?\b/gi, "pakket"],
   [/\brollback\b/gi, "terugzetten"],
   [/\b(?:toetsingskader|auditkader|onderzoekskader)s?\b/gi, "referentiekader (het vaste woord in Omnibus)"],
+  [/\b(?:middels|door middel van)\b/gi, "met of via"],
+  [/\bteneinde\b/gi, "om"],
+  [/\balsmede\b/gi, "en of ook"],
+  [/\b(?:derhalve|dientengevolge)\b/gi, "daarom"],
+  [/\bindien\b/gi, "als of wanneer"],
+  [/\bdien(?:t|en) te\b/gi, "moet of moeten"],
 ];
 const ZONDER_WOORDCONTROLE = "<!-- check-docs: geen-woordcontrole -->";
 // Een pagina die zelf codes uitlegt (zoals de acceptatiecontracten), krijgt geen codewaarschuwingen.
@@ -159,6 +165,50 @@ export function woordWaarschuwingen(rel, tekst) {
     }
   }
   return uit;
+}
+
+// Leesbaarheid: zinnen van meer dan MAX_WOORDEN woorden in docs/ (zie de stijlgids).
+export const MAX_WOORDEN = 25;
+
+/** Splitst lopende tekst in zinnen, met het regelnummer waar elke zin begint. */
+export function zinnen(tekst) {
+  const schoon = tekst
+    .replace(/<!--[\s\S]*?-->/g, (b) => b.replace(/[^\n]/g, " "))
+    .replace(/^```[\s\S]*?^```/gm, (b) => b.replace(/[^\n]/g, " "))
+    .replace(/`[^`\n]*`/g, "Code")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/<[^>\n]+>/g, " ");
+  // Blokken: een tabelcel, een opsommingspunt of een alinea (opeenvolgende gewone regels).
+  const blokken = [];
+  let alinea = null;
+  schoon.split("\n").forEach((ruw, i) => {
+    const regel = ruw.replace(/^\s*>\s?/, "").trim();
+    const nr = i + 1;
+    if (!regel || /^#{1,6}\s/.test(regel) || /^\|?\s*:?-{3,}/.test(regel)) { alinea = null; return; }
+    if (regel.startsWith("|")) {
+      alinea = null;
+      for (const cel of regel.split("|")) if (cel.trim()) blokken.push({ nr, tekst: cel });
+      return;
+    }
+    if (/^([-*+]|\d+\.)\s/.test(regel)) { alinea = { nr, tekst: regel.replace(/^([-*+]|\d+\.)\s/, "") }; blokken.push(alinea); return; }
+    if (alinea) alinea.tekst += " " + regel;
+    else { alinea = { nr, tekst: regel }; blokken.push(alinea); }
+  });
+  const uit = [];
+  for (const b of blokken) {
+    for (const zin of b.tekst.split(/(?<=[.!?:;][*"'”)]*)\s+(?=[A-Z0-9ÀÉÈËÏÖÜ*"'(])/u)) {
+      const woorden = zin.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w));
+      if (woorden.length) uit.push({ nr: b.nr, zin: zin.trim(), woorden: woorden.length });
+    }
+  }
+  return uit;
+}
+
+export function zinWaarschuwingen(rel, tekst) {
+  if (!rel.startsWith("docs/") || tekst.includes(ZONDER_WOORDCONTROLE)) return [];
+  return zinnen(tekst).filter((z) => z.woorden > MAX_WOORDEN)
+    .map((z) => `${rel}:${z.nr}: zin van ${z.woorden} woorden: "${z.zin.slice(0, 60)}…"`);
 }
 
 export function markdownBestanden(root) {
@@ -192,17 +242,24 @@ export function controleer(root) {
   const nvmrc = readFileSync(path.join(root, ".nvmrc"), "utf8").trim();
   const { scripts = {} } = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
   const meldingen = controleerConfig(root, nvmrc);
-  const waarschuwingen = [];
+  const waarschuwingen = [], lang = [];
   for (const rel of markdownBestanden(root)) {
     meldingen.push(...controleerBestand(root, rel, { nvmrc, scripts }));
-    waarschuwingen.push(...woordWaarschuwingen(rel, readFileSync(path.join(root, rel), "utf8")));
+    const tekst = readFileSync(path.join(root, rel), "utf8");
+    waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
+    lang.push(...zinWaarschuwingen(rel, tekst));
   }
-  return { meldingen, waarschuwingen };
+  return { meldingen, waarschuwingen, lang };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-  const { meldingen, waarschuwingen } = controleer(root);
+  const { meldingen, waarschuwingen, lang } = controleer(root);
+  if (lang.length) {
+    console.warn(`Leesbaarheid: ${lang.length} ${lang.length === 1 ? "lange zin" : "lange zinnen"} (meer dan ${MAX_WOORDEN} woorden; zie docs/bijdragen/stijlgids.md).`);
+    for (const w of lang) console.warn(`  · ${w}`);
+    console.warn("");
+  }
   if (waarschuwingen.length) {
     console.warn(`Woordkeuze: ${waarschuwingen.length} ${waarschuwingen.length === 1 ? "waarschuwing" : "waarschuwingen"} (zie docs/bijdragen/stijlgids.md).`);
     for (const w of waarschuwingen) console.warn(`  · ${w}`);

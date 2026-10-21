@@ -1,6 +1,6 @@
 # Checklist live demo
 
-> **In het kort:** wat er nog moet gebeuren om van de lokale applicatie naar een online demo te gaan, wie het doet, wanneer, en wanneer het klaar is. Doel: een werkende demo op **1 december 2026**.
+> **In het kort:** wat er nog moet gebeuren voor een online demo. Per stap: wie het doet, wanneer, en wanneer het klaar is. Doel: een werkende demo op **1 december 2026**.
 
 ## Waar staat het?
 
@@ -40,7 +40,7 @@ Bewust niet in deze demo: een test met schermlezer en een test in desktop-Excel 
 
 Leg per controle vast: de codeversie, de release en publicatie, de datum, wie het deed, de uitkomst en wat níet is getest. Houd brontekst, echte projecten, exports, databases en ruwe testuitvoer buiten Git.
 
-Een lokale proef in de browser bewijst selecties, koppelingen en Excel-inhoud, maar niet hoe het eruitziet in desktop-Excel, niet de toegankelijkheid voor mensen en niet de snelheid op de server. Herhaal alleen de controles die geraakt worden als code, database of serverinstellingen veranderen.
+Een lokale proef in de browser bewijst selecties, koppelingen en Excel-inhoud. Hij bewijst niet hoe het eruitziet in desktop-Excel, of het toegankelijk is voor mensen, en hoe snel de server is. Herhaal alleen de controles die geraakt worden als code, database of serverinstellingen veranderen.
 
 Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md), het [runtimepakket](runtime-pakket.md) en [storingen en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
 

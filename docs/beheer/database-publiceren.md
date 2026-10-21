@@ -1,6 +1,6 @@
 # Database publiceren
 
-> **In het kort:** je maakt een nieuwe database vanuit de private verwerkingsomgeving, vergelijkt hem met de huidige, test hem en brengt hem uit als zip bij een GitHub-release. De huidige database blijft staan tot je bewust overstapt.
+> **In het kort:** je maakt een nieuwe database in de private verwerkingsomgeving. Je vergelijkt en test hem, en brengt hem uit als zip bij een GitHub-release. De huidige database blijft staan tot je bewust overstapt.
 
 ## Het hele traject
 

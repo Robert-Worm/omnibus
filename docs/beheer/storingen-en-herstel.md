@@ -28,7 +28,7 @@ Voer de opdrachten uit vanuit de map van de repository, met Node 24 en je eigen 
 
 - **Bewaar:** het tijdstip, de codeversie (commit), de controlegetallen van release en publicatie, de foutcode en de `X-Request-ID`. De server maakt die ID zelf; een ID die iemand meestuurt, wordt niet vertrouwd.
 - **Deel nooit** in een openbaar verslag: databasepaden, zoekopdrachten, ingeleverde pakketten, projecttekst, cookies, headers of volledige adressen.
-- **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500 en schrijft hij één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
+- **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500. Hij schrijft dan één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
 - **Start de server niet?** Hij toont dan een vaste, veilige uitleg zonder interne details. Controleer eerst de opties, de database, de publicatie en de webbuild. Voeg bij het zoeken geen volledige lijst van omgevingsvariabelen, headers of databaseinhoud toe.
 - **`GET /api/v1/health`** zegt alleen dat de server antwoordt. Of de database heel is, controleer je met de databasecontrole hieronder.
 

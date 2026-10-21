@@ -1,6 +1,6 @@
 # Storingsdraaiboek
 
-> **In het kort:** zes situaties die het meest waarschijnlijk misgaan, met per situatie hoe je het herkent, wat je eerst doet, hoe je herstelt en wat je daarna regelt.
+> **In het kort:** de zes situaties die het vaakst misgaan. Per situatie: hoe je het herkent, wat je eerst doet, hoe je herstelt en wat je daarna regelt.
 
 ## Zo gebruik je dit draaiboek
 
@@ -14,7 +14,7 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
 | --- | --- |
 | **Herkennen** | Een nieuwe claim krijgt na tien minuten geen welkomstbericht, of `/inleveren` krijgt geen reactie. |
 | **Eerste handeling** | Kijk in [Actions](https://github.com/Robert-Worm/omnibus/actions/workflows/voortgang.yml) of de GitHub-workflow *Voortgang bijwerken* is gestart en of hij rood is. |
-| **Herstellen** | Rood: open de run en lees de foutmelding. Een tijdelijke fout van GitHub los je op met *Re-run jobs*. Een fout in het script: draai lokaal `npm run test:voortgang`, los het op en push. Niet gestart: start de GitHub-workflow met de hand (*Run workflow*). De bot haalt gemiste claims bij de volgende run vanzelf in. |
+| **Herstellen** | Rood: open de run en lees de foutmelding. Een tijdelijke fout van GitHub los je op met *Re-run jobs*. Een fout in het script: draai lokaal `npm run test:voortgang`, los het op en push. Niet gestart: start de GitHub-workflow met de hand (knop `Run workflow`). De bot haalt gemiste claims bij de volgende run vanzelf in. |
 | **Nazorg** | Laat de bijdrager in de claim weten dat het opgelost is. |
 
 ## 2. Er staat een verkeerde database online

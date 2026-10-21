@@ -35,6 +35,7 @@ Een `README.md` in een map begint ook met *In het kort*. De wegwijzer en de begr
 - **Begin met wat de lezer doet of krijgt.** Achtergrond en uitzonderingen komen daarna.
 - **Leg een vakwoord uit** bij het eerste gebruik op een pagina, of link naar de [begrippenlijst](../begrippen.md).
 - **Breek regels niet af.** Schrijf een alinea als één regel; GitHub zet de tekst zelf om.
+- **Houd zinnen onder de 25 woorden.** De documentatiecheck waarschuwt bij langere zinnen in `docs/`. Splits een lange zin in twee, of maak van een opsomming een lijst.
 
 ### Vaste woorden
 
@@ -50,6 +51,26 @@ Een `README.md` in een map begint ook met *In het kort*. De wegwijzer en de begr
 | controle | check, gate |
 | bewijs | evidence |
 | testgegevens | fixtures |
+
+### Moeilijke woorden
+
+| Gebruik | Niet |
+| --- | --- |
+| met, via | middels, door middel van |
+| om | teneinde |
+| over | inzake, met betrekking tot |
+| en, ook | alsmede |
+| daarom | derhalve, dientengevolge |
+| moeten | dienen te |
+| volgens | conform, overeenkomstig |
+| controleren | verifiëren, valideren (in uitleg voor gebruikers) |
+| toevoegen, opnemen | integreren |
+| invoeren, bouwen | implementeren |
+| helpen, mogelijk maken | faciliteren |
+| als, wanneer | indien |
+| nodig | benodigd, noodzakelijk |
+
+De documentatiecheck waarschuwt bij de woorden uit de kolom *Niet* die bijna nooit nodig zijn, zoals *middels*, *teneinde*, *alsmede*, *derhalve* en *indien*.
 
 Termen uit GitHub zelf (*issue*, *pull request*, *release*, *Discussions*) en namen van opdrachten blijven zoals ze zijn.
 

@@ -38,6 +38,15 @@
 | --- | --- | --- |
 | [**Begin hier →**](docs/gebruiken/README.md)<br>Installeren, de vier stappen en de veelgestelde vragen | [**Begin hier →**](docs/bijdragen/README.md)<br>Een bron claimen, verwerken met AI en inleveren | [**Begin hier →**](docs/beheer/README.md)<br>Het beheerhandboek, releases en storingen |
 
+<details lang="en">
+<summary>🇬🇧 <strong>In English</strong></summary>
+
+Omnibus helps auditors and researchers build a *reference framework* (in Dutch: *referentiekader*): the set of norms and test points used to assess an organisation. Instead of starting from a blank page, you pick norms from earlier audit reports of the Dutch government's Audit Service (Auditdienst Rijk), from laws and from established frameworks, link them to your research questions and export the result to Excel. Every norm keeps a link to its original source.
+
+Omnibus is free for non-commercial use and runs in your browser; projects stay on your own computer. The content and documentation are in Dutch. [Try it online](https://omnibus.sliplane.app), watch the [25-second tour](#zo-werkt-het), or run it yourself with Docker (see [Aan de slag](#aan-de-slag)). Questions are welcome in [Discussions](https://github.com/Robert-Worm/omnibus/discussions), in English too.
+
+</details>
+
 ## Wat is Omnibus?
 
 Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *referentiekader* te maken: de lijst met normen en toetspunten waarmee je een organisatie onderzoekt.

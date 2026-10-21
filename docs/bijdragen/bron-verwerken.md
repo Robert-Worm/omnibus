@@ -75,7 +75,7 @@ Wil je een tweede mening? De skill [`omnibus-review-audit-quality`](../../skills
 2. Voeg de zip toe aan je claim: sleep hem in een reactie (maximaal 25 MB). Te groot? Zet hem online en deel de link.
 3. Schrijf in dezelfde reactie, **op een eigen regel**, `/inleveren`. Zet erbij wat goed ging en waar je twijfelt.
 
-Binnen een paar minuten kijkt een automatische controle in je zip: is hij te openen, staan de belangrijkste onderdelen erin, en zitten er geen programma's of scripts in? Je ziet het resultaat als reactie bij je claim. Wat er daarna gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
+Binnen een paar minuten kijkt een automatische controle in je zip. Is hij te openen? Staan de belangrijkste onderdelen erin? Zitten er geen programma's of scripts in? Je ziet het resultaat als reactie bij je claim. Wat er daarna gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
 
 ## Wat lever je in?
 
