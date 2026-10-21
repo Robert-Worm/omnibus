@@ -43,6 +43,7 @@ export default function CompactMatrix({
   onChange,
   onOpen,
   onOpenField,
+  onPrepare,
   selected,
   viewKey = "fixture",
   reveal,
@@ -77,6 +78,7 @@ export default function CompactMatrix({
   onChange: (draft: Draft) => void;
   onOpen: (id: string) => void;
   onOpenField?: (id: string, field: ElementKey) => void;
+  onPrepare?: (id: string) => void;
   selected: string;
   viewKey?: string;
   reveal?: { id: string; nonce: number };
@@ -499,6 +501,8 @@ export default function CompactMatrix({
               <TableRow
                 key={l.id}
                 data-norm-id={l.id}
+                onPointerEnter={()=>onPrepare?.(l.id)}
+                onFocusCapture={()=>onPrepare?.(l.id)}
                 data-state={(selected || view.lastId) === l.id ? "selected" : undefined}
               >
                 <TableCell>
