@@ -1,5 +1,6 @@
 import {digest} from './repository.mjs';
 import {createModelChoicePresentation,createQuestionWorkbenchPresentation} from '../lib/model-presentation.mjs';
+import {isAdmittedFoundation,validateFlatFoundationChain} from '../lib/admitted-foundation.mjs';
 
 const FORMAT = 'omnibus-runtime-publication';
 const MAX_BYTES = 64 * 1024 * 1024;
@@ -58,6 +59,22 @@ function verifyResources(repository, value) {
   }
 }
 
+// Check only new publications. Existing immutable releases remain readable.
+function verifyFoundationChains(repository, value) {
+  const id='lib/foundations/registry.mjs', registry=value.modules[id];
+  if(!registry)return;
+  const admitted=new Set(Object.entries(registry.importedFoundationMetadata||{})
+    .filter(([,metadata])=>isAdmittedFoundation(metadata)).map(([sourceId])=>sourceId));
+  if(!admitted.size)return;
+  const check=items=>validateFlatFoundationChain(items.filter(item=>admitted.has(item.sourceId)));
+  check(registry.importedFoundationItems||[]);
+  const select=repository.db.prepare('SELECT payload FROM web_resources WHERE release_id=? AND hash=?');
+  for(const key of value.registrations[id]||[]) {
+    const ref=value.refs[key],entries=JSON.parse(select.get(value.release,ref.hash).payload);
+    for(const entry of entries)if(entry.path?.length===1&&entry.path[0]==='importedFoundationItems')check(entry.value);
+  }
+}
+
 /** Admin/import operation, never called by the web build or HTTP request handler. */
 export function publishRuntime(repository, value, expected) {
   validateRuntimePublication(value, expected);
@@ -65,6 +82,7 @@ export function publishRuntime(repository, value, expected) {
   const payload = JSON.stringify(value);
   if (Buffer.byteLength(payload) > MAX_BYTES) fail('size limit');
   verifyResources(repository, value);
+  verifyFoundationChains(repository, value);
   repository.db.exec(`CREATE TABLE IF NOT EXISTS runtime_publications(
     release_id TEXT NOT NULL REFERENCES releases(id), hash TEXT NOT NULL,
     payload TEXT NOT NULL CHECK(json_valid(payload)), PRIMARY KEY(release_id,hash))`);

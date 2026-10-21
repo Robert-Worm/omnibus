@@ -41,7 +41,7 @@ export default function AdmittedLawBrowser({sourceId,...props}:Props){
   const members=foundationProposals.filter(p=>p.sourceId===sourceId),presentation=flatLawPresentation(source,members);
   const item=(id:string)=>members.find(p=>p.id===id)!;
   return {...presentation,sourceId,title:source.title,heading:source.title,viewKey:'admitted-'+sourceId+'-v1',
-   goalFor:()=>null,measureFor:(id:string)=>({text:item(id).control||''}),
+   analysisNotice:'Doel, risico en beheersing zijn analytische voorstellen bij de norm, geen aanvullende wettelijke eisen.',
    selection:(draft:Draft,ids?:string[])=>flatLawSelection(draft,members,ids),
    choose:(draft:Draft,ids:string[],include:boolean)=>{
     const sourceIds=draft.investigation?.sourceIds||[];

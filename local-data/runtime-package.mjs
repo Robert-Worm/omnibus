@@ -20,6 +20,7 @@ export const runtimeFiles = Object.freeze([
   "content-tools/identity.mjs",
   "lib/runtime-contract.mjs",
   "lib/model-presentation.mjs",
+  "lib/admitted-foundation.mjs",
   "lib/runtime-contract-identity.mjs",
   "lib/source-text-blocks.mjs",
   "lib/reader-display.mjs",

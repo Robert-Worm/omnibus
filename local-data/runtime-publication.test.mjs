@@ -74,3 +74,18 @@ test('model presentation shape is checked before build and publication',()=>{
     assert.throws(()=>validateRuntimeModules({modules:{[id]:{}}},contract),/Invalid model/);
   }
 });
+
+test('new flat foundation publications require complete chains in inline and deferred data', t=>{
+ const {repository,release,contract,value}=fixture(t);
+ const id='lib/foundations/registry.mjs';
+ const metadata={S:{catalogueAdmission:{schema:'reviewed-flat/v1',reviewBasis:'a'.repeat(64)}}};
+ const complete={id:'S-1',sourceId:'S',auditRole:'norm',reviewStatus:'ai-reviewed',objective:'Service continuity',risk:'Responsibilities may be missed',controlObjective:'Responsibilities are clear',control:'Assign a responsible role'};
+ for(const deferred of [false,true])for(const valid of [false,true]) {
+   const item={...complete,...(valid?{}:{controlObjective:''})};
+   const refs=deferred?prepareWebResources(repository,release,{foundation:[{path:['importedFoundationItems'],value:[item]}]}):{};
+   const candidate={...value,modules:{[id]:{importedFoundationMetadata:metadata,importedFoundationItems:deferred?[]:[item]}},
+     registrations:{[id]:deferred?['foundation']:[]},refs};
+   if(valid)assert.ok(publishRuntime(repository,candidate,{release,contract}));
+   else assert.throws(()=>publishRuntime(repository,candidate,{release,contract}),/Onvolledige beheersketen.*controlObjective/);
+ }
+});

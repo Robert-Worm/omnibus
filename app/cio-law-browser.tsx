@@ -31,7 +31,7 @@ import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
 import './control-objective-pilot.css';
 import './cio-law-browser.css';
 
-export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>};
+export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[]};
 type Tab='points'|'source'|'approach';
@@ -144,6 +144,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
     <nav className="law-point-tabs law-main-tabs" aria-label="Kaderanalyse">{([{id:'points',label:'Toetspunten',Icon:ListChecks},{id:'source',label:'Bronpassage',Icon:BookOpen},{id:'approach',label:'Toetsaanpak',Icon:ClipboardCheck}] as const).map(({id,label,Icon})=><Button key={id} variant="ghost" aria-pressed={tab===id} onClick={()=>setTab(id)}><Icon size={16}/>{label}</Button>)}</nav>
     {row&&parent&&point&&<div className="law-detail-body law-focused-body">
      {tab==='points'?<>
+      {adapter?.analysisNotice&&<p className="text-xs text-muted-foreground">{adapter.analysisNotice}</p>}
       <section className="law-context law-flow" aria-label="Samenhang van doel, risico en beheersing">{objectives.map(objective=><div className="law-context-grid" key={objective.id}>
        {[{label:'Doel',text:goalFor(objective.id)?.text||'Niet geformuleerd',field:'objective',Icon:Target},{label:'Risico',text:objective.risk||'Niet geformuleerd',field:'risk',Icon:TriangleAlert},{label:'Beheersdoelstelling',text:objective.text,field:'controlObjective',Icon:ShieldCheck},{label:'Beheersmaatregel',text:measure?.text||'Niet geformuleerd',field:'control',Icon:Settings2}].map(({label,text,field,Icon})=><section className={`law-context-card law-context-${field}`} key={field}><h4><Icon size={16}/><TermText text={label}/></h4><CompactContextText text={text} label={label}/></section>)}
       </div>)}</section>
