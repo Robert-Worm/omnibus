@@ -26,7 +26,7 @@ Wissel je tijdens het werk van model? Pas dan het veld in je claim aan, of noem 
 ## Stap voor stap
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["1 · Skill<br/>installeren"] --> B["2 · Bron<br/>ophalen"] --> C["3 · Skill<br/>uitvoeren"] --> D["4 · Resultaat<br/>controleren"] --> E["5 · Inleveren"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```

@@ -67,7 +67,7 @@ Deze route is voor ontwikkelaars, of voor wie precies wil zien wat er gebeurt.
 | De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["1 · Code ophalen"] --> B["2 · Installeren"] --> C["3 · Database uitpakken"] --> D["4 · Controleren<br/>en bouwen"] --> E["5 · Starten"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
@@ -129,6 +129,8 @@ Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
   <source media="(prefers-color-scheme: dark)" srcset="../images/omnibus-overview-donker.png">
   <img src="../images/omnibus-overview.png" alt="Het startscherm van Omnibus na een geslaagde installatie">
 </picture>
+
+*Het startscherm na een geslaagde installatie.*
 
 ## Goed om te weten
 

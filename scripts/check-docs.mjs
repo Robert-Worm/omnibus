@@ -3,7 +3,7 @@
 // Controleert links en ankers, de Node-versie, de installatieopdracht en het
 // vaste paginapatroon. Draait lokaal met `npm run check:docs` en in GitHub Actions.
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatProductVersion } from "../lib/product-release.mjs";
@@ -279,6 +279,61 @@ export function meldingWaarschuwingen(rel, ruw) {
   return uit;
 }
 
+/** Schema's (docs/bijdragen/bouwstenen.md#schemas): vaste kleuren, en van boven naar beneden bij meer dan vier vakken. */
+export const SCHEMAKLEUREN = {
+  default: "fill:#eaf2f8,stroke:#01689b,color:#15233b;",
+  groep: "fill:#f6f8fb,stroke:#9fb3c8,color:#15233b;",
+  klaar: "fill:#e8f5ec,stroke:#2e7d4f,color:#15233b;",
+  open: "fill:#ffffff,stroke:#8a97a6,color:#15233b,stroke-dasharray:4 3;",
+};
+export function schemaWaarschuwingen(rel, ruw) {
+  if (rel === "CHANGELOG.md") return [];
+  const uit = [];
+  for (const m of ruw.matchAll(/^```mermaid\n([\s\S]*?)^```/gm)) {
+    const plek = `${rel}:${ruw.slice(0, m.index).split("\n").length}`, body = m[1];
+    const groepen = new Set([...body.matchAll(/subgraph (\w+)/g)].map((g) => g[1]));
+    const vakken = new Set([...body.matchAll(/\b([A-Z]\w*)[[(]/g)].map((v) => v[1]).filter((v) => !groepen.has(v)));
+    if (vakken.size > 4 && /^\s*(flowchart|graph) (LR|RL)\b/m.test(body)) uit.push(`${plek}: schema met ${vakken.size} vakken van links naar rechts; gebruik flowchart TD`);
+    if (!body.includes(`classDef default ${SCHEMAKLEUREN.default}`)) uit.push(`${plek}: schema zonder de vaste kleur (classDef default ${SCHEMAKLEUREN.default})`);
+    for (const [, naam, stijl] of body.matchAll(/classDef (\w+) ([^\n]+)/g)) {
+      if (SCHEMAKLEUREN[naam] !== stijl.trim()) uit.push(`${plek}: classDef ${naam} volgt de vaste kleurset niet`);
+    }
+    if (/^\s*style \w+/m.test(body)) uit.push(`${plek}: losse style-regel; gebruik een klasse uit de vaste kleurset`);
+  }
+  return uit;
+}
+
+/** Afbeeldingen (docs/bijdragen/bouwstenen.md#afbeeldingen): licht en donker, alt-tekst en een bijschrift. */
+export function afbeeldingWaarschuwingen(rel, ruw) {
+  if (rel === "CHANGELOG.md" || rel.startsWith("skills/")) return [];
+  const uit = [], tekst = ruw.replace(/^ *```[\s\S]*?^ *```/gm, (b) => b.replace(/[^\n]/g, ""));
+  const regel = (i) => tekst.slice(0, i).split("\n").length;
+  for (const m of tekst.matchAll(/!\[[^\]]*\]\(([^)]*images\/[^)]+\.png)\)/g)) uit.push(`${rel}:${regel(m.index)}: afbeelding als ![…](…); gebruik <picture> met een donkere variant`);
+  for (const m of tekst.matchAll(/<img\b[^>]*>/g)) {
+    const src = m[0].match(/src="([^"]+)"/)?.[1] || "";
+    if (/^https?:/.test(src)) continue; // badges
+    const plek = `${rel}:${regel(m.index)}`, alt = m[0].match(/alt="([^"]*)"/)?.[1] ?? "";
+    if (alt.length < 10 || alt.length > 150) uit.push(`${plek}: alt-tekst van ${alt.length} tekens; houd hem tussen 10 en 150`);
+    const voor = tekst.slice(Math.max(0, m.index - 200), m.index);
+    if (/\.png$/.test(src) && !/<source media="\(prefers-color-scheme: dark\)" srcset="[^"]+-donker\.png">\s*$/.test(voor)) uit.push(`${plek}: afbeelding zonder donkere variant in <picture>`);
+    if (/<h1\b[^>]*>\s*(<picture>\s*<source[^>]*>\s*)?$/.test(voor)) continue; // de banner
+    const na = tekst.slice(m.index + m[0].length).replace(/^\s*<\/picture>/, "").replace(/^\s*<\/a>/, "");
+    if (!/^\s*\n\s*\n\*[^*\n]+\*\s*(\n|$)/.test(na)) uit.push(`${plek}: zet een kort bijschrift *zo* direct onder de afbeelding`);
+  }
+  return uit;
+}
+
+/** Beeldbestanden in docs/images: niet te groot, en bij elke PNG een donkere variant. */
+export function beeldbestandWaarschuwingen(bestanden) {
+  const uit = [], namen = new Set(bestanden.map((b) => b.naam));
+  for (const { naam, grootte } of bestanden) {
+    if (naam.endsWith(".png") && grootte > 300 * 1024) uit.push(`docs/images/${naam}: ${Math.round(grootte / 1024)} KB; een PNG is hooguit 300 KB`);
+    if (naam.endsWith(".gif") && grootte > 1024 * 1024) uit.push(`docs/images/${naam}: ${Math.round(grootte / 1024)} KB; een GIF is hooguit 1 MB`);
+    if (naam.endsWith(".png") && !naam.endsWith("-donker.png") && !namen.has(naam.replace(/\.png$/, "-donker.png"))) uit.push(`docs/images/${naam}: geen donkere variant; maak hem met npm run docs:screenshots`);
+  }
+  return uit;
+}
+
 /** Vaste blokken (docs/bijdragen/bouwstenen.md): vaste namen, uitklapblokken zonder koppen, kaarten in vaste volgorde, geen dubbele koppen. */
 export const BLOKNAMEN = new Map([["technische referentie", "Technische details"], ["waar staat het?", "Waar staat dit?"], ["wat je nodig hebt", "Wat heb je nodig?"], ["benodigdheden", "Wat heb je nodig?"], ["vereisten", "Wat heb je nodig?"], ["tips", "Goed om te weten"], ["opmerkingen", "Goed om te weten"]]);
 export const KAARTWOORDEN = ["Herkennen", "Oorzaak", "Eerst doen", "Herstellen", "Nazorg"];
@@ -433,11 +488,15 @@ export function controleer(root) {
     waarschuwingen.push(...meldingWaarschuwingen(rel, tekst));
     waarschuwingen.push(...vormWaarschuwingen(rel, tekst));
     waarschuwingen.push(...blokWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...afbeeldingWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...schemaWaarschuwingen(rel, tekst));
     const tabel = tabelControle(rel, tekst);
     meldingen.push(...tabel.fouten);
     waarschuwingen.push(...tabel.waarschuwingen);
     lang.push(...zinWaarschuwingen(rel, tekst));
   }
+  const beelden = path.join(root, "docs", "images");
+  if (existsSync(beelden)) waarschuwingen.push(...beeldbestandWaarschuwingen(readdirSync(beelden).filter((n) => /\.(png|gif)$/.test(n)).map((naam) => ({ naam, grootte: statSync(path.join(beelden, naam)).size }))));
   const release = path.join(root, "lib", "product-release.mjs");
   const nummer = existsSync(release) && readFileSync(release, "utf8").match(/PRODUCT_RELEASE_NUMBER\s*=\s*(\d+)/)?.[1];
   if (nummer) {

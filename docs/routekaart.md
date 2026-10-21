@@ -9,13 +9,15 @@ Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Idee�
 ## Overzicht
 
 ```mermaid
-flowchart LR
+flowchart TD
     N["✅ Nu<br/>Lokaal en online als proef<br/>met openbare database"]
     N --> A["🌐 Pad A<br/>Online versie"]
     N --> B["🤖 Pad B<br/>AI rechtstreeks<br/>aan de database"]
     N --> C["🗂️ Pad C<br/>Eigen databases<br/>bouwen"]
     N --> D["🤝 Pad D<br/>Samen bijdragen"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
+    classDef klaar fill:#e8f5ec,stroke:#2e7d4f,color:#15233b;
+    class N klaar;
 ```
 
 | Pad | Doel | Status | Toelichting |

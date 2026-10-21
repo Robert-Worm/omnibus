@@ -18,6 +18,7 @@ Kies eerst het [paginatype](#paginatypen). Bouw de pagina daarna op met de bouws
 | [Stappen](#stappen) | Een taak die de lezer uitvoert |
 | [Opdrachten](#opdrachten) | Codeblokken en plaatshouders |
 | [Uitklapblokken](#uitklapblokken) | Details die niet iedereen nodig heeft |
+| [Afbeeldingen en schema's](#afbeeldingen-en-schemas) | Schermafbeeldingen, de rondleiding en mermaid-schema's |
 | [Paginarand](#paginarand) | Hoe elke pagina eindigt |
 
 ## Paginatypen
@@ -224,6 +225,37 @@ Klap alleen in wat niet iedereen nodig heeft. Wat de lezer nodig heeft om de taa
 | Technische details | Opdrachten en uitvoer die niet iedereen nodig heeft |
 
 **Wat de check bewaakt:** koppen in een uitklapblok, de vorm van de kop van een uitklapblok, andere namen voor deze vaste blokken (zoals *Technische referentie*), *Vaste regels* buiten beheer, en dubbele koppen op één pagina.
+
+## Afbeeldingen en schema's
+
+**Afbeeldingen.** Elke schermafbeelding komt uit `npm run docs:screenshots`. Dat script maakt elk scherm in licht en donker (`-donker.png`), de banner en de rondleiding. Zet een afbeelding altijd zo neer, met een kort bijschrift eronder:
+
+```text
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/stap-1-onderzoeksrichting-donker.png">
+  <img src="../images/stap-1-onderzoeksrichting.png" alt="Stap 1: de onderzoeksrichting Diagnostisch is gekozen">
+</picture>
+
+*Stap 1: kies de onderzoeksrichting en vul het onderwerp in.*
+```
+
+- De alt-tekst beschrijft wat je ziet, in 10 tot 150 tekens. Het bijschrift zegt waarom het beeld er staat.
+- Een PNG is hooguit 300 KB, een GIF hooguit 1 MB. Het script verkleint te grote PNG's.
+- Bewegend beeld speelt nooit vanzelf af. De rondleiding staat er als stilstaand beeld met een afspeelknop, dat naar de animatie linkt; de stappen staan als tekst eronder.
+
+<a id="schemas"></a>
+**Schema's.** Gebruik mermaid, met de vaste kleuren hieronder. Een schema met meer dan vier vakken loopt van boven naar beneden (`flowchart TD`), zodat het ook op een telefoon past. Zet na een schema dezelfde informatie als tekst, bijvoorbeeld als genummerde stappen. Teken geen schema dat alleen naar andere pagina's verwijst: gebruik daarvoor een wegwijzertabel.
+
+| Klasse | Gebruik je voor | Stijl |
+| --- | --- | --- |
+| `default` | Elk gewoon vak | `fill:#eaf2f8,stroke:#01689b,color:#15233b;` |
+| `groep` | Een groep (`subgraph`) | `fill:#f6f8fb,stroke:#9fb3c8,color:#15233b;` |
+| `klaar` | Iets wat af is | `fill:#e8f5ec,stroke:#2e7d4f,color:#15233b;` |
+| `open` | Iets wat nog moet | `fill:#ffffff,stroke:#8a97a6,color:#15233b,stroke-dasharray:4 3;` |
+
+De vakken blijven ook in donker thema licht, met donkere tekst. Zo blijven ze overal goed leesbaar.
+
+**Wat de check bewaakt:** afbeeldingen zonder donkere variant of bijschrift, de lengte van de alt-tekst, de grootte van beeldbestanden, de kleuren van schema's, losse `style`-regels, en schema's met meer dan vier vakken van links naar rechts.
 
 ## Paginarand
 

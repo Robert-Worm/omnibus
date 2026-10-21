@@ -13,7 +13,7 @@
 ## Stap voor stap
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["1 · Instellingen<br/>vastleggen"] --> B["2 · Voorcontrole<br/>--check"] --> C["3 · Publiceren"] --> D["4 · Vergelijken"] --> E["5 · Testbuild"] --> F["6 · Release<br/>uitbrengen"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```

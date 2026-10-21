@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, blokWaarschuwingen, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, blokWaarschuwingen, afbeeldingWaarschuwingen, beeldbestandWaarschuwingen, schemaWaarschuwingen, SCHEMAKLEUREN, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -214,4 +214,26 @@ test("blokken: vaste namen, geen koppen in uitklapblokken, kaarten op volgorde, 
   const w = blokWaarschuwingen("docs/gebruiken/a.md", fout).join("\n");
   for (const m of [/noem dit blok "Technische details"/, /<b>Naam<\/b>/, /kop in een uitklapblok/, /alleen op beheerpagina's/, /"Eerst doen" staat niet op zijn plek/, /oude kaartvorm/, /dubbele kop "Kaart"/]) assert.match(w, m);
   assert.deepEqual(blokWaarschuwingen("docs/beheer/a.md", "## Vaste regels\n"), []);
+});
+
+test("afbeeldingen: licht en donker, alt-tekst van 10 tot 150 tekens, en een bijschrift", () => {
+  const pic = (alt, na = "\n\n*Een bijschrift.*\n") => `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="a-donker.png">\n  <img src="a.png" alt="${alt}">\n</picture>${na}`;
+  assert.deepEqual(afbeeldingWaarschuwingen("docs/a.md", pic("Het startscherm van Omnibus")), []);
+  assert.deepEqual(afbeeldingWaarschuwingen("README.md", `<h1>\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="b-donker.png">\n    <img src="b.png" alt="De banner van Omnibus">\n  </picture>\n</h1>\n`), [], "de banner heeft geen bijschrift nodig");
+  const w = [afbeeldingWaarschuwingen("docs/a.md", pic("Kort", "\n\nGewone tekst.\n")), afbeeldingWaarschuwingen("docs/a.md", "![Een scherm van Omnibus](../images/x.png)\n"), afbeeldingWaarschuwingen("docs/a.md", '<img src="x.png" alt="Een scherm zonder donker">\n\n*Bijschrift.*\n')].flat().join("\n");
+  for (const m of [/alt-tekst van 4 tekens/, /bijschrift/, /gebruik <picture>/, /zonder donkere variant/]) assert.match(w, m);
+  assert.deepEqual(afbeeldingWaarschuwingen("README.md", '<img alt="Badge" src="https://img.shields.io/x">'), [], "badges tellen niet mee");
+});
+
+test("beeldbestanden: grootte en donkere variant", () => {
+  assert.deepEqual(beeldbestandWaarschuwingen([{ naam: "a.png", grootte: 1000 }, { naam: "a-donker.png", grootte: 1000 }, { naam: "r.gif", grootte: 900 * 1024 }]), []);
+  const w = beeldbestandWaarschuwingen([{ naam: "a.png", grootte: 400 * 1024 }, { naam: "r.gif", grootte: 2 * 1024 * 1024 }]).join("\n");
+  for (const m of [/hooguit 300 KB/, /hooguit 1 MB/, /geen donkere variant/]) assert.match(w, m);
+});
+
+test("schema's: vaste kleuren en van boven naar beneden bij meer dan vier vakken", () => {
+  const def = `    classDef default ${SCHEMAKLEUREN.default}\n`;
+  assert.deepEqual(schemaWaarschuwingen("docs/a.md", "```mermaid\nflowchart LR\n    A[\"a\"] --> B[\"b\"]\n" + def + "```\n"), []);
+  const w = schemaWaarschuwingen("docs/a.md", "```mermaid\nflowchart LR\n    A[\"a\"] --> B[\"b\"] --> C[\"c\"] --> D[\"d\"] --> E[\"e\"]\n    classDef rood fill:#f00;\n    style A fill:#0f0\n```\n").join("\n");
+  for (const m of [/5 vakken van links naar rechts/, /zonder de vaste kleur/, /classDef rood/, /losse style-regel/]) assert.match(w, m);
 });

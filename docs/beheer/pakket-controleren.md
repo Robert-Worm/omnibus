@@ -20,7 +20,7 @@ work/content-inbox/<pakket-id>/<versie>/
 ## Stap voor stap
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["Pakket uitpakken<br/>in de inbox"] --> B["plan.json<br/>maken"] --> C["content:prepare<br/>maakt intake.json"] --> D["content:intake<br/>controleert"]
     D -->|"FILES_VERIFIED…"| E["Door naar<br/>inhoudelijke review"]
     D -->|HOLD| F["Herstellen<br/>(zie hieronder)"]

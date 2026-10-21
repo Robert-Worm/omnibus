@@ -1,11 +1,20 @@
 # Bij welke versie van de applicatie hoort elke afbeelding? Bijgewerkt door npm run docs:screenshots.
+ai-koppelen-donker.png 0.1.085
 ai-koppelen.png 0.1.085
+bronpassage-donker.png 0.1.085
 bronpassage.png 0.1.085
+omnibus-banner-donker.png 0.1.085
+omnibus-banner.png 0.1.085
 omnibus-overview-donker.png 0.1.085
 omnibus-overview.png 0.1.085
+rondleiding-donker.png 0.1.085
 rondleiding.gif 0.1.085
+rondleiding.png 0.1.085
+stap-1-onderzoeksrichting-donker.png 0.1.085
 stap-1-onderzoeksrichting.png 0.1.085
 stap-2-verzamel-donker.png 0.1.085
 stap-2-verzamel.png 0.1.085
+stap-3-bouw-je-kader-donker.png 0.1.085
 stap-3-bouw-je-kader.png 0.1.085
+stap-4-exporteer-donker.png 0.1.085
 stap-4-exporteer.png 0.1.085

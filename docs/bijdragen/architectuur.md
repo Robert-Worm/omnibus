@@ -7,7 +7,7 @@
 ## Hoe de onderdelen samenhangen
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Inhoud["Inhoud (buiten Git)"]
         P["Verwerkte bronnen<br/>+ reviews"] --> DB[("Database<br/>catalogue.sqlite")]
     end
@@ -23,6 +23,8 @@ flowchart LR
     W --> X["Projectbestand<br/>en Excel"]
     M --> X
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
+    classDef groep fill:#f6f8fb,stroke:#9fb3c8,color:#15233b;
+    class Inhoud,Code groep;
 ```
 
 1. **De database** bevat de verwerkte bronnen. Hij komt los van de code, via de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).

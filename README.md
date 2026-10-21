@@ -1,5 +1,8 @@
 <h1 align="center">
-  <img src="docs/images/omnibus-banner.png" alt="Omnibus: van brondocument naar referentiekader" width="820">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-banner-donker.png">
+    <img src="docs/images/omnibus-banner.png" alt="Omnibus: van brondocument naar referentiekader" width="820">
+  </picture>
 </h1>
 
 <p align="center">
@@ -52,10 +55,19 @@ Omnibus is free for non-commercial use and runs in your browser; projects stay o
   <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
 </picture>
 
+*Het startscherm: begin vanuit een vraag of vanuit signalen.*
+
 <a id="zo-werkt-het"></a>
 ## Zo werkt het
 
-![Rondleiding van 25 seconden, met bovenin een voortgangsbalk die de vier stappen volgt: een onderzoeksrichting kiezen, normen uit het CIO-stelsel selecteren, een centrale vraag met zes bouwstenen maken en het kader als Excel exporteren](docs/images/rondleiding.gif)
+<a href="docs/images/rondleiding.gif">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/rondleiding-donker.png">
+    <img src="docs/images/rondleiding.png" alt="Begin van de rondleiding: het startscherm, met de vier stappen erboven">
+  </picture>
+</a>
+
+*Klik op het beeld voor de rondleiding van 25 seconden (bewegend beeld, 0,8 MB). De vier stappen staan hieronder.*
 
 1. **Onderzoeksrichting.** Begin vanuit een vraag van je opdrachtgever, of vanuit signalen en zorgen.
 2. **Verzamel.** Blader door rapporten, wetten, kaders en onderzoeksmodellen. Kies losse toetspunten, een norm of een hele groep.

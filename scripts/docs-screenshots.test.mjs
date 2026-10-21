@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { leesOpties, leesStand, ONDERZOEK, rondleidingHtml, schrijfStand, STAPPEN } from "./docs-screenshots.mjs";
+import { bannerHtml, beeldNaam, KLEUREN, leesOpties, leesStand, ONDERZOEK, rondleidingHtml, schrijfStand, STAPPEN } from "./docs-screenshots.mjs";
 import { schermWaarschuwingen } from "./check-docs.mjs";
 
 test("zonder --settings een begrijpelijke fout; --alleen splitst namen", () => {
@@ -35,4 +35,21 @@ test("het standbestand is leesbare tekst die heen en terug hetzelfde blijft", ()
   const tekst = schrijfStand({ "b.png": "0.1.085", "a.gif": "0.1.084" });
   assert.match(tekst, /^# .*\na\.gif 0\.1\.084\nb\.png 0\.1\.085\n$/);
   assert.deepEqual(leesStand(tekst), { "a.gif": "0.1.084", "b.png": "0.1.085" });
+});
+
+test("elke afbeelding krijgt een donkere variant met -donker in de naam", () => {
+  assert.equal(beeldNaam("stap-1", "light"), "stap-1");
+  assert.equal(beeldNaam("stap-1", "dark"), "stap-1-donker");
+});
+
+test("de rondleiding en de banner volgen het kleurschema; het stilstaande beeld toont een afspeelknop", () => {
+  const donker = rondleidingHtml({ stap: 0, uitleg: "U", voortgang: 0, beeld: Buffer.from("x"), schema: "dark", speel: true });
+  assert.ok(donker.includes(`background:${KLEUREN.dark.achter}`));
+  assert.match(donker, /Bekijk de rondleiding/);
+  assert.doesNotMatch(rondleidingHtml({ stap: 0, uitleg: "U", voortgang: 0, beeld: Buffer.from("x") }), /Bekijk de rondleiding/);
+  const banner = bannerHtml({ schema: "dark", voor: Buffer.from("v"), achter: Buffer.from("a") });
+  assert.match(banner, /Omnibus/);
+  assert.match(banner, /Van brondocument naar referentiekader/);
+  assert.match(banner, /#0f1722/);
+  assert.equal((banner.match(/data:image\/png;base64,/g) || []).length, 2);
 });

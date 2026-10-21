@@ -11,7 +11,7 @@
 //   npm install --no-save playwright && npx playwright install chromium
 // Voor de GIF ook ffmpeg. Ontbreekt ffmpeg, dan slaat het script alleen de GIF over.
 import { execFileSync, spawn } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,26 +41,63 @@ export const ONDERZOEK = {
 export const STAPPEN = ["Onderzoeksrichting", "Verzamel", "Bouw je kader", "Exporteer"];
 
 /** HTML voor één beeld van de rondleiding: de vier stappen, een uitleg en een voortgangsbalk boven de schermafbeelding. */
-export function rondleidingHtml({ stap, uitleg, voortgang, beeld }) {
+export const KLEUREN = {
+  light: { achter: "#fff", tekst: "#15233b", accent: "#01689b", zacht: "#5b6b7f", rand: "#cdd5df", balk: "#e3e8ee", vlak: "#fff" },
+  dark: { achter: "#111a24", tekst: "#e6edf5", accent: "#5aa9e6", zacht: "#9aa8b8", rand: "#2c3a4a", balk: "#223040", vlak: "#16212d" },
+};
+
+export function rondleidingHtml({ stap, uitleg, voortgang, beeld, schema = "light", speel = false }) {
+  const k = KLEUREN[schema];
   const pil = (naam, i) => {
     const klaar = i < stap, actief = i === stap;
-    const stijl = actief ? "background:#01689b;color:#fff;border-color:#01689b" : klaar ? "background:#fff;color:#01689b;border-color:#01689b" : "background:#fff;color:#5b6b7f;border-color:#cdd5df";
+    const stijl = actief ? `background:${k.accent};color:${k.achter};border-color:${k.accent}` : klaar ? `background:${k.vlak};color:${k.accent};border-color:${k.accent}` : `background:${k.vlak};color:${k.zacht};border-color:${k.rand}`;
     const teken = klaar ? "✓" : String(i + 1);
     return `<div class="pil" style="${stijl}"><span class="nr">${teken}</span>${naam}</div>`;
   };
   return `<!doctype html><meta charset="utf-8"><style>
-    body{margin:0;width:${BREED}px;font-family:Inter,"Segoe UI",Arial,sans-serif;background:#fff}
+    body{margin:0;width:${BREED}px;font-family:Inter,"Segoe UI",Arial,sans-serif;background:${k.achter}}
     .kop{padding:18px 20px 0;height:138px;box-sizing:border-box}
     .pillen{display:flex;gap:12px}
     .pil{flex:1;border:2px solid;border-radius:8px;padding:9px 14px;font-size:22px;display:flex;align-items:center;gap:10px}
     .nr{display:inline-flex;width:28px;height:28px;border-radius:50%;border:2px solid currentColor;align-items:center;justify-content:center;font-size:16px}
-    .balk{height:6px;background:#e3e8ee;margin:12px 0 10px}.balk div{height:100%;background:#01689b}
-    .uitleg{font-size:20px;color:#15233b}
+    .balk{height:6px;background:${k.balk};margin:12px 0 10px}.balk div{height:100%;background:${k.accent}}
+    .uitleg{font-size:20px;color:${k.tekst}}
     img{display:block;width:${BREED}px;height:${HOOG}px}
-  </style><div class="kop"><div class="pillen">${STAPPEN.map(pil).join("")}</div>
+    .speel{position:absolute;left:50%;top:${138 + HOOG / 2}px;transform:translate(-50%,-50%);display:flex;align-items:center;gap:16px;padding:22px 34px;border-radius:999px;background:${k.accent};color:${k.achter};font-size:30px;font-weight:600;box-shadow:0 12px 32px rgba(0,0,0,.3)}
+    .speel b{width:0;height:0;border-left:26px solid currentColor;border-top:16px solid transparent;border-bottom:16px solid transparent}
+  </style>${speel ? `<div class="speel"><b></b>Bekijk de rondleiding</div>` : ""}<div class="kop"><div class="pillen">${STAPPEN.map(pil).join("")}</div>
   <div class="balk"><div style="width:${(voortgang * 100).toFixed(1)}%"></div></div>
   <div class="uitleg">${uitleg}</div></div><img src="data:image/png;base64,${beeld.toString("base64")}">`;
 }
+
+/** De banner bovenaan de README: naam, belofte en twee schermen van Omnibus, in licht of donker. Formaat 1280 × 480, gemaakt op dubbele dichtheid. */
+export const BANNER = { breed: 1280, hoog: 480 };
+export function bannerHtml({ schema = "light", lettertypen = "", voor, achter }) {
+  const d = schema === "dark";
+  const c = d
+    ? { bg: "linear-gradient(135deg,#0f1722,#172231)", titel: "#cfe0f5", lijn: "#5aa9e6", kop: "#e6edf5", tekst: "#a9b6c6", raam: "#1c2633", rand: "#2c3a4a", stip: "#3a4a5c", schaduw: "0 18px 40px rgba(0,0,0,.45)" }
+    : { bg: "linear-gradient(135deg,#f5f7fa,#e8edf3)", titel: "#1b3f6e", lijn: "#1b3f6e", kop: "#15233b", tekst: "#3b4a5c", raam: "#fff", rand: "#d9e0e8", stip: "#d3d9e0", schaduw: "0 18px 40px rgba(21,35,59,.16)" };
+  const raam = (beeld, stijl, bijsnijden = 0) => `<div class="raam" style="${stijl}"><div class="balk"><i></i><i></i><i></i></div><img style="margin-top:-${bijsnijden}px" src="data:image/png;base64,${beeld.toString("base64")}"></div>`;
+  return `<!doctype html><meta charset="utf-8"><style>${lettertypen}
+    body{margin:0;width:${BANNER.breed}px;height:${BANNER.hoog}px;overflow:hidden;background:${c.bg};font-family:Inter,sans-serif;position:relative}
+    .tekst{position:absolute;left:58px;top:118px;width:470px}
+    h1{margin:0 0 30px;padding-left:24px;border-left:5px solid ${c.lijn};font:700 96px/1 Spectral,Georgia,serif;color:${c.titel};letter-spacing:-1px}
+    .belofte{margin:0 0 18px;font:600 30px/1.2 Inter,sans-serif;color:${c.kop}}
+    .uitleg{margin:0;font:400 19px/1.45 Inter,sans-serif;color:${c.tekst}}
+    .raam{position:absolute;border-radius:10px;overflow:hidden;background:${c.raam};border:1px solid ${c.rand};box-shadow:${c.schaduw}}
+    .raam .balk{position:relative;z-index:1;background:${c.raam};height:22px;display:flex;gap:6px;align-items:center;padding-left:12px}
+    .raam i{width:9px;height:9px;border-radius:50%;background:${c.stip}}
+    .raam img{display:block;width:100%}
+  </style>
+  ${raam(achter, "left:770px;top:22px;width:450px")}
+  ${raam(voor, "left:600px;top:120px;width:500px", 14)}
+  <div class="tekst"><h1>Omnibus</h1><p class="belofte">Van brondocument naar referentiekader</p>
+  <p class="uitleg">Rapporten, wetten, kaders en modellen<br>→ normen, toetspunten en onderzoeksvragen</p></div>`;
+}
+
+/** Naam van een afbeelding in een kleurschema: licht heet gewoon, donker krijgt -donker. */
+export const beeldNaam = (naam, schema) => (schema === "dark" ? `${naam}-donker` : naam);
+export const MAX_PNG = 300 * 1024, MAX_GIF = 1024 * 1024;
 
 /** Leest de opties; gooit een begrijpelijke fout bij ontbrekende instellingen. */
 export function leesOpties(args) {
@@ -110,17 +147,15 @@ async function exporteer(p) {
   await naarBoven(p);
 }
 
-/** De losse schermafbeeldingen: naam, kleurschema en wat er moet gebeuren. */
+/** De losse schermafbeeldingen: naam en wat er moet gebeuren. Elk scherm wordt in licht én donker gemaakt. */
 const SCHERMEN = [
-  { naam: "omnibus-overview", schema: "light", doe: async () => {} },
-  { naam: "omnibus-overview-donker", schema: "dark", doe: async () => {} },
-  { naam: "stap-1-onderzoeksrichting", schema: "light", doe: async (p) => { await richting(p); await naarBoven(p); } },
-  { naam: "stap-2-verzamel", schema: "light", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); } },
-  { naam: "stap-2-verzamel-donker", schema: "dark", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); } },
-  { naam: "stap-3-bouw-je-kader", schema: "light", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); await bouw(p); await vraagopzet(p); await koppel(p); await naarBoven(p); } },
-  { naam: "stap-4-exporteer", schema: "light", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); await bouw(p); await vraagopzet(p); await koppel(p); await exporteer(p); } },
-  { naam: "ai-koppelen", schema: "light", doe: async (p) => { await p.getByRole("button", { name: "AI koppelen" }).click(); await wacht(p); } },
-  { naam: "bronpassage", schema: "light", start: "#rapporten", doe: async (p) => {
+  { naam: "omnibus-overview", doe: async () => {} },
+  { naam: "stap-1-onderzoeksrichting", doe: async (p) => { await richting(p); await naarBoven(p); } },
+  { naam: "stap-2-verzamel", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); } },
+  { naam: "stap-3-bouw-je-kader", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); await bouw(p); await vraagopzet(p); await koppel(p); await naarBoven(p); } },
+  { naam: "stap-4-exporteer", doe: async (p) => { await richting(p); await verzamel(p); await selecteer(p); await bouw(p); await vraagopzet(p); await koppel(p); await exporteer(p); } },
+  { naam: "ai-koppelen", doe: async (p) => { await p.getByRole("button", { name: "AI koppelen" }).click(); await wacht(p); } },
+  { naam: "bronpassage", start: "#rapporten", doe: async (p) => {
     await wacht(p, 1200);
     await p.getByText("Bekijk normen en toetspunten").first().click(); await wacht(p, 2500);
     await p.getByText("Bekijk toetspunten").first().click(); await wacht(p, 1500);
@@ -139,6 +174,14 @@ const SCENES = [
   { stap: 2, uitleg: "Schrijf je centrale vraag en koppel de bouwstenen", duur: 7, doe: async (p) => { await koppel(p); await naarBoven(p); } },
   { stap: 3, uitleg: "Kies een werkvorm en download je referentiekader als Excel", duur: 8, doe: exporteer },
 ];
+
+/** De lettertypen van Omnibus zelf (Inter en Spectral), uit de gebouwde CSS, zodat de banner er net zo uitziet als de app. */
+function lettertypenUitBuild() {
+  const map = path.join(root, "database-build", "assets");
+  if (!existsSync(map)) return "";
+  return readdirSync(map).filter((f) => f.endsWith(".css"))
+    .flatMap((f) => readFileSync(path.join(map, f), "utf8").match(/@font-face\{[^}]*\}/g) || []).join("\n");
+}
 
 async function laadPlaywright() {
   try { return (await import("playwright")).chromium; } catch {
@@ -168,6 +211,15 @@ async function nieuwePagina(browser, schema, adres) {
   return { context, pagina, fouten };
 }
 
+/** Maakt een PNG kleiner (256 kleuren) als hij boven de grens komt. Zonder ffmpeg blijft hij zoals hij is. */
+function verklein(bestand) {
+  if (statSync(bestand).size <= MAX_PNG) return;
+  try { execFileSync("ffmpeg", ["-version"], { stdio: "ignore" }); } catch { return; }
+  const tijdelijk = bestand.replace(/\.png$/, ".klein.png");
+  execFileSync("ffmpeg", ["-loglevel", "error", "-y", "-i", bestand, "-vf", "split[a][b];[a]palettegen=max_colors=256:stats_mode=full[p];[b][p]paletteuse=dither=none", tijdelijk]);
+  renameSync(tijdelijk, bestand);
+}
+
 function maakGif(beelden, doel) {
   try { execFileSync("ffmpeg", ["-version"], { stdio: "ignore" }); } catch { console.warn("ffmpeg ontbreekt: de rondleiding wordt overgeslagen."); return false; }
   const map = mkdtempSync(path.join(tmpdir(), "omnibus-rondleiding-"));
@@ -191,29 +243,64 @@ async function main() {
   const gemaakt = [];
   const wil = (naam) => !alleen || alleen.includes(naam);
   try {
-    for (const s of SCHERMEN.filter((s) => wil(s.naam))) {
-      const { context, pagina, fouten } = await nieuwePagina(browser, s.schema, adres + (s.start || "#begin"));
+    const beeld = {};
+    for (const s of SCHERMEN) for (const schema of ["light", "dark"]) {
+      const naam = beeldNaam(s.naam, schema);
+      if (!wil(s.naam) && !wil(naam)) continue;
+      const { context, pagina, fouten } = await nieuwePagina(browser, schema, adres + (s.start || "#begin"));
       await s.doe(pagina);
-      await pagina.screenshot({ path: path.join(uit, `${s.naam}.png`) });
+      const doel = path.join(uit, `${naam}.png`);
+      beeld[naam] = await pagina.screenshot({ path: doel });
       await context.close();
-      if (fouten.length) throw new Error(`Browserfout bij ${s.naam}: ${fouten[0]}`);
-      gemaakt.push(`${s.naam}.png`); console.log(`✓ ${s.naam}.png`);
+      if (fouten.length) throw new Error(`Browserfout bij ${naam}: ${fouten[0]}`);
+      verklein(doel);
+      gemaakt.push(`${naam}.png`); console.log(`✓ ${naam}.png`);
+    }
+    if (wil("omnibus-banner")) {
+      const lettertypen = lettertypenUitBuild();
+      for (const schema of ["light", "dark"]) {
+        const naam = beeldNaam("omnibus-banner", schema);
+        const lees = (n) => beeld[beeldNaam(n, schema)] ?? readFileSync(path.join(uit, `${beeldNaam(n, schema)}.png`));
+        const kader = await browser.newPage({ viewport: { width: BANNER.breed, height: BANNER.hoog }, deviceScaleFactor: 2 });
+        await kader.setContent(bannerHtml({ schema, lettertypen, voor: lees("stap-2-verzamel"), achter: lees("stap-4-exporteer") }), { waitUntil: "load" });
+        await kader.evaluate(() => document.fonts.ready);
+        const doel = path.join(uit, `${naam}.png`);
+        await kader.screenshot({ path: doel });
+        await kader.close();
+        verklein(doel);
+        gemaakt.push(`${naam}.png`); console.log(`✓ ${naam}.png`);
+      }
     }
     if (wil("rondleiding")) {
-      const { context, pagina, fouten } = await nieuwePagina(browser, "light", adres + "#begin");
-      const opname = [];
-      for (const scene of SCENES) { await scene.doe(pagina); opname.push({ ...scene, beeld: await pagina.screenshot() }); }
-      await context.close();
-      if (fouten.length) throw new Error(`Browserfout in de rondleiding: ${fouten[0]}`);
-      const totaal = SCENES.reduce((n, s) => n + s.duur, 0);
-      const kader = await browser.newPage({ viewport: { width: BREED, height: HOOG + 138 } });
-      const beelden = [];
-      let teller = 0;
-      for (const s of opname) for (let i = 0; i < s.duur; i++) {
-        await kader.setContent(rondleidingHtml({ ...s, voortgang: ++teller / totaal }));
-        beelden.push(await kader.screenshot());
+      for (const schema of ["light", "dark"]) {
+        const { context, pagina, fouten } = await nieuwePagina(browser, schema, adres + "#begin");
+        const opname = [];
+        for (const scene of SCENES) {
+          await scene.doe(pagina);
+          opname.push({ ...scene, beeld: await pagina.screenshot() });
+          if (schema === "dark") break; // donker: alleen het stilstaande beeld
+        }
+        await context.close();
+        if (fouten.length) throw new Error(`Browserfout in de rondleiding: ${fouten[0]}`);
+        const totaal = SCENES.reduce((n, s) => n + s.duur, 0);
+        const kader = await browser.newPage({ viewport: { width: BREED, height: HOOG + 138 } });
+        // Het stilstaande beeld: het begin van de rondleiding, waarvandaan je de animatie opent.
+        const stil = path.join(uit, `${beeldNaam("rondleiding", schema)}.png`);
+        await kader.setContent(rondleidingHtml({ ...opname[0], uitleg: "Rondleiding van 25 seconden: de vier stappen van Omnibus", voortgang: 0, schema, speel: true }));
+        await kader.screenshot({ path: stil });
+        verklein(stil);
+        gemaakt.push(path.basename(stil)); console.log(`✓ ${path.basename(stil)}`);
+        if (schema === "light") {
+          const beelden = [];
+          let teller = 0;
+          for (const s of opname) for (let i = 0; i < s.duur; i++) {
+            await kader.setContent(rondleidingHtml({ ...s, voortgang: ++teller / totaal }));
+            beelden.push(await kader.screenshot());
+          }
+          if (maakGif(beelden, path.join(uit, "rondleiding.gif"))) { gemaakt.push("rondleiding.gif"); console.log(`✓ rondleiding.gif (${beelden.length} beelden)`); }
+        }
+        await kader.close();
       }
-      if (maakGif(beelden, path.join(uit, "rondleiding.gif"))) { gemaakt.push("rondleiding.gif"); console.log(`✓ rondleiding.gif (${beelden.length} beelden)`); }
     }
   } finally {
     await browser.close();

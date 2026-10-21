@@ -9,7 +9,7 @@ Een skill is een map met instructies (`SKILL.md`) en naslag die een AI-assistent
 ## De zes skills
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Bron["Een bron omzetten"]
         R["Rapport<br/>omnibus-add-report"]
         F["Wet of kader<br/>omnibus-add-framework"]
@@ -22,6 +22,8 @@ flowchart LR
     end
     Bron --> Kwaliteit
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
+    classDef groep fill:#f6f8fb,stroke:#9fb3c8,color:#15233b;
+    class Bron,Kwaliteit groep;
 ```
 
 | Je wilt… | Skill |

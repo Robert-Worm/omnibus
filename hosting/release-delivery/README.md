@@ -15,7 +15,7 @@
 ## Hoe werkt het?
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["1 · Database<br/>controleren"] --> B["2 · Runtimepakket<br/>maken"] --> C["3 · Image<br/>maken"] --> D["4 · Image<br/>controleren"] --> E["5 · Database op<br/>de server zetten"] --> F["6 · Starten"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```

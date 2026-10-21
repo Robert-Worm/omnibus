@@ -42,9 +42,16 @@ Beide routes komen uit bij hetzelfde kader. Je kunt later van route wisselen.
   <img src="../images/omnibus-overview.png" alt="Het startscherm met de twee routes: vanuit een vraag of vanuit signalen">
 </picture>
 
+*Het startscherm met de twee routes.*
+
 Na je keuze geef je de onderzoeksrichting en het onderwerp op:
 
-![Stap 1: de onderzoeksrichting Diagnostisch is gekozen en het onderwerp ingevuld](../images/stap-1-onderzoeksrichting.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/stap-1-onderzoeksrichting-donker.png">
+  <img src="../images/stap-1-onderzoeksrichting.png" alt="Stap 1: de onderzoeksrichting Diagnostisch is gekozen en het onderwerp ingevuld">
+</picture>
+
+*Stap 1: kies de onderzoeksrichting en vul het onderwerp in.*
 
 ### 2. Verzamel
 
@@ -62,6 +69,8 @@ Bij elke norm zie je de samenhang tussen doel, risico, beheersdoelstelling en be
   <img src="../images/stap-2-verzamel.png" alt="Stap 2: normen uit het Besluit CIO-stelsel, met doel, risico, beheersdoelstelling en beheersmaatregel naast elkaar; zes toetspunten zijn gekozen">
 </picture>
 
+*Stap 2: normen uit het Besluit CIO-stelsel, met gekozen toetspunten.*
+
 Twijfel je over een norm? Open de bron. Je leest dan de oorspronkelijke tekst, met de passage gemarkeerd.
 
 ### 3. Bouw je kader
@@ -71,7 +80,12 @@ Schrijf je centrale onderzoeksvraag en deelvragen. Koppel de gekozen bouwstenen 
 - **Zelf formuleren:** je schrijft de vragen, met voorbeelden als hulp.
 - **Vanuit je selectie:** Omnibus doet een voorstel op basis van wat je hebt gekozen. Jij past het aan.
 
-![Stap 3: een centrale onderzoeksvraag met zes gekoppelde bouwstenen](../images/stap-3-bouw-je-kader.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/stap-3-bouw-je-kader-donker.png">
+  <img src="../images/stap-3-bouw-je-kader.png" alt="Stap 3: een centrale onderzoeksvraag met zes gekoppelde bouwstenen">
+</picture>
+
+*Stap 3: de centrale onderzoeksvraag met zes gekoppelde bouwstenen.*
 
 ### 4. Exporteer
 
@@ -85,7 +99,12 @@ Kies een werkvorm voor je Excel-bestand:
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
-![Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen](../images/stap-4-exporteer.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/stap-4-exporteer-donker.png">
+  <img src="../images/stap-4-exporteer.png" alt="Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen">
+</picture>
+
+*Stap 4: kies een werkvorm en download je referentiekader.*
 
 **Gelukt als:** je Excel-bestand is gedownload.
 
