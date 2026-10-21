@@ -5,7 +5,7 @@
 //   node scripts/check-links.mjs --issue    houdt één issue met label 'kapotte-links' bij
 //
 // Alleen 404, 410, een onbekend domein of een blijvende serverfout telt als kapot.
-// 401, 403 en 429 betekenen meestal dat een site robots weert; die tellen niet mee.
+// 401, 403, 429 en time-outs betekenen meestal dat een site robots weert; die tellen niet mee.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -35,7 +35,8 @@ export function verzamelLinks(tekst) {
 
 /** Beslist of een uitkomst kapot is. `status` is een HTTP-code of een foutcode als tekst. */
 export function isKapot(status) {
-  if (typeof status === "string") return !/^(TIMEOUT|ECONNRESET|UND_ERR_SOCKET)$/.test(status);
+  // Time-outs en verbroken verbindingen zeggen niets zeker: sommige sites weren cloudservers.
+  if (typeof status === "string") return !/^(TIMEOUT|ETIMEDOUT|ECONNRESET|EAI_AGAIN|UND_ERR_SOCKET|UND_ERR_CONNECT_TIMEOUT)$/.test(status);
   return status === 404 || status === 410 || status >= 500;
 }
 

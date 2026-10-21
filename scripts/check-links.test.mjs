@@ -21,7 +21,7 @@ test("haalt alleen echte externe links uit markdown", () => {
 
 test("alleen echte fouten tellen als kapot; robotweren niet", () => {
   for (const s of [404, 410, 500, 503, "ENOTFOUND", "ECONNREFUSED", "CERT_HAS_EXPIRED"]) assert.equal(isKapot(s), true, String(s));
-  for (const s of [200, 301, 401, 403, 429, "TIMEOUT", "ECONNRESET"]) assert.equal(isKapot(s), false, String(s));
+  for (const s of [200, 301, 401, 403, 429, "TIMEOUT", "ETIMEDOUT", "ECONNRESET", "EAI_AGAIN", "UND_ERR_CONNECT_TIMEOUT"]) assert.equal(isKapot(s), false, String(s));
 });
 
 test("probeert GET als HEAD niet mag, en een kapotte link twee keer", async () => {
