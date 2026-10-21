@@ -21,6 +21,8 @@ import {newProject,clearProjectBrowsePreferences} from '@/lib/new-project.mjs';
 import ProductFooter from './product-footer';
 import { useCallback, useEffect, useEffectEvent, useRef, useState, useMemo, useSyncExternalStore } from "react";
 import {createProjectStatus} from '@/lib/project-status.mjs';
+import {createBackgroundProjectSave} from '@/lib/background-project-save.mjs';
+import {createProjectEncoder} from './project-encoder';
 import {
   InvestigationNavigation,
   CollectionNavigation,
@@ -296,6 +298,7 @@ export default function FrameworkEditor() {
   const projectRef = useRef<Project>(makeProject(draft,modelLibrary,workspace));
   const storeRef = useRef<ReturnType<typeof guardedProjectStore> | null>(null);
   const storageBlocked = useRef(false);
+  const backgroundSave=useRef<ReturnType<typeof createBackgroundProjectSave<Project>>|null>(null);
   const [recoveryOriginal,setRecoveryOriginal] = useState('');
   const [reloadOpen,setReloadOpen] = useState(false);
   const [storageHelpOpen,setStorageHelpOpen] = useState(false);
@@ -303,6 +306,7 @@ export default function FrameworkEditor() {
   const [resumeOriginal,setResumeOriginal] = useState<string|null>(null);
   const resumeStoreRef = useRef<ReturnType<typeof guardedProjectStore>|null>(null);
   const saveProject = useCallback((project:Project) => {
+    backgroundSave.current?.cancel();
     if(storageBlocked.current || !storeRef.current)return false;
     try {
       storeRef.current.save(project);
@@ -314,6 +318,24 @@ export default function FrameworkEditor() {
       return false;
     }
   }, [projectStatus]);
+  useEffect(()=>{
+    const encoder=createProjectEncoder();
+    const saver=createBackgroundProjectSave<Project>({
+      encode:project=>encoder.encode(project),
+      write:text=>{
+        if(storageBlocked.current||!storeRef.current)throw Error('Automatisch bewaren is onderbroken.');
+        storeRef.current.saveSerialized(text);
+      },
+      onPending:()=>projectStatus.update({savedLocally:false}),
+      onSaved:()=>projectStatus.update({savedLocally:true,problem:false,message:'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'}),
+      onError:error=>{
+        storageBlocked.current=true;
+        projectStatus.update({savedLocally:false,problem:true,message:(error instanceof Error?error.message:'Automatisch bewaren is niet gelukt.')+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
+      },
+    });
+    backgroundSave.current=saver;
+    return ()=>{saver.dispose();encoder.dispose();backgroundSave.current=null;};
+  },[projectStatus]);
   function rememberProject(label:string) {
     const active=document.activeElement;
     const typing=active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement;
@@ -333,6 +355,7 @@ export default function FrameworkEditor() {
   }
   function resumeSaving() {
     if(!backupConfirmed || !resumeStoreRef.current)return;
+    backgroundSave.current?.cancel();
     try {
       // Explicit replacement, only after the auditor confirms an external backup.
       // Do not require another local copy: a full browser store may be the cause.
@@ -497,7 +520,7 @@ export default function FrameworkEditor() {
       researchRoute,discoveryAxis:discoveryView.axis,discoveryCategory:discoveryView.category,
       ...modelView,aboutViews,openModelIds,combined:browseMode.combined,excluded:reportChoices.excluded,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId:choiceThemeId??''});
     projectRef.current=next;
-    saveProject(next);
+    if(!storageBlocked.current&&storeRef.current)backgroundSave.current?.save(next);
   },[loaded,modelsReady,draft,modelLibrary,workspace,page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,modelView,aboutViews,browseMode,reportChoices,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId,researchRoute,discoveryView,openModelIds,saveProject]);
   useEffect(()=>{
     const changed=(event:StorageEvent)=>{
@@ -514,15 +537,22 @@ export default function FrameworkEditor() {
     return ()=>window.removeEventListener('storage',changed);
   },[setMessage,setProblem]);
   useEffect(()=>{
+    // Finish the latest snapshot before leaving, including mobile backgrounding.
+    // Normal navigation uses the worker; this synchronous fallback is exceptional.
+    const flush=()=>{if(backgroundSave.current?.pending)saveProject(projectRef.current);};
+    const hidden=()=>{if(document.visibilityState==='hidden')flush();};
     const warn=(event:BeforeUnloadEvent)=>{
+      flush();
       if(storageBlocked.current) {
         // Current browsers use cancellation; no deprecated legacy returnValue.
         event.preventDefault();
       }
     };
     window.addEventListener('beforeunload',warn);
-    return ()=>window.removeEventListener('beforeunload',warn);
-  },[]);
+    document.addEventListener('visibilitychange',hidden);
+    window.addEventListener('pagehide',flush);
+    return ()=>{window.removeEventListener('beforeunload',warn);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',flush);};
+  },[saveProject]);
   function openReportChoice() {
     setChoiceThemeId(combinedView ? "" : (activeTheme?.id ?? null));
     setReportScope("open"); navigate("reports");
@@ -869,6 +899,7 @@ export default function FrameworkEditor() {
   }
   const renderFoundations = () => (
             <FoundationCatalogue
+              onPrepareSource={id=>{void prefetchCatalogue(['foundation:'+id]);}}
               prepareSources={(ids,action)=>withContent(ids.map(id=>'foundation:'+id),action)}
               sourceScope={page==='risk-start'?(riskArea==='laws'?'laws':'frameworks'):foundationCatalogueScope}
               onSourceScopeChange={page==='risk-start'?undefined:setFoundationCatalogueScope}
@@ -962,10 +993,10 @@ export default function FrameworkEditor() {
               <Button variant="outline" className="project-save-indicator"
                 data-state={storageBlocked.current?'unsaved':savedLocally?'saved':'loading'}
                 disabled={!loaded || !modelsReady}
-                aria-label={storageBlocked.current?'Niet automatisch opgeslagen — bekijk opslagstatus':savedLocally?'Lokaal opgeslagen — bekijk opslagstatus':'Projectopslag wordt geladen'}
-                title={storageBlocked.current?'Niet automatisch opgeslagen. Klik voor uitleg en bewaar je project.':savedLocally?'Automatisch opgeslagen in deze browser. Klik voor uitleg.':'Projectopslag wordt geladen'}
+                aria-label={storageBlocked.current?'Niet automatisch opgeslagen — bekijk opslagstatus':savedLocally?'Lokaal opgeslagen — bekijk opslagstatus':loaded&&modelsReady?'Wijzigingen worden lokaal opgeslagen':'Projectopslag wordt geladen'}
+                title={storageBlocked.current?'Niet automatisch opgeslagen. Klik voor uitleg en bewaar je project.':savedLocally?'Automatisch opgeslagen in deze browser. Klik voor uitleg.':loaded&&modelsReady?'Wijzigingen worden lokaal opgeslagen':'Projectopslag wordt geladen'}
                 onClick={openStorageHelp}>
-                {storageBlocked.current?<CircleAlert size={16} aria-hidden="true"/>:savedLocally?<Save size={16} aria-hidden="true"/>:<LoaderCircle size={16} aria-hidden="true"/>}
+                {storageBlocked.current?<CircleAlert size={16} aria-hidden="true"/>:loaded&&modelsReady?<Save size={16} aria-hidden="true"/>:<LoaderCircle size={16} aria-hidden="true"/>}
               </Button>
               <output className="sr-only">{storageBlocked.current?'Let op: je huidige werk wordt niet automatisch opgeslagen. Kies Bewaar project.':savedLocally?'Project automatisch opgeslagen in deze browser.':''}</output>
             </fieldset>

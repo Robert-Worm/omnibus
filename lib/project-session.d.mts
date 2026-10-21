@@ -10,4 +10,4 @@ export function projectContentEqual(a:unknown,b:unknown):boolean;
 export function projectView(value?:Partial<ProjectView & {aboutViews:AboutViews}>):ProjectView & {aboutViews:AboutViews};
 export function makeProject(draft:Draft,models:ModelLibraryState,workspace:Project['workspace'],view?:Partial<ProjectView & {aboutViews:AboutViews}>):Project;
 export function readProject(value:unknown,current:Project,options:{restoreDraft:(value:unknown)=>Draft;restoreModels:(value:unknown)=>ModelLibraryState;themes:unknown[]}):{project:Project;legacy:boolean};
-export function guardedProjectStore(storage:Pick<Storage,'getItem'|'setItem'>,key?:string):{raw:()=>string|null;save:(project:Project)=>void;checkpoint:(preserve?:boolean)=>void};
+export function guardedProjectStore(storage:Pick<Storage,'getItem'|'setItem'>,key?:string):{raw:()=>string|null;save:(project:Project)=>void;saveSerialized:(text:string)=>void;checkpoint:(preserve?:boolean)=>void};
