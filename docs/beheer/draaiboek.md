@@ -23,7 +23,7 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
 | --- | --- |
 | **Herkennen** | Gebruikers melden ontbrekende of verkeerde inhoud, of de controlegetallen in de release kloppen niet met de zip. |
 | **Eerste handeling** | Zet de release op *pre-release* of verwijder de zip, zodat niemand hem nog downloadt. Plaats een korte melding in Discussions. |
-| **Herstellen** | Zet de vorige, goede zip terug als nieuwste release. Zet `verwerkt.json` terug naar de vorige stand en push. Maak daarna de juiste database opnieuw volgens [database publiceren](database-publiceren.md). |
+| **Herstellen** | Zet de vorige, goede zip terug als nieuwste release. Zet `verwerkt.json` terug naar de vorige stand en push. Maak daarna de juiste database opnieuw volgens [database publiceren](database-publiceren.md). Online: zet de vorige commit van de Dockerfile terug en push; controleer daarna `/api/v1/health`. |
 | **Nazorg** | Zoek uit welke stap van de releasechecklist is overgeslagen en verbeter de checklist. |
 
 ## 3. De release-zip is beschadigd

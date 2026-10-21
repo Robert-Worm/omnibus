@@ -46,7 +46,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | Een overzicht van het beheerwerk | [Beheer](beheer/README.md) |
 | Een ingeleverd pakket controleren | [Pakket controleren](beheer/pakket-controleren.md) |
 | Een nieuwe database maken en uitbrengen | [Database publiceren](beheer/database-publiceren.md) |
-| Omnibus online zetten als demo | [Checklist live demo](beheer/live-demo-checklist.md) en [`hosting/`](../hosting/release-delivery/README.md) |
+| Omnibus online zetten als demo | [Checklist live demo](beheer/live-demo-checklist.md) en [`hosting/`](../hosting/README.md) |
 
 ## Overig
 
@@ -68,7 +68,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | `agent-tools/` | De koppeling voor AI-assistenten |
 | `content-tools/` | Hulpmiddelen voor de beheerder |
 | `scripts/` | Bouwen, testen en controleren |
-| `hosting/` | Voorbereiding van de online versie |
+| `hosting/` | De online versie (container-route) en de route voor later |
 
 In de hoofdmap staan verder alleen bestanden die daar moeten staan, omdat hulpmiddelen ze daar zoeken. Als nieuwkomer hoef je er niets mee.
 

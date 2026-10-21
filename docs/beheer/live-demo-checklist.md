@@ -13,8 +13,8 @@ Sinds 21 oktober 2026 staat een proefversie online op [omnibus.sliplane.app](htt
 | # | Wat | Wie | Streefdatum | Klaar wanneer |
 | --- | --- | --- | --- | --- |
 | 1 | **Database kiezen** | Beheerder (inhoud) | eind oktober | De database en de rechten op de inhoud zijn beoordeeld. Er gaan geen privébestanden of persoonlijke paden mee. |
-| 2 | **Code en runtimepakket vastzetten** | Ontwikkelaar | eind oktober | De code is beoordeeld en getest, de echte image is gebouwd, de basis-image is gecontroleerd op beveiligingsupdates, en de database zit níet in de image. |
-| 3 | **Eerste ontvangst op de server** | Hostingbeheerder | begin november | Er is een beveiligde manier om de database over te zetten. Schijf, gebruikers en leesrechten zijn vastgesteld. De tijdelijke [eerste start](../../hosting/first-start/README.md) is netjes beëindigd. |
+| 2 | **Code en runtimepakket vastzetten** | Ontwikkelaar | eind oktober | De code is beoordeeld en getest, de echte image is gebouwd, de basis-image is gecontroleerd op beveiligingsupdates. De openbare database zit gecontroleerd in de image ([container-route](../../hosting/container/README.md)); een niet-openbare database nooit. |
+| 3 | **Eerste ontvangst op de server** | Hostingbeheerder | begin november | Er is een beveiligde manier om de database over te zetten. Schijf, gebruikers en leesrechten zijn vastgesteld. De tijdelijke [eerste start](../../hosting/first-start/README.md) is netjes beëindigd. Vervalt zolang de database openbaar is. |
 | 4 | **Werking op de server** | Hostingbeheerder en een beoordelaar | begin november | Beveiligde verbinding (TLS), adres- en herkomstcontroles, gezondheidscontroles, foutafhandeling, logboeken en snelheid werken op de echte server. |
 | 5 | **Storingen signaleren** | Hostingbeheerder | begin november | De controles van de hostingpartij werken, logboeken bevatten geen onderzoeksinhoud, iemand ontvangt de meldingen en er is een aanpak bij overbelasting. |
 | 6 | **Back-up en herstel** | Hostingbeheerder | 20 november | Bewaarplaats, bewaartermijn, verantwoordelijke en hersteldoelen zijn gekozen. Herstel en teruggaan naar een eerdere combinatie van code en database zijn op de server geoefend. |
@@ -34,7 +34,8 @@ Bewust niet in deze demo: een test met schermlezer en een test in desktop-Excel 
 - **Wil je zeker weten dat er niets ongewensts terugkomt?** Gebruik ook de [actieve-inventariscontrole](actieve-inventaris-controleren.md). Die wijzigt niets en beoordeelt geen rechten.
 - **De lokale AI-koppeling** wordt niet vanzelf bijgewerkt met een nieuwe database. Bouw en test hem apart, en laat een AI-assistent opnieuw verbinden. Zie de [AI-koppeling](../../agent-tools/README.md).
 - **Projecten blijven in de browser.** Naar een ander adres gaat alleen via **Bewaar project** en **Open project**.
-- **Kies niet nu al voor extra snelheidswerk.** Een snellere publicatie pak je alleen op als een meting daar reden voor geeft.
+- **Snelheid volgt de metingen.** Het snelheidswerk loopt in [#82](https://github.com/Robert-Worm/omnibus/issues/82) tot en met [#84](https://github.com/Robert-Worm/omnibus/issues/84). Kies geen ander hostingpakket of andere database zonder meting.
+- **Controleer na een push de online versie.** De host bouwt opnieuw; kijk daarna of de online codeversie gelijk is aan `main` (zie [#85](https://github.com/Robert-Worm/omnibus/issues/85)).
 
 ## Hoe je bewijs vastlegt
 
@@ -42,7 +43,7 @@ Leg per controle vast: de codeversie, de release en publicatie, de datum, wie he
 
 Een lokale proef in de browser bewijst selecties, koppelingen en Excel-inhoud. Hij bewijst niet hoe het eruitziet in desktop-Excel, of het toegankelijk is voor mensen, en hoe snel de server is. Herhaal alleen de controles die geraakt worden als code, database of serverinstellingen veranderen.
 
-Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md), het [runtimepakket](runtime-pakket.md) en [storingen en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
+Gebruik de [container-route](../../hosting/container/README.md), het [runtimepakket](runtime-pakket.md) en [storingen en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
 
 ## Samengevat
 

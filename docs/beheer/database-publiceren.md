@@ -89,8 +89,9 @@ Als de nieuwe database is goedgekeurd, open je een [checklist voor de databasere
    Die controleert de database eerst. Daarna maakt hij `omnibus-database-<jjjj-mm-dd>.zip` (met database, instellingen, `LEESMIJ.txt` en `SHA256SUMS.txt`), de controlegetallen en een concept van de releasenotities (`releasenotities.md`). Haalt de database de controle niet, dan maakt hij niets.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
 3. **Maak een release** op GitHub met tag `database-<jjjj-mm-dd>`. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe.
-4. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
-5. **Sluit de verwerkte claims** met het label **verwerkt**.
+4. **Zet de nieuwe database online en in de installatieopdracht.** Pas de zip-link en het controlegetal aan in `hosting/container/Dockerfile` én `scripts/database-release.mjs`, en push. De online versie bouwt dan opnieuw; controleer daarna of hij de nieuwe database toont.
+5. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
+6. **Sluit de verwerkte claims** met het label **verwerkt**.
 
 > [!NOTE]
 > Aantallen in de documentatie staan tussen onzichtbare markeringen, zoals `<!--n:rapporten-->27<!--/n-->`. Het voortgangsscript vult ze in. Pas het getal niet met de hand aan; gebruik een markering als je een aantal ergens nieuw noemt. Beschikbaar: `rapporten`, `kaders`, `modellen`, `alle`, `aanbevolen` en `aanbevolenInDatabase`.

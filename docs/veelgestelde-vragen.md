@@ -19,7 +19,7 @@ Nee. Een norm kiezen zegt niet dat hij geldt, of dat de organisatie eraan voldoe
 ## Installeren en gebruiken
 
 **Wat heb ik nodig om Omnibus te gebruiken?**
-Git, Node.js 24.17 en de database-zip van de [releases](https://github.com/Robert-Worm/omnibus/releases/latest). Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Met Docker gaat het nog sneller. Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
+Niets, als je de [proefversie online](https://omnibus.sliplane.app) gebruikt. Zelf installeren: Git en Node.js 24.17; `node scripts/installeer.mjs` haalt de database zelf op. Met Docker heb je alleen Docker nodig. Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
 
 **Kan ik Omnibus gebruiken zonder iets te installeren?**
 Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk blijft ook daar in je eigen browser. De officiële online demo volgt; zie de [routekaart (pad A)](routekaart.md#pad-a--online-versie).
@@ -31,7 +31,7 @@ Omnibus is getest op Windows en Linux (Ubuntu 24.04). macOS zou moeten werken, m
 In je browser, op je eigen computer. Er gaat niets naar een server. Browseropslag is geen back-up: download je project met **Bewaar project**. Zie [goed om te weten](gebruiken/installeren.md#goed-om-te-weten).
 
 **Ik zie mijn project niet meer. Wat nu?**
-Controleer of je hetzelfde adres gebruikt: `127.0.0.1:4319` en `localhost:4319` hebben elk hun eigen opslag. Heb je een projectbestand bewaard? Open het met **Open project**.
+Controleer of je hetzelfde adres en dezelfde poort gebruikt; elke poort en elke browser heeft eigen opslag. Heb je een projectbestand bewaard? Open het met **Open project**.
 
 **Komt er een nieuwe database, en hoe krijg ik die?**
 Ja, als er nieuwe bronnen zijn verwerkt. Download de nieuwe zip bij de releases, pak hem uit in `local-data/runtime/` en voer de stappen *controleren en bouwen* en *starten* opnieuw uit. Bewaar je lopende projecten vooraf met **Bewaar project**, voor de zekerheid.

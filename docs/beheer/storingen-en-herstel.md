@@ -1,6 +1,6 @@
 # Storingen en herstel
 
-> **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Alles lokaal; een online versie bestaat nog niet.
+> **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Dit gaat vooral over je eigen computer. De proefversie online herstel je door de vorige werkende commit opnieuw uit te rollen.
 
 ## Bij een storing, in het kort
 
@@ -73,10 +73,10 @@ De test start versie A, daarna versie B, en probeert verkeerde combinaties van p
 | De server start niet, of met een verkeerde versie | Laat de werkende versie staan. Vergelijk pakket, instellingen en controlegetallen met wat je bewaarde. | Pakket en databasecontrole slagen samen, en een korte proef slaagt. |
 | Code 500 bij het openen van een bron | Noteer tijd en request-ID; kijk in de foutuitvoer en controleer de database. Zet geen bron- of projecttekst in je verslag. | De oorzaak is opgelost, of de vorige combinatie is terug, en de route is getest. |
 | De database is beschadigd of weg | Bewaar wat je vond afgeschermd. Herstel de gecontroleerde back-up naar een nieuwe map. Repareer of overschrijf het actieve bestand niet. | Controlegetallen, verwijzingen en de gebruikersproef kloppen. |
-| Onverwacht veel verkeer of kosten (later, online) | Bekijk bij de hostingpartij verzoeken, statuscodes en verbruik. Bij misbruik: openbare toegang beperken. Niet zomaar opschalen. | Oorzaak, grenzen en kosten zijn gecontroleerd en de beheerder geeft weer toegang. |
-| Verkeerde inhoud openbaar of een gegevenslek (later, online) | Beperk de toegang. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd. | Alleen toegestane inhoud is bereikbaar en een onafhankelijke beoordeling is klaar. |
+| Onverwacht veel verkeer of kosten (online) | Bekijk bij de hostingpartij verzoeken, statuscodes en verbruik. Bij misbruik: openbare toegang beperken. Niet zomaar opschalen. | Oorzaak, grenzen en kosten zijn gecontroleerd en de beheerder geeft weer toegang. |
+| Verkeerde inhoud openbaar of een gegevenslek (online) | Beperk de toegang. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd. | Alleen toegestane inhoud is bereikbaar en een onafhankelijke beoordeling is klaar. |
 
-Let op bij latere hosting: terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
+Bij de container-route is er geen aparte schijf: zet de vorige commit van de Dockerfile terug en push. Let op bij een route met een aparte schijf. Terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
 
 </details>
 

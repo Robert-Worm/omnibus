@@ -1,6 +1,6 @@
 # Runtimepakket
 
-> **In het kort:** een runtimepakket is Omnibus zonder ontwikkelomgeving: de gebouwde app plus de lokale server. Handig om Omnibus naar een andere computer over te zetten, en de basis voor een latere online versie.
+> **In het kort:** een runtimepakket is Omnibus zonder ontwikkelomgeving: de gebouwde app plus de lokale server. Handig om Omnibus naar een andere computer over te zetten, en de basis van de online versie.
 
 ## Wanneer gebruik je dit?
 
@@ -68,11 +68,11 @@ node scripts/start-runtime-package.mjs --database "<absoluut-pad-naar-private.sq
 - `npm install` is niet nodig: de server gebruikt alleen onderdelen die in Node zitten.
 - Ook dit pakket is lokale uitvoer: het geeft geen toestemming om inhoud te publiceren.
 
-Voor de online versie wordt dit pakket later in een image gezet; zie [de online versie voorbereiden](../../hosting/release-delivery/README.md). `npm run test:hosting-preparation` test die hulpmiddelen met fictieve gegevens op je eigen computer.
+Voor de online versie zit dit pakket al in een image; zie de [container-route](../../hosting/container/README.md). `npm run test:hosting-preparation` test die hulpmiddelen met fictieve gegevens op je eigen computer.
 
 ### Opties voor online gebruik (standaard uit)
 
-Deze opties werken alleen als je ze allemaal tegelijk en volledig opgeeft. Ze zijn getest met fictieve gegevens op de eigen computer. Er is nog nooit een openbare server mee gestart; dat is een apart besluit.
+Deze opties werken alleen als je ze allemaal tegelijk en volledig opgeeft. Ze zijn getest met fictieve gegevens op de eigen computer. Sinds 21 oktober 2026 draait de proefversie zo bij Sliplane (zie de [container-route](../../hosting/container/README.md)).
 
 | Optie | Wat je opgeeft |
 | --- | --- |
@@ -90,7 +90,7 @@ Voorbeeld om dit bewust op je eigen computer te proberen (vervang paden en contr
 node scripts/start-runtime-package.mjs --database "<apart-pad-naar-private.sqlite>" --release "<release-sha256>" --publication "<publicatie-sha256>" --public-origin https://omnibus.example.invalid --listen-host 127.0.0.1 --port 8080
 ```
 
-Hetzelfde werkt voor `scripts/serve-database-web.mjs`, met daarbij `--web-root "<webbuild>"`. Het voorbeeldadres wordt alleen als instelling gebruikt; er wordt geen verbinding mee gemaakt. `0.0.0.0` wordt nu alleen gecontroleerd, nooit echt gestart.
+Hetzelfde werkt voor `scripts/serve-database-web.mjs`, met daarbij `--web-root "<webbuild>"`. Het voorbeeldadres wordt alleen als instelling gebruikt; er wordt geen verbinding mee gemaakt. In de container luistert de server op `0.0.0.0`.
 
 De tests controleren dat opties goed worden gelezen, dat controlegetallen worden vergeleken en dat de juiste waarden worden doorgegeven. Een aparte test (`scripts/hosting-start-integration.test.mjs`) start beide echte opdrachten op de eigen computer en verwerkt echte verzoeken. Foutmeldingen bij het starten zijn kort en tonen geen ingevoerde waarden, bestandsinhoud of interne details.
 
@@ -132,7 +132,7 @@ Een geslaagde lokale controle zegt niets over snelheid op de host, de controles 
 
 Eerder bewijs: het pakket is getest op Windows en Ubuntu 24.04 met Node 24.17.0 (59 geslaagde tests). Selecties, vraagkoppelingen, bronmarkeringen, projecten en de drie Excel-werkvormen bleven gelijk. Dat geldt niet automatisch voor latere wijzigingen.
 
-Voor een openbare proef ontbreken nog:
+Voor de officiële demo ontbreken nog:
 
 - bewijs bij de hostingpartij voor de servergrenzen, de toegestane inhoud en een onafhankelijke beoordeling;
 - aantoonbaar bewaren van de database, alleen-leesrechten, een beveiligde verbinding (TLS) en geteste herstart;

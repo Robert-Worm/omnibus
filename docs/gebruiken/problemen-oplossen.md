@@ -99,7 +99,7 @@ Preview start refused. Check explicit start options, the pinned database, web bu
 
 **Wat het betekent:** je opent Omnibus op een ander adres dan waarop hij draait. Op je eigen computer is dat `http://127.0.0.1:4319/`, niet `http://localhost:4319/`. Omnibus weigert andere adressen, zodat websites niet stiekem bij je gegevens kunnen.
 
-**Wat je doet:** open precies het adres dat in de terminal staat. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
+**Wat je doet:** open precies het adres dat in de terminal staat. Met Docker is het juist `http://localhost:8080/`, niet `127.0.0.1:8080`. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
 
 ### 10. Mijn project is weg
 

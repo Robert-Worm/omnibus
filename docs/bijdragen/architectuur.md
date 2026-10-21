@@ -1,6 +1,6 @@
 # Architectuur
 
-> **In het kort:** Omnibus is een React-applicatie die in je browser draait. Een kleine lokale server levert de app en leest de database. Code en inhoud zijn strikt gescheiden: de code staat in Git, de inhoud in een aparte database.
+> **In het kort:** Omnibus is een React-applicatie die in je browser draait. Een kleine server die alleen leest, levert de app en de database: op je eigen computer, of online in openbare modus. Code en inhoud zijn strikt gescheiden: de code staat in Git, de inhoud in een aparte database.
 
 ## Hoe de onderdelen samenhangen
 

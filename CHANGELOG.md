@@ -2,6 +2,16 @@
 
 De belangrijkste wijzigingen, nieuwste eerst.
 
+## 21 oktober 2026 · online proefversie en versie 0.1.0
+
+- **Proefversie online** op [omnibus.sliplane.app](https://omnibus.sliplane.app), voor een vaste prijs per maand. De openbare database zit in de image; elke push naar `main` rolt automatisch uit.
+- **Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0)** als release, met de Dockerfile. Hoort bij de database van 19 oktober 2026.
+- **Sneller beginnen:** met Docker in twee opdrachten, of zonder Docker met één opdracht (`node scripts/installeer.mjs`). Nieuwe pagina met de tien meest voorkomende foutmeldingen en een hulpcategorie in Discussions.
+- **Claimsysteem:** hooguit vijf bronnen tegelijk, een overzicht van wat op de beheerder wacht, een herinnering na zeven dagen en een weekoverzicht in Discussions.
+- **Documentatie:** een Engelse kennismaking, hostinguitleg in gewone taal, nieuwe schermafbeeldingen met één opdracht, een wekelijkse linkcontrole en strengere controles op leesbaarheid.
+- **De Content Workbench is verwijderd**; de voortgang loopt via GitHub.
+- **Eerste snelheidsverbeteringen** in de viewers en bij het bewaren van projecten.
+
 ## 20 oktober 2026 · meedoen en nieuwe documentatie
 
 - **Claimsysteem voor bijdragers:** zet een rapport, wet of kader op je naam (check-out), lever in met `/inleveren` (check-in). De [voortgang](docs/bijdragen/voortgang.md) werkt zichzelf bij.

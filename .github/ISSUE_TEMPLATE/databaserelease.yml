@@ -43,6 +43,7 @@ body:
         - [ ] Release gemaakt met tag `database-<datum>`, beschrijving en zip
         - [ ] `.github/voortgang/verwerkt.json` bijgewerkt (datum, rapporten, wetten en kaders, modellen) en gepusht
         - [ ] Voortgang, badge en tellingen in de README kloppen (vanzelf bijgewerkt na de push)
+        - [ ] Nieuwe zip en controlegetal in `hosting/container/Dockerfile` én `scripts/database-release.mjs` gezet en gepusht; de online versie toont de nieuwe database
 
         **4. Afronden**
         - [ ] Verwerkte claims gesloten met het label **verwerkt**

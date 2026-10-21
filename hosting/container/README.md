@@ -36,7 +36,7 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 
 ## Een nieuwe database online zetten
 
-Pas `DATABASE_URL` en `DATABASE_SHA256` in de Dockerfile aan naar de nieuwe release, push, en laat de host opnieuw bouwen. Het controlegetal van de zip staat in `SHA256SUMS.txt` van de release-assistent.
+Pas `DATABASE_URL` en `DATABASE_SHA256` aan in de Dockerfile én in `scripts/database-release.mjs` (de installatieopdracht); een test bewaakt dat ze gelijk zijn. Push, laat de host opnieuw bouwen en controleer de online versie. Het controlegetal van de zip staat in `SHA256SUMS.txt` van de release-assistent.
 
 ## Goed om te weten
 

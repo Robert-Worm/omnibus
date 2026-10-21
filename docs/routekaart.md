@@ -1,6 +1,6 @@
 # Routekaart
 
-> **In het kort:** Omnibus werkt nu op je eigen computer, met een openbare database. Vanaf hier lopen vier paden naast elkaar. Een online versie, AI die rechtstreeks met de database werkt, eigen databases bouwen en samen de openbare database laten groeien.
+> **In het kort:** Omnibus werkt op je eigen computer en als proefversie online, met een openbare database. Vanaf hier lopen vier paden naast elkaar. Een online versie, AI die rechtstreeks met de database werkt, eigen databases bouwen en samen de openbare database laten groeien.
 
 Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Ideeën en reacties zijn welkom in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
@@ -8,7 +8,7 @@ Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Idee�
 
 ```mermaid
 flowchart LR
-    N["✅ Nu<br/>Lokaal werkend<br/>met openbare database"]
+    N["✅ Nu<br/>Lokaal en online als proef<br/>met openbare database"]
     N --> A["🌐 Pad A<br/>Online versie"]
     N --> B["🤖 Pad B<br/>AI rechtstreeks<br/>aan de database"]
     N --> C["🗂️ Pad C<br/>Eigen databases<br/>bouwen"]
@@ -27,7 +27,7 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 
 ## Het vertrekpunt: wat er nu is
 
-- Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md).
+- Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md), of probeer de [proefversie online](https://omnibus.sliplane.app).
 - Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met <!--n:rapporten-->27<!--/n--> rapporten, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen.
 - Zes [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren.
 
@@ -41,7 +41,8 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 | Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ |
 | Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ |
 | Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ |
-| Online proef: logs, snelheid, back-up en herstel | ⬜ |
+| Snelheid online aantoonbaar ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | 🔄 |
+| Online proef: logs, back-up en herstel | ⬜ |
 | Onafhankelijke beveiligings- en overdrachtsreview | ⬜ |
 | Gebruikers testen de demo | ⬜ |
 | Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ |
@@ -104,7 +105,7 @@ Dat verandert alleen na een nieuw, bewust besluit.
 
 ## Samengevat
 
-Vier paden vanaf een werkende lokale versie: online, AI, eigen databases en samen bijdragen. Pad D voedt de rest.
+Vier paden vanaf een werkende versie, lokaal en online: online, AI, eigen databases en samen bijdragen. Pad D voedt de rest.
 
 ## Volgende stap
 

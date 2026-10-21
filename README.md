@@ -77,7 +77,7 @@ Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-m
 
 ## Wat zit erin?
 
-Omnibus bestaat uit twee delen die je los downloadt:
+Omnibus bestaat uit twee delen. Online en met Docker krijg je ze samen; bij een eigen installatie haalt de installatieopdracht de database op.
 
 | Deel | Wat het is | Waar |
 | --- | --- | --- |
@@ -113,7 +113,7 @@ Omnibus wordt beter met elke bron die erbij komt. Je zet een rapport, wet of kad
 
 ## Wat komt er nog?
 
-Vanaf de lokale versie lopen vier paden:
+Vanaf de huidige versie, lokaal en online, lopen vier paden:
 
 | Pad | Doel |
 | --- | --- |
