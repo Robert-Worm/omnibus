@@ -135,12 +135,9 @@ npm run data:runtime-backup -- --from <absoluut-pad/catalogue.sqlite> --to <nieu
 
 De opdracht maakt een gecontroleerde kopie en weigert een bestaand doelbestand. Kopieer een SQLite-bestand dat in gebruik is nooit met de verkenner.
 
-## Vaste regels
+## Goed om te weten
 
-- De publicatie wijzigt de actieve database niet. Overstappen is een bewuste stap.
-- Een bestaande uitvoermap wordt nooit overschreven.
-- Hashes, manifesten en HOLD-statussen worden nooit aangepast om een fout weg te werken.
-- Uitvoer van mislukte pogingen blijft staan en wordt niet gebruikt.
+Lees vóór je begint de [vaste regels](README.md#vaste-regels) in het beheeroverzicht, onder *Bij het publiceren*. Ze staan op één plek, zodat ze nergens van elkaar afwijken.
 
 ## Samengevat
 

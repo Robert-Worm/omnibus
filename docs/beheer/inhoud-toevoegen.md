@@ -84,12 +84,9 @@ Controleer twee dingen:
 
 Pas als beide controles goed zijn, kies je de nieuwe database. Bewaar de vorige database en build, zodat je kunt terugvallen. Daarna volgt [een release uitbrengen](database-publiceren.md#een-release-uitbrengen).
 
-## Vaste regels
+## Goed om te weten
 
-- Bronpassages, citaten en markeringen blijven ongewijzigd.
-- Een technische controle is geen inhoudelijke goedkeuring.
-- Een correctie op bestaande inhoud wordt de nieuwe actuele tekst; er komen geen parallelle oude versies bij.
-- Gedeelde onderdelen die je niet mag breken: `app/law-point-source.tsx` (bronweergave), `app/report-library.tsx` (bronpagina's en markeringen), `app/viewer-readability.css` en `app/workflow-patterns.tsx` (opmaak), en de modelweergave in `lib/model-presentation.mjs`.
+Lees vóór je begint de [vaste regels](README.md#vaste-regels) in het beheeroverzicht, onder *Bij nieuwe inhoud*. Ze staan op één plek, zodat ze nergens van elkaar afwijken.
 
 ## Samengevat
 

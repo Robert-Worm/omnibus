@@ -151,7 +151,7 @@ Zet nooit de lokale server of de lokale AI-koppeling rechtstreeks online. Een op
 
 ## Volgende stap
 
-Lees [storingen en herstel](storingen-en-herstel.md) voor back-up en herstel.
+Lees [back-up en herstel](storingen-en-herstel.md) voor back-up en herstel.
 
 ---
 

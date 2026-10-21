@@ -2,7 +2,15 @@
 
 > **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.sliplane.app](https://omnibus.sliplane.app). De andere mappen beschrijven een uitgebreidere route met de database op een aparte schijf; die is nodig zodra er een niet-openbare database online moet.
 
-## Wat staat hier?
+## Zo draait de proefversie nu
+
+De proefversie draait via [`container/`](container/README.md): één Dockerfile met de openbare database erin, voor één app bij een containerhost (Sliplane). Je vindt hem op [omnibus.sliplane.app](https://omnibus.sliplane.app).
+
+Begin hier als je de online versie wilt bijwerken of herstellen.
+
+## Klaarliggend: de route met een aparte database
+
+Deze route is nodig zodra er een niet-openbare database online moet. De vier mappen volgen elkaar op:
 
 ```mermaid
 flowchart LR
@@ -16,7 +24,6 @@ flowchart LR
 | [`image-verification/`](image-verification/README.md) | De image lokaal bouwen en controleren met fictieve gegevens |
 | [`data-transfer/`](data-transfer/README.md) | Een database op de server ontvangen en tegen vaste controlegetallen controleren |
 | [`first-start/`](first-start/README.md) | De allereerste start op de server, voordat de database er staat |
-| [`container/`](container/README.md) | De eenvoudigste route: één Dockerfile met de openbare database erin, voor één app bij een containerhost (Sliplane) |
 
 ## Samengevat
 

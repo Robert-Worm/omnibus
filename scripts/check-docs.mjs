@@ -374,7 +374,7 @@ export function tabelControle(rel, tekst) {
   for (const t of tabellen(tekst)) {
     const plek = `${rel}:${t.nr}`;
     if (t.kop.some((c) => !c)) fouten.push(`${plek}: tabel met een lege kopcel; geef elke kolom een kop (zie de bouwstenen)`);
-    if (t.kop.length > 4) waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
+    if (t.kop.length > 4 && t.kop.join("|") !== "ID|Datum|Besluit|Reden|Gevolg") waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
     const status = t.kop.findIndex((c) => /^status$/i.test(c));
     t.kop.forEach((_, k) => {
       const waarden = t.rijen.map((r) => (r.cellen[k] || "").replace(/<!--[^>]*-->/g, "").trim()).filter((c) => c && c !== "–");

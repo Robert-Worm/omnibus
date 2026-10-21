@@ -45,7 +45,7 @@ Een release is nodig als er genoeg nieuwe bronnen klaarliggen; bijvoorbeeld eens
 
 | Taak | Waarom | Hoe |
 | --- | --- | --- |
-| Herstelproef met een back-up | Een back-up die niet terug te zetten is, is geen back-up | [Storingen en herstel](storingen-en-herstel.md) |
+| Herstelproef met een back-up | Een back-up die niet terug te zetten is, is geen back-up | [Back-up en herstel](storingen-en-herstel.md) |
 | Node-versie en onderdelen bijwerken | Beveiligingsupdates | Pas `.nvmrc` en `package.json` samen aan; de documentatiecheck bewaakt dat ze gelijk blijven |
 | Werklijst van de Rijksmap verversen | Nieuwe rapporten komen erbij | Vervang `.github/voortgang/rapporten.csv` door een nieuwe export |
 | Besluitenlijst nalopen | Kloppen de afspraken nog? | [Besluiten](besluiten.md) |

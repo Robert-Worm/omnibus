@@ -191,7 +191,7 @@ De vier stappen, titels, panelen, toetsenbordbediening en kleine schermen blijve
 
 <details><summary><b>Technische details</b> · Gedeelde bediening</summary>
 
-Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry, smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen. Gerichte handmatige toetsenbord- en leesbaarheidstoets naast technische tests. Een schermlezertest valt voor de demo buiten scope (besluit 20 oktober 2026) en staat als open punt in ACCESSIBILITY.md.
+Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry, smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen. Gerichte handmatige toetsenbord- en leesbaarheidstoets naast technische tests. Een schermlezertest valt voor de demo buiten scope ([besluit B-005](besluiten.md#b-005)) en staat als open punt in ACCESSIBILITY.md.
 
 </details>
 

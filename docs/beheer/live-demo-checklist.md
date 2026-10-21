@@ -44,7 +44,7 @@ Elke stap is klaar als het volgende geldt.
 10. **Vrijgavebesluit.** De eigenaar besluit op basis van stap 1–9 of de demo online mag.
 11. **Generale repetitie.** Dezelfde vastgezette code en database zijn op de server doorlopen, en er is een terugvalroute.
 
-Bewust niet in deze demo: een test met schermlezer en een test in desktop-Excel ([besluit 20 oktober 2026](besluiten.md)).
+Bewust niet in deze demo: een test met schermlezer en een test in desktop-Excel ([besluit B-005](besluiten.md#b-005)).
 
 ## Waar je op let
 
@@ -61,7 +61,7 @@ Leg per controle vast: de codeversie, de release en publicatie, de datum, wie he
 
 Een lokale proef in de browser bewijst selecties, koppelingen en Excel-inhoud. Hij bewijst niet hoe het eruitziet in desktop-Excel, of het toegankelijk is voor mensen, en hoe snel de server is. Herhaal alleen de controles die geraakt worden als code, database of serverinstellingen veranderen.
 
-Gebruik de [container-route](../../hosting/container/README.md), het [runtimepakket](runtime-pakket.md) en [storingen en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
+Gebruik de [container-route](../../hosting/container/README.md), het [runtimepakket](runtime-pakket.md) en [back-up en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
 
 ## Samengevat
 

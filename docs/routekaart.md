@@ -48,7 +48,7 @@ flowchart LR
 | Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ Gepland | – |
 | Online demo | ⬜ Gepland | – |
 
-Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md). Een test met schermlezer en in desktop-Excel hoort bewust niet bij deze demo (besluit 20 oktober 2026). Deze tabel en de checklist volgen dezelfde demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór 1 december.
+Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md). Een test met schermlezer en in desktop-Excel hoort bewust niet bij deze demo ([besluit B-005](beheer/besluiten.md#b-005)). Deze tabel en de checklist volgen dezelfde demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór 1 december.
 
 ## Pad B · AI rechtstreeks aan de database
 

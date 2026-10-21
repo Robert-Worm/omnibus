@@ -71,7 +71,7 @@ Eerst voorkomen dat het erger wordt, dan rustig herstellen, en daarna vastleggen
 
 ## Volgende stap
 
-Voor back-up en herstel van de database zelf: [storingen en herstel](storingen-en-herstel.md).
+Voor back-up en herstel van de database zelf: [back-up en herstel](storingen-en-herstel.md).
 
 ---
 

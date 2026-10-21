@@ -60,7 +60,7 @@ Gebruik een tabel alleen voor informatie die je naast elkaar vergelijkt. Er zijn
 **Regels voor elke tabel**
 
 - Elke kolom heeft een kop. Een lege cel krijgt `–`.
-- Hooguit vier kolommen. Alleen gegenereerde standtabellen mogen er vijf hebben.
+- Hooguit vier kolommen. Alleen gegenereerde standtabellen en de besluitenlijst (`ID | Datum | Besluit | Reden | Gevolg`) mogen er vijf hebben.
 - Een cel is kort: hooguit 25 woorden en één gedachte.
 - Getallen staan rechts (`---:`). Datums in een tabel schrijf je als `2026-10-21`; in lopende tekst als *21 oktober 2026*.
 - De eerste kolom is gewone tekst, een link of `code`. Niet vet.

@@ -25,4 +25,4 @@ Bij het installeren (je zet de database in `runtime/`), of als je iets aan de se
 
 ## Verder lezen
 
-[Installeren](../docs/gebruiken/installeren.md) · [Database publiceren](../docs/beheer/database-publiceren.md) · [Storingen en herstel](../docs/beheer/storingen-en-herstel.md)
+[Installeren](../docs/gebruiken/installeren.md) · [Database publiceren](../docs/beheer/database-publiceren.md) · [Back-up en herstel](../docs/beheer/storingen-en-herstel.md)
