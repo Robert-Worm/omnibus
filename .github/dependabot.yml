@@ -1,0 +1,23 @@
+# Dependabot stelt elke maand updates voor; zie SECURITY.md (Automatische meldingen).
+# Alleen de GitHub-workflows en de Node-basis-image van de container. De npm-onderdelen
+# staan vast op exacte versies en worden bij de kwartaalcontrole met de hand bijgewerkt;
+# kwetsbaarheden daarin meldt Dependabot apart (alerts), los van dit bestand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      workflows:
+        patterns: ['*']
+    commit-message:
+      prefix: 'GitHub-workflows'
+  - package-ecosystem: docker
+    directory: /hosting/container
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: 'Container'

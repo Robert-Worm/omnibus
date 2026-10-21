@@ -23,11 +23,23 @@ De beheerder beoordeelt welke versies geraakt zijn, bevestigt het probleem waar 
 
 Zijn er mogelijk wachtwoorden of sleutels uitgelekt? Meld dat direct. Een bestand uit de laatste commit verwijderen is niet genoeg: de sleutel moet worden vervangen.
 
+## Automatische meldingen
+
+GitHub waarschuwt de beheerder automatisch op drie manieren:
+
+| Wat | Wat het doet | Wie, en binnen welke termijn |
+| --- | --- | --- |
+| **Dependabot-meldingen** | Waarschuwt als een gebruikte bibliotheek een bekende kwetsbaarheid heeft | De beheerder beoordeelt een melding binnen 7 dagen; bij *critical* of *high* binnen 2 werkdagen |
+| **Dependabot-updates** | Stelt elke maand een update voor van de GitHub-workflows en de Node-basis-image van de [container](hosting/container/README.md) | De beheerder bekijkt het voorstel bij de maandelijkse controle |
+| **Geheimen scannen** | Waarschuwt als er een sleutel of wachtwoord in Git terechtkomt, en houdt een push met een herkenbare sleutel tegen | Direct: vervang de sleutel en meld het, zie hierboven |
+
+Een melding beoordelen betekent: kijken of Omnibus het kwetsbare deel echt gebruikt, en zo ja, bijwerken of een reden vastleggen waarom niet. Leg die reden vast in de melding zelf. De instellingen staan onder *Settings → Code security* van de repository.
+
 ## Waar kunnen problemen zitten?
 
 Bijvoorbeeld in de bronweergave, het openen van projectbestanden, de Excel-export, de lokale server, de AI-koppeling, de publicatiehulpmiddelen of de gebruikte bibliotheken.
 
-Omnibus draait nu alleen lokaal. De lokale server en de AI-koppeling zijn niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
+Omnibus draait lokaal en als [proefversie online](https://omnibus.sliplane.app), in openbare alleen-lezen modus. De AI-koppeling is niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
 
 ## Verder lezen
 
