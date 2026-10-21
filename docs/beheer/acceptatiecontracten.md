@@ -27,10 +27,68 @@ Niet (meer) van toepassing: K01–K03 (accounts en rollen) en K21 (betalingen) v
 
 Dit document zegt niet dat alle afspraken al gehaald zijn; het beschrijft waaraan een wijziging getoetst wordt.
 
+## De afspraken in gewone taal
+
+### K04 · Je werk gaat niet verloren
+Een project in de browser blijft precies gelijk na herladen, bewaren en weer openen: selecties, eigen tekst, vraagkoppelingen en bronverwijzingen. Een fout mag nooit werk wissen. Er is geen account en geen opslag in de cloud; zeg eerlijk dat browseropslag geen back-up is.
+*Voorbeeld van een wijziging die hieronder valt:* een nieuw veld in het projectbestand, of een andere manier van opslaan in de browser.
+
+### K05 · Bronnen blijven exact zoals ze zijn
+Brontekst, nummers, markeringen en HOLD-punten veranderen nooit stilletjes. Alle wetten en kaders gebruiken dezelfde viewer; er komt geen aparte weergave per bron. AI en browser passen de brongegevens nooit aan.
+*Voorbeeld:* een nieuwe wet toevoegen, of de manier waarop passages worden gemarkeerd.
+
+### K06 · De server accepteert alleen veilige, begrensde verzoeken
+De openbare app leest alleen; hij publiceert niets en heeft geen beheerfuncties. Paden, nummers, aantallen en groottes worden gecontroleerd, en foutmeldingen verraden geen paden of geheimen. Online gaat alleen na een beoordeelde servergrens, nooit via een open tunnel naar de eigen computer.
+*Voorbeeld:* een nieuwe API-route, of een nieuwe optie bij het starten van de server.
+
+### K07 · Excel en projectbestanden kloppen en zijn veilig
+De export gebeurt in de browser, zonder server. Bestandsnamen zijn veilig, formules en HTML kunnen geen kwaad, en bestanden zijn begrensd in grootte. De drie werkvormen houden hun geteste inhoud.
+*Voorbeeld:* een nieuwe kolom in de Excel-export, of een nieuwe werkvorm.
+
+### K08 · De AI-koppeling leest alleen, en schrijft pas na akkoord
+Je eigen AI-assistent kan zoeken en voorstellen doen, maar slaat pas iets op als jij akkoord geeft, in een nieuwe, aparte map. Bronteksten zijn gegevens, geen opdrachten voor de AI. De koppeling werkt alleen op je eigen computer.
+*Voorbeeld:* een nieuw hulpmiddel voor de AI, of een andere manier van opslaan.
+
+### K09 · Nieuwe inhoud komt alleen binnen na controle
+Een bron komt alleen in de database na de pakketcontrole, de vereiste beoordelingen en een bewuste publicatie. Ontbreekt bewijs, dan blijft het HOLD. Dezelfde bron komt nooit twee keer binnen.
+*Voorbeeld:* een wijziging in de pakketcontrole of in de publicatie-opdrachten.
+
+### K11 · Foutmeldingen helpen zonder inhoud te lekken
+Een fout is te onderzoeken met tijdstip en request-ID, zonder dat bron-, project- of pakkettekst in de logboeken komt.
+*Voorbeeld:* een nieuwe foutmelding of extra logboekregels.
+
+### K13 · De app blijft snel genoeg
+Met de testcollectie: een bruikbare start binnen 3 seconden, kiezen binnen 0,1 seconde en zoeken binnen 0,5 seconde. Grenzen worden niet achteraf versoepeld om een test te halen.
+*Voorbeeld:* een groter scherm met meer gegevens, of een nieuwe zoekfunctie.
+
+### K14 · Back-up en herstel werken
+Herstellen gaat altijd naar een nieuw, leeg bestand, met controle van de controlegetallen en een proef. De vorige werkende versie blijft bewaard; een mislukte wissel verandert nooit stilletjes de actieve versie.
+*Voorbeeld:* een wijziging in de back-upopdracht of in de databaseopbouw.
+
+### K15 · Code en database horen aantoonbaar bij elkaar
+Er is één gedocumenteerde manier om te bouwen en te starten, met een expliciete database en vaste controlegetallen. Geen geheimen, databases of gegenereerde bestanden in Git. Liever kleine, leesbare onderdelen dan een grote herschrijving.
+*Voorbeeld:* een nieuw bouwscript, of een nieuwe afhankelijkheid.
+
+### K16 · Bronrechten en privacy worden gerespecteerd
+Projecten blijven op de eigen computer, tenzij de gebruiker zelf iets deelt. Inhoud waarvan de rechten onbekend zijn, wordt niet gepubliceerd. Geen bronarchieven of private documenten naar GitHub.
+*Voorbeeld:* een nieuwe bron in de openbare database, of een functie om iets te delen.
+
+### K17 · Bediening en opmaak zijn gedeeld en gelijk
+De vier stappen, titels, panelen, toetsenbordbediening en kleine schermen blijven werken zoals ze nu werken. Geen knoppen voor accounts of betalingen.
+*Voorbeeld:* een nieuw scherm of een andere indeling van de bovenbalk.
+
+### K18 · Het bewijs past bij de wijziging
+Een tekstwijziging vraagt een inhoudelijke controle, een technische wijziging gerichte tests, een release een proef van de belangrijkste gebruikersroute. Niet te weinig, niet te veel.
+*Voorbeeld:* elke wijziging; noem in je pull request welke controles je deed.
+
+### K20 · Beveiliging richt zich op echte risico's
+Bevindingen rond import, bronweergave, export, de API, bestanden, onderdelen en geheimen worden beoordeeld en opgelost. Werkende beveiliging wordt niet weggehaald.
+*Voorbeeld:* een nieuwe manier om bestanden in te lezen, of een nieuwe afhankelijkheid.
+
 ## Hoe gebruik je deze afspraken?
 
 1. **Zoek welke afspraken je wijziging raakt.** Gebruik de tabel hierboven. Een wijziging aan de Excel-export raakt bijvoorbeeld K07.
-2. **Lees die afspraken in detail** (hieronder) en controleer of je wijziging eraan voldoet.
+2. **Lees die afspraken** hierboven in gewone taal, en zo nodig in de technische referentie, en controleer of je wijziging eraan voldoet.
 3. **Noem de codes in je pull request**, met de tests die je draaide. Zie [welke tests passen bij je wijziging](../bijdragen/ontwikkelen.md#welke-tests-passen-bij-je-wijziging).
 
 ## Technische referentie

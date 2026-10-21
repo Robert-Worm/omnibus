@@ -26,13 +26,11 @@ Bij elke start controleert het pakket zichzelf en de database. Klopt er iets nie
 
 <details><summary><b>Technische referentie: alle details en opdrachten</b></summary>
 
-Het runtimepakket bevat de gebouwde Omnibus-interface en de bestaande alleen-lezen server, zonder ontwikkelomgeving, npm-installatie of database. Je hebt Node 24 en een database nodig. Standaard start het alleen lokaal op `127.0.0.1`. De hostingopties hieronder zijn voorbereiding, geen toestemming om het pakket openbaar te maken.
+Het runtimepakket bevat de gebouwde app en de server die alleen leest. Er zit geen ontwikkelomgeving, geen npm-installatie en geen database in. Je hebt alleen Node 24 en een database nodig. Het pakket start standaard alleen op je eigen computer (`127.0.0.1`). De opties voor online gebruik hieronder zijn voorbereiding: ze geven geen toestemming om het pakket openbaar te maken.
 
 ### Bouwen en starten
 
-Voor latere hosting: [imagecontext voorbereiden](../../hosting/release-delivery/README.md). Dat gebruikt het bestaande pakket; geen database in de image, geen automatische upload of online zetten. `npm run test:hosting-preparation` controleert deze hulpmiddelen met synthetische testgegevens en loopback. Imagebouw en providerbewijs blijven apart.
-
-Voer vanuit de codecheckout uit, met de bestaande privé-bouwinstellingen:
+Voer de opdrachten uit vanuit de map van de repository, met je eigen, private instellingen.
 
 Windows (PowerShell):
 
@@ -53,93 +51,94 @@ npm run build:runtime -- --settings "$settingsFile"
 npm run package:runtime -- --web-root runtime-build --database "$database" --out work/runtime-01
 ```
 
-`build:runtime` gebruikt dezelfde React/Vite-applicatie, viewers, exports en gegevenscontrole. De uitvoer gaat naar `runtime-build`; `database-build` en de actieve lokale versie blijven ongemoeid. Alleen de lokale AI-startconfiguratie verschilt: het pakket bevat geen persoonlijk computerpad en toont de bestaande uitleg dat een online AI-koppeling nog niet beschikbaar is. De afzonderlijke lokale AI-service blijft ongewijzigd.
+Wat de opdrachten doen:
 
-De bovenliggende uitvoermap moet bestaan en de doelmap moet nieuw zijn. De packager controleert eerst de bronrelease, gegevenspublicatie en het codecontract. Daarna kopieert hij uitsluitend de vaste runtimebestanden, HTML, releasebeschrijving en toegestane gebouwde assets. Hij vervangt geen bestaande map. Na een fout blijft eventuele onvolledige uitvoer herkenbaar apart; kies een nieuwe doelmap voor een nieuwe poging.
+- **`build:runtime`** bouwt dezelfde app als de gewone build, met dezelfde schermen, exports en controles. De uitvoer komt in `runtime-build`. Je gewone build (`database-build`) blijft onaangeroerd. Eén verschil: het pakket bevat geen pad van jouw computer voor de AI-koppeling, en laat zien dat een online AI-koppeling nog niet bestaat.
+- **`package:runtime`** controleert eerst of release, publicatie en code bij elkaar horen. Daarna kopieert hij alleen de vaste serverbestanden, de gebouwde app en een beschrijving. De bovenliggende map moet bestaan; de doelmap moet nieuw zijn. Gaat er iets mis, dan blijft de halve uitvoer herkenbaar apart staan. Kies dan een nieuwe doelmap.
 
-Start op Windows of Linux vanuit de gemaakte pakketmap:
+Starten op Windows of Linux, vanuit de pakketmap:
 
 ```text
 node scripts/start-runtime-package.mjs --database "<absoluut-pad-naar-private.sqlite>" --port 4322
 ```
 
-`npm start -- --database "<absoluut-pad-naar-private.sqlite>" --port 4322` is gelijkwaardig. Een `npm install` is niet nodig: de server gebruikt alleen Node-modules. De browserbundels bevatten uiteraard hun bestaande frontendbibliotheken en startgegevens. Behandel ook dit pakket als lokale uitvoer; het is geen toestemming om broninhoud te publiceren.
+- `npm start -- --database "<pad>" --port 4322` doet hetzelfde.
+- In plaats van `--database` kun je `--settings "<pad-naar-local-build.json>"` gebruiken. De start controleert dan ook de release en publicatie uit dat bestand.
+- Bewaar instellingen en database **buiten** de pakketmap.
+- `npm install` is niet nodig: de server gebruikt alleen onderdelen die in Node zitten.
+- Ook dit pakket is lokale uitvoer: het geeft geen toestemming om inhoud te publiceren.
 
-Ook `--settings "<pad-naar-local-build.json>"` wordt ondersteund. Bewaar instellingen en database buiten de pakketmap. De start controleert dan naast de pakketidentiteit ook de gekozen release en publicatie uit dat instellingenbestand.
+Voor de online versie wordt dit pakket later in een image gezet; zie [de online versie voorbereiden](../../hosting/release-delivery/README.md). `npm run test:hosting-preparation` test die hulpmiddelen met fictieve gegevens op je eigen computer.
 
-### Expliciete hostingopties — standaard uitgeschakeld
+### Opties voor online gebruik (standaard uit)
 
-De startlaag accepteert de onderstaande opties alleen als complete configuratie. De startlaag, gedeelde originvalidator, publieke requestgrens en het burstbudget zijn geïntegreerd. Beide echte CLI-routes zijn met synthetische data op loopback getest, inclusief het zelfstandige pakket zonder dependencies. Er is geen publieke listener gestart. Een echte hosted vrijgave blijft een afzonderlijk besluit; de localhost-probealias van een provider is niet toegestaan zonder bewijs en afzonderlijke beoordeling.
+Deze opties werken alleen als je ze allemaal tegelijk en volledig opgeeft. Ze zijn getest met fictieve gegevens op de eigen computer. Er is nog nooit een openbare server mee gestart; dat is een apart besluit.
 
-| Optie | Voorwaarde |
+| Optie | Wat je opgeeft |
 | --- | --- |
-| `--public-origin` | Eén canonieke HTTPS-origin, bijvoorbeeld `https://omnibus.example.invalid`. Exact opgegeven: geen gebruikersnaam/wachtwoord, pad, afsluitende slash, query, fragment, hoofdlettercorrectie, trailing dot, wildcard of overbodige `:443`. Een expliciete niet-standaardpoort zoals `:8443` mag wel. |
-| `--listen-host` | Alleen exact `127.0.0.1` of `0.0.0.0`, altijd samen met `--public-origin`. Een luisteradres zonder origin wordt ook voor loopback geweigerd. De server-API houdt loopback als standaard; de startroutes eisen in hostingmodus een bewuste keuze. |
-| `--port` | Verplicht expliciet in hostingmodus: decimale gehele poort 1–65535, zonder voorloopnul of andere normalisatie. Geen automatische overname van `PORT` of andere omgevingsvariabelen. De operator kan een providerpoort later zelf als argument doorgeven. |
-| Database en pinnen | `--database` plus afzonderlijke `--release` en `--publication`, beide exacte 64-tekens SHA-256 in kleine letters; of één expliciet `--settings`-bestand met precies deze drie velden. Geen menging of overrides. De hostingstart leidt geen ontbrekende pin af uit de webbuild. |
-| Webroot | `serve-database-web.mjs` vereist in hostingmodus expliciet `--web-root`. `start-runtime-package.mjs` gebruikt uitsluitend de gecontroleerde `database-build` binnen het gekozen pakket en weigert een hosting-override met `--web-root`. De database blijft buiten het pakket. |
+| `--public-origin` | Het openbare adres, precies één `https://`-adres, bijvoorbeeld `https://omnibus.example.invalid`. Zonder gebruikersnaam, pad, slash aan het eind, vraagteken, hoofdletters of overbodige `:443`. Een andere poort zoals `:8443` mag wel. |
+| `--listen-host` | Alleen `127.0.0.1` (eigen computer) of `0.0.0.0` (alle netwerken), en altijd samen met `--public-origin`. |
+| `--port` | Verplicht: een poortnummer van 1 tot 65535, zonder voorloopnul. De server leest de poort niet zelf uit omgevingsvariabelen zoals `PORT`; geef hem expliciet door. |
+| Database en controlegetallen | `--database` met `--release` en `--publication` (elk 64 kleine hexadecimale tekens), óf één `--settings`-bestand met precies die drie velden. Niet mengen. |
+| Webmap | `serve-database-web.mjs` vraagt dan expliciet `--web-root`. `start-runtime-package.mjs` gebruikt altijd de gecontroleerde app in het pakket en weigert een andere webmap. |
 
-Onbekende of dubbele vlaggen, aliassen zoals `--host` en `--origin`, en `--vlag=waarde` worden geweigerd. Dezelfde hostingvoorwaarden gelden voor de geëxporteerde startfuncties: wegvallen van een optie activeert nooit een lokale terugval. De gewone lokale CLI behoudt poort 4319 (of expliciet 1024–65535); programmatic lokale tests kunnen nog steeds poort 0 gebruiken. Er komen geen hostingvelden in het database-instellingenbestand of in de pakketmanifestindeling.
+De server weigert onbekende of dubbele opties, afkortingen zoals `--host` en de vorm `--optie=waarde`. Ontbreekt een optie, dan valt hij nooit stilletjes terug op lokaal gebruik. Lokaal blijft poort 4319 de standaard. Instellingen voor online gebruik komen nooit in het databasebestand of het pakket terecht.
 
-Voorbeeld voor **bewuste loopbackvalidatie**; alle paden en pinnen moeten door echte gecontroleerde waarden worden vervangen:
+Voorbeeld om dit bewust op je eigen computer te proberen (vervang paden en controlegetallen door echte waarden):
 
 ```text
 node scripts/start-runtime-package.mjs --database "<apart-pad-naar-private.sqlite>" --release "<release-sha256>" --publication "<publicatie-sha256>" --public-origin https://omnibus.example.invalid --listen-host 127.0.0.1 --port 8080
 ```
 
-Dezelfde opties gelden voor `scripts/serve-database-web.mjs`, met aanvullend `--web-root "<expliciete-webbuild>"`. Het synthetische domein is alleen een configuratie-/headerwaarde; er wordt geen verbinding mee gemaakt. De expliciete keuze `0.0.0.0` is bedoeld voor een later goedgekeurde host en wordt in deze tranche alleen door de parser getoetst, nooit als listener gestart.
+Hetzelfde werkt voor `scripts/serve-database-web.mjs`, met daarbij `--web-root "<webbuild>"`. Het voorbeeldadres wordt alleen als instelling gebruikt; er wordt geen verbinding mee gemaakt. `0.0.0.0` wordt nu alleen gecontroleerd, nooit echt gestart.
 
-De nieuwe starttests gebruiken een serverdubbel voor de doorgifte van `{port, webRoot, publicOrigin, listenHost}` en echte synthetische publicaties en pakketinventarissen voor de voorafgaande controles. Dat bewijst argumentvalidatie, pinvergelijking, integriteit en doorgifte. De ontwikkelaar heeft daarnaast met `scripts/hosting-start-integration.test.mjs` beide echte CLI-processen en de publieke verzoekafhandeling op loopback bewezen, zonder testdubbel. Bestaande lokale pakkettests blijven van toepassing. Startfouten aan de CLI blijven kort en geredigeerd, zonder ingevoerde waarden, bestandsinhoud of stacktrace.
+De tests controleren dat opties goed worden gelezen, dat controlegetallen worden vergeleken en dat de juiste waarden worden doorgegeven. Een aparte test (`scripts/hosting-start-integration.test.mjs`) start beide echte opdrachten op de eigen computer en verwerkt echte verzoeken. Foutmeldingen bij het starten zijn kort en tonen geen ingevoerde waarden, bestandsinhoud of interne details.
 
 ### Controle bij overdracht en start
 
-`runtime-package.json` bevat de exacte bestandsinventaris, bytegroottes, SHA-256-hashes en de release-/publicatie-/contractidentiteiten. Gewijzigde of ontbrekende bestanden, extra bestanden, ongeldige paden en symlinks blokkeren de verificatie. Databases, oorspronkelijke documenten, secrets, tests, sourcemaps, `node_modules` en publicatiehulpmiddelen worden niet meegenomen. De database moet buiten de pakketmap staan en wordt alleen-lezen geopend.
+`runtime-package.json` is de inhoudsopgave van het pakket: elk bestand met zijn grootte en controlegetal, plus de release, publicatie en code. Ontbreekt er een bestand, is er een veranderd of toegevoegd, of klopt een pad niet, dan start het pakket niet. Databases, originele documenten, geheimen, tests en ontwikkelbestanden gaan nooit mee. De database staat buiten het pakket en wordt alleen gelezen.
 
-De inventaris detecteert onbedoelde wijzigingen, maar is geen digitale handtekening. Wie het pakket én de inventaris kan wijzigen, kan nieuwe hashes maken. Ontvang pakket en verwachte identiteiten via een vertrouwd kanaal en gebruik later een gecontroleerde releaseprocedure. Pak een nieuwe versie in een nieuwe map uit, verifieer en test die voordat een bestaande versie wordt vervangen.
+Let op: de inhoudsopgave ziet ongewenste wijzigingen, maar is geen handtekening. Wie pakket én inhoudsopgave kan aanpassen, kan nieuwe controlegetallen maken. Ontvang het pakket en de verwachte controlegetallen daarom via een vertrouwd kanaal. Pak een nieuwe versie altijd uit in een nieuwe map en test die, voordat je de oude vervangt.
 
-De server begint pas te luisteren na pakket- en databasecontrole. `GET /api/v1/health` geeft de gekozen alleen-lezen modus terug: `local-read-only` of expliciet `public-read-only`. Beide probes weigeren querysyntaxis, ook een kale `?`. Shutdown laat actieve leesverzoeken maximaal vijf seconden afronden. Browserprojecten blijven aan hun oorspronkelijke adres gekoppeld; breng een project naar een ander adres over met **Bewaar project** en **Open project**.
+De server luistert pas als pakket en database gecontroleerd zijn. `GET /api/v1/health` laat zien in welke modus hij draait: `local-read-only` of `public-read-only`. Bij afsluiten krijgen lopende verzoeken nog vijf seconden. Projecten in de browser horen bij het adres waarop ze gemaakt zijn; neem ze mee met **Bewaar project** en **Open project**.
 
-Alleen in expliciete publieke modus deelt de hele listener één burstbudget: 120 directe toelatingen, daarna aanvulling met 60 per seconde tot maximaal 120. Bij uitputting volgt 429, `Retry-After` en no-store vóór inhouds-/readinesslezing. Probes delen het budget; forwarded IP-headers, andere sockets en URL's geven geen nieuwe voorraad. Lokale modus krijgt geen extra rategrens. De bestaande 32 actieve antwoorden, 128 verbindingen en 30-secondenresponsegrens blijven gelden. Dit zijn beginwaarden, geen hosted capaciteits-, fairness- of DDoS-garantie. Een overbelaste probe mag later geen onbeheerst herstartpatroon veroorzaken.
+In de openbare modus deelt de hele server één budget voor verzoeken: 120 direct, daarna 60 per seconde erbij tot weer 120. Is het budget op, dan antwoordt de server met 429 en `Retry-After`. Lokaal is er geen extra grens. Daarnaast gelden altijd: hooguit 32 antwoorden tegelijk, 128 verbindingen en 30 seconden per antwoord. Dit zijn beginwaarden, geen garantie tegen overbelasting of aanvallen.
 
-#### Lokale gereedheid en capaciteitsgrenzen
+#### Gereedheid en grenzen
 
-`GET /api/v1/ready` controleert bij een webbuild de oorspronkelijke alleen-lezen databaseverbinding en de bij start geverifieerde release-/publicatie-/contractpinnen. Een gereed proces antwoordt 200 met `status: "ready"`; een onleesbare of gewijzigde database geeft 503 met `status: "not-ready"` en `Retry-After: 1`. Beide antwoorden zijn `no-store` en bevatten geen paden, inhoud of pinwaarden. Queryparameters zijn niet toegestaan. Losse catalogustooling zonder webbuild biedt deze route niet aan.
+`GET /api/v1/ready` controleert of de database nog leesbaar is en nog dezelfde controlegetallen heeft als bij de start. Gereed: antwoord 200 met `status: "ready"`. Niet gereed: 503 met `status: "not-ready"` en `Retry-After: 1`. De antwoorden tonen geen paden of inhoud.
 
-Een tijdelijke SQLite-lock kan herstellen. Een waargenomen databasecommit, verloren pin of vervangen/gesloten verbinding vereist een nieuwe gecontroleerde start: de probe accepteert nooit stilzwijgend een nieuwe baseline. Schrijf daarom niet in de geopende runtime-database; publiceer naar een afzonderlijke versie en schakel later bewust om. De probe leest kleine metadatavelden, niet alle bronhashes, en bewijst geen volledige bestandsintegriteit of harde OS-I/O-deadline.
-
-Alle routes, ook health en ready, delen per server maximaal 32 actieve antwoorden, 128 verbindingen en een absolute antwoorddeadline van 30 seconden. Overbelasting kan dus ook een probe 503 geven. De bestaande Host-/Origin-/invoercontroles blijven vooraf gelden. Deze capaciteitsgrenzen zijn onafhankelijk van het aanvullende publieke burstbudget; geen eerlijke verdeling per gebruiker, query-annulering of publieke DoS-bescherming.
+Een tijdelijke blokkade van de database kan vanzelf overgaan. Is de database gewijzigd of vervangen, dan is een nieuwe, gecontroleerde start nodig; de server neemt nooit stilletjes een nieuwe stand over. Schrijf daarom nooit in een database die in gebruik is: publiceer een nieuwe versie en schakel bewust om.
 
 ### Grens naar echte hosting
 
 #### Begrensde HTTP-controle vóór de demo
 
-Gebruik vanuit de **codecheckout** de bestaande operatorcontrole tegen een al gestart pakket. Zij start of wijzigt niets. Zonder argumenten toont zij alleen hulp en maakt zij geen verbinding. Het hulpmiddel hoort niet in de webroot.
+Deze controle test een draaiend pakket van buitenaf, vanuit de map van de repository. Hij start en wijzigt niets. Zonder opties toont hij alleen uitleg.
 
 ```text
 node scripts/hosting-acceptance.mjs --run --target http://127.0.0.1:8080 --public-origin https://omnibus.example.invalid --package "<geverifieerd-runtimepakket>" --release "<releasehash>" --publication "<publicatiehash>" --approved-resource "<hash-uit-het-pakketmanifest>" --excluded-resource "<hash-van-bestaande-maar-uitgesloten-resource>"
 ```
 
-Gebruik de werkelijk gekozen pinnen en resources. De uitgesloten resource moet bekend aanwezig zijn in de database, maar ontbreken in de webpublicatie: een verzonnen hash bewijst niet dat bestaande niet-openbare inhoud afgeschermd is. De controle verifieert het lokale pakket vóór het eerste verzoek.
+- Gebruik echte controlegetallen. De uitgesloten bron moet echt in de database staan maar niet in de webpublicatie; een verzonnen controlegetal bewijst niets.
+- De controle doet zestien verzoeken: gezondheid, gereedheid, startpagina, één JavaScript-bestand (ingepakt en uitgepakt vergeleken met het pakket), één toegestane bron en de afgeschermde routes.
+- Grenzen: 3 seconden per verzoek, 30 seconden in totaal, hooguit 8 MiB per antwoord en 24 MiB in totaal. Geen herhalingen of doorverwijzingen.
+- Uitkomst: 0 is geslaagd, 1 is een mislukte controle, 2 is verkeerde invoer. De uitvoer toont alleen namen, statuscodes, aantallen en tijden.
+- Voor een echte host is `--allow-external` nodig, met een `https://`-adres dat gelijk is aan `--public-origin`. Gebruik dat pas na toestemming.
 
-Zestien opeenvolgende GET-verzoeken controleren health, readiness, startpagina, één JavaScript-bundel, één toegestane resource en uitgesloten routes. De bundel wordt met gzip opgevraagd en moet na uitpakken exact overeenkomen met het vertrouwde pakket. Ontbrekende compressie, gewijzigde inhoud, beschadigde gzip, onveilige headers of een overschreden limiet geven een mislukte controle. De overige verzoeken gebruiken ongecomprimeerde antwoorden.
-
-Grenzen: drie seconden per verzoek, dertig seconden totaal; maximaal 8 MiB per antwoord en 24 MiB totaal, **afzonderlijk voor ontvangen en uitgepakte bytes**. Er zijn geen retries of redirects. Uitvoer bevat alleen controlenamen, statuscodes, byteaantallen en tijden; geen antwoordinhoud. Afsluitcode 0 betekent dat deze steekproef slaagt, 1 een mislukte controle en 2 geweigerde invoer.
-
-Voor de later goedgekeurde host vereist de hulp expliciet `--allow-external` en een HTTPS-target dat exact gelijk is aan `--public-origin`. Gebruik dat nu niet als impliciete toestemming voor een hostproef. Een geslaagde lokale run bewijst geen hosted snelheid, providerprobes, browserwerking, volledige collectie-integriteit of onafhankelijke beveiligingsacceptatie.
+Een geslaagde lokale controle zegt niets over snelheid op de host, de controles van de hostingpartij, de browser of een onafhankelijke beveiligingsbeoordeling.
 
 #### Nog te bewijzen op de host
 
-Historisch bewijs van de eerdere pakketroute: lokaal getest op Windows en Ubuntu 24.04 met Node 24.17.0, met 59 geslaagde ondersteunde tests. Beide pakketversies behielden in de browserproef selecties, vraagkoppelingen, bronmarkeringen en projectoverdracht; de drie Excel-werkvormen hadden dezelfde uitgepakte inhoud als de eerdere Windows-preview. De brondata en actieve lokale versie zijn toen niet vervangen. Dit is geen nieuwe browser-/Linuxtest van latere wijzigingen.
+Eerder bewijs: het pakket is getest op Windows en Ubuntu 24.04 met Node 24.17.0 (59 geslaagde tests). Selecties, vraagkoppelingen, bronmarkeringen, projecten en de drie Excel-werkvormen bleven gelijk. Dat geldt niet automatisch voor latere wijzigingen.
 
-Dit pakket introduceert geen tweede backend of hostingprovider. De bestaande uitrolcontracten blijven leidend. Voor een publieke pilot ontbreken nog:
+Voor een openbare proef ontbreken nog:
 
-- Providerbewijs voor de geïmplementeerde server-/proxy-/Host-/Origin-/CORS-grens, toegestane broninhoud en onafhankelijke publieke review.
-- Aantoonbare SQLite-persistentie, minimale leesrechten, TLS en geteste readiness/restart op Sevalla.
-- Begrensd verkeer, providerlogprivacy, afzonderlijke backup en herstelproef, releasebescherming en onafhankelijke menselijke beveiligingsreview.
+- bewijs bij de hostingpartij voor de servergrenzen, de toegestane inhoud en een onafhankelijke beoordeling;
+- aantoonbaar bewaren van de database, alleen-leesrechten, een beveiligde verbinding (TLS) en geteste herstart;
+- begrensd verkeer, privacy in de logs, een aparte back-up met herstelproef en een menselijke beveiligingsbeoordeling.
 
-Pas daarna kan een hosted startconfiguratie worden vrijgegeven. De loopbackserver of lokale STDIO-AI-service rechtstreeks online zetten is geen ondersteunde tussenoplossing. Zie de [routekaart](../routekaart.md). Sinds het scopebesluit van 19 oktober zijn applicatieaccounts en betalingen verwijderd uit de productscope; SQLite blijft behouden en de bestaande lokale MCP-demo is actief.
-
-Deze startopties leveren geen authenticatie, providerconfiguratie of probe-authority-alias. Onder meer de werkelijke proxy-/TLS-/Host-/probeheaders, probe-isolatie, providerlogs, misbruikgrenzen, opslag/herstart en herstel blijven hostingchecks die nog moeten gebeuren voordat Omnibus online gaat. Een publieke origin is geen toegangscontrole voor vertrouwelijke inhoud.
+Zet nooit de lokale server of de lokale AI-koppeling rechtstreeks online. Een openbaar adres is geen toegangscontrole voor vertrouwelijke inhoud. Zie de [routekaart](../routekaart.md).
 
 </details>
 

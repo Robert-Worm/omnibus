@@ -15,7 +15,7 @@ Een besluit geldt tot er een nieuw besluit is dat het vervangt. Wil je een beslu
 | 19-10-2026 | Code en eigen uitwerkingen onder de PolyForm Noncommercial-licentie | Vrij te gebruiken, niet commercieel | [LICENSE](../../LICENSE) en [NOTICE](../../NOTICE) |
 | 20-10-2026 | De vier IIA Topical Requirements blijven met volledige tekst in de database | Bruikbaarheid voor auditors; risico bewust aanvaard | Vraagt de IIA om verwijdering, dan gaan de teksten uit de volgende database. Zie NOTICE. |
 | 20-10-2026 | Een test met schermlezer en in desktop-Excel hoort niet bij de online demo | Prioriteit voor de demo van 1 december | Staat als open punt in [ACCESSIBILITY.md](../../ACCESSIBILITY.md) |
-| 20-10-2026 | Het eindresultaat heet overal **referentiekader** | Eén woord voorkomt verwarring | De documentatiecheck waarschuwt bij toetsingskader, auditkader en onderzoekskader |
+| 20-10-2026 | Het eindresultaat heet overal **referentiekader** | Eén woord voorkomt verwarring | De documentatiecheck waarschuwt bij andere woorden voor het eindresultaat |
 | 20-10-2026 | De voortgang loopt via GitHub (claims en voortgangspagina) | Eén overzicht voor iedereen | De Content Workbench is op 21-10-2026 uit de repository gehaald |
 | 21-10-2026 | Bijdragers mogen hooguit vijf bronnen tegelijk claimen | Bronnen naast elkaar verwerken kan, zonder dat er veel blijft liggen | De claimbot sluit een zesde claim, met uitleg |
 | 21-10-2026 | Geen pilot met externe bijdragers in de huidige ronde | Nu niet nodig | Kan later opnieuw worden opgepakt |

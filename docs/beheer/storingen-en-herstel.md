@@ -22,63 +22,61 @@ De precieze opdrachten, de herstelproef en de tabel *Handelen bij een storing* s
 
 <details><summary><b>Technische referentie: alle details en opdrachten</b></summary>
 
-Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekozen bestanden. Vul de plaatshouders zelf in. Pakket, database, instellingen en bewijs blijven buiten Git.
+Voer de opdrachten uit vanuit de map van de repository, met Node 24 en je eigen bestanden. Vul de plaatshouders tussen `< >` zelf in. Pakket, database, instellingen en bewijs blijven buiten Git.
 
-### Diagnose zonder onderzoeksinhoud
+### Wat je vastlegt bij een fout (zonder onderzoeksinhoud)
 
-- Bewaar tijdstip, codecommit, lokaal gebruikte release-/publicatiepin, foutstatus en `X-Request-ID`. De server maakt een nieuwe willekeurige ID; een meegestuurde request-ID wordt niet vertrouwd. Deel geen databasepaden, queries, ingeleverde pakketten, projecttekst, cookies, headers of volledige URLs in een openbaar incident.
-- Onverwachte synchrone requestfouten geven een generiek 500-antwoord en één JSON-regel op stderr: `event`, `requestId`, `status`, `time`. Er is geen standaard accesslog. Vroege HTTP-parserweigeringen, 100-continue-weigeringen en afgebroken streams vallen buiten deze foutlog; een ontbrekende regel bewijst geen succes.
-- Een startweigering toont veilige vaste hulptekst, geen exception/stack/pad. Controleer eerst de argumenten en de aparte database, publicatie en webbuild. Voeg bij diagnose geen algemene dump van process.env, requestheaders of SQLite toe.
-- `GET /api/v1/health` bevestigt uitsluitend dat deze lokale HTTP-handler antwoordt. Gebruik de databasecontrole hieronder voor integriteit. Die is een operatoractie, geen endpoint en geen lichte readinessprobe.
+- **Bewaar:** het tijdstip, de codeversie (commit), de controlegetallen van release en publicatie, de foutcode en de `X-Request-ID`. De server maakt die ID zelf; een ID die iemand meestuurt, wordt niet vertrouwd.
+- **Deel nooit** in een openbaar verslag: databasepaden, zoekopdrachten, ingeleverde pakketten, projecttekst, cookies, headers of volledige adressen.
+- **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500 en schrijft hij één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
+- **Start de server niet?** Hij toont dan een vaste, veilige uitleg zonder interne details. Controleer eerst de opties, de database, de publicatie en de webbuild. Voeg bij het zoeken geen volledige lijst van omgevingsvariabelen, headers of databaseinhoud toe.
+- **`GET /api/v1/health`** zegt alleen dat de server antwoordt. Of de database heel is, controleer je met de databasecontrole hieronder.
 
-### Backup en herstel naar nieuwe bestanden
+### Back-up en herstel naar nieuwe bestanden
 
-1. Noteer de werkende combinatie van codecommit, Node-versie, pakketmanifest, release- en publicatiehash. Maak een nieuwe afgeschermde uitvoermap buiten de pakketmap/webroot. Laat een bestaande database of server ongemoeid.
-2. Maak een consistente SQLite-backup; kopieer een geopende database niet met een gewone bestandskopie. De backup-API neemt vastgelegde WAL-wijzigingen mee.
+1. **Leg de werkende combinatie vast:** codeversie, Node-versie, pakket, release en publicatie. Maak een nieuwe, afgeschermde map buiten het pakket. Laat de database en server die draaien met rust.
+2. **Maak de back-up.** Kopieer een database die open is nooit met een gewone bestandskopie: die kan half zijn. Gebruik:
 
    ```text
    npm run data:runtime-backup -- --from "<bron.sqlite>" --to "<nieuwe-map>/backup.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 
-   De opdracht controleert SQLite-integriteit, foreign keys, de geselecteerde bronidentiteiten/inhoud en publicatie-/afleverhashes vóór aflevering. Een bestaand doel of achtergebleven `-wal`, `-shm` of `-journal` blokkeert de opdracht. Gebruik een door deze operator exclusief beheerde nieuwe map; dit is geen bescherming tegen een gelijktijdige kwaadwillende schrijver met dezelfde filesystemrechten.
-3. Bewaar de SHA-256 van het afgeronde bestand apart in het private herstelbewijs (PowerShell: `Get-FileHash -Algorithm SHA256 -LiteralPath "<backup.sqlite>"`). Kopieer backup en codepakket naar afzonderlijke beschermde opslag. De opdracht versleutelt, uploadt en plant niets. Een bestand op dezelfde disk is geen bescherming tegen diskverlies. Ruwe operatoruitvoer kan private paden bevatten.
-4. Controleer bij herstel de backup-SHA-256 tegen dat eerder bewaarde bewijs. Herbereken geen verwachte hash om een afwijkend bestand toch te accepteren. Gebruik vervolgens dezelfde snapshotfunctie met een **nieuwe** bestemming:
+   De opdracht controleert eerst of de database heel is, of alle verwijzingen kloppen en of de bronnen en controlegetallen overeenkomen. Bestaat het doelbestand al, of staan er nog hulpbestanden van SQLite (`-wal`, `-shm`, `-journal`), dan stopt hij. Gebruik een map die alleen jij beheert.
+3. **Bewaar het controlegetal** van de back-up apart, bijvoorbeeld in PowerShell met `Get-FileHash -Algorithm SHA256 -LiteralPath "<backup.sqlite>"` of op macOS/Linux met `shasum -a 256 "<backup.sqlite>"`. Zet back-up en pakket op een andere, beschermde plek. De opdracht versleutelt en uploadt niets; een back-up op dezelfde schijf beschermt niet tegen schijfverlies.
+4. **Herstel naar een nieuw bestand.** Controleer eerst het controlegetal van de back-up tegen wat je bewaarde. Klopt het niet, gebruik de back-up dan niet; reken nooit een nieuw verwacht getal uit. Herstel en controleer daarna:
 
    ```text
    npm run data:runtime-backup -- --from "<backup.sqlite>" --to "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
    npm run data:check-runtime -- --database "<nieuwe-herstelmap>/restored.sqlite" --release <releasehash> --publication <publicatiehash>
    ```
 
-   Vergelijk release/publicatie/contract, aantallen en bronhashcontrole. SQLite kan bij backup de fysieke bestandsindeling veranderen; bronidentiteiten moeten gelijk blijven. Een intacte publicatie verleent geen nieuwe inhoudelijke review.
-5. Start het bijbehorende geverifieerde runtimepakket tegen uitsluitend dit herstel, op een vrije lokale poort (bijvoorbeeld 4353). Gebruik de startinstructie uit [runtime-pakket.md](runtime-pakket.md). Controleer health, bron openen/markeren, fictieve selectie, vraagkoppeling, projectdownload/heropenen en Excel. Stop alleen deze eigen proefserver. De volledige gebruikersproef is geen gevolg van alleen een geslaagde databasecontrole.
-6. Schakel pas na review de hele combinatie van pakket en instellingen bewust om. Bij mislukking blijft de vorige combinatie de terugweg. Verander geen actieve database in-place en laat een oude build nooit stil een nieuwe publicatie kiezen.
-
+   Vergelijk release, publicatie, code, aantallen en de controle van de bronnen. Het bestand zelf kan er na herstel iets anders uitzien; de bronnen moeten gelijk zijn. Een geslaagde controle is geen nieuwe inhoudelijke beoordeling.
+5. **Test het herstel.** Start het bijbehorende pakket met alleen deze herstelde database, op een vrije poort (bijvoorbeeld 4353); zie het [runtimepakket](runtime-pakket.md). Controleer: de gezondheid, een bron openen met markering, een fictieve selectie, een vraagkoppeling, een project bewaren en openen, en de Excel-export. Stop daarna alleen deze proefserver.
+6. **Schakel bewust om.** Vervang pas na de test de hele combinatie van pakket en instellingen. Mislukt het, dan is de vorige combinatie je terugweg. Verander nooit een database die in gebruik is.
 
 ### Korte incidentroute
 
 #### De terugweg lokaal oefenen
 
-De bestaande integratietest oefent een wissel tussen twee afzonderlijke, fictieve versies. Vanuit de codecheckout, met Node 24:
+Een bestaande test oefent het wisselen tussen twee fictieve versies:
 
 ```text
 node --test --test-concurrency=1 --test-timeout=120000 scripts/hosting-start-integration.test.mjs scripts/start-hosting-options.test.mjs scripts/package-runtime.test.mjs
 ```
 
-De proef start pakket A en daarna pakket B op dezelfde lokale testpoort. Vervolgens probeert zij verkeerde combinaties van pakket, database en versie-identiteiten. Die moeten weigeren voordat een server gaat luisteren. Daarna start zij de volledige combinatie A opnieuw, en herhaalt die start. Bij iedere geslaagde start worden de startpagina, gereedheid, toegestane inhoud en weigering van de andere bronversie gecontroleerd. Na afsluiten is de testpoort vrij en zijn alle pakketbestanden, instellingen en databasebytes behouden.
-
-Dit gebruikt alleen tijdelijke fictieve bestanden; de actieve installatie wordt niet omgeschakeld. Het bewijst de terugweg via de bestaande pakketstart, niet automatisch herstel na een storing. Het vervangt ook geen echte imagewissel, proxy-/cachecontrole, diskherstel of terugschakelproef op Sevalla.
+De test start versie A, daarna versie B, en probeert verkeerde combinaties van pakket, database en controlegetallen; die moeten weigeren voordat de server luistert. Daarna start hij versie A opnieuw. Na afloop is alles nog precies zoals het was. Dit bewijst dat de terugweg werkt met fictieve bestanden; het is geen echte wissel bij de hostingpartij.
 
 #### Handelen bij een storing
 
-| Signaal | Eerste handeling | Voorwaarde voor hervatten |
+| Wat je ziet | Wat je eerst doet | Wanneer je weer verdergaat |
 | --- | --- | --- |
-| Startweigering/verkeerde release | Laat de werkende versie staan; vergelijk pakket, instellingen en expliciete pins met het herstelbewijs. Controleer de kandidaat alleen-lezen. | Pakket en databasecontrole slagen samen; lokale smokeproef geslaagd. |
-| 500 bij bronlezen | Noteer tijd en request-ID; controleer beperkte stderr en de aparte database. Gebruik geen bron-/projecttekst in het incidentverslag. | Oorzaak verholpen of hele vorige combinatie hersteld; relevante route getest. |
-| Beschadigde/ontbrekende database | Bewaar het incidentmateriaal privé; herstel de gecontroleerde backup naar een nieuwe map. Geen overschrijven of reparatie van het actieve bestand. | Hashes/relaties en gebruikersproef kloppen. |
-| Onverwacht verkeer/verbruik bij latere hosting | Beheerder beoordeelt providerrequests, bytes, statuscodes en compute. Bij misbruik publieke toegang via beheer beperken; geen blind opschalen, disk verwijderen of data in logs zetten. | Oorzaak, limieten en kosten gecontroleerd; nieuwe publieke toegang bewust goedgekeurd. |
-| Verkeerde publieke bron/gegevenslek bij latere hosting | Beheerder beperkt toegang en laat bronrechten, cache en providerlogs onderzoeken; bewaar minimaal incidentbewijs afgeschermd. | Alleen toegestane inhoud bereikbaar, cachegedrag getoetst en onafhankelijke review afgerond. |
+| De server start niet, of met een verkeerde versie | Laat de werkende versie staan. Vergelijk pakket, instellingen en controlegetallen met wat je bewaarde. | Pakket en databasecontrole slagen samen, en een korte proef slaagt. |
+| Code 500 bij het openen van een bron | Noteer tijd en request-ID; kijk in de foutuitvoer en controleer de database. Zet geen bron- of projecttekst in je verslag. | De oorzaak is opgelost, of de vorige combinatie is terug, en de route is getest. |
+| De database is beschadigd of weg | Bewaar wat je vond afgeschermd. Herstel de gecontroleerde back-up naar een nieuwe map. Repareer of overschrijf het actieve bestand niet. | Controlegetallen, verwijzingen en de gebruikersproef kloppen. |
+| Onverwacht veel verkeer of kosten (later, online) | Bekijk bij de hostingpartij verzoeken, statuscodes en verbruik. Bij misbruik: openbare toegang beperken. Niet zomaar opschalen. | Oorzaak, grenzen en kosten zijn gecontroleerd en de beheerder geeft weer toegang. |
+| Verkeerde inhoud openbaar of een gegevenslek (later, online) | Beperk de toegang. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd. | Alleen toegestane inhoud is bereikbaar en een onafhankelijke beoordeling is klaar. |
 
-Providerrollback herstelt geen disk en gebruikt actuele runtimeinstellingen. Providerdiskherstel draait de gehele disk terug en kan nieuwere bestanden verwijderen. Maak de combinatie van code, data, pins en beheerbesluit daarom expliciet.
+Let op bij latere hosting: terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
 
 </details>
 

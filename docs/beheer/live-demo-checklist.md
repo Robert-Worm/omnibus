@@ -1,62 +1,52 @@
 # Checklist live demo
 
-> **In het kort:** wat er nog moet gebeuren om van de lokale applicatie naar een online demo te gaan: database, code, hosting, herstel en acceptatie.
+> **In het kort:** wat er nog moet gebeuren om van de lokale applicatie naar een online demo te gaan, wie het doet, wanneer, en wanneer het klaar is. Doel: een werkende demo op **1 december 2026**.
 
-Doel: een werkende demo op Sevalla op **1 december 2026**, met de bestaande applicatie en een afzonderlijk aangeleverde SQLite-database. Deze checklist is geen melding dat Omnibus al is uitgerold of voor productie is goedgekeurd.
+## Waar staat het?
 
-De beheerder levert de database en beoordeelt de inhoud en verspreidingsrechten. De ontwikkelaar controleert de aansluitingen, versiegrenzen en werkwijzen. Login, gebruikersbeheer, betalingen en een publiek MCP-endpoint vallen buiten deze demo. De bestaande lokale MCP-koppeling blijft een aparte demonstratieroute.
+Het werk op de eigen computer is af: de app, het runtimepakket, de image en alle lokale proeven. Wat nog open staat, moet **op de echte server** worden bewezen, of door **mensen** worden getest. Lokale tests zijn daarvoor niet genoeg.
 
-## Actuele vervolgstappen — 20 oktober 2026
+De demo draait bij de hostingpartij Sevalla, met de bestaande app en een aparte database. Accounts, betalingen en een openbare AI-koppeling horen er niet bij. Deze checklist en [pad A van de routekaart](../routekaart.md#pad-a--online-versie) noemen dezelfde stappen. De [kwaliteitsbacklog](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aissue+label%3Akwaliteit) staat er los van: die is geen voorwaarde voor de demo.
 
-Het lokale ontwikkelwerk voor de demo is af. Wat nog open staat, vraagt vooral **bewijs op de echte host of menselijke acceptatie**, geen nieuwe functies. Lokaal geslaagde tests zijn daarvoor niet genoeg. De [kwaliteitsbacklog](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aissue+label%3Akwaliteit) met verbeteringen voor documentatie en bijdragen staat daar los van: die is geen voorwaarde voor deze demo. Deze checklist en [pad A van de routekaart](../routekaart.md#pad-a--online-versie) noemen dezelfde stappen.
+## De checklist
 
-| Onderdeel | Wat is lokaal voorbereid? | Wat resteert voor de demo? |
-| --- | --- | --- |
-| storingen signaleren | Health/readiness, veilige foutdiagnostiek en begrensde HTTP-controle | Providerprobes, logprivacy, meldingsontvanger en handelen bij overbelasting beproeven. |
-| snelheid op de host | Gemeten lokale werkwijze; de HTTP-controle verifieert ook gzip en exacte uitgepakte bundelbytes | Cold/warm browsermeting via de echte HTTPS-host en afgesproken belasting uitvoeren. |
-| back-up en herstel | Ontvangstcontrole en afzonderlijk herstel met fictieve gegevens getest | Bewaarplaats, retentie, verantwoordelijke en hersteldoelen kiezen; herstel op de host oefenen. |
-| release en terugschakelen | Gepind pakket, afzonderlijke database en strikte startweigering | Rechten op de disk, eerste ontvangst, herstart en terugschakelen van de volledige code/data-combinatie beproeven. |
-| overdracht | Lokale tests en handmatig te starten CI aanwezig | CI-gebruik en reviewafspraken bewust kiezen; een niet-betrokken ontwikkelaar de setup laten volgen. |
-| beveiligingsacceptatie | Gerichte technische controles beschikbaar | Onafhankelijke review van de daadwerkelijk te hosten configuratie. |
-| gebruikersacceptatie | Gegroepeerde bovenbalk getest op desktop en mobiel, inclusief toetsenbord en projectoverdracht | Menselijke bruikbaarheidscontrole en generale repetitie. Een test met schermlezer en in desktop-Excel valt buiten deze demo (besluit 20 oktober 2026). |
+| # | Wat | Wie | Streefdatum | Klaar wanneer |
+| --- | --- | --- | --- | --- |
+| 1 | **Database kiezen** | Beheerder (inhoud) | eind oktober | De database en de rechten op de inhoud zijn beoordeeld. Er gaan geen privébestanden of persoonlijke paden mee. |
+| 2 | **Code en runtimepakket vastzetten** | Ontwikkelaar | eind oktober | De code is beoordeeld en getest, de echte image is gebouwd, de basis-image is gecontroleerd op beveiligingsupdates, en de database zit níet in de image. |
+| 3 | **Eerste ontvangst op de server** | Hostingbeheerder | begin november | Er is een beveiligde manier om de database over te zetten. Schijf, gebruikers en leesrechten zijn vastgesteld. De tijdelijke [eerste start](../../hosting/first-start/README.md) is netjes beëindigd. |
+| 4 | **Werking op de server** | Hostingbeheerder en een beoordelaar | begin november | Beveiligde verbinding (TLS), adres- en herkomstcontroles, gezondheidscontroles, foutafhandeling, logboeken en snelheid werken op de echte server. |
+| 5 | **Storingen signaleren** | Hostingbeheerder | begin november | De controles van de hostingpartij werken, logboeken bevatten geen onderzoeksinhoud, iemand ontvangt de meldingen en er is een aanpak bij overbelasting. |
+| 6 | **Back-up en herstel** | Hostingbeheerder | 20 november | Bewaarplaats, bewaartermijn, verantwoordelijke en hersteldoelen zijn gekozen. Herstel en teruggaan naar een eerdere combinatie van code en database zijn op de server geoefend. |
+| 7 | **Beveiliging beoordelen** | Onafhankelijke beoordelaar | 20 november | De instellingen zoals ze echt online gaan, zijn beoordeeld door iemand die ze niet heeft gemaakt. |
+| 8 | **Overdracht** | Ontwikkelaar | 20 november | Er is gekozen hoe automatische controles en beoordelingen gaan. Iemand die niet betrokken was, heeft de installatie met de documentatie kunnen volgen. |
+| 9 | **Gebruikers testen** | Demonstrator en een onafhankelijke tester | 20 november | Bronnen, selecties, vragen, bewaren en openen en de drie Excel-werkvormen zijn door mensen doorlopen, ook met alleen het toetsenbord. |
+| 10 | **Vrijgavebesluit** | Eigenaar | 27 november | De eigenaar besluit op basis van stap 1–9 of de demo online mag. |
+| 11 | **Generale repetitie** | Eigenaar en ontwikkelaar | 30 november | Dezelfde vastgezette code en database zijn op de server doorlopen, en er is een terugvalroute. |
 
-De toolbarverbetering en het gelijkzetten van de lokale MCP-index zijn geleverd. Een bestaande AI-client moet opnieuw verbinden voordat hij de nieuwe index gebruikt. Controleer vóór de demonstratie de actuele pinnen, niet alleen een eerder geslaagd resultaat.
+De data zijn streefdata. Ze geven geen toestemming om diensten aan te zetten of kosten te maken.
 
-De uitgestelde publicatieoptimalisatie is geen verplicht nieuw bouwproject. Pak die alleen op als een relevante meting daar aanleiding toe geeft, met afzonderlijke toestemming voor een kandidaatpublicatie. De actieve database blijft bij codeverbeteringen ongewijzigd.
+Bewust niet in deze demo: een test met schermlezer en een test in desktop-Excel ([besluit 20 oktober 2026](besluiten.md)).
 
-## Wat moet nog worden aangetoond?
+## Waar je op let
 
-| Stap | Verantwoordelijke | Klaar wanneer |
-| --- | --- | --- |
-| Database kiezen | Inhoudsbeheerder | De bedoelde dataset en verspreidingsrechten zijn beoordeeld; privébestanden en persoonlijke paden worden niet onbedoeld meegeleverd. |
-| Code en runtimepakket | Ontwikkelaar | De gekozen code is gereviewd en getest, de echte image is gebouwd, de base-image is opnieuw op actuele beveiligingsupdates beoordeeld en de database blijft buiten de image. |
-| Eerste ontvangst | Hostingbeheerder | Een ondersteund, beschermd overdrachtskanaal, de disk, procesidentiteiten en daadwerkelijke leesrechten zijn vastgesteld. De tijdelijke beheerstart wordt veilig beëindigd. |
-| Hosted werking | Hostingbeheerder en reviewer | TLS, Host/Origin/CORS, probes, fout- en herstelgedrag, logs en cold/warm prestaties werken op de echte host. Lokale tests vervangen deze proef niet. |
-| Herstel | Hostingbeheerder | Een aparte back-up, retentie en hersteldoelen zijn gekozen; herstel en terugschakelen naar een passende eerdere code/data-combinatie zijn geoefend. |
-| Gebruikersacceptatie | Demonstrator en onafhankelijke tester | Bronnen, selecties, vragen, bewaren/openen en drie Excelwerkvormen zijn door mensen doorlopen, ook met alleen het toetsenbord. Schermlezer en desktop-Excel horen bewust niet bij deze demo. |
-| Generale repetitie | Eigenaar en ontwikkelaar | Dezelfde vastgezette code/data-combinatie is op de gekozen host doorlopen en een terugvalroute is beschikbaar. |
+- **Controleer elke nieuwe database** met `npm run data:check-runtime -- --settings work/candidate/local-build.json`, volgens [database publiceren](database-publiceren.md). Val nooit stilletjes terug op een oudere versie.
+- **Wil je zeker weten dat er niets ongewensts terugkomt?** Gebruik ook de [actieve-inventariscontrole](actieve-inventaris-controleren.md). Die wijzigt niets en beoordeelt geen rechten.
+- **De lokale AI-koppeling** wordt niet vanzelf bijgewerkt met een nieuwe database. Bouw en test hem apart, en laat een AI-assistent opnieuw verbinden. Zie de [AI-koppeling](../../agent-tools/README.md).
+- **Projecten blijven in de browser.** Naar een ander adres gaat alleen via **Bewaar project** en **Open project**.
+- **Kies niet nu al voor extra snelheidswerk.** Een snellere publicatie pak je alleen op als een meting daar reden voor geeft.
 
-Voorgestelde planning: pakket en ontvangst eind oktober, echte hostingproef begin november, herstel en gebruikersacceptatie uiterlijk 20 november, vrijgavebesluit op 27 november en generale repetitie op 30 november. Dit zijn streefdata, geen toestemming om diensten te activeren of kosten te maken.
+## Hoe je bewijs vastlegt
 
-## Database en koppelingen
+Leg per controle vast: de codeversie, de release en publicatie, de datum, wie het deed, de uitkomst en wat níet is getest. Houd brontekst, echte projecten, exports, databases en ruwe testuitvoer buiten Git.
 
-- Controleer een nieuwe database met `npm run data:check-runtime -- --settings work/candidate/local-build.json`. Volg daarbij de [publicatiehandleiding](database-publiceren.md). Gebruik expliciete database-, release- en publicatie-identiteiten; val niet stilzwijgend terug op een oudere versie.
-- Gebruik zo nodig de [actieve-inventariscontrole](actieve-inventaris-controleren.md) naast de volledige runtimevergelijking. Die controle wijzigt niets en beoordeelt geen bronrechten.
-- Een nieuwe webpublicatie maakt een bestaande agentbuild niet automatisch actueel. Controleer de versie van de [lokale AI-koppeling](../../agent-tools/README.md) tegen de voor de demo gekozen release. Bereid een passende agentbuild apart voor en test het protocol en de export; presenteer een oudere index niet als bewijs voor de nieuwe collectie.
-- Onderzoeksprojecten blijven in de browser. Naar een ander adres verhuizen vraagt een projectdownload en opnieuw openen, geen veronderstelde automatische overdracht van browseropslag.
+Een lokale proef in de browser bewijst selecties, koppelingen en Excel-inhoud, maar niet hoe het eruitziet in desktop-Excel, niet de toegankelijkheid voor mensen en niet de snelheid op de server. Herhaal alleen de controles die geraakt worden als code, database of serverinstellingen veranderen.
 
-## Hoe bewijs wordt vastgelegd
-
-Leg per controle de exacte codeversie, release/publicatie, datum, uitvoerder, resultaat en beperkingen vast. Houd broninhoud, echte projecten, exports, databasebestanden en ruwe testuitvoer buiten de coderepository.
-
-Een lokale browserrepetitie kan selecties, vraagkoppelingen en Excel-inhoud controleren, maar bewijst geen desktop-Excelweergave of menselijke toegankelijkheid. Die twee tests zijn voor deze demo bewust buiten scope gelaten (besluit van de eigenaar, 20 oktober 2026). Een snelle lokale proef is evenmin een capaciteitsgarantie voor de host. Herhaal alleen relevante controles wanneer code, data of hostingconfiguratie veranderen.
-
-Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md), [runtime-instructies](runtime-pakket.md) en [herstelhandleiding](storingen-en-herstel.md); bouw hiervoor geen tweede beheerplatform. De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kan alvast met een synthetisch pakket op loopback worden uitgevoerd. Zij houdt ontvangen en uitgepakte bytes apart bij en stopt bij de eerste fout; het is geen vervanging voor de latere hosted browsermeting.
+Gebruik de bestaande [hostingvoorbereiding](../../hosting/release-delivery/README.md), het [runtimepakket](runtime-pakket.md) en [storingen en herstel](storingen-en-herstel.md). De [begrensde HTTP-controle](runtime-pakket.md#begrensde-http-controle-vóór-de-demo) kun je alvast met een fictief pakket op je eigen computer uitvoeren; die vervangt de meting op de server niet.
 
 ## Samengevat
 
-- Database, code, hosting, herstel en acceptatie hebben elk een verantwoordelijke en een duidelijk "klaar wanneer".
-- De data zijn streefdata, geen toestemming om diensten te activeren of kosten te maken.
+Elf stappen, elk met een verantwoordelijke, een streefdatum en een duidelijk "klaar wanneer". Het meeste werk zit in bewijs op de echte server en in een test door mensen.
 
 ## Volgende stap
 

@@ -13,8 +13,8 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
 | | |
 | --- | --- |
 | **Herkennen** | Een nieuwe claim krijgt na tien minuten geen welkomstbericht, of `/inleveren` krijgt geen reactie. |
-| **Eerste handeling** | Kijk in [Actions](https://github.com/Robert-Worm/omnibus/actions/workflows/voortgang.yml) of de workflow *Voortgang bijwerken* is gestart en of hij rood is. |
-| **Herstellen** | Rood: open de run en lees de foutmelding. Een tijdelijke fout van GitHub los je op met *Re-run jobs*. Een fout in het script: draai lokaal `npm run test:voortgang`, los het op en push. Niet gestart: start de workflow met de hand (*Run workflow*). De bot haalt gemiste claims bij de volgende run vanzelf in. |
+| **Eerste handeling** | Kijk in [Actions](https://github.com/Robert-Worm/omnibus/actions/workflows/voortgang.yml) of de GitHub-workflow *Voortgang bijwerken* is gestart en of hij rood is. |
+| **Herstellen** | Rood: open de run en lees de foutmelding. Een tijdelijke fout van GitHub los je op met *Re-run jobs*. Een fout in het script: draai lokaal `npm run test:voortgang`, los het op en push. Niet gestart: start de GitHub-workflow met de hand (*Run workflow*). De bot haalt gemiste claims bij de volgende run vanzelf in. |
 | **Nazorg** | Laat de bijdrager in de claim weten dat het opgelost is. |
 
 ## 2. Er staat een verkeerde database online
@@ -44,11 +44,11 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
 | **Herstellen** | Vertrouwelijke bijlage al gedownload door anderen? Meld het bij de eigenaar van de informatie. Bij herhaling: blokkeer de gebruiker voor de repository. |
 | **Nazorg** | Verwijs naar de [gedragscode](../../CODE_OF_CONDUCT.md). |
 
-## 5. Een workflow faalt na een push
+## 5. Een GitHub-workflow faalt na een push
 
 | | |
 | --- | --- |
-| **Herkennen** | Een rode regel bij *Documentatie en claimsysteem controleren* of een andere workflow in Actions. |
+| **Herkennen** | Een rode regel bij *Documentatie en claimsysteem controleren* of een andere GitHub-workflow in Actions. |
 | **Eerste handeling** | Open de run en lees de laatste regels: de controle noemt het bestand en het regelnummer. |
 | **Herstellen** | Draai dezelfde controle lokaal (`npm run check:docs`, `npm run test:voortgang` of `npm test`), pas de tekst of code aan en push opnieuw. Schakel nooit een controle uit om groen te krijgen. |
 | **Nazorg** | Kwam de fout van een wijziging die de controle had moeten tegenhouden? Breid de controle of de test uit. |
