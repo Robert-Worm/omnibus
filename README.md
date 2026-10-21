@@ -1,42 +1,47 @@
-<h1 align="center">Omnibus</h1>
-
-<p align="center">
+<h1 align="center">
   <img src="docs/images/omnibus-banner.png" alt="Omnibus: van brondocument naar referentiekader" width="820">
-</p>
+</h1>
 
 <p align="center">
-  Stel in een paar stappen een referentiekader samen voor je onderzoek,<br>
-  met normen uit echte rapporten, wetten en kaders. En exporteer het naar Excel.
+  Stel in een paar stappen een referentiekader samen voor je onderzoek, met normen uit echte rapporten, wetten en kaders. En exporteer het naar Excel.
 </p>
 
 <p align="center">
   <!--badge:database-->
   <a href="https://github.com/Robert-Worm/omnibus/releases/latest"><img alt="Database: 27 rapporten" src="https://img.shields.io/badge/database-27%20rapporten-01689b?style=flat-square&labelColor=15233b"></a>
   <!--/badge-->
-  <a href="docs/bijdragen/voortgang.md"><img alt="Meedoen: bronnen claimen" src="https://img.shields.io/badge/meedoen-bronnen%20claimen-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="skills/README.md"><img alt="6 AI-skills" src="https://img.shields.io/badge/AI--skills-6-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="#licentie"><img alt="Code: PolyForm Noncommercial" src="https://img.shields.io/badge/code-PolyForm%20Noncommercial-01689b?style=flat-square&labelColor=15233b"></a>
 </p>
 
 <p align="center">
-  <a href="https://omnibus.sliplane.app"><strong>🌐 Probeer online</strong></a> ·
-  <a href="#zo-werkt-het"><strong>Zo werkt het</strong></a> ·
-  <a href="docs/gebruiken/installeren.md">Installeren</a> ·
-  <a href="docs/bijdragen/README.md">Meedoen</a> ·
-  <a href="docs/README.md">Alle documentatie</a> ·
-  <a href="docs/veelgestelde-vragen.md">Vragen</a> ·
-  <a href="docs/routekaart.md">Routekaart</a>
+  <a href="https://omnibus.sliplane.app"><strong>Probeer online</strong></a> &nbsp;·&nbsp;
+  <a href="docs/gebruiken/installeren.md"><strong>Installeren</strong></a> &nbsp;·&nbsp;
+  <a href="docs/bijdragen/README.md"><strong>Meedoen</strong></a>
 </p>
 
----
+## Wat is Omnibus?
 
-| 👥 Voor wie | ❓ Het probleem | ✅ Wat je krijgt |
-| --- | --- | --- |
-| Auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten | Bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een referentiekader samenstellen kost veel zoekwerk. | Een referentiekader als Excel-werkdocument, met bij elke norm de bron waar hij vandaan komt |
+- **Voor wie:** auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten.
+- **Het probleem:** bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een referentiekader samenstellen kost veel zoekwerk.
+- **Wat je krijgt:** een *referentiekader*, de normen en toetspunten waarmee je een organisatie onderzoekt, als Excel-werkdocument. Bij elke norm staat de bron waar hij vandaan komt.
 
-| 🧭 Ik wil Omnibus gebruiken | 🤝 Ik wil bijdragen | 🛠️ Ik beheer Omnibus |
-| --- | --- | --- |
-| [**Begin hier →**](docs/gebruiken/README.md)<br>Installeren, de vier stappen en de veelgestelde vragen | [**Begin hier →**](docs/bijdragen/README.md)<br>Een bron claimen, verwerken met AI en inleveren | [**Begin hier →**](docs/beheer/README.md)<br>Het beheerhandboek, releases en storingen |
+Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapporten, uit wetten en uit normenkaders. Jij kiest wat past bij jouw onderzoek. Bij elke norm kun je de oorspronkelijke bron lezen, zodat je altijd weet waar hij vandaan komt.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-overview-donker.png">
+  <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
+</picture>
+
+## Kies je route
+
+| Je wilt… | Lees |
+| --- | --- |
+| Omnibus gebruiken voor je onderzoek | [Omnibus gebruiken](docs/gebruiken/README.md): installeren, de vier stappen en de veelgestelde vragen |
+| Een bron toevoegen aan de database | [Meedoen](docs/bijdragen/README.md): een bron claimen, verwerken met een AI-skill en inleveren |
+| Pakketten controleren en databases uitbrengen | [Omnibus beheren](docs/beheer/README.md): het beheerhandboek, releases en storingen |
+
+Alle pagina's staan in de [wegwijzer](docs/README.md). Een vraag? Kijk bij de [veelgestelde vragen](docs/veelgestelde-vragen.md) of stel hem in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
 <details lang="en">
 <summary>🇬🇧 <strong>In English</strong></summary>
@@ -46,17 +51,6 @@ Omnibus helps auditors and researchers build a *reference framework* (in Dutch: 
 Omnibus is free for non-commercial use and runs in your browser; projects stay on your own computer. The content and documentation are in Dutch. [Try it online](https://omnibus.sliplane.app), watch the [25-second tour](#zo-werkt-het), or run it yourself with Docker (see [Aan de slag](#aan-de-slag)). Questions are welcome in [Discussions](https://github.com/Robert-Worm/omnibus/discussions), in English too.
 
 </details>
-
-## Wat is Omnibus?
-
-Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *referentiekader* te maken: de lijst met normen en toetspunten waarmee je een organisatie onderzoekt.
-
-Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapporten, uit wetten en uit normenkaders. Jij kiest wat past bij jouw onderzoek. Bij elke norm kun je de oorspronkelijke bron lezen, zodat je altijd weet waar hij vandaan komt.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-overview-donker.png">
-  <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
-</picture>
 
 <a id="zo-werkt-het"></a>
 ## Zo werkt het
@@ -81,8 +75,8 @@ Omnibus bestaat uit twee delen. Online en met Docker krijg je ze samen; bij een 
 
 | Deel | Wat het is | Waar |
 | --- | --- | --- |
-| **De applicatie** | De code van Omnibus. Draait lokaal in je browser. | Deze repository; vaste versies bij de [releases](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) |
-| **De database** | De inhoud: <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
+| De applicatie | De code van Omnibus. Draait lokaal in je browser. | Deze repository; vaste versies bij de [releases](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0) |
+| De database | De inhoud: <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. | [Releases](https://github.com/Robert-Worm/omnibus/releases/latest) (zip van 10 MB) |
 
 Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).
 
@@ -105,11 +99,6 @@ node scripts/installeer.mjs
 ```
 
 Open daarna `http://127.0.0.1:4319/`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
-
-<a id="meedoen"></a>
-## Meedoen
-
-Omnibus wordt beter met elke bron die erbij komt. Je zet een rapport, wet of kader op je naam, verwerkt hem met een [AI-skill](skills/README.md) en levert hem in; hoe dat gaat, lees je in [meedoen](docs/bijdragen/README.md). Kijk in de [voortgang](docs/bijdragen/voortgang.md) wat er nog open staat. Vragen en ideeën kun je kwijt in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
 ## Wat komt er nog?
 

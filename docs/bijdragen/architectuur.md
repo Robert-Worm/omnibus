@@ -42,6 +42,34 @@ Elke database hoort bij twee controlegetallen (hashes) in `local-build.json`:
 
 Omnibus weigert te starten als database, hashes en code niet bij elkaar passen. Een hash bewijst dat er niets is veranderd, niet dat de inhoud goed is.
 
+## Mappen en bestanden
+
+| Map | Wat erin staat |
+| --- | --- |
+| `docs/` | De documentatie, in drie routes: `gebruiken/`, `bijdragen/` en `beheer/` |
+| `skills/` | Zes AI-skills om bronnen te verwerken en te controleren |
+| `app/`, `components/`, `hooks/` | De schermen van de applicatie |
+| `lib/` | Gedeelde regels: selecties, vragen, projecten en Excel-export |
+| `local-data/` | De koppeling met de database |
+| `agent-tools/` | De koppeling voor AI-assistenten |
+| `content-tools/` | Hulpmiddelen voor de beheerder |
+| `scripts/` | Bouwen, testen en controleren |
+| `hosting/` | De online versie (container-route) en de route voor later |
+
+In de hoofdmap staan verder alleen bestanden die daar moeten staan, omdat hulpmiddelen ze daar zoeken. Als nieuwkomer hoef je er niets mee.
+
+| Bestand | Waarvoor |
+| --- | --- |
+| `README.md`, `CONTRIBUTING.md`, `SECURITY.md` en andere hoofdletterbestanden | Uitleg, licentie en afspraken; GitHub toont ze op vaste plekken |
+| `database.html`, `offline.tsx` | Het startpunt van de app: de pagina en de code die hem opstart |
+| `package.json`, `package-lock.json`, `.nvmrc` | Welke onderdelen en welke Node-versie Omnibus gebruikt |
+| `vite.config.ts`, `vite.database.config.ts`, `vite-env.d.ts`, `tsconfig.json` | Instellingen voor het bouwen en de typecontrole |
+| `components.json`, `.oxlintrc.json` | Instellingen voor de schermonderdelen en de codecontrole |
+| `code-snapshot.json` | Een technische lijst van wat bij de eerste publicatie bewust niet in Git is gezet |
+| `CITATION.cff` | Hoe je Omnibus citeert |
+
+Elke map heeft een korte README met uitleg.
+
 ## Codekaart
 
 | Onderdeel | Begin bij | Wat het doet |
@@ -100,7 +128,7 @@ De hoofdmap heeft vier mappen met applicatiecode: `app/`, `components/`, `hooks/
 | Nadeel 2 | Ongeveer 150 bestanden gebruiken de verwijzing `@/…` en 60 bestanden relatieve paden naar deze mappen. Ook noemen 56 plekken in scripts en de lokale server vaste paden. De lijst van gecontroleerde bestanden (`code-snapshot.json`) verwijst ook naar de huidige paden. |
 | Nadeel 3 | Lopende pull requests en de Git-geschiedenis per bestand worden lastiger te volgen. |
 
-**Advies:** combineer de verplaatsing met een volgende databaserelease die toch een nieuw contract krijgt. Doe het dan in één aparte wijziging, met alleen verplaatsingen en de volledige testronde. Tot die tijd helpen de [wegwijzer](../README.md#waar-vind-je-wat-in-de-repository) en de korte README per map de nieuwkomer op weg.
+**Advies:** combineer de verplaatsing met een volgende databaserelease die toch een nieuw contract krijgt. Doe het dan in één aparte wijziging, met alleen verplaatsingen en de volledige testronde. Tot die tijd helpen de [wegwijzer](#mappen-en-bestanden) en de korte README per map de nieuwkomer op weg.
 
 ## Licentie
 
