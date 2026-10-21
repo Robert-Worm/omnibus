@@ -2,7 +2,7 @@
 import {countLabel} from '@/lib/display-count.mjs';
 import { linkNewSelections } from "@/lib/research-proposals.mjs";
 import {focusWorkflowHeading} from '@/lib/workflow-focus.mjs';
-import {collectionStart} from '@/lib/collection-start.mjs';
+import {collectionDestination,rememberCollectionPage} from '@/lib/collection-start.mjs';
 import "./investigation.css";
 import FoundationWorkspace from "./foundation-workspace";
 import DiscoveryCatalogue,{emptyDirectoryView} from './discovery-catalogue';
@@ -209,6 +209,7 @@ export default function FrameworkEditor() {
   const [aboutViews,setAboutViews]=useState(()=>projectView().aboutViews);
   const [detail, setDetail] = useState("chain");
   const [page, setPage] = useState("entry");
+  const [lastCollectionPage,setLastCollectionPage]=useState('');
   const [researchRoute,setResearchRoute]=useState('');
   const [discoveryView,setDiscoveryView]=useState<{axis:'themes'|'processes';category:string}>({axis:'themes',category:''});
   const [directoryViews,setDirectoryViews]=useState({themes:emptyDirectoryView(),processes:emptyDirectoryView()});
@@ -350,6 +351,7 @@ export default function FrameworkEditor() {
     draftRef.current=project.draft;
     setDraft(project.draft);setModelLibrary(project.modelLibrary);setWorkspace(project.workspace);
     setAboutViews(project.view.aboutViews);
+    setLastCollectionPage(project.view.lastCollectionPage);
     setOpenModelIds(normalizeOpenModelIds(project.view.openModelIds,project.modelLibrary.models));
     setResearchRoute(project.view.researchRoute);
     setDiscoveryView({axis:project.view.discoveryAxis,category:project.view.discoveryCategory});
@@ -463,6 +465,7 @@ export default function FrameworkEditor() {
       if(route==='export')setExportOpened(true);
       contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
       setPage(route);
+      setLastCollectionPage(previous=>rememberCollectionPage(route,previous));
       if(route==='start')setResearchRoute('question');
       if(route==='risk-start')setResearchRoute('risk');
       const reportRoute = window.location.hash.replace("#rapport-", "");
@@ -486,12 +489,12 @@ export default function FrameworkEditor() {
   // Saving synchronizes browser storage; the status subscription reports its result.
   useEffect(() => {
     if(!loaded || !modelsReady)return;
-    const next=makeProject(draft,modelLibrary,workspace,{page,selected,readerId,reportPage,foundationFocus,sourceProcess,
+    const next=makeProject(draft,modelLibrary,workspace,{page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,
       researchRoute,discoveryAxis:discoveryView.axis,discoveryCategory:discoveryView.category,
       ...modelView,aboutViews,openModelIds,combined:browseMode.combined,excluded:reportChoices.excluded,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId:choiceThemeId??''});
     projectRef.current=next;
     saveProject(next);
-  },[loaded,modelsReady,draft,modelLibrary,workspace,page,selected,readerId,reportPage,foundationFocus,sourceProcess,modelView,aboutViews,browseMode,reportChoices,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId,researchRoute,discoveryView,openModelIds,saveProject]);
+  },[loaded,modelsReady,draft,modelLibrary,workspace,page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,modelView,aboutViews,browseMode,reportChoices,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId,researchRoute,discoveryView,openModelIds,saveProject]);
   useEffect(()=>{
     const changed=(event:StorageEvent)=>{
       // localStorage.clear() reports key=null; it invalidates a saved project too.
@@ -525,7 +528,7 @@ export default function FrameworkEditor() {
     if(!catalogueReady(keys)){withContent(keys,()=>openWorkspace(id));return;}
     setBrowseMode({ combined: false });
     setWorkspace((w) => openTheme(w, id, workspaces));
-    if(page!=="topics")navigate("topics");
+    if(page!=="topics")navigate("topics",readerId,id);
   }
   function openReportRisks(reportId:string){
     setAboutViews(v=>({...v,reports:false}));
@@ -558,9 +561,9 @@ export default function FrameworkEditor() {
     revealCounter.current += 1;
     setReveal({ id, nonce: revealCounter.current });
   }
-  function navigate(next: string, reportId = readerId) {
+  function navigate(next: string, reportId = readerId, topicWorkspaceId?:string) {
     if(next==='collect'){
-      const landing=collectionStart(draftRef.current.investigation?.goal?.direction,researchRoute);
+      const landing=collectionDestination(lastCollectionPage,draftRef.current.investigation?.goal?.direction,researchRoute);
       if(landing.foundationScope)setFoundationCatalogueScope(landing.foundationScope);
       next=landing.page;
     }
@@ -571,14 +574,15 @@ export default function FrameworkEditor() {
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
       if(source)keys.push('foundation:'+source);
     }
-    if(next==='topics')for(const id of workspace.openIds)keys.push(...(catalogueRouting.workspaces[id]??[]).map((report:string)=>'report:'+report));
-    if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId));return;}
+    if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map((report:string)=>'report:'+report));
+    if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
     if(['models','model-workspace'].includes(next))prepareModelLibrary();
     if(next==='export')setExportOpened(true);
     contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
     if(next==='start')setResearchRoute('question');
     if(next==='risk-start')setResearchRoute('risk');
     setPage(next);
+    setLastCollectionPage(previous=>rememberCollectionPage(next,previous));
     setDetailsOpen(false);
     setTab("framework");
     setDetail("chain");
@@ -999,6 +1003,7 @@ export default function FrameworkEditor() {
           )}
           <InvestigationNavigation
             page={page}
+            lastCollectionPage={lastCollectionPage}
             researchRoute={researchRoute}
             researchDirection={draft.investigation?.goal?.direction}
             navigate={(next) => {

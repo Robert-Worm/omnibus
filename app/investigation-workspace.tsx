@@ -36,7 +36,7 @@ import { foundations, foundationKinds, validateInvestigation, workflowStage, add
 import { addQuestion } from "@/lib/research-plan.mjs";
 import { directionApproach, directionBoundary, researchDirections } from '@/lib/research-directions.mjs';
 import { goalTemplates, researchGoalText } from '@/lib/research-goal.mjs';
-import {collectionStart} from '@/lib/collection-start.mjs';
+import {collectionDestination} from '@/lib/collection-start.mjs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { filterSources, sourceDomains } from "@/lib/active-foundation-navigation.mjs";
 import {cioSourceId} from '@/lib/cio-law-data.mjs';
@@ -54,15 +54,18 @@ export function InvestigationNavigation({
   count,
   researchRoute='question',
   researchDirection='',
+  lastCollectionPage='',
 }: {
   page: string;
   navigate: (s: string) => void;
   count: number;
   researchRoute?: string;
   researchDirection?: string;
+  lastCollectionPage?: string;
 }) {
   const stage = workflowStage(page);
-  const landing=collectionStart(researchDirection,researchRoute);
+  const landing=collectionDestination(lastCollectionPage,researchDirection,researchRoute);
+  const collectionHint=(lastCollectionPage?'Terug naar ':'Begin bij ')+landing.label;
   const stages = [
     [researchRoute==='risk'?'risk-start':'start', researchRoute==='risk'?'Verken je onderwerp':'Onderzoeksrichting', researchRoute==='risk'?'#risicoverkenning':'#start'],
     ["collect", "Verzamel", landing.hash],
@@ -99,7 +102,7 @@ export function InvestigationNavigation({
           <a
             key={id}
             href={hash}
-            title={id==='collect'?'Begin bij '+landing.label:undefined}
+            title={id==='collect'?collectionHint:undefined}
             aria-current={stage === i ? "step" : undefined}
             onClick={(e) => {
               e.preventDefault();
@@ -115,7 +118,7 @@ export function InvestigationNavigation({
       </nav>}
       <header className="workflow-page-heading">
         <div><h1 id="workflow-page-title" tabIndex={-1}>{heading[0]}</h1><p><TermText text={heading[1]} /></p></div>
-        {next && !hasViewerNext && <div className={viewer?'viewer-heading-actions':undefined}><Button className="workflow-next" title={next[0]==='collect'?'Begin bij '+landing.label:undefined} onClick={() => navigate(next[0])}>{next[1]}<ArrowRight size={16} aria-hidden="true" /></Button></div>}
+        {next && !hasViewerNext && <div className={viewer?'viewer-heading-actions':undefined}><Button className="workflow-next" title={next[0]==='collect'?collectionHint:undefined} onClick={() => navigate(next[0])}>{next[1]}<ArrowRight size={16} aria-hidden="true" /></Button></div>}
       </header>
     </>
   );

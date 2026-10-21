@@ -1,7 +1,7 @@
 import type {Draft} from './framework-types';
 import type {ModelLibraryState} from '../app/model-library';
 export type FoundationBrowse = {query:string;sourceId:string;topic:string;groupId:string;page:number;selectedOnly:boolean;reviewedOnly:boolean;grouped:boolean};
-export type ProjectView = {page:string;researchRoute:string;foundationCatalogueScope:'laws'|'frameworks';discoveryAxis:'themes'|'processes';discoveryCategory:string;openModelIds:string[];selected:string;readerId:string;reportPage:number;foundationFocus:string;sourceProcess:string;activeModel:string;modelDimension:string;modelQuery:string;combined:boolean;excluded:string[];foundationBrowse:FoundationBrowse;reportScope:'open'|'audit'|'all';choiceThemeId:string};
+export type ProjectView = {page:string;lastCollectionPage:string;researchRoute:string;foundationCatalogueScope:'laws'|'frameworks';discoveryAxis:'themes'|'processes';discoveryCategory:string;openModelIds:string[];selected:string;readerId:string;reportPage:number;foundationFocus:string;sourceProcess:string;activeModel:string;modelDimension:string;modelQuery:string;combined:boolean;excluded:string[];foundationBrowse:FoundationBrowse;reportScope:'open'|'audit'|'all';choiceThemeId:string};
 export type AboutViews = {laws:boolean;models:boolean;reports:boolean};
 export type Project = {format:'rijksmap-project';version:1;draft:Draft;modelLibrary:ModelLibraryState;workspace:{openIds:string[];activeId:string|null};view:ProjectView & {aboutViews:AboutViews}};
 export const PROJECT_KEY:string;
