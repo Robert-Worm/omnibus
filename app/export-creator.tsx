@@ -1,7 +1,7 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
 import LegacyCioNotice from "./legacy-cio-notice";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { ExportGuideStatus } from './workflow-help';
 import { FileSpreadsheet, Check, ClipboardCheck, ShieldCheck, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,24 +9,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { exportAuditXlsx } from "@/lib/excel-export.mjs";
-import { excelMime, exportFields, workbookStyles, requiredExportFields, columnName } from "@/lib/excel-model.mjs";
-import { creatorWorkbookModel } from "@/lib/creator-model.mjs";
+import { excelMime, exportFields, workbookStyles, columnName } from "@/lib/excel-model.mjs";
+import { exportState } from './export-state';
 import type {WorkbookPreviewStyle} from '@/lib/workbook-preview-types';
 import { exportPresets } from "@/lib/export-profiles.mjs";
-import {
-  scopedExportSelection,
-  selectedModelOptions,
-  exportDraftForSelection,
-} from "@/lib/model-library.mjs";
 import type { LibraryModel } from "./model-library";
-import InterviewSettings, { type InterviewSettingsValue } from "./interview-settings";
+import InterviewSettings from "./interview-settings";
 import { modelDisplayName, selectedQuestionCount } from "@/lib/interview-structure.mjs";
 import { normId } from "@/lib/norm-navigation.mjs";
 import type { Framework, Draft } from "@/lib/framework-types";
 import { testingAspects, testingTerminologies, testingAspectLabel, testingTerminologyHelp } from "@/lib/testing-aspects.mjs";
-import { planningReview } from "@/lib/planning-review.mjs";
-import { exportFonts, exportFontSizes, exportPalettes, exportFilename, exportPhasePalette } from '@/lib/export-design.mjs';
-import { suggestedExportProfile, researchSubjectDefault, exportScopeDefault, exportTitle } from '@/lib/workflow-defaults.mjs';
+import { exportFonts, exportFontSizes, exportPalettes, exportPhasePalette } from '@/lib/export-design.mjs';
 import { workbookPreviewEntries, workbookPreviewValue } from '@/lib/workbook-preview.mjs';
 import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
 import ScrollablePreview from './scrollable-preview';
@@ -59,102 +52,33 @@ export default function ExportCreator({
     setConfig(next);
     onSettingsChange?.(next);
   }
-  function setting<T>(key: string, fallback: T): [T, (value: T | ((old: T) => T)) => void] {
-    return [
-      (config[key] as T) ?? fallback,
-      (value) => {
+  function setting<T>(key: string, current: T): (value: T | ((old: T) => T)) => void {
+    return (value) => {
         const next = {
           ...config,
           [key]:
             typeof value === "function"
-              ? (value as (old: T) => T)((config[key] as T) ?? fallback)
+              ? (value as (old: T) => T)(current)
               : value,
         };
         updateSettings(next);
-      },
-    ];
+      };
   }
-  const selection = scopedExportSelection(framework, draft);
-  const selectedLines = framework.lines.filter(l => selection.included.includes(l.id));
-  const [profile] = setting("profile", suggestedExportProfile(selectedLines)),
-    [basis, setBasis] = setting("basis", "norms");
-  const [testScope, setTestScope] = setting<string[]>("testingAspects", []);
-  const [testingTerminology, setTestingTerminology] = setting("testingTerminology", "obw");
-  const [storedMeta, setMeta] = setting("meta", {
-    version: "0.1",
-    author: "",
-    team: "",
-    scope: exportScopeDefault(draft),
-    change: "Eerste opzet",
-  });
-  const meta = { ...storedMeta, scope: config.scopeFromInvestigation === true || !config.meta
-    ? exportScopeDefault(draft) : storedMeta.scope };
-  const [focus, setFocus] = setting("focus", researchSubjectDefault(draft).slice(0,160));
-  const [interview, setInterview] = setting<InterviewSettingsValue>("interview", {
-    levels: [],
-    starr: false,
-    triangulation: false,
-    overrides: {},
-  });
-  const [excludedNorms, setExcludedNorms] = setting<string[]>("excludedNorms", []);
-  const [fields, setFields] = setting<string[]>("fields", (exportPresets.find(p => p.id === profile) ?? exportPresets[0]).fields);
-  const questions = true;
-  const [notes, setNotes] = setting("notes", false);
-  const [accent, setAccent] = setting("accent", "blue"),
-    [colorMode, setColorMode] = setting("colorMode", "sections");
-  const [fontFamily,setFontFamily]=setting('fontFamily','Arial');
-  const [fontSize,setFontSize]=setting('fontSize',11);
-  const preset = exportPresets.find((p) => p.id === profile) ?? exportPresets[0];
-  const selectedModels = models.filter((m) => m.selected);
-  const selectedModel = selectedModels.find((m) => m.id === basis);
-  const modelBasis = basis !== "norms";
-  const modelTitle = selectedModel ? modelDisplayName(selectedModel) : "Model niet geselecteerd";
-  const themes = selection.themes;
-  const exportedNormIds = selection.included.filter((id: string) => !excludedNorms.includes(id));
-  const exportDraft = {...exportDraftForSelection(draft, exportedNormIds), title: exportTitle(draft)};
-  const [filename, setFilename] = setting('filename', modelBasis ? modelTitle : exportDraft.title);
-  const downloadName = exportFilename(filename, profile, meta.version);
-  const pickedLines = framework.lines.filter((l) => exportedNormIds.includes(l.id));
-  const hasCriteria = pickedLines.some(l => l.materialKind !== "model-question");
-  const requiredFields=requiredExportFields(pickedLines,{requiredField:preset.required,notes,
-    researchInterview:profile==="interview" ? interview : undefined});
-  for(const id of ['source','location',...(profile==='testing'?['category','controlObjective','control','criterion']:[])])requiredFields[id]='Vast onderdeel van het nieuwe referentiekader';
-  let modelOptions = {},
-    selectionError = "";
-  if (modelBasis) {
-    try {
-      modelOptions = selectedModelOptions(selectedModel, interview);
-    } catch (e) {
-      selectionError = e instanceof Error ? e.message : "Controleer je modelselectie.";
-    }
-  }
-  const choices = {
-    ...meta,
-    profile,
-    basis: "norms",
-    fields,
-    questions,
-    notes,
-    accent,
-    colorMode,
-    filename,
-    fontFamily, fontSize,
-    focus,
-    themeIds: selection.themeIds,
-    excludedNorms: [...new Set([...selection.excludedNorms, ...excludedNorms])],
-    ...modelOptions,
-    researchInterview: !modelBasis && profile === "interview" ? interview : undefined,
-    testingAspects: !modelBasis && profile === "testing" && hasCriteria ? testScope : undefined,
-    testingTerminology,
-  };
-  let preview: ReturnType<typeof creatorWorkbookModel> | null = null,
-    validation = "";
-  try {
-    if (selectionError) throw new Error(selectionError);
-    preview = creatorWorkbookModel(framework, exportDraft, choices);
-  } catch (e) {
-    validation = e instanceof Error ? e.message : "Controleer de exportinstellingen.";
-  }
+  const {
+    selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
+    excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
+    modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
+    requiredFields, choices, preview, validation, planningIssues,
+  } = useMemo(() => exportState(framework, draft, config, models), [framework, draft, config, models]);
+  const questions = choices.questions;
+  const setBasis = setting('basis', basis), setTestScope = setting('testingAspects', testScope);
+  const setTestingTerminology = setting('testingTerminology', testingTerminology);
+  const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
+  const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
+  const setFields = setting('fields', fields), setNotes = setting('notes', notes);
+  const setAccent = setting('accent', accent), setColorMode = setting('colorMode', colorMode);
+  const setFontFamily = setting('fontFamily', fontFamily), setFontSize = setting('fontSize', fontSize);
+  const setFilename = setting('filename', filename);
   const count = preview?.selection.norms ?? exportedNormIds.length;
   const hasResearchQuestions = Boolean(draft.research?.questions.length);
   const emptyFramework = !modelBasis && count === 0 && !hasResearchQuestions;
@@ -172,7 +96,7 @@ export default function ExportCreator({
     ?? (!modelBasis && count === 0 && hasResearchQuestions ? preview?.sheets.find((s: {name:string}) => s.name === '02 Onderzoeksvragen') : undefined)
     ?? preview?.sheets.find((s: {entries?: unknown; registerKind?: string}) => s.entries && s.registerKind !== "testing")
     ?? preview?.sheets.at(-1);
-  const previewEntries = workbookPreviewEntries(register);
+  const previewEntries = useMemo(() => workbookPreviewEntries(register), [register]);
   const previewIndex = Math.max(0, previewEntries.findIndex((entry: {key:string}) => entry.key === previewEntryKey));
   const previewEntry = previewEntries[previewIndex];
   const detailPreview = register?.viewer && register?.detailRecords;
@@ -192,7 +116,6 @@ export default function ExportCreator({
     previewGroups.push({index:i,span,label:typeof label === 'string' ? label : ''});
     i += span;
   }
-  const planningIssues = planningReview(framework, draft, exportedNormIds);
   function chooseProfile(id: string) {
     const p = exportPresets.find((v) => v.id === id)!;
     updateSettings({ ...config, profile: id, fields: [...p.fields] });
