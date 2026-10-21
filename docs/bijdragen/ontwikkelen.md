@@ -92,11 +92,11 @@ Hoe de code in elkaar zit, staat in [architectuur](architectuur.md).
 | Mijn project is weg | Elk adres en elke poort heeft eigen browseropslag. Open je projectbestand met **Open project**. |
 | Tests falen door de Node-versie | Gebruik Node 24.17.0. Controleer met `node --version`. |
 
-Kom je er niet uit? Stel je vraag in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+Meer meldingen met uitleg staan bij [problemen bij installeren en starten](../gebruiken/problemen-oplossen.md). Kom je er niet uit? Stel je vraag in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
 ## Bekende beperkingen
 
-- De applicatie draait alleen lokaal; er is nog geen online versie.
+- De online versie is een proefversie; de officiële demo volgt (zie de [routekaart](../routekaart.md#pad-a--online-versie)).
 - De AI-koppeling werkt alleen met assistenten die een lokaal proces (STDIO) ondersteunen.
 - Grote bronbundels laden in de browser nog niet optimaal.
 

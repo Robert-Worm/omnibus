@@ -90,7 +90,7 @@ Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
 - **Je werk wordt in je browser bewaard.** Dat is geen back-up. Gebruik **Bewaar project** om een projectbestand te downloaden, en **Open project** om het weer te openen.
 - **Elk adres heeft zijn eigen opslag.** `127.0.0.1:4319` en `localhost:4319` zien elkaars projecten niet. Gebruik steeds hetzelfde adres.
 - **Nieuwe database?** Pak de nieuwe zip uit, en voer stap 4 en 5 opnieuw uit.
-- **Iets gaat mis?** Kijk bij [problemen oplossen](../bijdragen/ontwikkelen.md#problemen-oplossen), of stel je vraag in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+- **Iets gaat mis?** Kijk bij [problemen bij installeren en starten](problemen-oplossen.md). Kom je er niet uit? Vraag dan om [hulp](problemen-oplossen.md#kom-je-er-niet-uit).
 
 ## Samengevat
 

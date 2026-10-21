@@ -10,7 +10,9 @@
 | 2 | [Werken met Omnibus](werken-met-omnibus.md) | Je maakt een referentiekader in vier stappen en exporteert het naar Excel |
 | 3 | [Veelgestelde vragen](../veelgestelde-vragen.md) | Je weet wat je bewaart, wat de normen betekenen en waar je hulp vindt |
 
-Eerst het resultaat bekijken, zonder te installeren? Download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip).
+Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](problemen-oplossen.md).
+
+Eerst proberen, zonder te installeren? Open de [proefversie online](https://omnibus.sliplane.app), of download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip).
 
 ## Verder
 

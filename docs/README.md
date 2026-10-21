@@ -18,6 +18,7 @@ Voor auditors en onderzoekers die Omnibus willen gebruiken.
 | --- | --- |
 | Weten waar ik begin | [Omnibus gebruiken](gebruiken/README.md) |
 | Omnibus op mijn computer zetten | [Installeren](gebruiken/installeren.md) |
+| Een foutmelding oplossen | [Problemen bij installeren en starten](gebruiken/problemen-oplossen.md) |
 | Weten hoe de vier stappen werken | [Werken met Omnibus](gebruiken/werken-met-omnibus.md) |
 | Met mijn eigen documenten werken | [Eigen documenten](gebruiken/eigen-documenten.md) |
 | Mijn eigen AI-assistent laten meewerken | [AI-koppeling](gebruiken/ai-koppeling.md) |

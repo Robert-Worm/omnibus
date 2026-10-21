@@ -19,10 +19,10 @@ Nee. Een norm kiezen zegt niet dat hij geldt, of dat de organisatie eraan voldoe
 ## Installeren en gebruiken
 
 **Wat heb ik nodig om Omnibus te gebruiken?**
-Git, Node.js 24.17 en de database-zip van de [releases](https://github.com/Robert-Worm/omnibus/releases/latest). Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md).
+Git, Node.js 24.17 en de database-zip van de [releases](https://github.com/Robert-Worm/omnibus/releases/latest). Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Met Docker gaat het nog sneller. Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
 
 **Kan ik Omnibus gebruiken zonder iets te installeren?**
-Nog niet. Een online versie staat op de [routekaart (pad A)](routekaart.md#pad-a--online-versie), met als eerste stap een online demo.
+Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk blijft ook daar in je eigen browser. De officiële online demo volgt; zie de [routekaart (pad A)](routekaart.md#pad-a--online-versie).
 
 **Werkt het op Windows, macOS en Linux?**
 Omnibus is getest op Windows en Linux (Ubuntu 24.04). macOS zou moeten werken, maar is niet getest.

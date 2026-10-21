@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Hulp bij installeren of gebruiken
+    url: https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp
+    about: Vastgelopen? Stel je vraag in Discussions, met een kort formulier.
   - name: Vraag of idee
     url: https://github.com/Robert-Worm/omnibus/discussions
     about: Stel een vraag of deel een idee in Discussions.

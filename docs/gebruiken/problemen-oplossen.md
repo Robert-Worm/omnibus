@@ -1,0 +1,132 @@
+# Problemen bij installeren en starten
+
+> **In het kort:** de meldingen die je het vaakst ziet bij het installeren en starten van Omnibus. Per melding: hoe hij eruitziet, wat hij betekent en wat je doet.
+
+## Zo gebruik je deze pagina
+
+Zoek met `Ctrl+F` naar een stukje van de melding die je ziet. De meldingen zijn in het Engels; de uitleg is in het Nederlands. Staat jouw melding er niet bij? Vraag dan om [hulp](#kom-je-er-niet-uit).
+
+## De meldingen
+
+### 1. Git of npm wordt niet herkend
+
+```text
+'git' is not recognized as an internal or external command
+'npm' is not recognized as an internal or external command
+bash: node: command not found
+```
+
+**Wat het betekent:** Git of Node.js is niet geïnstalleerd, of je terminal kent het nog niet.
+
+**Wat je doet:** installeer [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/). Sluit daarna je terminal en open hem opnieuw. Controleer met `git --version` en `node --version`.
+
+### 2. Een verkeerde versie van Node.js
+
+```text
+npm warn EBADENGINE Unsupported engine
+No such built-in module: node:sqlite
+```
+
+**Wat het betekent:** je gebruikt een oudere versie van Node.js. Omnibus heeft versie 24.17 of hoger nodig.
+
+**Wat je doet:** installeer Node.js 24.17 en controleer met `node --version`. Gebruik je `nvm`? Typ dan `nvm use` in de map van Omnibus.
+
+### 3. De opdracht vraagt om instellingen
+
+```text
+Error: Usage: build:database -- --settings <local-build.json> OR ...
+```
+
+**Wat het betekent:** je bent `--settings` vergeten. Zonder database bouwt Omnibus bewust niet.
+
+**Wat je doet:** typ de opdracht precies zoals in [installeren](installeren.md#4-controleer-en-bouw), met `-- --settings local-data/runtime/local-build.json` erachter.
+
+### 4. Het instellingenbestand wordt niet gevonden
+
+```text
+Runtime database check failed: ENOENT: no such file or directory, stat '.../local-data/runtime/local-build.json'
+```
+
+**Wat het betekent:** `local-build.json` staat niet op de plek waar Omnibus hem zoekt. Vaak is de zip uitgepakt in een extra map, zoals `local-data/runtime/omnibus-database-2026-10-19/`.
+
+**Wat je doet:** zet `catalogue.sqlite` en `local-build.json` rechtstreeks in `local-data/runtime/`. Zorg ook dat je terminal in de map van Omnibus staat.
+
+### 5. Het instellingenbestand is ongeldig
+
+```text
+Runtime database check failed: Invalid database settings: expected database, release and publication only.
+```
+
+**Wat het betekent:** `local-build.json` is aangepast, of opgeslagen in een andere tekstcodering. Dat gebeurt soms als je het bestand opent en bewaart in Kladblok.
+
+**Wat je doet:** pak het bestand opnieuw uit de zip. Pas het niet aan.
+
+### 6. Database en instellingen horen niet bij elkaar
+
+```text
+Runtime database check failed: Invalid runtime publication: unknown release
+```
+
+**Wat het betekent:** het instellingenbestand hoort bij een andere database. Je hebt bijvoorbeeld bestanden uit twee verschillende zips gemengd.
+
+**Wat je doet:** pak beide bestanden opnieuw uit dezelfde zip. Pas nooit zelf een controlegetal aan.
+
+### 7. De database is beschadigd
+
+```text
+Runtime database check failed: Release content verification failed: package contents
+```
+
+**Wat het betekent:** de inhoud van `catalogue.sqlite` klopt niet met de controlegetallen. De download is mislukt of het bestand is beschadigd.
+
+**Wat je doet:** download de zip opnieuw bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) en pak hem opnieuw uit. Blijft de melding? Meld het dan; dan is er mogelijk iets mis met de release.
+
+### 8. Omnibus weigert te starten
+
+```text
+Preview start refused. Check explicit start options, the pinned database, web build and port.
+```
+
+**Wat het betekent:** meestal is de poort al in gebruik, bijvoorbeeld door een Omnibus die nog draait. Het kan ook zijn dat je nog niet hebt gebouwd.
+
+**Wat je doet:** sluit andere terminals waarin Omnibus draait, of kies een andere poort met `--port 4320`. Heb je nog niet gebouwd? Voer dan eerst [stap 4](installeren.md#4-controleer-en-bouw) uit.
+
+### 9. De browser toont "Host not allowed"
+
+```text
+{"error":"Host not allowed"}
+```
+
+**Wat het betekent:** je opent Omnibus op een ander adres dan waarop hij draait. Op je eigen computer is dat `http://127.0.0.1:4319/`, niet `http://localhost:4319/`. Omnibus weigert andere adressen, zodat websites niet stiekem bij je gegevens kunnen.
+
+**Wat je doet:** open precies het adres dat in de terminal staat. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
+
+### 10. Mijn project is weg
+
+**Wat het betekent:** elk adres en elke poort heeft eigen opslag in de browser. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
+
+**Wat je doet:** open Omnibus op het adres dat je eerder gebruikte. Of open je projectbestand met **Open project**. Bewaar je werk regelmatig met **Bewaar project**.
+
+<a id="kom-je-er-niet-uit"></a>
+## Kom je er niet uit?
+
+Stel je vraag in de categorie *Hulp* van [Discussions](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp). Zet erbij:
+
+- je besturingssysteem, bijvoorbeeld Windows 11 of Ubuntu 24.04;
+- de uitkomst van `node --version`;
+- welke database je gebruikt, bijvoorbeeld `2026-10-19`;
+- de opdracht die je typte en de volledige melding.
+
+Zet er **geen** vertrouwelijke onderzoeksgegevens of projectbestanden bij. Discussions is openbaar.
+
+## Samengevat
+
+De meeste problemen komen door een ontbrekend programma, een verkeerde Node-versie, een extra map bij het uitpakken of een ander adres in de browser. Pak bij twijfel de zip opnieuw uit; pas nooit zelf een controlegetal aan.
+
+## Volgende stap
+
+Terug naar [Omnibus installeren](installeren.md).
+
+---
+
+[↑ Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)

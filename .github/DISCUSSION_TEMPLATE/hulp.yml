@@ -1,0 +1,55 @@
+title: "Hulp: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fijn dat je het vraagt. Kijk eerst even bij [problemen bij installeren en starten](https://github.com/Robert-Worm/omnibus/blob/main/docs/gebruiken/problemen-oplossen.md); misschien staat je melding daar al.
+
+        **Let op:** Discussions is openbaar. Zet hier geen vertrouwelijke onderzoeksgegevens, projectbestanden of namen van mensen neer.
+  - type: textarea
+    id: vraag
+    attributes:
+      label: Wat probeerde je te doen, en wat ging er mis?
+      placeholder: "Bijvoorbeeld: ik startte Omnibus met npm start, maar de browser toont een foutmelding."
+    validations:
+      required: true
+  - type: textarea
+    id: melding
+    attributes:
+      label: De opdracht en de volledige melding
+      description: Kopieer de tekst uit je terminal of browser. Een schermafbeelding mag ook, als er niets vertrouwelijks op staat.
+      render: text
+  - type: dropdown
+    id: hoe
+    attributes:
+      label: Hoe gebruik je Omnibus?
+      options:
+        - Op mijn eigen computer, met Node.js
+        - Op mijn eigen computer, met Docker
+        - De online proefversie
+        - Weet ik niet
+    validations:
+      required: true
+  - type: input
+    id: systeem
+    attributes:
+      label: Besturingssysteem
+      placeholder: "Bijvoorbeeld: Windows 11, macOS 15, Ubuntu 24.04"
+  - type: input
+    id: node
+    attributes:
+      label: Uitkomst van node --version
+      placeholder: "Bijvoorbeeld: v24.17.0 (niet nodig bij Docker of online)"
+  - type: input
+    id: database
+    attributes:
+      label: Welke database?
+      placeholder: "Bijvoorbeeld: 2026-10-19"
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Controle
+      options:
+        - label: Mijn vraag bevat geen vertrouwelijke onderzoeksgegevens.
+          required: true
