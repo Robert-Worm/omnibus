@@ -26,6 +26,15 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Onthoud per viewerfamilie het tabblad Over in `project.view.aboutViews`, ook bij navigeren tussen stappen, wisselen van bron en herladen. Expliciete acties om een norm te tonen mogen terugkeren naar de normlijst; gewone navigatie mag deze voorkeur niet resetten. Deze presentatiestatus wijzigt nooit selecties, vraagkoppelingen of bewijssnapshots.
 - Controleer zowel CIO als het toegevoegde kader: exacte markeringen, wisselen tussen bronbijdragen en pagina's, navigatie op smalle schermen, de integriteit van opgeslagen projecten en het ontbreken van browserfouten. Tests moeten het hergebruik van gedeelde onderdelen afdekken, zodat latere adapters niet ongemerkt afwijken.
 
+## Responsieve viewers als standaard
+
+- Gebruik `CompactMatrix` voor matrices en `DeferredViewerSection` voor lange lijsten/groepen. Ze bouwen bediening buiten beeld pas op bij naderen. Nieuw toegevoegde bronnen erven dit gedrag; maak geen eigen laadmechanisme per bron.
+- Stel alleen de presentatie uit. Zoeken, aantallen, volledige groepsselectie, HOLD/toepasselijkheid, vraagkoppelingen en exports blijven op de volledige toegestane gegevens werken, nooit op de gemonteerde rijen. Filters en expliciete verwijzingen moeten ook latere resultaten direct bereikbaar maken.
+- Laat eenmaal geopende onderdelen gemonteerd; behoud eigen tekst, focus en uitgeklapte bediening. Behoud de toetsenbordknop om een uitgesteld onderdeel te openen en de volledige weergave zonder IntersectionObserver.
+- Brontekst blijft via de gedeelde bronviewer per pagina laden, met exacte versie- en passagecontrole. Het openen van een overzicht mag niet alle onderliggende bronbestanden ophalen.
+- Projectcompressie gebruikt de gedeelde achtergrondopslag. Voeg geen synchrone volledige projectcompressie toe aan gewone navigatie. Behoud de bewaarbeveiligingen, synchrone afsluitfallback en herkenbare opslagstatus.
+- Controleer nieuwe viewers met een omvangrijke collectie, zoeken naar late items, selectie buiten beeld, herladen en smalle schermen. De gedeelde contracttests staan in `lib/viewer-rendering.test.mjs`.
+
 ## Versiebeheer
 
 - Maak kleine commits voor samenhangende, afgeronde verbeteringen, met controles die passen bij de wijziging. Bekijk eerst de werkmap en de gestagede diff; neem geen ongerelateerde wijzigingen mee.

@@ -61,6 +61,16 @@ Tests staan meestal naast de code die ze controleren (`*.test.mjs`). Fictieve te
 
 ## Wat wijzigingen moeten respecteren
 
+### Snel bladeren, ook bij grotere collecties
+
+Alle viewers volgen dezelfde regel: toon de eerste onderdelen meteen en bouw bediening buiten beeld pas op wanneer de gebruiker ernaartoe scrolt. `CompactMatrix` doet dit standaard voor rijen; `DeferredViewerSection` biedt hetzelfde voor groepen en modelvragen. Een eenmaal geopend onderdeel blijft aanwezig, zodat invoer en uitgeklapte panelen behouden blijven. Gerichte zoekresultaten en verwijzingen blijven direct bereikbaar.
+
+Dit verandert alleen wat de browser tekent. Aantallen, zoeken, selecties, vraagkoppelingen en exports gebruiken nog steeds de volledige toegestane collectie. Brondocumenten laden via de gedeelde bronviewer per pagina. Projecten worden in de achtergrond gecomprimeerd, met dezelfde controle op opslagconflicten en een afsluitfallback. Nieuwe viewers moeten deze onderdelen hergebruiken; de database en het projectformaat veranderen hierdoor niet.
+
+Controleer dit met `npm run test:frontend` en een browserronde met veel items: selecteer ook buiten beeld, zoek een laat item, wissel stappen en herlaad het project. Controleer ook een smal scherm en een browser zonder IntersectionObserver. De componenten zijn geen belofte dat netwerkvertraging verdwijnt; ze voorkomen dat onnodig teken- en compressiewerk normale navigatie blokkeert.
+
+### Bron- en projectintegriteit
+
 - **Bronnen, selecties en projecten zijn drie verschillende dingen.** Een bronpassage houdt altijd zijn oorspronkelijke tekst en positie. Een selectie verandert niets aan een bron of aan de HOLD-status.
 - **Eén ontwerp voor alle bronnen.** Hergebruik de bestaande viewers en opmaak. Wat per bron verschilt, hoort in een adapter in `lib/content-adapters/`.
 - **Projecten blijven werken.** Een wijziging in de weergave mag opgeslagen selecties, vragen en koppelingen niet veranderen.
