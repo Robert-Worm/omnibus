@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, opdrachtWaarschuwingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -138,4 +138,12 @@ test("lange zinnen in docs/ geven een waarschuwing, code en tabellen worden goed
 test("formele woorden uit de stijlgids geven een waarschuwing", () => {
   const w = woordWaarschuwingen("docs/a.md", "Indien nodig, middels de knop, teneinde te starten.");
   assert.equal(w.length, 3);
+});
+
+test("een opdracht met een npm-script hoort als npm run in docs/ te staan", () => {
+  const scripts = { "check:links": "node scripts/check-links.mjs", test: "node --test x.mjs" };
+  assert.deepEqual(opdrachtWaarschuwingen("docs/a.md", "Draai `node scripts/check-links.mjs` nu.", scripts),
+    ['docs/a.md:1: gebruik "npm run check:links" in plaats van "node scripts/check-links.mjs"']);
+  assert.deepEqual(opdrachtWaarschuwingen("docs/a.md", "node scripts/start-runtime-package.mjs", scripts), []);
+  assert.deepEqual(opdrachtWaarschuwingen("hosting/README.md", "node scripts/check-links.mjs", scripts), []);
 });

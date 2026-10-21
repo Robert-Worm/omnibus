@@ -224,6 +224,23 @@ export function zinWaarschuwingen(rel, tekst) {
     .map((z) => `${rel}:${z.nr}: zin van ${z.woorden} woorden: "${z.zin.slice(0, 60)}…"`);
 }
 
+/** Opdrachten in docs/ die een npm-script hebben, horen als `npm run …` te staan. */
+export function opdrachtWaarschuwingen(rel, tekst, scripts) {
+  if (!rel.startsWith("docs/")) return [];
+  const alias = new Map();
+  for (const [naam, opdracht] of Object.entries(scripts)) {
+    const m = opdracht.match(/^node ((?:scripts|local-data|content-tools|agent-tools)\/[\w.-]+\.mjs)$/);
+    if (m) alias.set(m[1], naam);
+  }
+  const uit = [];
+  tekst.split("\n").forEach((regel, i) => {
+    for (const m of regel.matchAll(/\bnode ((?:scripts|local-data|content-tools|agent-tools)\/[\w.-]+\.mjs)/g)) {
+      if (alias.has(m[1])) uit.push(`${rel}:${i + 1}: gebruik "npm run ${alias.get(m[1])}" in plaats van "node ${m[1]}"`);
+    }
+  });
+  return uit;
+}
+
 export function markdownBestanden(root) {
   const uit = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "*.md"], { cwd: root, encoding: "utf8" });
   return uit.split("\n").filter((f) => f && existsSync(path.join(root, f)));
@@ -260,6 +277,7 @@ export function controleer(root) {
     meldingen.push(...controleerBestand(root, rel, { nvmrc, scripts }));
     const tekst = readFileSync(path.join(root, rel), "utf8");
     waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...opdrachtWaarschuwingen(rel, tekst, scripts));
     lang.push(...zinWaarschuwingen(rel, tekst));
   }
   const release = path.join(root, "lib", "product-release.mjs");
