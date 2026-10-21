@@ -35,10 +35,12 @@ Elke pagina in `docs/` is van één type. Zet het type in een verborgen regel di
 | Type | Waarvoor | Vaste volgorde |
 | --- | --- | --- |
 | `start` | Het begin van een route, zoals de wegwijzer en de README van gebruiken, bijdragen en beheren | In het kort · Begin hier · Verder · Volgende stap. **Geen** Samengevat. |
-| `taak` | Iets wat de lezer doet, zoals installeren of een pakket controleren | In het kort · Kies je route (alleen bij meer routes) · Wat heb je nodig? · Stap voor stap · Goed om te weten · Technische details · Samengevat · Volgende stap |
+| `taak` | Iets wat de lezer doet, zoals installeren | In het kort · Kies je route\* · Wat heb je nodig? · Stap voor stap · Goed om te weten · Technische details · Samengevat · Volgende stap |
 | `naslag` | Iets wat je opzoekt, zoals begrippen, afspraken of foutmeldingen | In het kort · Zo gebruik je deze pagina · de inhoud · Volgende stap. Samengevat mag. |
 | `data` | Een pagina die een script maakt, zoals de voortgang en de werklijsten | In het kort · de stand · wat je kunt doen · de lijsten · Volgende stap. Met de regel *Automatisch bijgewerkt*. |
 | `logboek` | Een lijst die groeit, zoals de besluiten en de checklist live demo | In het kort · Zo gebruik je deze lijst · de tabel · Volgende stap |
+
+\* Alleen als er meer dan één route is.
 
 **Wat de check bewaakt:** elke pagina in `docs/` heeft een geldig type. Een `start`-pagina heeft geen Samengevat. Een `taak`-pagina heeft Samengevat en genummerde stappen. Een `data`-pagina zegt dat hij automatisch wordt bijgewerkt. Een `logboek` heeft een tabel.
 
@@ -101,6 +103,8 @@ Uitkomst:
 | Uitkomst | Betekenis | Wat je doet |
 | --- | --- | --- |
 | `MATCH` | Precies de verwachte toevoegingen | Ga verder met de testbuild |
+
+**Wat de check bewaakt:** een lege kopcel is een fout. Een waarschuwing krijg je bij meer dan vier kolommen, een lege cel, een cel van meer dan 25 woorden, getallen die niet rechts staan, een datum als 21-10-2026 in een tabel, en een statuscel die geen vast label is.
 
 **Geen tabel als:**
 

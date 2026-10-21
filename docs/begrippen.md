@@ -10,7 +10,7 @@
 
 | Begrip | Betekenis |
 | --- | --- |
-| **Referentiekader** | De set normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen. Elders heet dit ook wel toetsingskader of auditkader; in Omnibus heet het altijd referentiekader. |
+| **Referentiekader** | De normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen. Elders heet dit toetsingskader of auditkader. |
 | **Norm** | Waar de organisatie aan zou moeten voldoen. |
 | **Toetspunt** | Een concrete controle bij een norm: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
 | **Bouwsteen** | Alles wat je in Omnibus kunt kiezen: normen, toetspunten en modelvragen. |

@@ -121,14 +121,17 @@ De volledige afspraken staan in [AGENTS.md](../../AGENTS.md) en de [acceptatieco
 
 De hoofdmap heeft vier mappen met applicatiecode: `app/`, `components/`, `hooks/` en `lib/`. Samenvoegen onder `src/` zou de hoofdmap rustiger maken. Uitkomst van het onderzoek (21 oktober 2026): **nu niet doen.**
 
-| | Wat het betekent |
-| --- | --- |
-| Voordeel | Vier mappen minder in de hoofdmap; een nieuwkomer ziet sneller `docs/` en `skills/`. |
-| Nadeel 1 | Het runtimecontract koppelt de openbare database aan modulenamen zoals `lib/cio-content.mjs` en `app/reviewed-reports.json`. Andere namen betekenen een nieuw contract en dus een nieuwe databaserelease. |
-| Nadeel 2 | Ongeveer 150 bestanden gebruiken de verwijzing `@/…` en 60 bestanden relatieve paden naar deze mappen. Ook noemen 56 plekken in scripts en de lokale server vaste paden. De lijst van gecontroleerde bestanden (`code-snapshot.json`) verwijst ook naar de huidige paden. |
-| Nadeel 3 | Lopende pull requests en de Git-geschiedenis per bestand worden lastiger te volgen. |
+**Voordeel**
 
-**Advies:** combineer de verplaatsing met een volgende databaserelease die toch een nieuw contract krijgt. Doe het dan in één aparte wijziging, met alleen verplaatsingen en de volledige testronde. Tot die tijd helpen de [wegwijzer](#mappen-en-bestanden) en de korte README per map de nieuwkomer op weg.
+- Vier mappen minder in de hoofdmap; een nieuwkomer ziet sneller `docs/` en `skills/`.
+
+**Nadelen**
+
+- Het runtimecontract koppelt de openbare database aan modulenamen zoals `lib/cio-content.mjs` en `app/reviewed-reports.json`. Andere namen betekenen een nieuw contract en dus een nieuwe databaserelease.
+- Ongeveer 150 bestanden gebruiken de verwijzing `@/…` en 60 bestanden relatieve paden naar deze mappen. Ook noemen 56 plekken in scripts en de lokale server vaste paden. De lijst van gecontroleerde bestanden (`code-snapshot.json`) verwijst ook naar de huidige paden.
+- Lopende pull requests en de Git-geschiedenis per bestand worden lastiger te volgen.
+
+**Advies:** combineer de verplaatsing met een volgende databaserelease die toch een nieuw contract krijgt. Doe het dan in één aparte wijziging, met alleen verplaatsingen en de volledige testronde. Tot die tijd helpen het overzicht van [mappen en bestanden](#mappen-en-bestanden) en de korte README per map de nieuwkomer op weg.
 
 ## Licentie
 

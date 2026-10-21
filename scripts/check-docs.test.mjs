@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -172,4 +172,27 @@ test("meldingen volgen de bouwstenen", () => {
   assert.match(w, /a\.md:8: begin een melding met een vet Nederlands woord/);
   assert.match(w, /a\.md:8: twee meldingen direct onder elkaar/);
   assert.deepEqual(meldingWaarschuwingen("docs/a.md", "```text\n> [!CAUTION]\n```\n"), [], "voorbeelden tellen niet");
+});
+
+test("tabellen volgen de bouwstenen", () => {
+  const goed = "| Onderdeel | Status | Toelichting |\n| --- | --- | --- |\n| Online | ✅ Klaar | – |\n| Aantal | ⬜ Open | Zie \\| hier |\n";
+  assert.deepEqual(tabelControle("docs/a.md", goed), { fouten: [], waarschuwingen: [] });
+  assert.equal(tabellen(goed)[0].rijen[1].cellen.length, 3, "een geëscapete | splitst geen cel");
+  const lang = Array.from({ length: 26 }, (_, i) => `w${i}`).join(" ");
+  const fout = [
+    "| | Wat |", "| --- | --- |", "| a | b |", "",
+    "| A | B | C | D | E |", "| --- | --- | --- | --- | --- |", "| 1 | 2 | 3 | 4 | 5 |", "",
+    "| Stap | Status | Aantal | Datum |", "| --- | --- | --- | --- |", `| ${lang} | ✅ | 12 | 21-10-2026 |`, "| x |  | 3 | – |",
+  ].join("\n");
+  const { fouten, waarschuwingen } = tabelControle("docs/a.md", fout);
+  assert.match(fouten[0], /a\.md:1: tabel met een lege kopcel/);
+  const w = waarschuwingen.join("\n");
+  assert.match(w, /a\.md:5: tabel met 5 kolommen/);
+  assert.match(w, /a\.md:9: kolom "Aantal" bevat getallen/);
+  assert.match(w, /a\.md:11: cel van 26 woorden/);
+  assert.match(w, /a\.md:11: statuscel "✅" volgt de statuslabels niet/);
+  assert.match(w, /a\.md:11: datum in een tabel als JJJJ-MM-DD/);
+  assert.match(w, /a\.md:12: lege cel/);
+  assert.doesNotMatch(w, /kolom "Stap"/, "stapnummers zijn geen hoeveelheden");
+  assert.deepEqual(tabelControle("docs/b.md", "<!-- paginatype: data -->\n" + fout), { fouten: [], waarschuwingen: [] }, "datapagina's volgen in #111");
 });

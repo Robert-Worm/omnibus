@@ -59,13 +59,11 @@ Deze route voegt alleen twee dingen toe: een hulp die lokaal de context voor de 
 
 Officiële documentatie, geraadpleegd op 19 oktober 2026:
 
-| Bron | Wat erin staat, en wat dat voor ons betekent |
-| --- | --- |
-| [Sevalla Docker images](https://docs.sevalla.com/applications/docker-images) | Een kant-en-klare image draait zonder dat de hostingpartij hem bouwt. `linux/amd64`, een tag of digest en inloggegevens voor een privé-registry worden ondersteund. Kies per release een digest, geen `latest` die kan veranderen. |
-| [Sevalla Dockerfile](https://docs.sevalla.com/applications/builds/dockerfile) | De route via Git bouwt uit de repository of context. Een eigen startopdracht vervangt zowel ENTRYPOINT als CMD, en draait via `/bin/sh -l -c`. `PORT` is de ingestelde webpoort. Een volledige `exec node ... --port "$PORT"` past bij onze bestaande startopdracht. |
-| [Sevalla disks](https://docs.sevalla.com/applications/disks) | SQLite kan op een schijf bij één proces in één instantie. Een nieuwe schijf is leeg en verbergt de bestanden uit de image op hetzelfde pad. Jobs en cronjobs kunnen geen schijf krijgen; schijven zijn niet te delen. Bevestig ontvangst en rechten vóór de eerste start van de app. |
-| [Sevalla webterminal](https://docs.sevalla.com/applications/web-terminal) | Werkt alleen als er een instantie draait en gereed is. Het Files-menu kan bestanden tot 100 MB uploaden of downloaden, met updatebevoegdheid. Zie het [voorstel voor de eerste start](../first-start/README.md); daarmee is de werkwijze bij de hostingpartij nog niet bewezen. |
-| [Docker build context](https://docs.docker.com/build/concepts/context/) en [Dockerfile](https://docs.docker.com/reference/dockerfile/) | De context bepaalt wat COPY kan kopiëren; `.dockerignore` filtert vóór het overzetten. De template gebruikt een expliciet gecontroleerde context, een exec-entrypoint en een gebruiker zonder rootrechten, met een nummer. |
+- **[Sevalla Docker images](https://docs.sevalla.com/applications/docker-images).** Een kant-en-klare image draait zonder dat de hostingpartij hem bouwt. `linux/amd64`, een tag of digest en inloggegevens voor een privé-registry worden ondersteund. Kies per release een digest, geen `latest` die kan veranderen.
+- **[Sevalla Dockerfile](https://docs.sevalla.com/applications/builds/dockerfile).** De route via Git bouwt uit de repository of context. Een eigen startopdracht vervangt zowel ENTRYPOINT als CMD, en draait via `/bin/sh -l -c`. `PORT` is de ingestelde webpoort. Een volledige `exec node ... --port "$PORT"` past bij onze bestaande startopdracht.
+- **[Sevalla disks](https://docs.sevalla.com/applications/disks).** SQLite kan op een schijf bij één proces in één instantie. Een nieuwe schijf is leeg en verbergt de bestanden uit de image op hetzelfde pad. Jobs en cronjobs kunnen geen schijf krijgen; schijven zijn niet te delen. Bevestig ontvangst en rechten vóór de eerste start van de app.
+- **[Sevalla webterminal](https://docs.sevalla.com/applications/web-terminal).** Werkt alleen als er een instantie draait en gereed is. Het Files-menu kan bestanden tot 100 MB uploaden of downloaden, met updatebevoegdheid. Zie het [voorstel voor de eerste start](../first-start/README.md); daarmee is de werkwijze bij de hostingpartij nog niet bewezen.
+- **[Docker build context](https://docs.docker.com/build/concepts/context/) en [Dockerfile](https://docs.docker.com/reference/dockerfile/).** De context bepaalt wat COPY kan kopiëren; `.dockerignore` filtert vóór het overzetten. De template gebruikt een expliciet gecontroleerde context, een exec-entrypoint en een gebruiker zonder rootrechten, met een nummer.
 
 **Wat dat betekent voor Omnibus:** een build vanuit Git mist de aparte SQLite-database die onze webcompiler nodig heeft. Een vooraf gebouwd pakket lost dat op. Deze route gebruikt de schijf nergens tijdens het bouwen van de image. Dat is een ontwerpkeuze. We beweren niet dat een build bij Sevalla bij die schijf zou kunnen.
 
@@ -85,9 +83,11 @@ Een aparte job kan volgens deze documentatie niet bij dezelfde schijf. Er is hie
 | Code-Git | De bestaande code en deze voorbereiding. Geen gegenereerde context en geen echte pinbestanden. |
 | Privé-releasewerkplek, buiten de context | De ontvangen SQLite, het instellingenbestand met precies `database`, `release` en `publication`, de inhoudsreview, de ontvangstcontrole, de back-up en de privé-verwerking van bronnen. |
 | Nieuwe lokale imagecontext | Alleen `Dockerfile`, `.dockerignore` en `runtime/` met precies de gecontroleerde pakketbestanden. |
-| Image `/app/omnibus-runtime` | De bestaande Node-server en de gebouwde webbestanden. Geen SQLite, instellingen, inloggegevens, privé-auteursmodules, Workbench, MCP-service of bronarchief. De webbestanden bevatten wél gepubliceerde gegevens voor de voorkant en de start. Daarvoor zijn dus ook rechten op de inhoud nodig. |
+| Image `/app/omnibus-runtime` | De bestaande Node-server en de gebouwde webbestanden. Geen SQLite, instellingen, inloggegevens, privé-auteursmodules, Workbench, MCP-service of bronarchief. |
 | Vaste schijf `/var/lib/omnibus` | `releases/<publicatie-sha256>/catalogue.sqlite` en `local-build.json`. Koppel de schijf nooit over het pakket of de webroot heen. Bewaar vorige versies, en overschrijf geen database die open is. |
-| Instellingen bij de hostingpartij | De image-digest, één webproces, een expliciete HTTPS-origin, de webpoort, het pad van de schijf en de inloggegevens voor de registry. Die laatste beheert de eigenaar. Inloggegevens komen nooit in de image, in buildargumenten of in Git. |
+| Instellingen bij de hostingpartij | De image-digest, één webproces, een expliciete HTTPS-origin, de webpoort, het pad van de schijf en de inloggegevens voor de registry (beheerd door de eigenaar). |
+
+De webbestanden in de image bevatten wél gepubliceerde gegevens voor de voorkant en de start; daarvoor zijn dus ook rechten op de inhoud nodig. Inloggegevens komen nooit in de image, in buildargumenten of in Git.
 
 De template maakt de pakketbestanden eigendom van root, zonder schrijfrechten. De app draait als UID/GID `1000:1000`. Dat is lokaal bevestigd in een proef met een fictieve Linux-image, maar nog niet bij Sevalla.
 

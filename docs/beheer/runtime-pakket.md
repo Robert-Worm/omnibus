@@ -78,11 +78,13 @@ Deze opties werken alleen als je ze allemaal tegelijk en volledig opgeeft. Ze zi
 
 | Optie | Wat je opgeeft |
 | --- | --- |
-| `--public-origin` | Het openbare adres, precies één `https://`-adres, bijvoorbeeld `https://omnibus.example.invalid`. Zonder gebruikersnaam, pad, slash aan het eind, vraagteken, hoofdletters of overbodige `:443`. Een andere poort zoals `:8443` mag wel. |
+| `--public-origin` | Het openbare adres: precies één `https://`-adres, zoals `https://omnibus.example.invalid`. Zie de regels onder deze tabel. |
 | `--listen-host` | Alleen `127.0.0.1` (eigen computer) of `0.0.0.0` (alle netwerken), en altijd samen met `--public-origin`. |
 | `--port` | Verplicht: een poortnummer van 1 tot 65535, zonder voorloopnul. De server leest de poort niet zelf uit omgevingsvariabelen zoals `PORT`; geef hem expliciet door. |
 | Database en controlegetallen | `--database` met `--release` en `--publication` (elk 64 kleine hexadecimale tekens), óf één `--settings`-bestand met precies die drie velden. Niet mengen. |
 | Webmap | `serve-database-web.mjs` vraagt dan expliciet `--web-root`. `start-runtime-package.mjs` gebruikt altijd de gecontroleerde app in het pakket en weigert een andere webmap. |
+
+Het openbare adres heeft geen gebruikersnaam, pad, `/` aan het eind, `?`, hoofdletters of overbodige `:443`. Een andere poort zoals `:8443` mag wel. Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`, voor een container op je eigen computer.
 
 De server weigert onbekende of dubbele opties, afkortingen zoals `--host` en de vorm `--optie=waarde`. Ontbreekt een optie, dan valt hij nooit stilletjes terug op lokaal gebruik. Lokaal blijft poort 4319 de standaard. Instellingen voor online gebruik komen nooit in het databasebestand of het pakket terecht.
 

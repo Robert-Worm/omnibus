@@ -279,6 +279,54 @@ export function meldingWaarschuwingen(rel, ruw) {
   return uit;
 }
 
+// Statuslabels uit de bouwstenen (docs/bijdragen/bouwstenen.md#statuslabels).
+export const STATUSLABELS = ["✅ Klaar", "✅ In database", "🔄 Bezig", "🔄 In bewerking", "📦 Ingeleverd", "⬜ Open", "⬜ Gepland",
+  "🔒 Niet beschikbaar", "🔒 Niet openbaar", "🔒 Toestemming nodig", "🔁 Mogelijk dubbel", "➖ Niet van toepassing"];
+
+/** Leest de tabellen uit markdown: kop, uitlijning, rijen en het regelnummer van de kop. */
+export function tabellen(ruw) {
+  const regels = ruw.replace(/^ *```[\s\S]*?^ *```/gm, (b) => b.replace(/[^\n]/g, "")).split("\n");
+  const cellen = (r) => r.trim().replace(/^\|/, "").replace(/\|$/, "").split(/(?<!\\)\|/).map((c) => c.trim());
+  const uit = [];
+  for (let i = 0; i + 1 < regels.length; i++) {
+    if (!/^\s*\|/.test(regels[i]) || !/^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/.test(regels[i + 1])) continue;
+    const kop = cellen(regels[i]), uitlijning = cellen(regels[i + 1]);
+    const rijen = [];
+    let j = i + 2;
+    while (j < regels.length && /^\s*\|/.test(regels[j])) rijen.push({ nr: j + 1, cellen: cellen(regels[j]) }), j++;
+    uit.push({ nr: i + 1, kop, uitlijning, rijen });
+    i = j - 1;
+  }
+  return uit;
+}
+
+/** Tabelregels uit de bouwstenen. Fouten: lege kopcellen. Waarschuwingen: de rest. */
+export function tabelControle(rel, tekst) {
+  const fouten = [], waarschuwingen = [];
+  if (/<!-- paginatype: data -->/.test(tekst) || rel === "CHANGELOG.md" || /^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel)) return { fouten, waarschuwingen };
+  const woorden = (c) => c.replace(/\]\([^)]*\)/g, "]").replace(/`[^`]*`/g, "x").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+  for (const t of tabellen(tekst)) {
+    const plek = `${rel}:${t.nr}`;
+    if (t.kop.some((c) => !c)) fouten.push(`${plek}: tabel met een lege kopcel; geef elke kolom een kop (zie de bouwstenen)`);
+    if (t.kop.length > 4) waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
+    const status = t.kop.findIndex((c) => /^status$/i.test(c));
+    t.kop.forEach((_, k) => {
+      const waarden = t.rijen.map((r) => (r.cellen[k] || "").replace(/<!--[^>]*-->/g, "").trim()).filter((c) => c && c !== "–");
+      if (!/^(stap|#|nr\.?)$/i.test(t.kop[k]) && waarden.length && waarden.every((c) => /^[\d.,]+$/.test(c)) && !/-:\s*$/.test(t.uitlijning[k] || ""))
+        waarschuwingen.push(`${plek}: kolom "${t.kop[k]}" bevat getallen; lijn rechts uit (---:)`);
+    });
+    for (const r of t.rijen) {
+      r.cellen.forEach((c, k) => {
+        if (!c) waarschuwingen.push(`${rel}:${r.nr}: lege cel; schrijf "–"`);
+        if (/\b\d{1,2}-\d{1,2}-\d{4}\b/.test(c)) waarschuwingen.push(`${rel}:${r.nr}: datum in een tabel als JJJJ-MM-DD schrijven`);
+        else if (woorden(c) > 25) waarschuwingen.push(`${rel}:${r.nr}: cel van ${woorden(c)} woorden; maak er een lijst of kaart van`);
+        if (k === status && c && c !== "–" && !STATUSLABELS.includes(c)) waarschuwingen.push(`${rel}:${r.nr}: statuscel "${c.slice(0, 40)}" volgt de statuslabels niet`);
+      });
+    }
+  }
+  return { fouten, waarschuwingen };
+}
+
 export function markdownBestanden(root) {
   const uit = execFileSync("git", ["ls-files", "-co", "--exclude-standard", "*.md"], { cwd: root, encoding: "utf8" });
   return uit.split("\n").filter((f) => f && existsSync(path.join(root, f)));
@@ -317,6 +365,9 @@ export function controleer(root) {
     waarschuwingen.push(...woordWaarschuwingen(rel, tekst));
     waarschuwingen.push(...opdrachtWaarschuwingen(rel, tekst, scripts));
     waarschuwingen.push(...meldingWaarschuwingen(rel, tekst));
+    const tabel = tabelControle(rel, tekst);
+    meldingen.push(...tabel.fouten);
+    waarschuwingen.push(...tabel.waarschuwingen);
     lang.push(...zinWaarschuwingen(rel, tekst));
   }
   const release = path.join(root, "lib", "product-release.mjs");

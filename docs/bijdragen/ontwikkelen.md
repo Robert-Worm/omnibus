@@ -60,7 +60,8 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Links en ankers | Elk gelinkt bestand bestaat; elk `#anker` hoort bij een kop of een `<a id>` op die pagina |
 | Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de GitHub-workflows |
 | Installatieopdracht | In codeblokken en GitHub-workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
-| Paginapatroon | Elke pagina in `docs/` noemt haar [paginatype](bouwstenen.md#paginatypen), heeft *In het kort* en *Volgende stap*, en eindigt met de navigatieregel naar de wegwijzer. Per type gelden extra onderdelen, zoals *Samengevat* op een taakpagina. Elke `README.md` in een map heeft *In het kort*. |
+| Tabellen | Elke kolom heeft een kop; verder de regels uit de [bouwstenen](bouwstenen.md#tabellen), zoals hooguit vier kolommen en vaste statuslabels |
+| Paginapatroon | Elke pagina in `docs/` heeft een [paginatype](bouwstenen.md#paginatypen), *In het kort*, *Volgende stap* en de navigatieregel. Een `README.md` in een map heeft *In het kort*. |
 
 Daarnaast geeft de controle waarschuwingen. Die laten de controle niet mislukken. Ze gaan over woorden uit de stijlgids, zinnen van meer dan 25 woorden in `docs/` en verouderde schermafbeeldingen.
 
