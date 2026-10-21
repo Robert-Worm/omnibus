@@ -4,6 +4,7 @@ import {CatalogueRepository} from '../local-data/repository.mjs';
 import {readRuntimePublication,validateRuntimeModules} from '../local-data/runtime-publication.mjs';
 import {runtimeContract} from '../lib/runtime-contract.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
+import {buildReportOverviews} from './build-report-overviews.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -16,22 +17,24 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
 
 /** Build code against an already published database. Never imports author files.
  * @param {{release?:string, publication?:string, databasePath?:string,
- * transportModule?:string, runtimeTarget?:'local-preview'|'portable-local'}} options
+ * transportModule?:string, reportOverviews?:boolean, runtimeTarget?:'local-preview'|'portable-local'}} options
  */
-export function publishedCataloguePlugin({release, publication, databasePath, transportModule, runtimeTarget='local-preview'} = {}) {
-  let content;
+export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, runtimeTarget='local-preview'} = {}) {
+  let content, overviews;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
     name:'omnibus-published-catalogue', enforce:'pre',
-    buildStart() {
+    async buildStart() {
       if (!databasePath) throw Error('An explicit private database path is required.');
       const repository = new CatalogueRepository(resolve(databasePath), {readOnly:true});
       try {
         content = readRuntimePublication(repository, {release,publication,contract:runtimeContractHash});
       } finally { repository.close(); }
       validateRuntimeModules(content, runtimeContract);
+      if(reportOverviews)overviews=await buildReportOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
     },
     resolveId(source, importer) {
+      if(source.startsWith('omnibus-report-overview:'))return virtualPrefix+source;
       if (source.startsWith(dataPrefix)) {
         const id = source.slice(dataPrefix.length);
         if (!Object.hasOwn(runtimeContract,id)) throw Error('Unknown runtime data module: '+id);
@@ -40,6 +43,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       if (!importer || !(source.startsWith('.') || source.startsWith('@/') || isAbsolute(source))) return null;
       const absolute = source.startsWith('@/') ? resolve(root,source.slice(2)) : resolve(dirname(importer),source);
       const id = moduleId(absolute);
+      if(id==='lib/report-overview-resources.mjs'&&reportOverviews)return virtualPrefix+'overview-resources';
       if (id === 'lib/database-source-client.mjs' && transportModule) return resolve(transportModule).replaceAll('\\','/');
       if (id === 'lib/application-mode.mjs') return virtualPrefix+'mode';
       const entry = runtimeContract[id];
@@ -49,6 +53,13 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
     load(id) {
       if (!id.startsWith(virtualPrefix)) return null;
       if (!content) throw Error('Publication must be verified before loading modules.');
+      if(id===virtualPrefix+'overview-resources')return 'export default {'+Object.keys(overviews).map(key=>
+        `${code(key)}:()=>import(${code('omnibus-report-overview:'+key)}).then(m=>m.default)`).join(',')+'};';
+      if(id.startsWith(virtualPrefix+'omnibus-report-overview:')){
+        const key=id.slice((virtualPrefix+'omnibus-report-overview:').length);
+        if(!Object.hasOwn(overviews??{},key))throw Error('Unknown report overview');
+        return `export default JSON.parse(${code(quote(overviews[key]))});`;
+      }
       if (id === virtualPrefix+'mode') return 'export const databaseSourcesEnabled=true;';
       const key = id.slice(virtualPrefix.length,-4);
       if (key.startsWith('exports:')) {

@@ -25,7 +25,7 @@ await test('build arguments require an explicit database and pinned identities',
 
 await test('code resolves only known modules; database values remain data, not executable source',async t=>{
   const options=fixture(t),plugin=publishedCataloguePlugin(options);
-  plugin.buildStart();
+  await plugin.buildStart();
   const importer=join(root,'app/client.tsx');
   assert.equal(plugin.resolveId('@/lib/cio-content.mjs',importer),resolve(root,'lib/cio-content.mjs'));
   assert.equal(plugin.resolveId('@/lib/not-in-the-contract.mjs',importer),null);
@@ -72,7 +72,7 @@ await test('private backup retains a verified publication without overwriting fi
   const result=await backupRuntime({from:options.databasePath,to,...options});
   assert.equal(result.database,to);
   const plugin=publishedCataloguePlugin({...options,databasePath:to});
-  plugin.buildStart();
+  await plugin.buildStart();
   await assert.rejects(backupRuntime({from:options.databasePath,to,...options}),/never replaced/);
   await assert.rejects(backupRuntime({from:options.databasePath,to:join(options.dir,'bad.sqlite'),
     release:options.release,publication:'f'.repeat(64)}),/missing or changed publication/);
