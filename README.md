@@ -68,7 +68,7 @@ Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapp
 3. **Bouw je kader.** Schrijf je onderzoeksvragen en koppel de gekozen normen eraan.
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
 
-Wil je het meteen proberen? Open de [proefversie online](https://omnibus.sliplane.app). Of bekijk eerst het resultaat: download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
+Wil je het meteen proberen? Open de [proefversie online](https://omnibus.sliplane.app). Je werk blijft daar in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen. Of bekijk eerst het resultaat: download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
 
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 
