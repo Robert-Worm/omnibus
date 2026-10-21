@@ -11,6 +11,7 @@ import { AuditProfilePicker, RelevancePreview, type AuditProfile } from "./audit
 import { defaultProfile, profileActive, rankForProfile } from "@/lib/audit-relevance.mjs";
 import { normId, filterSubjects, subjectOptions } from "@/lib/norm-navigation.mjs";
 import FullTextPreview from "./full-text-preview";
+import DeferredMatrixRows from './deferred-matrix-rows';
 import { fieldIncluded } from "@/lib/research-plan.mjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableHeader,
-  TableBody,
   TableRow,
   TableHead,
   TableCell,
@@ -63,6 +63,7 @@ export default function CompactMatrix({
   showSubjectSuggestions = true,
   columnBasis,
   embedded = false,
+  deferRows = false,
   showProvenance = true,
   initialTextDensity = 'comfortable',
   textDensity,
@@ -103,6 +104,8 @@ export default function CompactMatrix({
   columnBasis?: Partial<Record<ElementKey,string>>;
   /** The parent supplies filtered lines, columns and group controls. */
   embedded?: boolean;
+  /** Presentation only: group/header selections still operate on all filtered rows. */
+  deferRows?: boolean;
   /** Edited or unavailable fields remain identifiable even in a quiet matrix. */
   showProvenance?: boolean;
   initialTextDensity?: MatrixTextDensity;
@@ -276,6 +279,8 @@ export default function CompactMatrix({
   const allPage = selectableRows(rows).length > 0 && selectableRows(rows).every((l) => rowAll(l.id));
   const somePage = rows.some((l) => rowSome(l.id));
   const keys = (Object.keys(labels) as ElementKey[]).filter((k) => columns.includes(k));
+  const rowBatchSize=deferRows?8:Math.max(1,rows.length);
+  const rowBatches=Array.from({length:Math.ceil(rows.length/rowBatchSize)},(_,i)=>rows.slice(i*rowBatchSize,(i+1)*rowBatchSize));
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
   useEffect(()=>{
     const element=scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
@@ -496,8 +501,9 @@ export default function CompactMatrix({
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {rows.map((l) => (
+          {rowBatches.map((chunk,batch)=>{
+           return <DeferredMatrixRows key={batch} immediate={!deferRows||batch===0||Boolean(reveal)||view.top>0} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
+            {chunk.map((l) => (
               <TableRow
                 key={l.id}
                 data-norm-id={l.id}
@@ -575,7 +581,8 @@ export default function CompactMatrix({
                 })}
               </TableRow>
             ))}
-          </TableBody>
+          </DeferredMatrixRows>;
+          })}
         </Table>
       </div>}
       {!filtered.length && (
