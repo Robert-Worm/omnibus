@@ -41,12 +41,13 @@ export function ProjectUtilityContent({title,description,icon,children,footer,cl
   </DialogContent>;
 }
 
-export function ShareProject({disabled,onDownload}:{disabled:boolean,onDownload:()=>void}) {
+export function ShareProject({disabled,onDownload,error=''}:{disabled:boolean,onDownload:()=>void,error?:string}) {
   return <Dialog>
     <DialogTrigger render={<Button variant="outline" disabled={disabled} />}><Share2 size={16} aria-hidden="true"/>Delen</DialogTrigger>
     <ProjectUtilityContent title="Je onderzoek overdragen" description="Geef iemand een kopie van je project om zelf mee verder te werken."
       icon={<Share2 size={20}/>} className="share-project-dialog" closeLabel="Delen sluiten"
-      footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose><Button onClick={onDownload}><Download size={16} aria-hidden="true"/>Download project om te delen</Button></>}>
+      footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose><Button disabled={disabled} onClick={onDownload}><Download size={16} aria-hidden="true"/>Download project om te delen</Button></>}>
+      {error && <p role="alert">{error}</p>}
       <ol className="share-project-steps">
         <li><div><strong>Bewaar een projectbestand</strong><p>Download je project met de knop hieronder.</p></div></li>
         <li><div><strong>Stuur het veilig door</strong><p>Gebruik een kanaal dat voor jouw onderzoeksgegevens is toegestaan.</p></div></li>

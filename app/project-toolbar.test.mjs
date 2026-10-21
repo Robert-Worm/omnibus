@@ -62,3 +62,9 @@ test('storage state retains text announcements and all three states', () => {
     assert(save.includes(text), text);
   assert.match(save, /disabled=\{!loaded \|\| !modelsReady\}/);
 });
+
+test('destructive recovery actions wait for an explicit backup download to finish',()=>{
+  assert.match(editor,/disabled=\{fileDownload\.busy\} onClick=\{startNewProject\}/);
+  assert.match(editor,/disabled=\{fileDownload\.busy\} onClick=\{\(\)=>window\.location\.reload\(\)\}/);
+  assert.match(editor,/disabled=\{fileDownload\.busy \|\| !backupConfirmed \|\| !resumeStoreRef\.current\}/);
+});

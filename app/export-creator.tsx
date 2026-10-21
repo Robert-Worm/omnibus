@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { exportAuditXlsx } from "@/lib/excel-export.mjs";
+import {workbookFileSnapshot} from '@/lib/workbook-file-snapshot.mjs';
+import {downloadFile,useFileDownload} from './file-download';
 import { excelMime, exportFields, workbookStyles, columnName } from "@/lib/excel-model.mjs";
 import { exportState } from './export-state';
 import type {WorkbookPreviewStyle} from '@/lib/workbook-preview-types';
@@ -41,8 +42,8 @@ export default function ExportCreator({
   onSettingsChange?: (settings: Record<string, unknown>) => void;
   onGuidanceChange?: (status: ExportGuideStatus) => void;
 }) {
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
+  const {busy,error:fileError} = useFileDownload();
+  const [error, setError] = useState(""),
     [saved, setSaved] = useState(false);
   const [localConfig, setConfig] = useState<Record<string, unknown>>({});
   const config = draft.exportSettings ?? localConfig;
@@ -123,25 +124,15 @@ export default function ExportCreator({
     setError("");
   }
   async function save() {
-    setBusy(true);
+    if(busy)return;
     setError("");
     setSaved(false);
     try {
-      const data = exportAuditXlsx(framework, exportDraft, {
-        ...choices,
-        exportedAt: new Date().toISOString(),
-      });
-      const url = URL.createObjectURL(new Blob([new Uint8Array(data).buffer], { type: excelMime }));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = downloadName;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setSaved(true);
+      if(!preview||validation)throw Error(validation||'Controleer de exportinstellingen.');
+      const model=workbookFileSnapshot(preview);
+      setSaved(await downloadFile({kind:'xlsx',model},downloadName,excelMime));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Excel-export is niet gelukt.");
-    } finally {
-      setBusy(false);
     }
   }
   return (
@@ -627,7 +618,7 @@ export default function ExportCreator({
             </>
           )}
           {validation && !missingInput.some(item=>/^(interview-level|testing-aspect)-/.test(item.id)) && <output id="guide-export-check" tabIndex={-1} className="creator-help">{validation}</output>}
-          {error && <p role="alert">{error}</p>}
+          {(error || fileError) && <p role="alert">{error || fileError}</p>}
           {!!missingInput.length && <output id="export-missing-input" className="export-input-guidance" data-status-block=""><strong>Nog nodig voor je Excelbestand</strong>{missingInput.map(item=><Button key={item.id} variant="link" onClick={()=>{const input=document.getElementById(item.id);const target=input?.getAttribute('aria-hidden')==='true' ? input.parentElement?.querySelector<HTMLElement>('[role="checkbox"]') : input;target?.scrollIntoView({block:'center',behavior:'smooth'});target?.focus({preventScroll:true});}}>{item.label} →</Button>)}</output>}
           <Button
             className="creator-download"
@@ -648,7 +639,7 @@ export default function ExportCreator({
             onClick={() => void save()}
           >
             <FileSpreadsheet size={18} />
-            {busy ? "Excel maken…" : count === 0 && !modelBasis ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
+            {busy ? "Bestand maken…" : count === 0 && !modelBasis ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
           </Button>
           {saved && <output>Vorige download aangemaakt. Download opnieuw na wijzigingen.</output>}
           <p className="creator-help">

@@ -54,7 +54,8 @@ import ReportNormBrowser from './report-norm-browser';
 import ReportFrameworkAbout from './report-framework-about';
 import { cleanScopeDraft, admittedLines } from "@/lib/product-scope.mjs";
 import {makeProject,readProject,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
-import {serializeProject,parseProjectText,expandProject} from '@/lib/project-codec.mjs';
+import {parseProjectText,expandProject} from '@/lib/project-codec.mjs';
+import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
 import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
@@ -296,6 +297,10 @@ export default function FrameworkEditor() {
   const evidenceView = useMemo(()=>line ? lineEvidenceView(framework,line,activeEvidence) : {direct:[],context:[],remaining:[],focused:null},[framework,line,activeEvidence]);
   const sourceEntries = evidenceView.direct;
   const projectRef = useRef<Project>(makeProject(draft,modelLibrary,workspace));
+  const fileDownload=useFileDownload();
+  function downloadProject(name:string) {
+    void downloadFile({kind:'project',project:projectRef.current},name,'application/json');
+  }
   const storeRef = useRef<ReturnType<typeof guardedProjectStore> | null>(null);
   const storageBlocked = useRef(false);
   const backgroundSave=useRef<ReturnType<typeof createBackgroundProjectSave<Project>>|null>(null);
@@ -979,20 +984,21 @@ export default function FrameworkEditor() {
                   <AlertDialogTitle>Opnieuw beginnen met een leeg project?</AlertDialogTitle>
                   <AlertDialogDescription>Je huidige doelstelling, selecties, bouwstenen, onderzoeksvragen, modelaanpassingen en exportinstellingen worden uit het actieve project verwijderd. Herstelkopieën en oude projectgegevens in de browser blijven bestaan. De bronbibliotheek en eerder gedownloade bestanden blijven behouden.</AlertDialogDescription>
                 </AlertDialogHeader>
-                <Button variant="outline" onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project-voor-nieuw-project.json','application/json')}><Download size={16}/>Eerst huidig project bewaren</Button>
+                <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-voor-nieuw-project.json')}><Download size={16}/>Eerst huidig project bewaren</Button>
+                {fileDownload.error && <p role="alert">{fileDownload.error}</p>}
                 <p>Je kunt dit tot het herladen van de pagina ongedaan maken.</p>
                 <AlertDialogFooter>
                   <AlertDialogCancel ref={cancelNewProjectRef}>Annuleren</AlertDialogCancel>
-                  <AlertDialogAction variant="destructive" onClick={startNewProject}>Wis project en begin opnieuw</AlertDialogAction>
+                  <AlertDialogAction variant="destructive" disabled={fileDownload.busy} onClick={startNewProject}>Wis project en begin opnieuw</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
             <Button variant="outline" disabled={!loaded} onClick={()=>inputRef.current?.click()}><FolderOpen size={16}/>Open project</Button>
             </fieldset>
             <fieldset className="project-action-group" aria-label="Project bewaren en delen">
-            <Button variant="outline" disabled={!loaded || !modelsReady} title="Bewaar onderzoek, modelkeuzes en werkplek in één bestand"
-              onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project.json','application/json')}><Download size={16}/>Bewaar project</Button>
-            <ShareProject disabled={!loaded || !modelsReady} onDownload={()=>download(serializeProject(projectRef.current,true),'omnibus-project-delen.json','application/json')} />
+            <Button variant="outline" disabled={!loaded || !modelsReady || fileDownload.busy} title="Bewaar onderzoek, modelkeuzes en werkplek in één bestand"
+              onClick={()=>downloadProject('rijksmap-project.json')}><Download size={16}/>Bewaar project</Button>
+            <ShareProject disabled={!loaded || !modelsReady || fileDownload.busy} error={fileDownload.error} onDownload={()=>downloadProject('omnibus-project-delen.json')} />
               <Button variant="outline" className="project-save-indicator"
                 data-state={storageBlocked.current?'unsaved':savedLocally?'saved':'loading'}
                 disabled={!loaded || !modelsReady}
@@ -1036,6 +1042,7 @@ export default function FrameworkEditor() {
               onChange={e=>void importDraft(e.target.files?.[0])}/>
           </div>
         </header>
+        {fileDownload.error && <p className="project-import-feedback" role="alert">{fileDownload.error}</p>}
         {importFeedback && <div className="project-import-feedback" role="alert"><span>{importFeedback}</span><Button variant="ghost" aria-label="Importmelding sluiten" onClick={()=>setImportFeedback('')}><X size={18}/></Button></div>}
         <main id="main-workspace" tabIndex={-1} data-viewer={['foundation-workspace','model-workspace','topics'].includes(page)}>
           {contentNotice&&<div className="project-notice" role={contentFailure?'alert':'status'}>
@@ -1123,8 +1130,9 @@ export default function FrameworkEditor() {
           <Sheet open={reloadOpen} onOpenChange={setReloadOpen}>
             <SheetContent className="project-recovery-sheet"><SheetHeader><SheetTitle>Opgeslagen project herladen?</SheetTitle>
               <SheetDescription>Niet-opgeslagen werk uit dit tabblad gaat bij herladen verloren. Bewaar eerst uw versie als u die wilt behouden.</SheetDescription></SheetHeader>
-              <Button variant="outline" onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project-mijn-versie.json','application/json')}>Bewaar mijn versie</Button>
-              <Button onClick={()=>window.location.reload()}>Herlaad opgeslagen project</Button>
+              <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-mijn-versie.json')}>Bewaar mijn versie</Button>
+              {fileDownload.error && <p role="alert">{fileDownload.error}</p>}
+              <Button disabled={fileDownload.busy} onClick={()=>window.location.reload()}>Herlaad opgeslagen project</Button>
               <SheetClose render={<Button variant="ghost"/>}>Annuleren</SheetClose>
             </SheetContent>
           </Sheet>
@@ -1134,9 +1142,10 @@ export default function FrameworkEditor() {
               icon={<Save size={20}/>} className="project-storage-dialog" closeLabel="Projectopslag sluiten"
               footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose>
                 {storageBlocked.current
-                  ? <Button disabled={!backupConfirmed || !resumeStoreRef.current} onClick={resumeSaving}>Huidige werk opslaan en doorgaan</Button>
-                  : <Button onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project-huidig.json','application/json')}><Download size={16} aria-hidden="true"/>Bewaar huidige werk</Button>}
+                  ? <Button disabled={fileDownload.busy || !backupConfirmed || !resumeStoreRef.current} onClick={resumeSaving}>Huidige werk opslaan en doorgaan</Button>
+                  : <Button disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-huidig.json')}><Download size={16} aria-hidden="true"/>Bewaar huidige werk</Button>}
               </>}>
+              {fileDownload.error && <p role="alert">{fileDownload.error}</p>}
               <div className="project-storage-status" data-state={storageBlocked.current?'blocked':'saved'}>
                 {storageBlocked.current?<CircleAlert size={20} aria-hidden="true"/>:<Save size={20} aria-hidden="true"/>}
                 <div><strong>{storageBlocked.current?'Automatisch bewaren staat uit':'Lokaal opgeslagen'}</strong><output>{storageBlocked.current?message:'Automatisch bewaren is ingeschakeld.'}</output></div>
@@ -1151,7 +1160,7 @@ export default function FrameworkEditor() {
                   : 'Browseropslag kan verdwijnen of vol raken. Download een projectbestand als reservekopie, of om verder te werken op een andere computer of website.'}</p>
               </section>
               {storageBlocked.current && <div className="storage-recovery-actions">
-                <Button variant="outline" onClick={()=>download(serializeProject(projectRef.current,true),'rijksmap-project-huidig.json','application/json')}><Download size={16} aria-hidden="true"/>Bewaar huidige werk</Button>
+                <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-huidig.json')}><Download size={16} aria-hidden="true"/>Bewaar huidige werk</Button>
                 {resumeOriginal!==null && <Button variant="outline" onClick={()=>download(resumeOriginal,'rijksmap-project-oorspronkelijk.json','application/json')}>Bewaar oorspronkelijke versie</Button>}
                 <label className="creator-check" htmlFor="storage-backup-confirmed">
                   <Checkbox id="storage-backup-confirmed" checked={backupConfirmed} onCheckedChange={v=>setBackupConfirmed(Boolean(v))}/>
