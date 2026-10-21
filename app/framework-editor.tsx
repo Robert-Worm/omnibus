@@ -19,7 +19,6 @@ import {modelAdoptionPlan,applyModelAdoption,syncModelLibrarySelection} from '@/
 import {download} from '@/lib/browser-download.mjs';
 import {newProject,clearProjectBrowsePreferences} from '@/lib/new-project.mjs';
 import ProductFooter from './product-footer';
-import { PRODUCT_NAME, PRODUCT_VERSION } from '@/lib/product-release.mjs';
 import { useCallback, useEffect, useEffectEvent, useRef, useState, useMemo, useSyncExternalStore } from "react";
 import {createProjectStatus} from '@/lib/project-status.mjs';
 import {
@@ -913,12 +912,11 @@ export default function FrameworkEditor() {
         </a>
         <header className="brand-bar">
           <div>
-            <a className="brand-home" href="#begin" aria-label="Rijksmap — kies onderzoeksroute"
+            <a className="brand-home" href="#begin" aria-label="Omnibus — kies onderzoeksroute"
               onClick={(event) => { if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) { event.preventDefault(); navigate("entry"); } }}>
               <BookOpen aria-hidden="true" size={23} />
-              <strong>Rijks<span>map</span></strong>
+              <strong>Omnibus</strong>
             </a>
-            <span className="product-identity">{PRODUCT_NAME} <small>versie {PRODUCT_VERSION}</small></span>
           </div>
           <div className="file-actions project-actions">
             <fieldset className="project-action-group" aria-label="Project starten en openen">
@@ -1079,7 +1077,7 @@ export default function FrameworkEditor() {
           </Sheet>
           <Dialog open={storageHelpOpen} onOpenChange={setStorageHelpOpen}>
             <ProjectUtilityContent title={storageBlocked.current?'Automatisch bewaren herstellen':'Projectopslag'}
-              description={storageBlocked.current?'Bescherm eerst je werk voordat je het automatisch bewaren hervat.':'Je werk wordt automatisch bewaard in deze browser, niet online.'}
+              description={storageBlocked.current?'Bescherm eerst je werk voordat je het automatisch bewaren hervat.':'Je project wordt automatisch bewaard in deze browser, ook bij online gebruik. Het wordt niet automatisch in de online database opgeslagen.'}
               icon={<Save size={20}/>} className="project-storage-dialog" closeLabel="Projectopslag sluiten"
               footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose>
                 {storageBlocked.current

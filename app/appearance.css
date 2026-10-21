@@ -22,8 +22,6 @@ html[data-appearance=dark] .framework-app button.term-help-trigger:hover { color
 html[data-appearance=dark] [data-slot=popover-content].term-help-popup .term-help-close { background:transparent; color:#abd5f7; }
 html[data-appearance=dark] .glossary-dialog :is(button,input,[data-slot=dialog-title]):focus-visible,
 html[data-appearance=dark] .term-help-popup button:focus-visible { outline-color:#94c8f5; }
-.framework-app .brand-bar .product-identity { display:inline-flex; align-items:center; flex-wrap:wrap; gap:.55rem; }
-.product-identity small { font-size:.75rem; border:1px solid var(--border); border-radius:4px; padding:.1rem .4rem; background:var(--rm-surface); white-space:nowrap; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger { width:auto; padding:0 .65rem; gap:.4rem; background:#e5eff8; border-color:#9bbbd9; color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#d5e6f5; border-color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger .guide-icon { width:1.125rem; height:1.125rem; flex-shrink:0; }
@@ -166,7 +164,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
 }
 
 /* Consistent header controls, grouped without hiding project actions in menus. */
-.framework-app .brand-bar .project-actions { align-items:center; gap:.65rem; }
+.framework-app .brand-bar .project-actions { align-items:center; justify-content:flex-end; gap:.65rem; margin-inline-start:auto; }
 .project-actions .project-action-group { display:flex; flex:0 0 auto; flex-wrap:wrap; align-items:center; gap:.375rem; max-width:100%; min-width:0; }
 .project-actions .project-action-group + .project-action-group { border-inline-start:1px solid var(--border); padding-inline-start:.65rem; }
 .framework-app .brand-bar .project-actions button {
@@ -192,7 +190,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   .framework-app .brand-bar .project-actions button { transition:none; }
 }
 @media (max-width:600px) {
-  .framework-app .brand-bar .project-actions { width:100%; }
+  .framework-app .brand-bar .project-actions { width:100%; justify-content:flex-start; }
   .project-actions .project-action-group + .project-action-group { border-inline-start:0; padding-inline-start:0; }
 }
 

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {databaseSourcesEnabled} from '@/lib/application-mode.mjs';
 import Glossary from './glossary';
-import {PRODUCT_TITLE, PRODUCT_VERSION} from '@/lib/product-release.mjs';
+import {PRODUCT_VERSION} from '@/lib/product-release.mjs';
 import {contactAddress, contactRoutes} from '@/lib/product-contact.mjs';
 import {copyText} from '@/lib/copy-text.mjs';
 import {openMailto} from '@/lib/mail-handoff.mjs';
@@ -66,11 +66,11 @@ function ContactActions() {
 export default function ProductFooter() {
   return <footer className="product-footer" aria-label="Over Omnibus en contact">
     <div className="product-footer-grid">
-      <section className="product-footer-brand" aria-label={PRODUCT_TITLE}>
-        <a className="product-footer-wordmark" href="#begin">Project Omnibus</a>
+      <section className="product-footer-brand" aria-label={`Omnibus · versie ${PRODUCT_VERSION}`}>
+        <a className="product-footer-wordmark" href="#begin">Omnibus</a>
         <p>Begin bij een onderzoeksbehoefte of verken je onderwerp. Kies toetspunten en modelvragen, verbind ze aan je onderzoeksvragen en exporteer je referentiekader.</p>
         <p className="product-footer-attribution">Een onafhankelijk, niet-commercieel initiatief van <strong>Robert Worm</strong>. Geen officiële uiting van de rijksoverheid of van de uitgevers van de gebruikte kaders.</p>
-        <span className="product-footer-version">Versie {PRODUCT_VERSION} · Onderdeel van Rijksmap</span>
+        <span className="product-footer-version">Versie {PRODUCT_VERSION}</span>
       </section>
       <nav className="product-footer-column" aria-label="Bronnen verkennen">
         <h2>Bronnen</h2>
@@ -96,12 +96,14 @@ export default function ProductFooter() {
         <p>De rechten en gebruiksvoorwaarden van de oorspronkelijke bronnen blijven gelden. Een verwijzing of eigen bewerking maakt de bron niet vrij beschikbaar.</p>
       </details>
       <details><summary><LockKeyhole aria-hidden="true"/>Lokale opslag en privacy<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Deze lokale versie bewaart uw project in deze browser en uploadt het niet automatisch. Bewaar ook een projectbestand: browseropslag kan verdwijnen of vol raken. Deel geen vertrouwelijke onderzoeksgegevens bij een foutmelding. Bij het openen van externe links gelden de voorwaarden van die website.</p>
+        <p>Omnibus bewaart uw onderzoeksproject automatisch in deze browser, ook bij online gebruik. Uw vragen, notities en selecties worden niet automatisch in de online database opgeslagen. Bewaar ook een projectbestand: browseropslag kan verdwijnen of vol raken. Op een andere computer, in een andere browser of op een ander website-adres opent u dat bestand om verder te werken.</p>
         <p>Bij openen en aanpassen aan een nieuwe indeling kunnen herstelkopieën in deze browser achterblijven, naast oude projectgegevens en weergavevoorkeuren. Nieuw project maakt het actieve project leeg, maar verwijdert herstelkopieën en oude projectgegevens niet. Wilt u alle lokale gegevens verwijderen? Bewaar eerst de benodigde bestanden, sluit alle tabbladen van Omnibus en verwijder de sitegegevens voor dit website-adres via de browserinstellingen. Gedownloade project- en herstelbestanden blijven op uw computer staan; verwijder die zo nodig apart.</p>
-        {databaseSourcesEnabled&&<p>In deze databaseproef worden de catalogus, normen, modelgegevens en bronpagina’s opgehaald bij de lokale brondienst zodra ze nodig zijn. Alleen de benodigde pakketversies en paginanummers worden aangevraagd; uw vragen, notities en projectbestand worden niet meegestuurd. Dit is nog geen online productieomgeving.</p>}
+        {databaseSourcesEnabled&&<p>De catalogus, normen, modelgegevens en bronpagina’s worden opgehaald bij de brondienst zodra ze nodig zijn. Deze aanvragen bevatten verwijzingen naar de benodigde brondata, niet uw vragen, notities of projectbestand. De online versie wordt gehost bij Sliplane; bij lokaal gebruik draait de brondienst op uw eigen computer.</p>}
+        <p>Bij online gebruik ontvangt de hostingdienst technische verbindingsgegevens, zoals uw IP-adres en de opgevraagde adressen. De app registreert beperkte technische foutgegevens voor het opsporen van storingen. Lokale projectopslag betekent dus niet dat uw websitebezoek anoniem is.</p>
+        <p>Als u zelf een project deelt of gegevens aan een externe AI-dienst geeft, bepaalt u welke informatie u overdraagt. Controleer daarvoor de afspraken van uw organisatie en de voorwaarden van die dienst. Stuur geen vertrouwelijke onderzoeksgegevens mee bij een foutmelding. Bij externe links gelden de voorwaarden van die website.</p>
       </details>
       <details className="footer-about-contact"><summary><UserRound aria-hidden="true"/>Over &amp; contact<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Project Omnibus is een persoonlijk, niet-commercieel initiatief van <strong>Robert Worm</strong>, de maker van Rijksmap.</p>
+        <p>Omnibus is een persoonlijk, niet-commercieel initiatief van <strong>Robert Worm</strong>, ook de maker van Rijksmap. De toepassing wordt verder ontwikkeld en getest.</p>
         <p>Het doel: auditors helpen om vanuit een onderzoeksbehoefte of signalen bruikbare normen en interviewvragen te kiezen, met zicht op de oorspronkelijke bronnen.</p>
         <a className="footer-contact-item" href="https://www.linkedin.com/in/robertworm/" target="_blank" rel="noopener noreferrer"><UserRound aria-hidden="true"/><span>Robert Worm op LinkedIn</span><ArrowUpRight aria-hidden="true"/></a>
         <ContactActions/>

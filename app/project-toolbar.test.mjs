@@ -12,6 +12,22 @@ const group = label => {
   return header.slice(start, header.indexOf('</fieldset>', start));
 };
 
+test('Omnibus branding keeps one header wordmark and the version in the footer', () => {
+  assert.match(header, /aria-label="Omnibus — kies onderzoeksroute"/);
+  assert.match(header, /<BookOpen[^>]*aria-hidden="true"/);
+  assert.match(header, /<strong>Omnibus<\/strong>/);
+  assert.doesNotMatch(header, /product-identity|PRODUCT_VERSION|PRODUCT_NAME|Rijksmap/);
+  const footer = read('product-footer.tsx');
+  assert.match(footer, /className="product-footer-wordmark" href="#begin">Omnibus<\/a>/);
+  assert.match(footer, /Versie \{PRODUCT_VERSION\}/);
+  assert.doesNotMatch(footer, /Onderdeel van Rijksmap|Deze lokale versie|databaseproef|geen online productieomgeving/);
+  assert.match(footer, /ook bij online gebruik/);
+  assert.match(footer, /niet automatisch in de online database opgeslagen/);
+  assert.match(footer, /Sliplane/);
+  assert.match(footer, /herstelkopieën en oude projectgegevens niet/);
+  assert.match(read('../database.html'), /<title>Omnibus<\/title>/);
+});
+
 test('project controls keep lifecycle and native keyboard order', () => {
   const labels = ['Project starten en openen', 'Project bewaren en delen', 'Project herstellen', 'AI, hulp en weergave'];
   const offsets = labels.map(label => header.indexOf(`aria-label="${label}"`));
