@@ -1,8 +1,8 @@
-# Omnibus als online versie op Sevalla (of een andere containerhost).
+# Omnibus als online versie, voor elke containerhost (zoals Sliplane).
 # Bouwt de app, haalt de openbare database uit de GitHub-release, controleert die,
 # en zet alles alleen-lezen in één image. Geen aparte databasedienst of schijf nodig.
 #
-# Bouwen:  docker build -f hosting/sevalla/Dockerfile -t omnibus .
+# Bouwen:  docker build -f hosting/container/Dockerfile -t omnibus .
 # Starten: docker run -p 8080:8080 -e PORT=8080 -e PUBLIC_ORIGIN=https://<jouw-adres> omnibus
 #
 # Een nieuwe database? Pas DATABASE_URL en DATABASE_SHA256 hieronder aan (of geef ze

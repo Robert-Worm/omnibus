@@ -19,11 +19,12 @@ Een besluit geldt tot er een nieuw besluit is dat het vervangt. Wil je een beslu
 | 20-10-2026 | De voortgang loopt via GitHub (claims en voortgangspagina) | Eén overzicht voor iedereen | De Content Workbench is op 21-10-2026 uit de repository gehaald |
 | 21-10-2026 | Bijdragers mogen hooguit vijf bronnen tegelijk claimen | Bronnen naast elkaar verwerken kan, zonder dat er veel blijft liggen | De claimbot sluit een zesde claim, met uitleg |
 | 21-10-2026 | Geen pilot met externe bijdragers in de huidige ronde | Nu niet nodig | Kan later opnieuw worden opgepakt |
+| 21-10-2026 | De online versie draait bij Sliplane (Starter, €9 per maand, verkeer inbegrepen), met de openbare database in de image | Vaste, voorspelbare kosten; geen rekening per GB; geen aparte database of schijf nodig | Zie [online zetten in een container](../../hosting/container/README.md) |
 | 21-10-2026 | De applicatiecode blijft voorlopig in vier mappen | Verplaatsen vraagt een nieuw runtimecontract en een nieuwe databaserelease | Zie [het onderzoek](../bijdragen/architectuur.md#onderzoek-alle-applicatiecode-in-één-map) |
 
 ## Samengevat
 
-Tien besluiten bepalen nu hoe Omnibus werkt: lokaal en zonder account, database apart, één woord voor het resultaat, voortgang op GitHub en hooguit vijf claims per persoon.
+Elf besluiten bepalen nu hoe Omnibus werkt: lokaal en zonder account, database apart, één woord voor het resultaat, voortgang op GitHub en hooguit vijf claims per persoon.
 
 ## Volgende stap
 
