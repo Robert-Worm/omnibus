@@ -279,6 +279,45 @@ export function meldingWaarschuwingen(rel, ruw) {
   return uit;
 }
 
+/** Vaste blokken (docs/bijdragen/bouwstenen.md): vaste namen, uitklapblokken zonder koppen, kaarten in vaste volgorde, geen dubbele koppen. */
+export const BLOKNAMEN = new Map([["technische referentie", "Technische details"], ["waar staat het?", "Waar staat dit?"], ["wat je nodig hebt", "Wat heb je nodig?"], ["benodigdheden", "Wat heb je nodig?"], ["vereisten", "Wat heb je nodig?"], ["tips", "Goed om te weten"], ["opmerkingen", "Goed om te weten"]]);
+export const KAARTWOORDEN = ["Herkennen", "Oorzaak", "Eerst doen", "Herstellen", "Nazorg"];
+export function blokWaarschuwingen(rel, ruw) {
+  if (!rel.startsWith("docs/")) return [];
+  const uit = [], waar = (i) => `${rel}:${i + 1}`;
+  const regels = ruw.replace(/^ *```[\s\S]*?^ *```/gm, (b) => b.replace(/[^\n]/g, "")).split("\n");
+  const gezien = new Map();
+  let inDetails = false, kaart = -1;
+  regels.forEach((regel, i) => {
+    if (/<details>/.test(regel)) {
+      inDetails = true;
+      const s = regel.match(/<summary>(.*?)<\/summary>/)?.[1];
+      if (s !== undefined && !/^<b>[^<]+<\/b>( · .+)?$/.test(s)) uit.push(`${waar(i)}: kop van een uitklapblok als <b>Naam</b> · aanvulling`);
+    }
+    if (/<\/details>/.test(regel)) inDetails = false;
+    const kop = regel.match(/^(#{1,6}) (.+?)\s*$/);
+    if (kop) {
+      kaart = -1;
+      if (inDetails) uit.push(`${waar(i)}: kop in een uitklapblok; GitHub toont hem niet in de inhoudsopgave. Gebruik een vet woord`);
+      const naam = kop[2].toLowerCase();
+      if (BLOKNAMEN.has(naam)) uit.push(`${waar(i)}: kop "${kop[2]}"; noem dit blok "${BLOKNAMEN.get(naam)}"`);
+      if (naam === "vaste regels" && !rel.startsWith("docs/beheer/")) uit.push(`${waar(i)}: "Vaste regels" alleen op beheerpagina's`);
+      const sleutel = `${kop[1]} ${naam}`;
+      if (gezien.has(sleutel)) uit.push(`${waar(i)}: dubbele kop "${kop[2]}" (ook op regel ${gezien.get(sleutel) + 1})`);
+      else gezien.set(sleutel, i);
+      return;
+    }
+    if (/^\*\*(Wat het betekent|Wat je doet):\*\*/.test(regel)) uit.push(`${waar(i)}: oude kaartvorm; gebruik ${KAARTWOORDEN.join(" · ")}`);
+    const woord = regel.match(/^- \*\*([^*:]+):\*\*/)?.[1];
+    const plek = KAARTWOORDEN.indexOf(woord);
+    if (plek >= 0) {
+      if (plek <= kaart) uit.push(`${waar(i)}: "${woord}" staat niet op zijn plek; volgorde ${KAARTWOORDEN.join(" · ")}`);
+      kaart = plek;
+    }
+  });
+  return uit;
+}
+
 /** Vorm van taakpagina's (docs/bijdragen/bouwstenen.md#stappen en #opdrachten): stapkoppen, codeblokken, plaatshouders en systeemlabels. */
 export const CODETALEN = ["text", "bash", "powershell", "json", "mermaid"];
 export const SYSTEEMLABELS = ["**Windows (PowerShell)**", "**macOS en Linux (bash)**"];
@@ -393,6 +432,7 @@ export function controleer(root) {
     waarschuwingen.push(...opdrachtWaarschuwingen(rel, tekst, scripts));
     waarschuwingen.push(...meldingWaarschuwingen(rel, tekst));
     waarschuwingen.push(...vormWaarschuwingen(rel, tekst));
+    waarschuwingen.push(...blokWaarschuwingen(rel, tekst));
     const tabel = tabelControle(rel, tekst);
     meldingen.push(...tabel.fouten);
     waarschuwingen.push(...tabel.waarschuwingen);

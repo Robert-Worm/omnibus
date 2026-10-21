@@ -16,7 +16,7 @@
 3. **Overzetten.** Kopieer de pakketmap naar de andere computer. Zet de database er apart naast, buiten de pakketmap.
 4. **Starten.** Start vanuit de pakketmap met `node scripts/start-runtime-package.mjs`, met het pad naar de database en een poort. Open daarna het adres in je browser.
 
-Bij elke start controleert het pakket zichzelf en de database. Klopt er iets niet, dan start het niet. De volledige opdrachten, voor Windows en voor macOS en Linux, staan in de technische referentie hieronder.
+Bij elke start controleert het pakket zichzelf en de database. Klopt er iets niet, dan start het niet. De volledige opdrachten, voor Windows en voor macOS en Linux, staan hieronder bij de technische details.
 
 ## Goed om te weten
 
@@ -24,9 +24,7 @@ Bij elke start controleert het pakket zichzelf en de database. Klopt er iets nie
 - Je hebt alleen Node 24 nodig; `npm install` is niet nodig.
 - Een pakket maken is geen toestemming om inhoud openbaar te maken.
 
-## Technische referentie
-
-<details><summary><b>Technische referentie: alle details en opdrachten</b></summary>
+## Technische details
 
 Het runtimepakket bevat de gebouwde app en de server die alleen leest. Er zit geen ontwikkelomgeving, geen npm-installatie en geen database in. Je hebt alleen Node 24 en een database nodig. Het pakket start standaard alleen op je eigen computer (`127.0.0.1`). De opties voor online gebruik hieronder zijn voorbereiding: ze geven geen toestemming om het pakket openbaar te maken.
 
@@ -144,8 +142,6 @@ Voor de officiële demo ontbreken nog:
 - begrensd verkeer, privacy in de logs, een aparte back-up met herstelproef en een menselijke beveiligingsbeoordeling.
 
 Zet nooit de lokale server of de lokale AI-koppeling rechtstreeks online. Een openbaar adres is geen toegangscontrole voor vertrouwelijke inhoud. Zie de [routekaart](../routekaart.md).
-
-</details>
 
 ## Samengevat
 

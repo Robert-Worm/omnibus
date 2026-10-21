@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
+import { controleerBestand, controleerConfig, INSTALL, MAX_WOORDEN, meldingWaarschuwingen, tabelControle, tabellen, opdrachtWaarschuwingen, paginatypeMeldingen, slug, vormWaarschuwingen, blokWaarschuwingen, woordWaarschuwingen, zinnen, zinWaarschuwingen } from "./check-docs.mjs";
 
 const NVMRC = "24.17.0";
 const VOET = "---\n\n[↑ Wegwijzer](../README.md)\n";
@@ -205,4 +205,13 @@ test("taakpagina's: stapkoppen, codeblokken, plaatshouders en systeemlabels volg
   assert.deepEqual(vormWaarschuwingen("hosting/README.md", "## 1. Mag\n\n```text\nx \"<a>\"\n```\n"), [], "buiten docs/ alleen de codetaal");
   assert.match(vormWaarschuwingen("hosting/README.md", "```sh\nx\n```\n").join(), /codeblok in "sh"/);
   assert.deepEqual(vormWaarschuwingen("skills/x/SKILL.md", "```js\nx\n```\n"), []);
+});
+
+test("blokken: vaste namen, geen koppen in uitklapblokken, kaarten op volgorde, geen dubbele koppen", () => {
+  const goed = "## Wat heb je nodig?\n\n<details><summary><b>Technische details</b> · opdrachten</summary>\n\n**Vet**\n\n</details>\n\n### Melding\n\n- **Oorzaak:** a\n- **Herstellen:** b\n\n### Andere melding\n\n- **Herkennen:** c\n- **Nazorg:** d\n";
+  assert.deepEqual(blokWaarschuwingen("docs/a.md", goed), []);
+  const fout = "## Technische referentie\n\n<details><summary>Meer</summary>\n\n### Kop erin\n\n</details>\n\n## Vaste regels\n\n### Kaart\n\n- **Herstellen:** a\n- **Eerst doen:** b\n\n**Wat het betekent:** x\n\n### Kaart\n";
+  const w = blokWaarschuwingen("docs/gebruiken/a.md", fout).join("\n");
+  for (const m of [/noem dit blok "Technische details"/, /<b>Naam<\/b>/, /kop in een uitklapblok/, /alleen op beheerpagina's/, /"Eerst doen" staat niet op zijn plek/, /oude kaartvorm/, /dubbele kop "Kaart"/]) assert.match(w, m);
+  assert.deepEqual(blokWaarschuwingen("docs/beheer/a.md", "## Vaste regels\n"), []);
 });

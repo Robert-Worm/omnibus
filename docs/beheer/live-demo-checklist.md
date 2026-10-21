@@ -4,7 +4,7 @@
 
 > **In het kort:** wat er nog moet gebeuren voor een online demo. Per stap: wie het doet, wanneer, en wanneer het klaar is. Doel: een werkende demo op **1 december 2026**.
 
-## Waar staat het?
+## Waar staat dit?
 
 Het werk op de eigen computer is af: de app, het runtimepakket, de image en alle lokale proeven. De proefversie draait online. Wat nog open staat, moet **op de echte server** worden bewezen, of door **mensen** worden getest. Lokale tests zijn daarvoor niet genoeg.
 

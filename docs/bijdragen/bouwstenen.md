@@ -170,16 +170,23 @@ Situaties die je opzoekt, zoals storingen, nummer je niet: de lezer volgt ze nie
 **Wat de check bewaakt:** een stap als `## 1.`-kop, en een genummerde kop op een pagina die geen taakpagina is.
 
 <a id="kaarten"></a>
-**Kaarten.** Een situatie (een storing of een foutmelding) krijgt altijd dezelfde kaart: een kop, de melding in een codeblok, en dan deze vier vette woorden in deze volgorde:
+**Kaarten.** Een situatie (een storing of een foutmelding) krijgt altijd dezelfde kaart: een kop, eventueel de melding in een codeblok, en dan een lijst met deze vette woorden, in deze volgorde:
 
 ```text
 ### De claimbot reageert niet
 
 - **Herkennen:** …
+- **Oorzaak:** …
 - **Eerst doen:** …
 - **Herstellen:** …
 - **Nazorg:** …
 ```
+
+- Laat een woord weg als er niets over te zeggen is. De volgorde blijft.
+- Staat de melding in een codeblok, dan is dat het herkennen; begin dan met **Oorzaak**.
+- Gebruik geen tabel als kaart.
+
+**Wat de check bewaakt:** de volgorde van de woorden op een kaart, en de oude woorden *Wat het betekent* en *Wat je doet*.
 
 ## Opdrachten
 
@@ -205,6 +212,18 @@ Klap alleen in wat niet iedereen nodig heeft. Wat de lezer nodig heeft om de taa
 - De kop is **Technische details** met een korte aanvulling, of de naam van een groep met een aantal: `<b>Financiën</b> · 12 open van 40`.
 - Laat na `</summary>` een lege regel, anders toont GitHub de opmaak niet.
 - Zet geen `#`-koppen in een uitklapblok; GitHub toont ze niet in de inhoudsopgave. Gebruik vette woorden.
+
+**Vaste namen.** Hetzelfde soort blok heet overal hetzelfde:
+
+| Naam | Wat erin staat |
+| --- | --- |
+| Wat heb je nodig? | Programma's, bestanden en rechten vóór je begint |
+| Goed om te weten | Achtergrond en valkuilen na de stappen |
+| Vaste regels | Regels die altijd gelden; alleen op beheerpagina's |
+| Waar staat dit? | Waar bestanden, gegevens of instellingen staan |
+| Technische details | Opdrachten en uitvoer die niet iedereen nodig heeft |
+
+**Wat de check bewaakt:** koppen in een uitklapblok, de vorm van de kop van een uitklapblok, andere namen voor deze vaste blokken (zoals *Technische referentie*), *Vaste regels* buiten beheer, en dubbele koppen op één pagina.
 
 ## Paginarand
 
