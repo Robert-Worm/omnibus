@@ -96,15 +96,15 @@ docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Rober
 docker run --rm -p 8080:8080 omnibus
 ```
 
-**Zonder Docker** heb je Git, Node 24 en ongeveer tien minuten nodig. In het kort:
+**Zonder Docker** heb je Git en Node 24 nodig. Eén opdracht installeert, haalt de database op, controleert, bouwt en start:
 
 ```text
 git clone https://github.com/Robert-Worm/omnibus.git
 cd omnibus
-npm ci --ignore-scripts --no-audit --no-fund
+node scripts/installeer.mjs
 ```
 
-Pak daarna de database-zip uit in `local-data/runtime/`, bouw de applicatie en open hem in je browser. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
+Open daarna `http://127.0.0.1:4319/`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
 
 <a id="meedoen"></a>
 ## Meedoen

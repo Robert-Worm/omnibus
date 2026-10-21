@@ -25,7 +25,25 @@ docker run --rm -p 8080:8080 omnibus
 
 Open daarna `http://localhost:8080`. Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
 
-Liever zonder Docker, of wil je zelf aan de code werken? Volg dan de stappen hieronder.
+## Zonder Docker: met één opdracht
+
+Heb je [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/)? Dan doet één opdracht de rest. Hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
+
+Windows (PowerShell):
+
+```powershell
+git clone https://github.com/Robert-Worm/omnibus.git; cd omnibus; node scripts/installeer.mjs
+```
+
+macOS en Linux:
+
+```bash
+git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scripts/installeer.mjs
+```
+
+Open daarna `http://127.0.0.1:4319/`. Gaat er iets mis, dan zegt de opdracht wat je moet doen. Een volgende keer start dezelfde opdracht Omnibus weer; wat al klaar is, slaat hij over.
+
+Wil je precies zien wat er gebeurt, of zelf aan de code werken? Volg dan de stappen hieronder.
 
 ## Stap voor stap
 
