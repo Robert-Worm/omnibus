@@ -16,7 +16,7 @@ import { CatalogueRepository } from "../local-data/repository.mjs";
 import { publishRuntime } from "../local-data/runtime-publication.mjs";
 import { prepareWebResources } from "../local-data/web-resources.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
-import { bytesHash, verifyRuntimePackage } from "../local-data/runtime-package.mjs";
+import { bytesHash, verifyRuntimePackage, isWebFile } from "../local-data/runtime-package.mjs";
 import { packageRuntime, parsePackageArgs } from "./package-runtime.mjs";
 
 function fixture(t) {
@@ -55,6 +55,8 @@ function fixture(t) {
     "<!doctype html><title>Synthetic packaging test</title>",
   );
   writeFileSync(join(webRoot, "assets/app-12345678.js"), "// synthetic test asset");
+  for (const name of ['project-encoder.worker--1234567.js', 'preview-calculator.worker-12345678.js', 'file-encoder.worker-12345678.js'])
+    writeFileSync(join(webRoot, 'assets', name), '// synthetic worker: ' + name);
   writeFileSync(
     join(webRoot, "omnibus-release.json"),
     JSON.stringify({
@@ -80,6 +82,9 @@ test("package contains only runtime and unchanged web bytes; database stays sepa
     readFileSync(join(f.out, "database-build/database.html")),
     readFileSync(join(f.webRoot, "database.html")),
   );
+  for (const path of Object.keys(receipt.files).filter(path => path.includes('.worker-')))
+    assert.deepEqual(readFileSync(join(f.out, path)), readFileSync(join(f.webRoot, path.slice('database-build/'.length))));
+  assert.equal(Object.keys(receipt.files).filter(path => path.includes('.worker-')).length, 3);
   const pkg = JSON.parse(readFileSync(join(f.out, "package.json")));
   assert.equal(pkg.engines.node, "24.x");
   assert(!pkg.dependencies && !pkg.devDependencies);
@@ -139,6 +144,10 @@ test(
       });
       assert.equal((await fetch(url)).status, 200);
       assert.equal((await fetch(url + "/api/v1/health")).status, 200);
+      const worker = await fetch(url + '/assets/preview-calculator.worker-12345678.js');
+      assert.equal(worker.status, 200);
+      assert.match(worker.headers.get('content-type'), /javascript/);
+      assert.equal(await worker.text(), '// synthetic worker: preview-calculator.worker-12345678.js');
       const ready = await fetch(url + "/api/v1/ready");
       assert.equal(ready.status, 200);
       assert.equal(ready.headers.get("cache-control"), "no-store");
@@ -156,6 +165,16 @@ test(
     });
   },
 );
+
+test('worker names remain fingerprinted JavaScript, not source maps, sources or private files', () => {
+  assert(isWebFile('assets/project-encoder.worker--fSTbq-5.js'));
+  for (const path of ['assets/encoder.worker.js', 'assets/encoder.worker-short.js',
+    'assets/encoder.worker-12345678.js.map', 'assets/encoder.worker-12345678.ts',
+    'assets/encoder.worker-12345678.json', 'assets/encoder.worker-12345678.sqlite',
+    'assets/encoder.secret-12345678.js', 'assets/.worker-12345678.js',
+    'assets/nested/encoder.worker-12345678.js', '../assets/encoder.worker-12345678.js'])
+    assert.equal(isWebFile(path), false, path);
+});
 
 test("missing, added or changed files block verification", (t) => {
   const f = fixture(t);
