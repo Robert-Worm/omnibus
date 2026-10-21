@@ -27,7 +27,7 @@ Zijn er mogelijk wachtwoorden of sleutels uitgelekt? Meld dat direct. Een bestan
 
 Bijvoorbeeld in de bronweergave, het openen van projectbestanden, de Excel-export, de lokale server, de AI-koppeling, de publicatiehulpmiddelen of de gebruikte bibliotheken.
 
-Omnibus draait nu alleen lokaal. De lokale server, de Content Workbench en de AI-koppeling zijn niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
+Omnibus draait nu alleen lokaal. De lokale server en de AI-koppeling zijn niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
 
 ## Verder lezen
 

@@ -17,7 +17,7 @@ const token = process.env.GITHUB_TOKEN;
 const offline = process.argv.includes("--offline");
 
 // Pagina's met tellingen tussen <!--n:…--> markeringen (zie database-publiceren.md).
-const MET_TELLINGEN = ["README.md", "docs/routekaart.md", "docs/begrippen.md", "docs/bijdragen/README.md", "docs/beheer/content-workbench.md"];
+const MET_TELLINGEN = ["README.md", "docs/routekaart.md", "docs/begrippen.md", "docs/bijdragen/README.md"];
 
 const json = (f) => JSON.parse(readFileSync(join(dataDir, f), "utf8"));
 const data = {

@@ -24,7 +24,7 @@ test('standard commands use the same pinned database build and loopback preview'
   assert.equal(manifest.scripts.build,manifest.scripts['build:database']);
   assert.equal(manifest.scripts.start,manifest.scripts['dev:database']);
   assert.equal(manifest.scripts.dev,manifest.scripts.start);
-  assert.equal(manifest.scripts.test,'npm run check:types && npm run lint && npm run test:docs && npm run test:voortgang && npm run test:frontend && npm run test:code-only && npm run test:runtime && npm run test:publisher && npm run test:content-handoff && npm run test:source && npm run test:models && npm run test:release && npm run test:workbench && npm run test:agent:input && npm run test:hosting-preparation');
+  assert.equal(manifest.scripts.test,'npm run check:types && npm run lint && npm run test:docs && npm run test:voortgang && npm run test:frontend && npm run test:code-only && npm run test:runtime && npm run test:publisher && npm run test:content-handoff && npm run test:source && npm run test:models && npm run test:release && npm run test:release-prepare && npm run test:agent:input && npm run test:hosting-preparation');
   assert.match(read('vite.config.ts'),/export \{ default \} from '\.\/vite\.database\.config'/);
 });
 

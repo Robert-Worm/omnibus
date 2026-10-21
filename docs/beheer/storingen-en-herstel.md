@@ -53,7 +53,6 @@ Voer de opdrachten uit in je checkout, met Node 24 en je eigen, expliciet gekoze
 5. Start het bijbehorende geverifieerde runtimepakket tegen uitsluitend dit herstel, op een vrije lokale poort (bijvoorbeeld 4353). Gebruik de startinstructie uit [runtime-pakket.md](runtime-pakket.md). Controleer health, bron openen/markeren, fictieve selectie, vraagkoppeling, projectdownload/heropenen en Excel. Stop alleen deze eigen proefserver. De volledige gebruikersproef is geen gevolg van alleen een geslaagde databasecontrole.
 6. Schakel pas na review de hele combinatie van pakket en instellingen bewust om. Bij mislukking blijft de vorige combinatie de terugweg. Verander geen actieve database in-place en laat een oude build nooit stil een nieuwe publicatie kiezen.
 
-Workbench is een afzonderlijke private database met een eigen backupbewijs en herstelcommando; volg [Workbench-herstel](content-workbench.md). Bewaar ook het externe bewijsplan en bron-/reviewarchieven. Een runtimebackup bevat geen browserprojecten, oorspronkelijke PDF-archieven of Workbench. Gebruikers bewaren projecten via de bestaande projectdownload; er is geen serveraccountopslag.
 
 ### Korte incidentroute
 

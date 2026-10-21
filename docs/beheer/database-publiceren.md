@@ -80,7 +80,13 @@ Controleer de nieuwe inhoud en een kopie van een bestaand project. Zie [inhoud t
 
 Als de nieuwe database is goedgekeurd, open je een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml). Daarin staan alle stappen, van controle tot aankondiging, om af te vinken. In het kort:
 
-1. **Maak de zip** met `catalogue.sqlite`, `local-build.json`, een `LEESMIJ.txt` en `SHA256SUMS.txt`. Noem hem `omnibus-database-<jjjj-mm-dd>.zip`.
+1. **Maak de releasebestanden** met één opdracht:
+
+   ```text
+   npm run release:prepare -- --settings work/candidate/local-build.json --out work/release-<jjjj-mm-dd> --date <jjjj-mm-dd>
+   ```
+
+   Die controleert de database eerst. Daarna maakt hij `omnibus-database-<jjjj-mm-dd>.zip` (met database, instellingen, `LEESMIJ.txt` en `SHA256SUMS.txt`), de controlegetallen en een concept van de releasenotities (`releasenotities.md`). Haalt de database de controle niet, dan maakt hij niets.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
 3. **Maak een release** op GitHub met tag `database-<jjjj-mm-dd>`. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe.
 4. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.

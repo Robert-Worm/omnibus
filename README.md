@@ -33,6 +33,10 @@
 | --- | --- | --- |
 | Auditors en onderzoekers die een onderzoek opzetten, bij de overheid of daarbuiten | Bruikbare normen staan verspreid over duizenden rapporten, wetten en kaders. Een referentiekader samenstellen kost veel zoekwerk. | Een referentiekader als Excel-werkdocument, met bij elke norm de bron waar hij vandaan komt |
 
+| 🧭 Ik wil Omnibus gebruiken | 🤝 Ik wil bijdragen | 🛠️ Ik beheer Omnibus |
+| --- | --- | --- |
+| [**Begin hier →**](docs/gebruiken/README.md)<br>Installeren, de vier stappen en de veelgestelde vragen | [**Begin hier →**](docs/bijdragen/README.md)<br>Een bron claimen, verwerken met AI en inleveren | [**Begin hier →**](docs/beheer/README.md)<br>Het beheerhandboek, releases en storingen |
+
 ## Wat is Omnibus?
 
 Omnibus is een hulpmiddel voor **auditors en onderzoekers**. Het helpt je een *referentiekader* te maken: de lijst met normen en toetspunten waarmee je een organisatie onderzoekt.

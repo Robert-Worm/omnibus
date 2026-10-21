@@ -16,6 +16,7 @@ Voor auditors en onderzoekers die Omnibus willen gebruiken.
 
 | Ik wil… | Lees |
 | --- | --- |
+| Weten waar ik begin | [Omnibus gebruiken](gebruiken/README.md) |
 | Omnibus op mijn computer zetten | [Installeren](gebruiken/installeren.md) |
 | Weten hoe de vier stappen werken | [Werken met Omnibus](gebruiken/werken-met-omnibus.md) |
 | Met mijn eigen documenten werken | [Eigen documenten](gebruiken/eigen-documenten.md) |
@@ -65,7 +66,6 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | `local-data/` | De koppeling met de database |
 | `agent-tools/` | De koppeling voor AI-assistenten |
 | `content-tools/` | Hulpmiddelen voor de beheerder |
-| `content-workbench/` | Oud werkbord van de beheerder, niet meer in gebruik |
 | `scripts/` | Bouwen, testen en controleren |
 | `hosting/` | Voorbereiding van de online versie |
 

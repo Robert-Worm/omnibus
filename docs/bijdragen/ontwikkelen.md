@@ -45,7 +45,6 @@ Een tekstcorrectie vraagt geen volledige testronde. Kies wat past:
 | Database of server | `npm run test:runtime` |
 | Pakketcontrole of publicatie | `npm run test:content-handoff` en `npm run test:publisher` |
 | De AI-koppeling | `npm run test:agent:input` |
-| De Content Workbench | `npm run test:workbench` |
 | Twijfel? | `npm test` |
 
 Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat er geen databases, bronbestanden of geheimen in Git terechtkomen.

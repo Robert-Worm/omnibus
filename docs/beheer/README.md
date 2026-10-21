@@ -2,6 +2,14 @@
 
 > **In het kort:** de beheerder controleert ingeleverde bronnen, neemt ze op in een nieuwe database en brengt die uit als release. Deze pagina geeft het overzicht; de details staan in de pagina's eronder.
 
+## Begin hier
+
+| Stap | Lees | Wat je daarna kunt |
+| --- | --- | --- |
+| 1 | [Beheerhandboek](handboek.md) | Je weet welke taken er per dag, week en release zijn |
+| 2 | [Database publiceren](database-publiceren.md) | Je brengt een nieuwe database uit |
+| 3 | [Storingsdraaiboek](draaiboek.md) | Je weet wat je doet als er iets misgaat |
+
 ## De beheercyclus
 
 ```mermaid
@@ -26,11 +34,13 @@ flowchart TD
 
 | Pagina | Waarover |
 | --- | --- |
+| [Beheerhandboek](handboek.md) | Welke taken er per dag, week, release en kwartaal zijn |
+| [Storingsdraaiboek](draaiboek.md) | Zes situaties die misgaan, en wat je dan doet |
+| [Besluiten](besluiten.md) | Welke besluiten al genomen zijn, en waarom |
 | [Pakket controleren](pakket-controleren.md) | Een ingeleverd pakket technisch controleren |
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
 | [Database publiceren](database-publiceren.md) | Een nieuwe database maken, vergelijken, uitbrengen en herstellen |
 | [Actieve inventaris controleren](actieve-inventaris-controleren.md) | Controleren dat een nieuwe database alleen goedgekeurde inhoud bevat |
-| [Content Workbench](content-workbench.md) | Niet meer in gebruik; de voortgang staat op GitHub |
 | [Runtimepakket](runtime-pakket.md) | Omnibus verpakken voor een andere computer of voor hosting |
 | [Storingen en herstel](storingen-en-herstel.md) | Back-up, herstel en wat te doen bij een storing |
 | [Checklist live demo](live-demo-checklist.md) | Wat er nog moet gebeuren voor een online demo |

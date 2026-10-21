@@ -39,7 +39,7 @@ body:
         - [ ] Testbuild: nieuwe inhoud bekeken en een bestaand project geopend
 
         **3. Uitbrengen**
-        - [ ] Zip gemaakt met `catalogue.sqlite`, `local-build.json`, `LEESMIJ.txt` en `SHA256SUMS.txt`
+        - [ ] Releasebestanden gemaakt met `npm run release:prepare` (zip, controlegetallen, LEESMIJ en releasenotities)
         - [ ] Release gemaakt met tag `database-<datum>`, beschrijving en zip
         - [ ] `.github/voortgang/verwerkt.json` bijgewerkt (datum, rapporten, wetten en kaders, modellen) en gepusht
         - [ ] Voortgang, badge en tellingen in de README kloppen (vanzelf bijgewerkt na de push)

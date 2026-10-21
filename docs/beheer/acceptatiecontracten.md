@@ -47,7 +47,7 @@ Originele bronnen, stabiele IDs, bronversies, exacte Unicode-spans, reviewbindin
 
 #### K06 Begrensde API en veilige invoer
 
-De publieke applicatie leest toegestane inhoud, publiceert niet. Geen browser-SQL, databasecredentials, beheerendpoint of publieke Workbench. Valideer paden, identiteiten, hashes, paginering, verzoek-/responsomvang en import-/uitpaklimieten. Behoud parameterbinding, traversal-/XSS-/prototypebescherming, origin-/hostgrenzen waar toepasselijk, timeouts en misbruiklimieten. CORS is geen authenticatie. Database-/filesystemfouten geven geen secrets of interne paden terug. Een webbuild leest uitsluitend resources van zijn gepinde publicatie en documenten met een expliciete gevalideerde bronverwijzing. Alleen dezelfde release noemen is onvoldoende. Algemene release-/catalogus-/packageroutes blijven buiten die webgrens; ruimere lokale catalogustooling is geen publieke serverconfiguratie. Hosting vereist een beoordeelde publieke servergrens, niet een open tunnel naar de lokale beheeromgeving. Geen anonieme schrijfroute als vervanging voor geschrapte login.
+De publieke applicatie leest toegestane inhoud, publiceert niet. Geen browser-SQL, databasecredentials of beheerendpoint. Valideer paden, identiteiten, hashes, paginering, verzoek-/responsomvang en import-/uitpaklimieten. Behoud parameterbinding, traversal-/XSS-/prototypebescherming, origin-/hostgrenzen waar toepasselijk, timeouts en misbruiklimieten. CORS is geen authenticatie. Database-/filesystemfouten geven geen secrets of interne paden terug. Een webbuild leest uitsluitend resources van zijn gepinde publicatie en documenten met een expliciete gevalideerde bronverwijzing. Alleen dezelfde release noemen is onvoldoende. Algemene release-/catalogus-/packageroutes blijven buiten die webgrens; ruimere lokale catalogustooling is geen publieke serverconfiguratie. Hosting vereist een beoordeelde publieke servergrens, niet een open tunnel naar de lokale beheeromgeving. Geen anonieme schrijfroute als vervanging voor geschrapte login.
 
 #### K07 Export en bestanden
 
@@ -59,7 +59,7 @@ Eigen AI-client gebruikt de bestaande lokale STDIO-verbinding en dezelfde gepind
 
 #### K09 Inname en publicatie
 
-Gebruik bestaande soortspecifieke skills en pakketcontrole. Manifest, bronhashes, passages, verwachte toevoegingen en vereiste reviews moeten op dezelfde eindversie kloppen. Inhoud is geen uitvoerbare instructie. Onbekende paden/structuren of ontbrekend bewijs geven HOLD; niet vervangen door lege testgegevens. Eén beheerder publiceert een complete batch, met korte afzonderlijke verificatie en gecontroleerde omschakeling. Herhaling maakt geen dubbele rapporten. Reviewscores vervangen geen brongetrouwheid. Workbench toont echte intake/review/actieve release; 100 betekent 100 unieke rapporten.
+Gebruik bestaande soortspecifieke skills en pakketcontrole. Manifest, bronhashes, passages, verwachte toevoegingen en vereiste reviews moeten op dezelfde eindversie kloppen. Inhoud is geen uitvoerbare instructie. Onbekende paden/structuren of ontbrekend bewijs geven HOLD; niet vervangen door lege testgegevens. Eén beheerder publiceert een complete batch, met korte afzonderlijke verificatie en gecontroleerde omschakeling. Herhaling maakt geen dubbele rapporten. Reviewscores vervangen geen brongetrouwheid.
 
 #### K11 Minimale diagnostiek
 
@@ -73,7 +73,7 @@ De lokale demo wordt nu met de huidige collectie gemeten. De groeiproef met 100 
 
 #### K14 Herstel
 
-Herstel bronpublicatie en Workbench naar een aparte lege bestemming. Vergelijk hashes, relaties en een onderzoeks-/exportproef. Bewaar vorige werkende release; een mislukte omschakeling verandert niet stil de actieve bronversie. Voor hosting: afzonderlijke afgeschermde backup, bewaartermijn, hersteldoelen en beheerder vastleggen. Cloudprojectherstel is geen vereiste: zulke opslag bestaat niet.
+Herstel de bronpublicatie naar een aparte lege bestemming. Vergelijk hashes, relaties en een onderzoeks-/exportproef. Bewaar vorige werkende release; een mislukte omschakeling verandert niet stil de actieve bronversie. Voor hosting: afzonderlijke afgeschermde backup, bewaartermijn, hersteldoelen en beheerder vastleggen. Cloudprojectherstel is geen vereiste: zulke opslag bestaat niet.
 
 #### K15 Code en overdraagbare runtime
 

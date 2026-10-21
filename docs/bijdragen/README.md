@@ -2,6 +2,14 @@
 
 > **In het kort:** de belangrijkste manier om te helpen is een bron verwerken: een rapport, wet of kader omzetten naar normen en toetspunten. Je zet de bron op je naam (check-out), verwerkt hem met een AI-skill en levert hem in (check-in).
 
+## Begin hier
+
+| Stap | Lees | Wat je daarna kunt |
+| --- | --- | --- |
+| 1 | Deze pagina | Je weet hoe claimen, verwerken en inleveren werkt |
+| 2 | [Een bron verwerken](bron-verwerken.md) | Je maakt met een AI-skill een conceptpakket |
+| 3 | [Voortgang](voortgang.md) | Je kiest een open bron en claimt hem |
+
 ## Manieren om te helpen
 
 | Wat | Voor wie | Hoe begin je |
