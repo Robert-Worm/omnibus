@@ -1,6 +1,6 @@
 # De online versie voorbereiden (`hosting/release-delivery/`)
 
-> **In het kort:** hier staat hoe Omnibus later in een container (een *image*) online gaat, met de database apart ernaast. Alles is lokaal getest met fictieve gegevens. Er staat nog niets online.
+> **In het kort:** hier staat hoe Omnibus later in een container (een *image*) online gaat, met de database apart ernaast. Alles is lokaal getest met fictieve gegevens. Deze route is nodig zodra er een niet-openbare database online moet; de proefversie gebruikt de [container-route](../container/README.md).
 
 ## Waar staat dit?
 
@@ -10,7 +10,7 @@
 | De image controleren | ✅ Zie de [imagecontrole](../image-verification/README.md) |
 | De database veilig op de server krijgen | 🔄 Hulpmiddel klaar ([ontvangen](../data-transfer/README.md)); de route bij de hostingpartij is nog niet bevestigd |
 | De eerste start op de server | ⬜ Voorstel klaar ([eerste start](../first-start/README.md)); wacht op bevestiging van de hostingpartij |
-| Online, bij Sevalla | ⬜ Nog niet begonnen |
+| Online | ➖ Niet via deze route: de proefversie draait via de eenvoudigere [container-route](../container/README.md) bij Sliplane |
 
 ## Hoe werkt het?
 

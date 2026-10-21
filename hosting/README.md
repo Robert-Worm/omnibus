@@ -1,6 +1,6 @@
 # Hosting (`hosting/`)
 
-> **In het kort:** voorbereiding van de [online versie](../docs/routekaart.md#pad-a--online-versie). Niets hiervan is al online gezet; alles is lokaal getest met fictieve gegevens.
+> **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.sliplane.app](https://omnibus.sliplane.app). De andere mappen beschrijven een uitgebreidere route met de database op een aparte schijf; die is nodig zodra er een niet-openbare database online moet.
 
 ## Wat staat hier?
 
@@ -20,11 +20,11 @@ flowchart LR
 
 ## Samengevat
 
-Vier stappen, elk met een eigen hulpmiddel: de image maken, de image controleren, de database ontvangen en de eerste start. Alles is lokaal getest met fictieve gegevens; de afspraken met de hostingpartij volgen nog.
+De proefversie draait via één Dockerfile met de openbare database erin. De vier andere mappen (image maken, controleren, database ontvangen, eerste start) blijven klaarliggen voor een route met een aparte database.
 
 ## Volgende stap
 
-Begin bij [de online versie voorbereiden](release-delivery/README.md), of bekijk wat er voor de demo nog moet gebeuren in de [checklist live demo](../docs/beheer/live-demo-checklist.md).
+Begin bij [online zetten in een container](container/README.md), of bekijk wat er voor de demo nog moet gebeuren in de [checklist live demo](../docs/beheer/live-demo-checklist.md).
 
 ---
 

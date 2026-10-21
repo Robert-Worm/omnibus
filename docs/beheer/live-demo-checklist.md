@@ -4,9 +4,9 @@
 
 ## Waar staat het?
 
-Het werk op de eigen computer is af: de app, het runtimepakket, de image en alle lokale proeven. Wat nog open staat, moet **op de echte server** worden bewezen, of door **mensen** worden getest. Lokale tests zijn daarvoor niet genoeg.
+Het werk op de eigen computer is af: de app, het runtimepakket, de image en alle lokale proeven. De proefversie draait online. Wat nog open staat, moet **op de echte server** worden bewezen, of door **mensen** worden getest. Lokale tests zijn daarvoor niet genoeg.
 
-De demo draait bij de hostingpartij Sevalla, met de bestaande app en een aparte database. Accounts, betalingen en een openbare AI-koppeling horen er niet bij. Deze checklist en [pad A van de routekaart](../routekaart.md#pad-a--online-versie) noemen dezelfde stappen. De [kwaliteitsbacklog](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aissue+label%3Akwaliteit) staat er los van: die is geen voorwaarde voor de demo.
+Sinds 21 oktober 2026 staat een proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), bij de hostingpartij Sliplane. De openbare database zit daarbij gecontroleerd in de image ([container-route](../../hosting/container/README.md)), dus een aparte database of schijf is niet nodig. Stap 3 hieronder vervalt daarmee zolang de database openbaar is. Accounts, betalingen en een openbare AI-koppeling horen er niet bij. Deze checklist en [pad A van de routekaart](../routekaart.md#pad-a--online-versie) noemen dezelfde stappen. De [kwaliteitsbacklog](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aissue+label%3Akwaliteit) staat er los van: die is geen voorwaarde voor de demo.
 
 ## De checklist
 

@@ -18,7 +18,7 @@ flowchart LR
 
 | Pad | Doel | Waar staat het | Lees meer |
 | --- | --- | --- | --- |
-| 🌐 **A · Online versie** | Omnibus gebruiken zonder iets te installeren | 🔄 Voorbereiding loopt | [Pad A](#pad-a--online-versie) |
+| 🌐 **A · Online versie** | Omnibus gebruiken zonder iets te installeren | 🔄 Proefversie online | [Pad A](#pad-a--online-versie) |
 | 🤖 **B · AI aan de database** | Je AI-assistent laat zoeken en een onderzoeksopzet voorbereiden | ✅ Lokaal werkend | [Pad B](#pad-b--ai-rechtstreeks-aan-de-database) |
 | 🗂️ **C · Eigen databases** | Eigen documenten en een eigen database gebruiken, naast de openbare | 🔄 Deels mogelijk | [Pad C](#pad-c--eigen-databases-bouwen) |
 | 🤝 **D · Samen bijdragen** | De openbare database samen uitbreiden | ✅ Claimsysteem werkt | [Pad D](#pad-d--samen-bijdragen) |
@@ -39,8 +39,9 @@ Legenda: ✅ klaar · 🔄 bezig · ⬜ gepland
 | --- | --- |
 | Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ |
 | Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ |
-| Database veilig naar de server overbrengen en de eerste start regelen | 🔄 |
-| Online proef: beveiligde verbinding, probes en logs, snelheid, back-up en herstel | ⬜ |
+| Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ |
+| Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ |
+| Online proef: logs, snelheid, back-up en herstel | ⬜ |
 | Onafhankelijke beveiligings- en overdrachtsreview | ⬜ |
 | Gebruikers testen de demo | ⬜ |
 | Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ |

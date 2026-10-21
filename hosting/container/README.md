@@ -1,6 +1,6 @@
 # Online zetten in een container (`hosting/container/`)
 
-> **In het kort:** één Dockerfile die Omnibus met de openbare database bouwt als één image. Zo draait de online versie als één app bij een containerhost, zonder aparte databasedienst of schijf. Gekozen host: Sliplane (vaste prijs, verkeer inbegrepen).
+> **In het kort:** één Dockerfile die Omnibus met de openbare database bouwt als één image. Zo draait de online versie als één app bij een containerhost, zonder aparte databasedienst of schijf. Gekozen host: Sliplane (vaste prijs, verkeer inbegrepen). Draait sinds 21 oktober 2026 op [omnibus.sliplane.app](https://omnibus.sliplane.app).
 
 ## Hoe werkt het?
 
@@ -18,7 +18,8 @@
 | Omgevingsvariabele | `PUBLIC_ORIGIN` = het openbare adres van de app, bijvoorbeeld `https://omnibus.sliplane.app` (zonder `/` aan het eind) |
 | Poort | `PORT`; standaard 8080 |
 | Geheugen | De server gebruikt rond 200 MB bij normaal gebruik |
-| Automatisch uitrollen | Naar keuze; elke push naar `main` bouwt dan opnieuw |
+| Gezondheidscontrole | Pad `/api/v1/health` |
+| Automatisch uitrollen | Aan: elke push naar `main` bouwt en rolt opnieuw uit (ongeveer een halve minuut) |
 
 ## Een nieuwe database online zetten
 
@@ -26,6 +27,7 @@ Pas `DATABASE_URL` en `DATABASE_SHA256` in de Dockerfile aan naar de nieuwe rele
 
 ## Goed om te weten
 
+- **Links vanaf andere sites werken.** Wie op een link in een mail of zoekmachine klikt, krijgt de pagina. Andere sites kunnen de gegevens niet zelf opvragen en Omnibus niet in hun eigen pagina tonen; dat weigert de server.
 - **De database zit in de image.** Dat kan omdat hij openbaar is; een private database hoort hier nooit in. Zie de [besluitenlijst](../../docs/beheer/besluiten.md).
 - **Lokaal nabootsen** kan zonder Docker: voer de stappen uit de Dockerfile in dezelfde volgorde uit. Met Docker: `docker build -f hosting/container/Dockerfile -t omnibus .` en `docker run -p 8080:8080 -e PORT=8080 -e PUBLIC_ORIGIN=https://localhost omnibus`.
 

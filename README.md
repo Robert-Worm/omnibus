@@ -19,6 +19,7 @@
 </p>
 
 <p align="center">
+  <a href="https://omnibus.sliplane.app"><strong>🌐 Probeer online</strong></a> ·
   <a href="#zo-werkt-het"><strong>Zo werkt het</strong></a> ·
   <a href="docs/gebruiken/installeren.md">Installeren</a> ·
   <a href="docs/bijdragen/README.md">Meedoen</a> ·
@@ -100,7 +101,7 @@ Vanaf de lokale versie lopen vier paden:
 
 | Pad | Doel |
 | --- | --- |
-| 🌐 [Online versie](docs/routekaart.md#pad-a--online-versie) | Omnibus gebruiken zonder installatie; eerst een online demo |
+| 🌐 [Online versie](docs/routekaart.md#pad-a--online-versie) | Omnibus gebruiken zonder installatie. Een proefversie staat al op [omnibus.sliplane.app](https://omnibus.sliplane.app); de officiële demo volgt |
 | 🤖 [AI aan de database](docs/routekaart.md#pad-b--ai-rechtstreeks-aan-de-database) | Je AI-assistent laten zoeken en een opzet laten voorbereiden |
 | 🗂️ [Eigen databases](docs/routekaart.md#pad-c--eigen-databases-bouwen) | Eigen documenten en een eigen database naast de openbare |
 | 🤝 [Samen bijdragen](docs/routekaart.md#pad-d--samen-bijdragen) | De openbare database samen uitbreiden |
