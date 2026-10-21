@@ -1,1 +1,1 @@
-export function createBackgroundProjectSave<T>(options:{encode:(project:T)=>Promise<string>;write:(text:string)=>void;onPending:()=>void;onSaved:()=>void;onError:(error:unknown)=>void}):{readonly pending:boolean;save:(project:T)=>void;cancel:()=>void;dispose:()=>void};
+export function createBackgroundProjectSave<T>(options:{encode:(project:T)=>Promise<string>;write:(text:string)=>void;onPending:()=>void;onSaved:()=>void;onError:(error:unknown)=>void;schedule?:(run:()=>void)=>void}):{readonly pending:boolean;save:(project:T)=>void;cancel:()=>void;dispose:()=>void};

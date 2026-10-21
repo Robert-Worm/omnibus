@@ -659,12 +659,14 @@ export default function FrameworkEditor() {
         cleaned.removed.map(normId).join(", ") +
           " valt buiten de productscope en is niet opgenomen.",
       );
-    if (track && JSON.stringify(next)!==JSON.stringify(draftRef.current)) rememberProject(action);
+    if (track && !projectContentEqual(next,draftRef.current)) rememberProject(action);
     draftRef.current = next;
     setDraft(next);
     projectRef.current={...projectRef.current,draft:next};
-    return saveProject(projectRef.current);
-  }, [saveProject]);
+    // UI onChange accepts an in-memory edit; the save indicator alone reports
+    // durability. Mark pending now so an immediate page exit flushes this edit.
+    if(!storageBlocked.current&&storeRef.current)backgroundSave.current?.save(projectRef.current);
+  }, []);
   useEffect(() => {
     draftRef.current = draft;
   }, [draft]);
@@ -680,11 +682,12 @@ export default function FrameworkEditor() {
     const tools = () => createFrameworkTools(investigationFramework(baseFramework,draftRef.current), {
         getDraft: () => draftRef.current,
         apply: (next: Draft) => {
-          let saved = false;
           flushSync(() => {
-            saved = commit(next);
+            commit(next);
           });
-          return saved;
+          // This API explicitly promises a durable local_storage_saved result,
+          // unlike UI onChange. Keep that contract, including storage failures.
+          return saveProject(projectRef.current);
         },
       });
     return registerFrameworkTools(
@@ -701,7 +704,7 @@ export default function FrameworkEditor() {
         /* Optional agent surface unavailable; ordinary editor remains functional. */
       },
     );
-  }, [loaded, commit]);
+  }, [loaded, commit, saveProject]);
   function edit(key: string, text: string) {
     commit(updateValue(draft, line, key, text) as Draft);
   }
