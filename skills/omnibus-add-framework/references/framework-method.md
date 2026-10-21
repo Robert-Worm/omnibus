@@ -51,6 +51,52 @@ bronbeperkingen. Filters zijn navigatiehulp, geen toepasselijkheidsbesluit.
 Opzet en bestaan hebben zelfstandige instructies en passend bewijs. Werking
 krijgt geen verzonnen periode/populatie/steekproef of fictieve conclusie.
 
+### Complete beheersketen
+
+Voor iedere selecteerbare norm zijn doel, risico, beheersdoelstelling en
+beheersmaatregel verplicht. Dit is een eis aan de praktische Omnibus-uitwerking,
+niet een claim dat de bron die vier velden letterlijk bevat. Context-only
+definities en afbakeningen worden niet kunstmatig tot normen gemaakt.
+
+1. Lees norm, bronpassage en toepassingscontext. Gebruik het relevante risico
+   uit de bron of een gemotiveerde risicoafleiding; kopieer niet automatisch een
+   historisch rapportprobleem naar iedere onderzochte organisatie.
+2. Formuleer het **doel** als het beoogde resultaat. Formuleer de
+   **beheersdoelstelling** als de gewenste toestand die de oorzaak of het gevolg
+   van dat risico begrenst. Die mag worden gegenereerd op basis van het risico,
+   ook als de bron geen afzonderlijke beheersdoelstelling noemt.
+3. Formuleer de **beheersmaatregel** als een concrete, proportionele interventie
+   waarmee die toestand wordt bereikt of bewaakt. Behoud de juiste actor,
+   aanleiding, voorwaarden en bevoegdheidsgrenzen. Voeg geen onbevestigde
+   termijn, systeemkeuze, vaste frequentie of documentplicht toe.
+4. Bewaar eigen doel-/risico-/beheersuitwerkingen als `ANALYST_PROPOSAL` met
+   bron-/normverwijzing en een korte reden waarom de afleiding het risico
+   adresseert. Toon ze als voorstel, niet als citaat, geldende verplichting of
+   bewijs dat een organisatie de maatregel al uitvoert. De norm blijft ongewijzigd.
+5. Beoordeel met OAK-1.0 brontrouw, doel, risico, beheersdoelstelling,
+   beheersmaatregel en hun samenhang met norm en toetsen. Het beheersdoel is
+   geen handeling; de maatregel is geen herhaling van de gewenste toestand.
+   Geen lege waarden, placeholders, louter omgekeerd risico of generieke
+   'zorg voor goede beheersing'. Bij onvoldoende onderbouwing: herstel/HOLD,
+   nooit stilzwijgend toelaten met een leeg veld.
+
+Fictief voorbeeld: risico 'onbevoegd verstrekte toegang maakt vertrouwelijke
+informatie toegankelijk voor derden'; beheersdoel 'toegang is beperkt tot
+personen met een goedgekeurde taakgebonden behoefte'; maatregelvoorstel 'laat
+de verantwoordelijke rol toegangsaanvragen beoordelen op de taakbehoefte en
+pas verleende rechten aan wanneer die behoefte vervalt'. Dit is een ontwerp-
+voorbeeld, geen extra wettelijke eis of vaste inrichting voor ieder kader.
+
+Controleer bij de overdracht per selecteerbare norm de volledige keten en
+dezelfde waarden in viewer, selectie/opgeslagen project en export. Een adapter
+mag aangeleverde velden niet op leeg zetten. Bij de flat-adapter heten ze
+`objective`, `risk`, `controlObjective` en `control`; scope blijft `sourceContext`,
+niet het doel. Voer `validateFlatFoundationChain` uit vóór toelating/publicatie;
+de structuurcontrole vervangt geen bron-, kader- of praktische beoordeling.
+Een beperkt historisch herstelbesluit zonder beoordeling van de beheersketen
+is geen volledige toelating. Behoud bevroren oude contracten en reviewbesluiten;
+leg de aanvullende ketenreview vast op de nieuwe exacte inhoudsbasis.
+
 ### Lessen uit de tekstgerichte CIO-review
 
 Controleer gedeelde doelen, beheersdoelstellingen en overkoepelende normen tegen ieder gekoppeld

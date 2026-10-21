@@ -45,6 +45,14 @@ Hulp hierbij:
 
 Een AI-review is een hulpmiddel, geen menselijke goedkeuring. Twijfels blijven zichtbaar als HOLD.
 
+Bij een selecteerbare kadernorm horen een ingevuld doel, risico,
+beheersdoelstelling en beheersmaatregel. Staat een onderdeel niet letterlijk in
+de bron, werk het dan brongebonden uit vanuit het risico en benoem het als
+analytisch voorstel. Beoordeel ook deze afleidingen; alleen goedgekeurde normtekst
+is niet voldoende. Onvoldoende onderbouwing vraagt herstel vóór toelating,
+niet een leeg veld of standaardtekst. De flat-kaderpublisher controleert deze
+volledigheid bij nieuwe publicaties; bestaande publicaties blijven leesbaar.
+
 ## 2. Controleer of het past
 
 Past het pakket in de bestaande weergaven, zonder nieuwe code?

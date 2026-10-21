@@ -42,11 +42,20 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 - Houd verplichting, verbod, bevoegdheid, toestemming, definitie, reikwijdte,
   uitzondering, ingang en toelichting uit elkaar. Behoud normadressaat en
   taakdrager; een respondent of begunstigde is niet automatisch normadressaat.
-- Maak doel, risico, beheersdoelstelling, maatregel, norm en toetspunt semantisch
-  onderscheiden. Eigen voorstellen houden hun status. Geen fictieve vulling.
+- Vul bij iedere selecteerbare norm doel, risico, beheersdoelstelling en
+  beheersmaatregel inhoudelijk in. Een letterlijke bronformulering is niet nodig:
+  leid de gewenste beheerssituatie en een passende interventie af uit het
+  brongebonden risico. Label eigen uitwerkingen als `ANALYST_PROPOSAL` en bewaar
+  de herleiding; maak daarvan geen nieuwe bronplicht. Volg de beslisregels voor
+  [een complete beheersketen](references/framework-method.md#complete-beheersketen).
+  Lege velden, N.v.t. en generieke opvultekst zijn geen geaccepteerde eindinhoud.
+  Kan geen verdedigbare keten worden gemaakt, houd de norm op HOLD voor herstel.
 - Laat bron-, juridisch/kader- en praktisch perspectief onafhankelijk de exacte
   eindbasis beoordelen; geen auteur-selfapproval of opgefriste reviewhashes.
   Technische structuurcontrole vervangt deze beoordelingen niet.
+  Een review van uitsluitend normtekst of bronparafrase geeft geen goedkeuring
+  voor een volledige viewerketen: laat ook alle afgeleide velden en hun relaties
+  expliciet beoordelen voordat de norm wordt toegelaten.
 
 ## Overdraagbare aanlevering
 
@@ -74,11 +83,12 @@ echte reviewstatus, verwachte norm-/punt-ID's en aantallen, groepen/filters,
 HOLD- en context-only-grenzen en open mappingproblemen. Gebruik het bestaande
 overdrachtsoverzicht. Ontbrekend bewijs blijft HOLD; de voorbereidingschat
 schakelt geen publicatie om en bericht geen andere chat zonder opdracht.
-De lokale integrator volgt `docs/content-maintenance.md` en behoudt de CIO-viewer.
+De lokale integrator volgt `docs/beheer/inhoud-toevoegen.md` (of in een oudere
+privé-checkout `docs/content-maintenance.md`) en behoudt de CIO-viewer.
 
 ## Alleen bij opgedragen integratie
 
-Lees `docs/content-maintenance.md` in de checkout. Gebruik de bestaande
+Lees de bovenstaande beheerroute in de checkout. Gebruik de bestaande
 bronadapter en `LawPointSourceLayout`/`LawSourceDocument`, die
 `CriterionSourceLayout` en `ReportLibrary` hergebruiken. Gebruik de bestaande
 matrix, selectie, About-opbouw en gedeelde CSS. Geen quote-only bronviewer,

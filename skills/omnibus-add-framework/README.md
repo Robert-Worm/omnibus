@@ -26,6 +26,10 @@ Niet voor:
 - **Het soort bepaling**: verplichting, verbod, bevoegdheid, definitie, reikwijdte of uitzondering, apart gehouden.
 - **Voor wie de norm geldt** (de normadressaat), zodat je ziet of hij op jouw organisatie van toepassing kan zijn.
 - **Toetspunten** om naleving te onderzoeken, met hun status als eigen voorstel.
+- **Een complete beheersketen**: doel, risico, beheersdoelstelling en
+  beheersmaatregel. Niet-letterlijke onderdelen worden uit het brongebonden
+  risico afgeleid, als voorstel gemarkeerd en inhoudelijk beoordeeld. Een
+  selecteerbare norm wordt niet met lege schakels opgeleverd.
 
 ## Voorbeeld
 
