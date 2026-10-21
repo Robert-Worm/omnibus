@@ -28,11 +28,6 @@
 
 Je begint niet met een leeg vel. Omnibus bevat normen uit eerdere onderzoeksrapporten, uit wetten en uit normenkaders. Jij kiest wat past bij jouw onderzoek. Bij elke norm kun je de oorspronkelijke bron lezen, zodat je altijd weet waar hij vandaan komt.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-overview-donker.png">
-  <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
-</picture>
-
 ## Kies je route
 
 | Je wilt… | Lees |
@@ -51,6 +46,11 @@ Omnibus helps auditors and researchers build a *reference framework* (in Dutch: 
 Omnibus is free for non-commercial use and runs in your browser; projects stay on your own computer. The content and documentation are in Dutch. [Try it online](https://omnibus.sliplane.app), watch the [25-second tour](#zo-werkt-het), or run it yourself with Docker (see [Aan de slag](#aan-de-slag)). Questions are welcome in [Discussions](https://github.com/Robert-Worm/omnibus/discussions), in English too.
 
 </details>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/omnibus-overview-donker.png">
+  <img src="docs/images/omnibus-overview.png" alt="Het startscherm van Omnibus: kies of je begint vanuit een vraag of vanuit signalen">
+</picture>
 
 <a id="zo-werkt-het"></a>
 ## Zo werkt het
