@@ -16,6 +16,7 @@ flowchart LR
 | [`image-verification/`](image-verification/README.md) | De image lokaal bouwen en controleren met fictieve gegevens |
 | [`data-transfer/`](data-transfer/README.md) | Een database op de server ontvangen en tegen vaste controlegetallen controleren |
 | [`first-start/`](first-start/README.md) | De allereerste start op de server, voordat de database er staat |
+| [`sevalla/`](sevalla/README.md) | De eenvoudigste route: één Dockerfile met de openbare database erin, voor één kleine app bij Sevalla |
 
 ## Samengevat
 

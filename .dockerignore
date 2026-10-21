@@ -1,0 +1,11 @@
+# Alleen de code gaat mee in de image; geen lokale data, builds of geheimen.
+.git
+node_modules
+work
+local-data/runtime
+database-build
+runtime-build
+offline-build
+*.sqlite
+*.zip
+.env*
