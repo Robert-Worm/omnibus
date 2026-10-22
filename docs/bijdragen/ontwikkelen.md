@@ -41,7 +41,7 @@ Een tekstcorrectie vraagt geen volledige testronde. Kies wat past:
 | Je wijzigt… | Draai |
 | --- | --- |
 | Alleen documentatie | `npm run check:docs` |
-| Schermen of opmaak | `npm run check:types`, `npm run lint` en `npm run test:frontend` |
+| Schermen of opmaak | `npm run check:types`, `npm run lint`, `npm run test:frontend` en `npm run check:contrast` |
 | Bronweergave of Excel-export | `npm run test:source` |
 | Onderzoeksmodellen of formuleringen | `npm run test:models` |
 | Database of server | `npm run test:runtime` |
@@ -79,6 +79,17 @@ npm run docs:screenshots -- --settings local-data/runtime/local-build.json
 ```
 
 Voor de rondleiding (GIF) is ook [ffmpeg](https://ffmpeg.org/) nodig; zonder ffmpeg slaat het script alleen de GIF over. Wil je een paar afbeeldingen? Gebruik `--alleen stap-2-verzamel,rondleiding`. Het script legt in `docs/images/schermafbeeldingen.txt` vast bij welke versie de afbeeldingen horen. Bekijk de afbeeldingen voordat je ze commit.
+
+### Contrast controleren
+
+Heb je kleuren of opmaak veranderd? Controleer dan het contrast in lichte en donkere modus. Het script opent de hoofdschermen, een onderzoek tot in de normtabel, een rapport, het normdetail en een bronpassage. Het meldt elke zichtbare tekst met minder contrast dan 4,5:1 (WCAG AA). Het brondocument en het werkboekvoorbeeld tellen niet mee: die houden bewust hun papierkleur.
+
+```text
+npm run build -- --settings local-data/runtime/local-build.json
+npm run check:contrast -- --settings local-data/runtime/local-build.json
+```
+
+Je hebt Playwright nodig, net als voor de schermafbeeldingen. Wil je één thema? Gebruik `--schema dark` of `--schema light`. Een melding noemt het scherm, het element, de tekst en de verhouding. Los hem op met een kleurtoken uit `app/appearance.css`, niet met een losse kleur.
 
 Externe links controleer je met `npm run check:links`. Dat gebeurt ook elke maandag automatisch. Hoe je een pagina opbouwt en welke woorden je gebruikt, staat in de [stijlgids](stijlgids.md).
 

@@ -2,6 +2,14 @@
 
 De belangrijkste wijzigingen, nieuwste eerst.
 
+## 22 oktober 2026 · donkere modus en een verzorgde documentatie
+
+- **Donkere modus:** de normtabel, het normdetail en invoervelden hebben geen witte vlakken meer, en alle tekst is goed leesbaar. In licht en donker heeft tekst nu een contrast van minstens 4,5:1 (WCAG AA). Nieuwe controle: `npm run check:contrast`.
+- **Documentatie in één vorm:** vaste bouwstenen voor elke pagina (paginatypen, tabellen, statuslabels, meldingen, stappen met *Gelukt als*), een routekeuze bij installeren, één situatiekaart voor storingen en dezelfde voetregel op elke pagina. De documentatiecheck bewaakt dit.
+- **Beeld:** alle schermafbeeldingen en de banner in licht en donker; de rondleiding speelt niet meer vanzelf af.
+- **Beheer:** een overzicht per moment, vaste regels op één plek en besluiten met een vaste ID.
+- **Online versie** draait op Node 24.21.
+
 ## 21 oktober 2026 · online proefversie en versie 0.1.0
 
 - **Proefversie online** op [omnibus.sliplane.app](https://omnibus.sliplane.app), voor een vaste prijs per maand. De openbare database zit in de image; elke push naar `main` rolt automatisch uit.

@@ -7,7 +7,7 @@
 - **Toetsenbord:** alle vier de werkstappen, bronbestemmingen en het wisselen van route blijven met het toetsenbord bereikbaar, met een zichtbare focus.
 - **Inklapbare tekst:** lange toelichtingen kunnen inklappen achter een toegankelijke, omkeerbare knop "Lees verder". Normtekst, toetspunten en broncitaten worden nooit ingeklapt.
 - **Smalle schermen:** bronviewers schakelen over op tabbladen, zodat uitleg en brontekst ook op een klein scherm te lezen zijn.
-- **Licht en donker:** gedeelde kleurtokens voor beide thema's, ook voor de toetsenbordfocus.
+- **Licht en donker:** gedeelde kleurtokens voor beide thema's, ook voor de toetsenbordfocus. Tekst heeft in beide thema's een contrast van minstens 4,5:1 (WCAG AA); `npm run check:contrast` controleert dat op de hoofdschermen.
 - **Excel-export:** het referentiekader is ook als werkboek te gebruiken, buiten de browser.
 
 ## Bekende beperkingen
