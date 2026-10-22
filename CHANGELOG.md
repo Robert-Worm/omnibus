@@ -6,6 +6,7 @@ De belangrijkste wijzigingen, nieuwste eerst.
 
 - **Grote projecten openen:** minder dubbel selectiewerk en ruimte voor bediening tussen de herstelstappen. Broncontroles, opgeslagen keuzes en vraagkoppelingen blijven behouden.
 - **Exportvoorbeeld:** identieke broncontext hoeft maar één keer naar de achtergrondworker. Dat verkort het blokkerende kopieerwerk bij grote projecten, zonder velden of bewijs weg te laten. Een mislukte overdracht wordt bij opnieuw proberen volledig hersteld.
+- **Kleinere eerste download:** dezelfde lettertypen worden nu als gedeelde, lokaal geserveerde bestanden geladen in plaats van herhaald in de stijlbundel. Lettervormen, gewichten en licenties blijven gelijk; er is geen externe fontdienst nodig.
 - **Donkere modus:** de normtabel, het normdetail en invoervelden hebben geen witte vlakken meer, en alle tekst is goed leesbaar. In licht en donker heeft tekst nu een contrast van minstens 4,5:1 (WCAG AA). Nieuwe controle: `npm run check:contrast`.
 - **Documentatie in één vorm:** vaste bouwstenen voor elke pagina (paginatypen, tabellen, statuslabels, meldingen, stappen met *Gelukt als*), een routekeuze bij installeren, één situatiekaart voor storingen en dezelfde voetregel op elke pagina. De documentatiecheck bewaakt dit.
 - **Beeld:** alle schermafbeeldingen en de banner in licht en donker; de rondleiding speelt niet meer vanzelf af.

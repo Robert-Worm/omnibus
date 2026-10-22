@@ -27,3 +27,21 @@ test('redistribution notices retain their text without allowing a comment escape
   assert.equal(textLicenseNotice('Test','before --> after'),'<!-- Test\nbefore —> after\n-->');
   assert.equal(fontLicenseNotices('/*! Original font notice */'),'<!-- Font license\n Original font notice \n-->');
 });
+
+test('separate font assets preserve the exact original faces, glyphs and licence text',()=>{
+  const css=read('app/rijksmap-fonts.css').replaceAll('\r\n','\n');
+  const names=[];
+  const embedded=css.replace(/url\("\.\/fonts\/([a-z-]+\.woff2)"\)/g,(_match,name)=>{
+    names.push(name);
+    const bytes=readFileSync(new URL('../app/fonts/'+name,import.meta.url));
+    assert.equal(bytes.subarray(0,4).toString(),'wOF2');
+    return 'url(data:font/woff2;base64,'+bytes.toString('base64')+')';
+  });
+  assert.deepEqual(names,['inter-regular.woff2','inter-regular.woff2','inter-regular.woff2',
+    'spectral-semibold.woff2','spectral-bold.woff2']);
+  // Reconstruct the pre-extraction stylesheet: no font conversion, weight/range
+  // changes or lost notices can pass this comparison. Only delivery changed.
+  assert.equal(hash(embedded),'a8251b7fb0c619c5258184213928f4c299622fec515ab2c3a204cfc0e6cf951b');
+  assert(!css.includes('data:font/'));
+  assert(css.length<16000,'font bytes no longer block the stylesheet download');
+});

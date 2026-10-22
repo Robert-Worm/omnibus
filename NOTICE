@@ -8,7 +8,7 @@ Deze notitie wijzigt de licentievoorwaarden niet en verleent geen rechten op bro
 
 Licenties van derden
 - De shadcn-stylesheet behoudt zijn MIT-licentie in app/vendor/shadcn-LICENSE.txt.
-- Ingebedde lettertypen behouden hun vermeldingen en SIL Open Font License-tekst in app/rijksmap-fonts.css.
+- Meegeleverde lettertypen in app/fonts behouden hun vermeldingen en SIL Open Font License-tekst in app/rijksmap-fonts.css.
 - npm-afhankelijkheden behouden hun eigen licenties; package-lock.json legt de versies vast.
   De opdracht release:sbom maakt een overzicht van afhankelijkheden, geen juridische goedkeuring.
 

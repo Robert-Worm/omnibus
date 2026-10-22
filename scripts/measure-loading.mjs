@@ -26,7 +26,8 @@ export function assetTotals(entries) {
   const total = values => Object.fromEntries(['transferSize', 'encodedBodySize', 'decodedBodySize']
     .map(key => [key, values.reduce((n, entry) => n + entry[key], 0)]));
   return {all: total(entries), javascript: total(entries.filter(e => e.path.endsWith('.js'))),
-    css: total(entries.filter(e => e.path.endsWith('.css')))};
+    css: total(entries.filter(e => e.path.endsWith('.css'))),
+    fonts: total(entries.filter(e => e.path.endsWith('.woff2')))};
 }
 
 async function measureNavigation(page, hash, selector) {
@@ -105,10 +106,13 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
         });
         const snapshot = async () => {
           await page.waitForFunction(() => window.__loadingSample.readyMs !== null);
+          // Moving font bytes out of CSS must not make the download total look
+          // smaller just because those separate requests have not finished yet.
+          const fontsReadyMs = await page.evaluate(async () => {await document.fonts.ready; return performance.now();});
           const snapshot = await page.evaluate(() => {
             const entries = [...performance.getEntriesByType('navigation'), ...performance.getEntriesByType('resource')]
               .filter(e => new URL(e.name).origin === location.origin &&
-                (e.entryType === 'navigation' || /\.(js|css)$/.test(new URL(e.name).pathname)))
+                (e.entryType === 'navigation' || /\.(js|css|woff2)$/.test(new URL(e.name).pathname)))
               .map(e => ({path: new URL(e.name).pathname, transferSize: e.transferSize,
                 encodedBodySize: e.encodedBodySize, decodedBodySize: e.decodedBodySize,
                 startTime: e.startTime, responseEnd: e.responseEnd}));
@@ -119,7 +123,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
           assert(snapshot.entries.every(e => !/foundation-source-reader-|export-entry-content-/.test(e.path)),
             'Source reader and export must remain deferred');
           assert(snapshot.entries.some(e => e.path.endsWith('.js') && e.decodedBodySize > 0));
-          return {...snapshot, bytes: assetTotals(snapshot.entries)};
+          return {...snapshot, fontsReadyMs, bytes: assetTotals(snapshot.entries)};
         };
         await page.goto(url + '#begin');
         result.initial.push(await snapshot());
@@ -175,6 +179,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
     }
     result.summaryMs = {
       initial: summarize(result.initial.map(v => v.readyMs)), reload: summarize(result.reload.map(v => v.readyMs)),
+      initialFontsReady: summarize(result.initial.map(v => v.fontsReadyMs)),
       ...Object.fromEntries(Object.keys(result.navigation[0]).map(key => [key, summarize(result.navigation.map(v => v[key]))])),
     };
     assert.deepEqual(result.errors, []);

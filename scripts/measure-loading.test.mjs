@@ -22,10 +22,13 @@ test('cached decoded bodies are not misreported as transferred bytes', () => {
     {path: '/', transferSize: 400, encodedBodySize: 100, decodedBodySize: 200},
     {path: '/assets/main.js', transferSize: 0, encodedBodySize: 1000, decodedBodySize: 5000},
     {path: '/assets/main.css', transferSize: 500, encodedBodySize: 200, decodedBodySize: 400},
+    {path: '/assets/regular.woff2', transferSize: 1300, encodedBodySize: 1000, decodedBodySize: 1000},
+    {path: '/assets/bold.woff2', transferSize: 0, encodedBodySize: 800, decodedBodySize: 800},
   ];
   assert.deepEqual(assetTotals(entries), {
-    all: {transferSize: 900, encodedBodySize: 1300, decodedBodySize: 5600},
+    all: {transferSize: 2200, encodedBodySize: 3100, decodedBodySize: 7400},
     javascript: {transferSize: 0, encodedBodySize: 1000, decodedBodySize: 5000},
     css: {transferSize: 500, encodedBodySize: 200, decodedBodySize: 400},
+    fonts: {transferSize: 1300, encodedBodySize: 1800, decodedBodySize: 1800},
   });
 });
