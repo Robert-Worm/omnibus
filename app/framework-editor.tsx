@@ -54,7 +54,8 @@ import ReportNormBrowser from './report-norm-browser';
 import ReportFrameworkAbout from './report-framework-about';
 import { cleanScopeDraft, admittedLines } from "@/lib/product-scope.mjs";
 import {makeProject,readProject,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
-import {parseProjectText,expandProject} from '@/lib/project-codec.mjs';
+import {expandProject} from '@/lib/project-codec.mjs';
+import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
 import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
@@ -403,6 +404,7 @@ export default function FrameworkEditor() {
   const onProjectRestored = useEffectEvent((project:Project) => applyProject(project));
   useEffect(() => {
     let cancelled = false;
+    const reading=new AbortController();
     void Promise.resolve().then(async () => {
       if (cancelled) return;
       setPage(workspaceRoute(window.location.hash || "#begin"));
@@ -412,13 +414,16 @@ export default function FrameworkEditor() {
         const store=guardedProjectStore(localStorage);
         storeRef.current=store;
         if(store.raw()!==null) {
-          const original=parseProjectText(store.raw()!);
+          const original=await readProjectInBackground(store.raw()!,{signal:reading.signal});
+          if(cancelled)return;
           await ensureCatalogue(projectCatalogueKeys(original));
           if(cancelled)return;
           const restored=readProject(original,projectRef.current,restoreOptions);
           onProjectRestored(restored.project);
-          if(!projectContentEqual(original.draft,restored.project.draft) ||
-            !projectContentEqual(original.modelLibrary,restored.project.modelLibrary)) {
+          // readProject has validated the decoded object before these comparisons.
+          const originalFields=original as {draft?:unknown;modelLibrary?:unknown};
+          if(!projectContentEqual(originalFields.draft,restored.project.draft) ||
+            !projectContentEqual(originalFields.modelLibrary,restored.project.modelLibrary)) {
             store.checkpoint(true);
             setScopeNotice('Het opgeslagen project is aangepast aan de huidige indeling. Het oorspronkelijke project is als herstelkopie bewaard.');
           }
@@ -463,6 +468,7 @@ export default function FrameworkEditor() {
           }
         }
       } catch(e) {
+        if(cancelled)return;
         storageBlocked.current=true;
         setProblem(true);
         setMessage(!storeRef.current
@@ -481,6 +487,7 @@ export default function FrameworkEditor() {
     });
     return () => {
       cancelled = true;
+      reading.abort();
     };
   }, [setMessage,setProblem]);
   useEffect(() => {
