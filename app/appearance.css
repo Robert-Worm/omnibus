@@ -261,6 +261,8 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] .framework-app :is(.law-group,.law-browse-filters,.matrix-explained-table) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .framework-app .law-group-heading { background:var(--rm-surface); }
   html[data-appearance=dark] .framework-app thead { background:#25394d; }
+  html[data-appearance=dark] .law-viewer-heading h2 { color:var(--foreground); }
+  html[data-appearance=dark] :is(.law-viewer-heading output,.cio-source-toolbar > span,.cio-point-source .cio-source-links button span) { color:var(--rm-muted); }
   html[data-appearance=dark] .framework-app :is(.law-group-location,.law-group-count) { color:var(--rm-muted); }
   /* Normdetail (rapporten en kaders): vlakken, kaarten en tekst in donker; het brondocument houdt zijn papierkleur. */
   html[data-appearance=dark] [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { background:#101923; color:var(--foreground); }
