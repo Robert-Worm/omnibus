@@ -7,12 +7,12 @@ const context={framework:{lines:[{id:'n1'}]},draft:{title:'Test',included:['n1']
 const request=config=>({...context,config});
 const result=label=>({preview:{title:label},validation:''});
 const tick=()=>new Promise(r=>setImmediate(r));
-function harness({fallback=()=>result('fallback'),blocked=false}={}){
+function harness({fallback=()=>result('fallback'),blocked=false,prepareSources}={}){
  const queue=[],sent=[],changes=[];let created=0,terminated=0,calls=0;
- const worker={postMessage:message=>sent.push(structuredClone(message)),terminate:()=>terminated++};
+ const worker={postMessage:(message,transfer)=>sent.push(structuredClone(message,{transfer})),terminate:()=>terminated++};
  const client=createPreviewCalculator({schedule:run=>queue.push(run),onChange:state=>changes.push(state),
   createWorker:()=>{created++;if(blocked)throw Error('Unavailable');return worker;},
-  fallback:input=>{calls++;return fallback(input);}});
+  fallback:input=>{calls++;return fallback(input);},prepareSources});
  return {client,worker,sent,changes,run:()=>queue.shift()?.(),counts:()=>({created,terminated,calls})};
 }
 
@@ -68,4 +68,16 @@ test('unavailable workers use the original calculation and late failures cannot 
  assert.equal(blocked.changes.at(-1).result.preview.title,'fallback');
  const removed=harness();removed.client.request(input);removed.client.dispose();removed.run();
  assert.equal(removed.counts().created,0);removed.client.request(request({}));assert.equal(removed.changes.length,1);
+});
+
+test('source buffers transfer only with changed context and already transferred identities are not resent',()=>{
+ const calls=[],source={release:'a'.repeat(64),hash:'b'.repeat(64),bytes:new ArrayBuffer(3)};
+ const h=harness({prepareSources:(_request,known)=>{calls.push([...known]);return known.size?[]:[source];}});
+ h.client.request(request({fontSize:10}));h.run();
+ assert.equal(source.bytes.byteLength,0);assert.equal(h.sent[0].sources[0].bytes.byteLength,3);
+ h.worker.onmessage({data:{id:1,result:result('first')}});
+ h.client.request(request({fontSize:12}));h.run();assert.equal(h.sent[1].sources,undefined);assert.equal(calls.length,1);
+ h.worker.onmessage({data:{id:2,result:result('settings')}});
+ h.client.request({...request({}),draft:{...context.draft,notes:{n1:'Changed'}}});h.run();
+ assert.deepEqual(calls[1],[source.release+':'+source.hash]);assert.deepEqual(h.sent[2].sources,[]);
 });

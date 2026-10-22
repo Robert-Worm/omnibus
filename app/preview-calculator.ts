@@ -1,11 +1,12 @@
 import type {Framework,Draft} from '@/lib/framework-types';
 import type {LibraryModel} from './model-library';
 import type {workbookPreviewSnapshot} from '@/lib/workbook-preview-snapshot.mjs';
+import type {ContentTransfer} from '@/lib/database-source-client.mjs';
 
 export type PreviewContext={framework:Framework;draft:Draft;models:LibraryModel[]};
 export type PreviewRequest=PreviewContext & {config:Record<string,unknown>};
 export type PreviewResult={preview:ReturnType<typeof workbookPreviewSnapshot>;validation:string};
-export type PreviewMessage={id:number;context?:PreviewContext;config:Record<string,unknown>};
+export type PreviewMessage={id:number;context?:PreviewContext;config:Record<string,unknown>;sources?:ContentTransfer[]};
 type Reply={id:number;result?:PreviewResult;error?:string};
 export type PreviewState={request:PreviewRequest|null;result:PreviewResult|null;busy:boolean;failed:boolean};
 export const initialPreviewState:PreviewState={request:null,result:null,busy:false,failed:false};
@@ -19,13 +20,15 @@ export function samePreviewContext(a:PreviewContext|null,b:PreviewContext) {
 }
 
 /** One calculation in flight and only the newest edit queued; never publish stale results. */
-export function createPreviewCalculator({createWorker,fallback,onChange,schedule=(run:()=>void)=>setTimeout(run,0)}:{
+export function createPreviewCalculator({createWorker,fallback,onChange,prepareSources,schedule=(run:()=>void)=>setTimeout(run,0)}:{
   createWorker:()=>Worker;fallback:(request:PreviewRequest)=>PreviewResult|Promise<PreviewResult>;
   onChange:(state:PreviewState)=>void;schedule?:(run:()=>void)=>void;
+  prepareSources?:(request:PreviewRequest,known:ReadonlySet<string>)=>ContentTransfer[];
 }) {
   type Job={id:number;request:PreviewRequest};
   let worker:Worker|null=null,sent:PreviewContext|null=null,unavailable=false,disposed=false;
   let active:Job|null=null,queued:Job|null=null,serial=0,state=initialPreviewState;
+  const transferred=new Set<string>();
   const update=(next:PreviewState)=>{state=next;onChange(state);};
   function finish(job:Job,reply:Reply) {
     if(disposed||active!==job)return;
@@ -55,7 +58,9 @@ export function createPreviewCalculator({createWorker,fallback,onChange,schedule
         worker.onerror=failed;worker.onmessageerror=failed;
         const {framework,draft,models,config}=job.request;
         const context=samePreviewContext(sent,job.request)?undefined:{framework,draft,models};
-        worker.postMessage({id:job.id,context,config} satisfies PreviewMessage);
+        const sources=context?prepareSources?.(job.request,transferred):undefined;
+        worker.postMessage({id:job.id,context,config,sources} satisfies PreviewMessage,sources?.map(source=>source.bytes)??[]);
+        for(const source of sources??[])transferred.add(source.release+':'+source.hash);
         sent=job.request;
       }catch{local(job);}
     });
