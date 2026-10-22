@@ -2,11 +2,12 @@ import type {Framework,Draft} from '@/lib/framework-types';
 import type {LibraryModel} from './model-library';
 import type {workbookPreviewSnapshot} from '@/lib/workbook-preview-snapshot.mjs';
 import type {ContentTransfer} from '@/lib/database-source-client.mjs';
+import {packPreviewContext} from '../lib/preview-context.mjs';
 
 export type PreviewContext={framework:Framework;draft:Draft;models:LibraryModel[]};
 export type PreviewRequest=PreviewContext & {config:Record<string,unknown>};
 export type PreviewResult={preview:ReturnType<typeof workbookPreviewSnapshot>;validation:string};
-export type PreviewMessage={id:number;context?:PreviewContext;config:Record<string,unknown>;sources?:ContentTransfer[]};
+export type PreviewMessage={id:number;context?:PreviewContext;sharedMaterials?:true;config:Record<string,unknown>;sources?:ContentTransfer[]};
 type Reply={id:number;result?:PreviewResult;error?:string};
 export type PreviewState={request:PreviewRequest|null;result:PreviewResult|null;busy:boolean;failed:boolean};
 export const initialPreviewState:PreviewState={request:null,result:null,busy:false,failed:false};
@@ -33,6 +34,9 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
   function finish(job:Job,reply:Reply) {
     if(disposed||active!==job)return;
     active=null;
+    // A rejected context must be sent afresh on retry, never replaced by an
+    // older worker context merely because its send completed successfully.
+    if(reply.error)sent=null;
     if(worker){worker.onmessage=null;worker.onerror=null;worker.onmessageerror=null;}
     if(state.request===job.request)update({request:job.request,busy:false,failed:!!reply.error,
       result:reply.result??{preview:null,validation:reply.error||'Het exportvoorbeeld kon niet worden gemaakt.'}});
@@ -59,7 +63,8 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
         const {framework,draft,models,config}=job.request;
         const context=samePreviewContext(sent,job.request)?undefined:{framework,draft,models};
         const sources=context?prepareSources?.(job.request,transferred):undefined;
-        worker.postMessage({id:job.id,context,config,sources} satisfies PreviewMessage,sources?.map(source=>source.bytes)??[]);
+        const packed=context?packPreviewContext(context):{context:undefined};
+        worker.postMessage({id:job.id,...packed,config,sources} satisfies PreviewMessage,sources?.map(source=>source.bytes)??[]);
         for(const source of sources??[])transferred.add(source.release+':'+source.hash);
         sent=job.request;
       }catch{local(job);}

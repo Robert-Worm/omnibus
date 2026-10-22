@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPreviewCalculator,samePreviewContext} from './preview-calculator.ts';
+import {packPreviewContext,unpackPreviewContext} from '../lib/preview-context.mjs';
+import {serialize} from 'node:v8';
 
 const context={framework:{lines:[{id:'n1'}]},draft:{title:'Test',included:['n1'],notes:{n1:'Eigen tekst'},
  investigation:{materials:[{sourceContext:'Exacte bron 🧭'}]}},models:[]};
@@ -55,6 +57,7 @@ test('source failures remain visible and retry the same request without suppress
  h.worker.onmessage({data:{id:1,error:'Bronversie ontbreekt'}});
  assert.equal(h.changes.at(-1).failed,true);assert.equal(h.changes.at(-1).result.preview,null);
  h.client.request(input,true);h.run();assert.equal(h.sent.length,2);
+  assert.deepEqual(h.sent[1].context,context,'a failed context is resent, not silently reused');
  h.worker.onmessage({data:{id:2,result:{preview:null,validation:'Kies toetsfasen'}}});
  assert.equal(h.changes.at(-1).failed,false);assert.equal(h.changes.at(-1).result.validation,'Kies toetsfasen');
  assert.equal(h.counts().calls,0);
@@ -80,4 +83,59 @@ test('source buffers transfer only with changed context and already transferred 
  h.worker.onmessage({data:{id:2,result:result('settings')}});
  h.client.request({...request({}),draft:{...context.draft,notes:{n1:'Changed'}}});h.run();
  assert.deepEqual(calls[1],[source.release+':'+source.hash]);assert.deepEqual(h.sent[2].sources,[]);
+});
+
+const repeatedContext=()=>{
+ const materials=[{id:'m1',lawTrace:'Exacte bron 🧭 é界\n'.repeat(15000),question:'How?',revision:3,flag:false,missing:undefined,empty:null}];
+ return {...context,framework:{...context.framework,workbenchMaterials:structuredClone(materials)},
+  draft:{...context.draft,investigation:{materials}}};
+};
+test('equal material snapshots cross the worker boundary once and become independent exact records again',()=>{
+ const input=repeatedContext(),before=structuredClone(input),packed=packPreviewContext(input);
+ assert.equal(packed.sharedMaterials,true);
+ assert.equal(packed.context.framework.workbenchMaterials,packed.context.draft.investigation.materials);
+ assert.notEqual(input.framework.workbenchMaterials,input.draft.investigation.materials);
+ assert(serialize(packed).length<serialize({context:input}).length*.6,'large repeated text is transferred once');
+ const received=unpackPreviewContext(structuredClone(packed));
+ assert.deepEqual(received,before);assert.deepEqual(input,before);
+ received.framework.workbenchMaterials[0].question='Changed worker projection';
+ assert.equal(received.draft.investigation.materials[0].question,'How?');
+ received.framework.workbenchMaterials.push({id:'new'});assert.equal(received.draft.investigation.materials.length,1);
+});
+
+test('changed or unusual snapshots always retain the original full context without reading accessors',()=>{
+ for(const edit of [m=>{m[0].question='Different';},m=>{delete m[0].empty;},m=>{m[0].extra='Future field';},
+  m=>{m[0].revision='3';},m=>{m[0]={...m[0],nested:{text:'Not scalar'}};},
+  m=>{m[0]=Object.fromEntries(Object.entries(m[0]).reverse());},
+  m=>{Object.defineProperty(m[0],'question',{enumerable:true,get(){throw Error('Must not read getter');}});},
+  m=>{Object.defineProperty(m[0],'hidden',{value:'Not transferable'});},m=>{m[0][Symbol('extra')]='No';},
+  m=>{m[0]=Object.assign(Object.create(null),m[0]);},m=>{m.extra='Array field';},m=>{delete m[0];},
+  m=>{Object.defineProperty(m,0,{enumerable:true,get(){throw Error('Must not read index getter');}});},
+ ]){
+  const input=repeatedContext();edit(input.framework.workbenchMaterials);
+  assert.equal(packPreviewContext(input).context,input);assert.equal(packPreviewContext(input).sharedMaterials,undefined);
+ }
+ const input=repeatedContext();input.framework.workbenchMaterials=input.draft.investigation.materials;
+ assert.equal(packPreviewContext(input).context,input);assert.equal(packPreviewContext(input).sharedMaterials,undefined);
+ const plain=packPreviewContext(context);assert.equal(unpackPreviewContext(plain),context);
+});
+
+test('sharing distinguishes signed zero and preserves exact scalar values',()=>{
+ const input=repeatedContext();input.framework.workbenchMaterials[0].number=-0;input.draft.investigation.materials[0].number=0;
+ assert.equal(packPreviewContext(input).context,input);
+ input.draft.investigation.materials[0].number=-0;input.draft.investigation.materials[0].nan=NaN;input.framework.workbenchMaterials[0].nan=NaN;
+ const result=unpackPreviewContext(structuredClone(packPreviewContext(input)));
+ assert.deepEqual(result,input);assert(Object.is(result.framework.workbenchMaterials[0].number,-0));
+ assert.throws(()=>unpackPreviewContext({context:repeatedContext(),sharedMaterials:true}),/Ongeldige onderzoekscontext/);
+});
+
+test('preview jobs share only equal snapshots, send changed text and keep fallback independent',async()=>{
+ const h=harness(),input={...repeatedContext(),config:{fontSize:10}};h.client.request(input);h.run();
+ assert.equal(h.sent[0].sharedMaterials,true);assert.deepEqual(unpackPreviewContext(h.sent[0]),{framework:input.framework,draft:input.draft,models:input.models});
+ h.worker.onmessage({data:{id:1,result:result('first')}});
+ h.client.request({...input,framework:{...input.framework,workbenchMaterials:[{id:'changed'}]}});h.run();
+ assert.equal(h.sent[1].sharedMaterials,undefined);assert.deepEqual(h.sent[1].context.framework.workbenchMaterials,[{id:'changed'}]);
+ const fails=harness({fallback:request=>{assert.equal(request,input);assert.notEqual(request.framework.workbenchMaterials,request.draft.investigation.materials);return result('fallback');}});
+ fails.client.request(input);fails.run();fails.worker.onerror();await tick();assert.equal(fails.counts().calls,1);
+ assert.equal(fails.changes.at(-1).result.preview.title,'fallback');
 });
