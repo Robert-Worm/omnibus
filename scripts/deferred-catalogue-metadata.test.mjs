@@ -72,3 +72,32 @@ await test('normal catalogue admission is atomic, reusable, and retries a failed
   assert.equal(loads,2,'Ready metadata and successful prefetch are reused');
   assert.deepEqual(modules[wwke].source_dispositions,[]);
 });
+
+await test('report review and admission metadata follow only their report without losing shared references',async()=>{
+  const id='app/reviewed-reports.json', content={modules:{[id]:{
+    corpus:['A','B'].map(report=>({framework:{report:{id:report,title:'Synthetic '+report,source_hash:report},
+      lines:[],source_review:{reviewed:true,reason:'Exact review '+report}}})),
+    scopeDecisions:{A1:['retain','Exact admission A'],B1:['hold','Exact admission B']},
+    researchPresets:[{id:'unchanged suggestion'}],
+  }},registrations:{[id]:['report:A:lines','report:B:lines']},refs:{},routing:{reports:{A1:'A',B1:'B'}}};
+  const before=JSON.stringify(content), result=deferredCatalogueMetadata(content), data=result.modules[id];
+  assert.equal(JSON.stringify(content),before);
+  const scope={...data.scopeDecisions}, review=data.corpus[0].framework.source_review;
+  assert.deepEqual(data.corpus.map(c=>c.framework.report.id),['A','B']);
+  assert.deepEqual(data.researchPresets,content.modules[id].researchPresets);
+  assert.deepEqual(scope,{A1:[],B1:[]});
+  const runtime=await import('../lib/catalogue-runtime.mjs?report-metadata-test');
+  for(const key of result.registrations[id])runtime.registerCatalogueResource(key,()=>result.resources.get(key),edits=>applyCatalogueEdits(data,edits));
+  await runtime.ensureCatalogue(['report:B']);
+  assert.deepEqual(scope.B1,['hold','Exact admission B']);
+  assert.deepEqual(scope.A1,[]);
+  assert.deepEqual(review,{});
+  await runtime.ensureCatalogue(['report:A']);
+  assert.equal(scope.A1,data.scopeDecisions.A1);
+  assert.equal(review,data.corpus[0].framework.source_review);
+  assert.equal(JSON.stringify(data),JSON.stringify(content.modules[id]));
+  const missing=structuredClone(content);delete missing.routing.reports.B1;
+  assert.throws(()=>deferredCatalogueMetadata(missing),/existing report boundary/);
+  const bad=structuredClone(content);bad.modules[id].scopeDecisions.B1='not reviewed';
+  assert.throws(()=>deferredCatalogueMetadata(bad),/admission decision/);
+});
