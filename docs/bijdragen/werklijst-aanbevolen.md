@@ -6,7 +6,7 @@
 
 *Automatisch bijgewerkt door het voortgangsscript. Pas deze pagina niet met de hand aan; de gegevens staan in `.github/voortgang/`.*
 
-**Stand:** 27 in de database · 1 in bewerking of ingeleverd · 512 open.
+**Stand:** 27 in de database · 0 in bewerking of ingeleverd · 513 open.
 
 **Legenda**
 
@@ -23,7 +23,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 | Ministerie | Open | Totaal |
 | --- | ---: | ---: |
-| [Financiën](#financiën--118-open) | 118 | 123 |
+| [Financiën](#financiën--119-open) | 119 | 123 |
 | [Defensie](#defensie--70-open) | 70 | 72 |
 | [Binnenlandse Zaken en Koninkrijksrelaties](#binnenlandse-zaken-en-koninkrijksrelaties--56-open) | 56 | 60 |
 | [Onderwijs, Cultuur en Wetenschap](#onderwijs-cultuur-en-wetenschap--54-open) | 54 | 58 |
@@ -37,9 +37,9 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 | [Sociale Zaken en Werkgelegenheid](#sociale-zaken-en-werkgelegenheid--18-open) | 18 | 20 |
 | [Algemene Zaken](#algemene-zaken--1-open) | 1 | 1 |
 
-### Financiën · 118 open
+### Financiën · 119 open
 
-<details><summary><b>Financiën</b> · 118 open van 123</summary>
+<details><summary><b>Financiën</b> · 119 open van 123</summary>
 
 | Bron | Datum | Status | Actie |
 | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 | [Samenvattend eindrapport Dossierreviews zelfreinigende maatregelen bij de aanbesteding van…](https://www.rijksmap.nl/rapport/2025-samenvattend-eindrapport-dossierreviews-zelfreinigende-maatregelen-bij/) | 2025-11-24 | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Samenvattend%20eindrapport%20Dossierreviews%20zelfreinigende%20maatregelen%20bij%20de%20aanbesteding%20van%20Betalingsverkeer%20Belastingdie&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-samenvattend-eindrapport-dossierreviews-zelfreinigende-maatregelen-bij%2F "Claimen: Samenvattend eindrapport Dossierreviews zelfreinigende maatregelen bij de aanbesteding van Betalingsverkeer Belastingdienst, Dienst Toeslagen en Douane en de aanbesteding van Contant geld en vervoer contant geld voor het Rijk") |
 | [Onderzoeksrapport Bevindingen onderzoeksopdracht proces Cloudtoets Douane](https://www.rijksmap.nl/rapport/2025-onderzoeksrapport-bevindingen-onderzoeksopdracht-proces-cloudtoets/) | 2025-11-04 | ✅ In database | – |
 | [Proefconversietraject van de Consignatiekas Financiën naar SAP 3F (SZWFDC)](https://www.rijksmap.nl/rapport/2025-proefconversietraject-van-de-consignatiekas-financien-naar-sap-3f-szwfdc/) | 2025-10-21 | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Proefconversietraject%20van%20de%20Consignatiekas%20Financi%C3%ABn%20naar%20SAP%203F%20%28SZWFDC%29&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-proefconversietraject-van-de-consignatiekas-financien-naar-sap-3f-szwfdc%2F "Claimen: Proefconversietraject van de Consignatiekas Financiën naar SAP 3F (SZWFDC)") |
-| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | 2025-10-15 | 🔄 In bewerking | [Claim van @Robert-Worm](https://github.com/Robert-Worm/omnibus/issues/4) |
+| [Conceptwerkproces team FG Ministerie van Financiën](https://www.rijksmap.nl/rapport/2025-conceptwerkproces-team-fg-ministerie-van-financien/) | 2025-10-15 | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Conceptwerkproces%20team%20FG%20Ministerie%20van%20Financi%C3%ABn&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-conceptwerkproces-team-fg-ministerie-van-financien%2F "Claimen: Conceptwerkproces team FG Ministerie van Financiën") |
 | [Onderzoek naar de uitvoering van het Nederlandse HVP](https://www.rijksmap.nl/rapport/2025-onderzoek-naar-de-uitvoering-van-het-nederlandse-hvp/) | 2025-07-21 | ✅ In database | – |
 | [Onderzoeksrapport Belastingdienst totstandkoming ICS 2024](https://www.rijksmap.nl/rapport/2025-onderzoeksrapport-belastingdienst-totstandkoming-ics-2024/) | 2025-05-22 | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Onderzoeksrapport%20Belastingdienst%20totstandkoming%20ICS%202024&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-onderzoeksrapport-belastingdienst-totstandkoming-ics-2024%2F "Claimen: Onderzoeksrapport Belastingdienst totstandkoming ICS 2024") |
 | [Hoofdlijnen auditrapporten Auditdienst Rijk 2024](https://www.rijksmap.nl/rapport/2025-hoofdlijnen-auditrapporten-auditdienst-rijk-2024/) | 2025-05-21 | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Hoofdlijnen%20auditrapporten%20Auditdienst%20Rijk%202024&bron=https%3A%2F%2Fwww.rijksmap.nl%2Frapport%2F2025-hoofdlijnen-auditrapporten-auditdienst-rijk-2024%2F "Claimen: Hoofdlijnen auditrapporten Auditdienst Rijk 2024") |
