@@ -7,6 +7,7 @@ import QuestionCountHelp from './question-count-help';
 import { buildingBlockHeading, groupBuildingBlocks } from '@/lib/workflow-readability.mjs';
 import {objectiveGroupsForDraft} from '@/lib/control-objectives.mjs';
 import QuestionBuildingBlocks from './question-building-blocks';
+import {ResearchDisclosure, ResearchMaterialGroup, ResearchMaterialList} from './research-material-list';
 import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions -- Drag surfaces supplement explicit keyboard/touch controls and retain section/list semantics. */
 import { useRef, useState, useEffect, useMemo, useId } from "react";
@@ -651,15 +652,16 @@ export default function ResearchBuilder({
                 onDragStart={e=>start(e,{type:'group',lineId:group.title,lineIds:group.lines.map(l=>l.id),from:q.id})} onDragEnd={end}>
                 <GripVertical size={16} aria-hidden="true"/> Sleep groep ({group.lines.length})
               </div>
-              <details open={direct.length<=5}>
-                <summary><span className="group-summary-copy">{group.sourceTitle && <small>{group.sourceTitle}</small>}{group.title} ({group.lines.length})</span></summary>
-                {group.lines.map(l=>item(l.id,q.id))}
-              </details>
+              <ResearchMaterialGroup open={direct.length<=5} lines={group.lines}
+                summary={<span className="group-summary-copy">{group.sourceTitle && <small>{group.sourceTitle}</small>}{group.title} ({group.lines.length})</span>}
+                renderItem={line=>item(line.id,q.id)}/>
               <Button variant="ghost" disabled={disabled} aria-label={'Groep '+group.title+' loskoppelen van deze vraag'}
                 onClick={()=>commit(()=>group.lines.reduce((next,l)=>unlinkLine(next,l.id,q.id),draft) as Draft)}>
                 Groep loskoppelen
               </Button>
-            </section>) : (expandedQuestions.includes(q.id) ? direct : direct.slice(0, 5)).map((id) => item(id, q.id))}
+            </section>) : <ResearchMaterialList
+              lines={(expandedQuestions.includes(q.id) ? direct : direct.slice(0, 5)).flatMap(id=>selected.filter(line=>line.id===id))}
+              renderItem={line=>item(line.id,q.id)}/>}
           {direct.length > 5 && !selected.some(l=>direct.includes(l.id)&&l.collectionGroup) && <Button variant="outline" data-no-drop
             aria-expanded={expandedQuestions.includes(q.id)}
             onClick={() => setExpandedQuestions(ids => ids.includes(q.id) ? ids.filter(id => id !== q.id) : [...ids, q.id])}>
@@ -918,11 +920,11 @@ export default function ResearchBuilder({
               <span className="question-count">{direct.length} {direct.length === 1 ? 'bouwsteen' : 'bouwstenen'}</span>
             </div>
             <p className="direct-attachments-description">Bouwstenen die rechtstreeks bij de centrale vraag horen.</p>
-            <details className="question-attached"><summary>{direct.length} {direct.length===1?'bouwsteen':'bouwstenen'} bekijken</summary>{material()}</details>
+            <ResearchDisclosure className="question-attached" summary={<>{direct.length} {direct.length===1?'bouwsteen':'bouwstenen'} bekijken</>}>{material}</ResearchDisclosure>
           </section>}
           <QuestionBranch questions={children} renderQuestion={question}/>
         </div>}
-        {q.parent_id && direct.length > 0 ? <details className="question-attached"><summary>{direct.length} {direct.length===1?'bouwsteen':'bouwstenen'} bekijken</summary>{material()}</details> : direct.length === 0 ? material() : null}
+        {q.parent_id && direct.length > 0 ? <ResearchDisclosure className="question-attached" summary={<>{direct.length} {direct.length===1?'bouwsteen':'bouwstenen'} bekijken</>}>{material}</ResearchDisclosure> : direct.length === 0 ? material() : null}
         {q.parent_id && (!q.text.trim() || editing === q.id) && proposed.length > 0 && (
           <Button
             data-no-drop

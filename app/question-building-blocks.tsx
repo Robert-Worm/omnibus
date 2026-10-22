@@ -5,6 +5,8 @@ import {Checkbox} from '@/components/ui/checkbox';
 import {normId} from '@/lib/norm-navigation.mjs';
 import {groupBuildingBlocks} from '@/lib/workflow-readability.mjs';
 import type {Framework} from '@/lib/framework-types';
+import {ResearchMaterialList} from './research-material-list';
+import DeferredViewerSection from './deferred-viewer-section';
 
 export default function QuestionBuildingBlocks({lines,attached,linkedElsewhere,disabled,onLink,questions,targetId,onTargetChange}:{
   lines:Framework['lines']; attached:string[]; linkedElsewhere:string[]; disabled:boolean;
@@ -31,16 +33,18 @@ export default function QuestionBuildingBlocks({lines,attached,linkedElsewhere,d
         <Button variant="link" disabled={disabled||!visible.length} onClick={()=>setChosen(previous=>allVisible ? previous.filter(id=>!visible.some(l=>l.id===id)) : [...new Set([...previous,...visible.map(l=>l.id)])])}>
           {allVisible ? 'Getoonde selectie wissen' : `Selecteer alle ${visible.length} getoonde bouwstenen`}
         </Button>
-        <div className="bulk-link-items">{groups.map(group=><fieldset key={group.id} className="bulk-link-group">
+        <div className="bulk-link-items">{groups.map((group,index)=><DeferredViewerSection key={group.id}
+          immediate={index===0} count={group.lines.length} label={group.title+' tonen'}>
+          <fieldset className="bulk-link-group">
           <legend>{group.sourceTitle && <small>{group.sourceTitle}</small>}{group.title} ({group.lines.length})</legend>
           <Button variant="outline" disabled={disabled||!targetId} aria-label={'Koppel getoonde groep '+group.title+' aan de gekozen vraag'}
             onClick={()=>{const groupIds=group.lines.map(l=>l.id);if(onLink(groupIds))setChosen(previous=>previous.filter(id=>!groupIds.includes(id)));}}>
             Koppel {group.lines.length} uit deze groep
           </Button>
-          {group.lines.map(l=><label key={l.id}>
+          <ResearchMaterialList lines={group.lines} renderItem={l=><label key={l.id}>
           <Checkbox disabled={disabled} checked={chosen.includes(l.id)} onCheckedChange={v=>setChosen(previous=>v ? [...new Set([...previous,l.id])] : previous.filter(id=>id!==l.id))}/>
           <span>{normId(l.id)} · {l.title}{linkedElsewhere.includes(l.id)&&<small>Ook gekoppeld aan een andere vraag</small>}</span>
-        </label>)}</fieldset>)}</div>
+        </label>}/></fieldset></DeferredViewerSection>)}</div>
         <Button disabled={disabled||!targetId||!ids.length} onClick={()=>{if(onLink(ids))setChosen([]);}}>Koppel {ids.length} {ids.length===1 ? 'bouwsteen' : 'bouwstenen'} aan de gekozen vraag</Button>
       </> : <p>{lines.length ? 'Alle gekozen bouwstenen zijn al aan deze vraag gekoppeld.' : 'Verzamel eerst bouwstenen in stap 2.'}</p>}
     </div>}
