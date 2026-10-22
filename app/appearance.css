@@ -200,7 +200,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
     --background:#101923; --foreground:#dce6f1; --primary:#94c8f5;
     --primary-foreground:#101923;
     --border:#384b60; --rm-accent:#83caf3; --rm-muted:#b0bfd0;
-    --rm-surface:#1d2b3b; --rm-selected:#29455f; --rm-control-border:#6884a0; --rm-input:#101c29;
+    --rm-surface:#1d2b3b; --rm-selected:#29455f; --rm-control-border:#6884a0; --rm-input:#101c29; --rm-id:#b0bfd0;
     --rm-card-shadow:none;
   }
   html[data-appearance=dark] body { background:#101923; color:var(--foreground); }

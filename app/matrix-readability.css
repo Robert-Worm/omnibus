@@ -130,7 +130,7 @@
 .matrix-workspace .matrix-explained-table .cell-preview{white-space:normal}
 .matrix-workspace .matrix-explained-table .row-title{display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:6px;row-gap:3px;align-items:center}
 .matrix-workspace .matrix-explained-table .row-title .matrix-point-chip[data-slot=button]{grid-column:2;justify-self:start;margin:0;padding:0 2px;height:20px;min-height:20px}
-.matrix-workspace .compact-table.matrix-explained-table .row-title :is(.norm-id,button.norm-id[data-slot=button],button.matrix-point-chip[data-slot=button]){font-family:inherit;font-size:11px;font-weight:400;line-height:1.45;color:#385570}
+.matrix-workspace .compact-table.matrix-explained-table .row-title :is(.norm-id,button.norm-id[data-slot=button],button.matrix-point-chip[data-slot=button]){font-family:inherit;font-size:11px;font-weight:400;line-height:1.45;color:var(--rm-id,#385570)}
 .matrix-workspace .compact-table.matrix-explained-table .row-title button.matrix-point-chip[data-slot=button]{padding:0;gap:4px;text-decoration:none;border-radius:2px}
 .matrix-workspace .matrix-count-label{font:inherit;color:inherit}
 .matrix-workspace .matrix-explained-table .matrix-point-chip:hover{color:#173d65;text-decoration:underline}
