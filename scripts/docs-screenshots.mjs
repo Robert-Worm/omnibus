@@ -80,17 +80,17 @@ export function bannerHtml({ schema = "light", lettertypen = "", voor, achter })
   const raam = (beeld, stijl, bijsnijden = 0) => `<div class="raam" style="${stijl}"><div class="balk"><i></i><i></i><i></i></div><img style="margin-top:-${bijsnijden}px" src="data:image/png;base64,${beeld.toString("base64")}"></div>`;
   return `<!doctype html><meta charset="utf-8"><style>${lettertypen}
     body{margin:0;width:${BANNER.breed}px;height:${BANNER.hoog}px;overflow:hidden;background:${c.bg};font-family:Inter,sans-serif;position:relative}
-    .tekst{position:absolute;left:58px;top:118px;width:470px}
+    .tekst{position:absolute;left:58px;top:104px;width:520px}
     h1{margin:0 0 30px;padding-left:24px;border-left:5px solid ${c.lijn};font:700 96px/1 Spectral,Georgia,serif;color:${c.titel};letter-spacing:-1px}
-    .belofte{margin:0 0 18px;font:600 30px/1.2 Inter,sans-serif;color:${c.kop}}
-    .uitleg{margin:0;font:400 19px/1.45 Inter,sans-serif;color:${c.tekst}}
+    .belofte{margin:0 0 18px;font:600 32px/1.2 Inter,sans-serif;color:${c.kop}}
+    .uitleg{margin:0;font:400 22px/1.45 Inter,sans-serif;color:${c.tekst}}
     .raam{position:absolute;border-radius:10px;overflow:hidden;background:${c.raam};border:1px solid ${c.rand};box-shadow:${c.schaduw}}
     .raam .balk{position:relative;z-index:1;background:${c.raam};height:22px;display:flex;gap:6px;align-items:center;padding-left:12px}
     .raam i{width:9px;height:9px;border-radius:50%;background:${c.stip}}
     .raam img{display:block;width:100%}
   </style>
   ${raam(achter, "left:770px;top:22px;width:450px")}
-  ${raam(voor, "left:600px;top:120px;width:500px", 14)}
+  ${raam(voor, "left:600px;top:120px;width:500px")}
   <div class="tekst"><h1>Omnibus</h1><p class="belofte">Van brondocument naar referentiekader</p>
   <p class="uitleg">Rapporten, wetten, kaders en modellen<br>→ normen, toetspunten en onderzoeksvragen</p></div>`;
 }
@@ -262,7 +262,7 @@ async function main() {
         const naam = beeldNaam("omnibus-banner", schema);
         const lees = (n) => beeld[beeldNaam(n, schema)] ?? readFileSync(path.join(uit, `${beeldNaam(n, schema)}.png`));
         const kader = await browser.newPage({ viewport: { width: BANNER.breed, height: BANNER.hoog }, deviceScaleFactor: 2 });
-        await kader.setContent(bannerHtml({ schema, lettertypen, voor: lees("stap-2-verzamel"), achter: lees("stap-4-exporteer") }), { waitUntil: "load" });
+        await kader.setContent(bannerHtml({ schema, lettertypen, voor: lees("stap-4-exporteer"), achter: lees("stap-3-bouw-je-kader") }), { waitUntil: "load" });
         await kader.evaluate(() => document.fonts.ready);
         const doel = path.join(uit, `${naam}.png`);
         await kader.screenshot({ path: doel });
