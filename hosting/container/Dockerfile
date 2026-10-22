@@ -21,9 +21,11 @@ COPY . .
 ARG DATABASE_URL=https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-database-2026-10-19.zip
 ARG DATABASE_SHA256=b50d77a71aba1b9eb7d78ca58384f0c1fcdcc173f4189c1f144f31bef1858349
 ARG OMNIBUS_CODE_REVISION
+# Sliplane supplies this public build identifier; never use a runtime override.
+ARG SLIPLANE_COMMIT_HASH
 RUN node scripts/fetch-release-database.mjs --url "$DATABASE_URL" --sha256 "$DATABASE_SHA256" --out /database \
  && node scripts/check-runtime-database.mjs --settings /database/local-build.json \
- && OMNIBUS_CODE_REVISION="$OMNIBUS_CODE_REVISION" npm run build:runtime -- --settings /database/local-build.json \
+ && OMNIBUS_CODE_REVISION="${OMNIBUS_CODE_REVISION:-$SLIPLANE_COMMIT_HASH}" npm run build:runtime -- --settings /database/local-build.json \
  && npm run package:runtime -- --web-root runtime-build --database /database/catalogue.sqlite --out /pakket
 
 FROM node:24.21.0-bookworm-slim

@@ -50,7 +50,9 @@ node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root
 
 `MATCH` betekent dat de webbestanden en database-identiteiten overeenkomen. `MISMATCH` of een ontbrekend versieantwoord is geen geslaagde uitrol, ook niet bij een groene gezondheidscontrole. De controle verandert niets aan de host of database. Controleer bij een afwijking de build- en startlogs van de host; een GitHub-status alleen bewijst niet waarom een uitrol achterblijft.
 
-Een schone lokale Git-build voegt ook het commitnummer toe. In een container zonder Git kun je dat expliciet meegeven met het build-argument `OMNIBUS_CODE_REVISION` (volledige commit-hash). Zonder dat argument, of bij lokaal gewijzigde code, blijft het commitnummer onbekend. Het controlegetal van de webbestanden blijft dan wel beschikbaar. Dit is versieherkenning, geen cryptografisch ondertekend herkomstbewijs of vervanging van de demo-tests.
+Een schone lokale Git-build voegt ook het commitnummer toe. In een container zonder Git kun je dat expliciet meegeven met het build-argument `OMNIBUS_CODE_REVISION` (volledige commit-hash). Bij Sliplane gebruikt de build anders het door de host geleverde [`SLIPLANE_COMMIT_HASH`](https://docs.sliplane.io/services/deploying-a-service/#environment-variables). De bestaande controle weigert ongeldige commitnummers. De server leest dit nummer uit de gebouwde bestanden, niet uit een later gewijzigde omgevingsvariabele.
+
+Zonder een build-argument, of bij lokaal gewijzigde code, blijft het commitnummer onbekend. Het controlegetal van de webbestanden blijft dan wel beschikbaar. Dit is versieherkenning, geen cryptografisch ondertekend herkomstbewijs of vervanging van de demo-tests.
 
 ## Goed om te weten
 
