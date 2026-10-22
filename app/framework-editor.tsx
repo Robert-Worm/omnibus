@@ -417,8 +417,13 @@ export default function FrameworkEditor() {
           const original=await readProjectInBackground(store.raw()!,{signal:reading.signal});
           if(cancelled)return;
           await ensureCatalogue(projectCatalogueKeys(original));
+          // Source publication and project validation are separate atomic steps.
+          // Let pending input/paint run between them, not one long microtask chain.
+          await new Promise(resolve=>setTimeout(resolve,0));
           if(cancelled)return;
           const restored=readProject(original,projectRef.current,restoreOptions);
+          await new Promise(resolve=>setTimeout(resolve,0));
+          if(cancelled)return;
           onProjectRestored(restored.project);
           // readProject has validated the decoded object before these comparisons.
           const originalFields=original as {draft?:unknown;modelLibrary?:unknown};

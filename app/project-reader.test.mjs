@@ -80,12 +80,16 @@ test('the actual worker preserves legacy/current projects and enforces the share
  }finally{if(previous)Object.defineProperty(globalThis,'self',previous);else delete globalThis.self;}
 });
 
-test('startup awaits decoding before existing catalogue admission and project validation',()=>{
+test('startup keeps admission, validation and application ordered, with cancellable browser turns between them',()=>{
  const source=readFileSync(new URL('./framework-editor.tsx',import.meta.url),'utf8');
  const start=source.indexOf('const original=await readProjectInBackground(store.raw()!');assert(start>=0);
  const admission=source.indexOf('await ensureCatalogue(projectCatalogueKeys(original))',start);
  const validation=source.indexOf('const restored=readProject(original',admission);
  const apply=source.indexOf('onProjectRestored(restored.project)',validation);
  assert(admission>start&&validation>admission&&apply>validation);
+ for(const part of [source.slice(admission,validation),source.slice(validation,apply)]){
+  const pause=part.indexOf('await new Promise(resolve=>setTimeout(resolve,0))');
+  assert(pause>=0);assert(part.indexOf('if(cancelled)return;',pause)>pause);
+ }
  assert(source.includes('reading.abort()'));
 });
