@@ -48,7 +48,7 @@
 .cio-point-source .criterion-source-panels>.comparison-source{padding:0;border:1px solid #dce3ec;border-radius:5px;background:#fff}
 .cio-point-source .cio-source-record-heading{top:0;margin:0;padding:.55rem .7rem;background:#fff;z-index:5;min-height:44px;box-shadow:0 1px 0 #dce3ec}
 .cio-source-document>.report-library,.cio-source-document>.source-reader-content{padding-inline:.65rem}
-.cio-source-toolbar>span{font-size:.74rem;color:#65748a}
+.cio-source-toolbar>span{font-size:.74rem;color:#566a7f}
 .cio-source-explanation>header{background:transparent;border:0;border-radius:0;padding:0 0 .7rem;border-bottom:1px solid #dce3ec}
 .cio-source-explanation>header>p:not(.cio-source-kicker){font-size:.8rem;line-height:1.55;color:#52677d;margin:.25rem 0 0}
 .cio-source-explanation .cio-source-reason{border:0;padding:0;margin:.9rem 0 1.15rem}

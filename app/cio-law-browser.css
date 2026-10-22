@@ -22,10 +22,10 @@
 .law-group{min-width:0;scroll-margin-top:1rem;border:1px solid #d7e2eb;border-radius:.75rem;overflow:hidden;background:#fff}
 .law-group-heading{display:flex;justify-content:space-between;align-items:center;gap:1.3rem;padding:1rem 1.25rem;background:#f2f6fa;border-bottom:1px solid #d7e2eb}
 .law-group-heading h3{font-size:1.15rem;font-weight:650;color:#294560;line-height:1.4}
-.law-group-location{font-size:.71rem;color:#667d92;margin:0 0 .35rem}
+.law-group-location{font-size:.71rem;color:#556b80;margin:0 0 .35rem}
 .law-group-count{font-size:.76rem;color:#607286;margin:.4rem 0 0}
 .law-select-group{display:flex;align-items:center;gap:.6rem;cursor:pointer;flex-shrink:0;font-size:.8rem;color:#304e6a}
-.law-select-group small{display:block;font-size:.71rem;font-weight:400;color:#6b7e91;margin-top:.2rem}
+.law-select-group small{display:block;font-size:.71rem;font-weight:400;color:#556b80;margin-top:.2rem}
 .law-group .compact-matrix{margin:0;border:0;border-radius:0}
 .law-group [data-slot=table-container]{border:0;border-radius:0}
 .law-group .matrix-scroll-region{border-radius:0}
