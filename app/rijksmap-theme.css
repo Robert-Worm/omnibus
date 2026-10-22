@@ -218,7 +218,7 @@ body {
 .framework-app #workflow-page-title:focus { outline: none; }
 .framework-app :is(input:not([type=checkbox]):not([type=radio]),textarea,select),
 [data-slot=sheet-content] :is(input:not([type=checkbox]):not([type=radio]),textarea,select) {
-  background: #fff;
+  background: var(--rm-input, #fff);
   color: var(--foreground);
   border-color: var(--rm-control-border);
   border-radius: .5rem;

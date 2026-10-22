@@ -200,7 +200,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
     --background:#101923; --foreground:#dce6f1; --primary:#94c8f5;
     --primary-foreground:#101923;
     --border:#384b60; --rm-accent:#83caf3; --rm-muted:#b0bfd0;
-    --rm-surface:#1d2b3b; --rm-selected:#29455f; --rm-control-border:#6884a0;
+    --rm-surface:#1d2b3b; --rm-selected:#29455f; --rm-control-border:#6884a0; --rm-input:#101c29;
     --rm-card-shadow:none;
   }
   html[data-appearance=dark] body { background:#101923; color:var(--foreground); }
@@ -257,6 +257,23 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] .framework-app.compact-app .full-text-trigger { background:transparent; color:inherit; }
   html[data-appearance=dark] [data-slot=sheet-content]:is(.foundation-source-reader,.foundation-comparison) :is(input,select) { background:#101c29; color:var(--foreground); }
   html[data-appearance=dark] :is(.framework-app,[data-slot=alert-dialog-content],[data-slot=dialog-content],[data-slot=sheet-content]) button.text-destructive { background:#592f36; color:#ffcfce; border-color:#b77c83; }
+  /* Wet- en kaderviewer: filters, groepen en de normtabel kregen vaste lichte kleuren. */
+  html[data-appearance=dark] .framework-app :is(.law-group,.law-browse-filters,.matrix-explained-table) { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .framework-app .law-group-heading { background:var(--rm-surface); }
+  html[data-appearance=dark] .framework-app thead { background:#25394d; }
+  html[data-appearance=dark] .framework-app :is(.law-group-location,.law-group-count) { color:var(--rm-muted); }
+  /* Normdetail (rapporten en kaders): vlakken, kaarten en tekst in donker; het brondocument houdt zijn papierkleur. */
+  html[data-appearance=dark] [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { background:#101923; color:var(--foreground); }
+  html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-header],.bd-panel-nav,.bd-footer,.bd-criterion,.bd-point,.law-active-point,.law-application,.law-parent-criterion) { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-point.is-chosen { background:#1d3a2e; border-color:#6fb08f; }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-objective { background:color-mix(in srgb,#5f8fbf 16%,#172330); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-risk { background:color-mix(in srgb,#d7ad6b 14%,#172330); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-controlObjective { background:color-mix(in srgb,#9482b1 16%,#172330); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-control { background:color-mix(in srgb,#80a595 16%,#172330); }
+  html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-title],h2,h3,h4,strong,p,dd,li,label,blockquote):not(:is(.comparison-source,.report-reading) *) { color:var(--foreground); }
+  html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-description],small,.bd-panel-nav button:not([aria-pressed=true]),.bd-footer span):not(:is(.comparison-source,.report-reading) *) { color:var(--rm-muted); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-panel-nav button[aria-pressed=true] { background:#294b69; color:#f0f7ff; }
   html[data-appearance=dark] [data-slot=dropdown-menu-content].research-menu { background:#172330; color:var(--foreground); border-color:var(--border); }
   html[data-appearance=dark] .research-menu [data-highlighted] { background:#29455f; color:var(--foreground); }
   html[data-appearance=dark] .research-menu [data-variant=destructive] { color:#ffcfce; }
