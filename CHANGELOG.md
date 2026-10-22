@@ -8,7 +8,7 @@ De belangrijkste wijzigingen, nieuwste eerst.
 - **Documentatie in één vorm:** vaste bouwstenen voor elke pagina (paginatypen, tabellen, statuslabels, meldingen, stappen met *Gelukt als*), een routekeuze bij installeren, één situatiekaart voor storingen en dezelfde voetregel op elke pagina. De documentatiecheck bewaakt dit.
 - **Beeld:** alle schermafbeeldingen en de banner in licht en donker; de rondleiding speelt niet meer vanzelf af.
 - **Beheer:** een overzicht per moment, vaste regels op één plek en besluiten met een vaste ID.
-- **Online versie** draait op Node 24.21.
+- **Online versie** draait op de nieuwste patch van Node 24, via Dependabot.
 
 ## 21 oktober 2026 · online proefversie en versie 0.1.0
 
