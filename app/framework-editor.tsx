@@ -139,12 +139,12 @@ const restoreOptions = {
 export default function FrameworkEditor() {
   // Each catalogue publication supplies a current framework snapshot. Derived
   // framework data follows that snapshot instead of an implicit global read.
-  const [catalogueSnapshot,setCatalogueSnapshot]=useState(()=>({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue}));
+  const [catalogueSnapshot,setCatalogueSnapshot]=useState(()=>({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue,discoveryViews,legacyThemes}));
   const [contentNotice,setContentNotice]=useState('');
   const [contentFailure,setContentFailure]=useState(false);
   const contentAction=useRef<null|(()=>void)>(null);
   const contentRequest=useRef(0);
-  useEffect(()=>onCatalogueChange(()=>setCatalogueSnapshot({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue})),[]);
+  useEffect(()=>onCatalogueChange(()=>setCatalogueSnapshot({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue,discoveryViews,legacyThemes})),[]);
   function withContent(keys:string[], action:()=>void) {
     const request=++contentRequest.current;
     if(catalogueReady(keys)){setContentNotice('');setContentFailure(false);action();return;}
@@ -238,6 +238,8 @@ export default function FrameworkEditor() {
   const browseThemes = useMemo(()=>catalogueSnapshot.workspaces.filter((t) =>
     combinedView ? workspace.openIds.includes(t.id) : t.id === workspace.activeId,
   ),[combinedView,workspace,catalogueSnapshot]);
+  const questionThemes = useMemo(()=>relatedQuestionThemes(workspace.openIds,catalogueSnapshot.discoveryViews,catalogueSnapshot.legacyThemes),
+    [workspace.openIds,catalogueSnapshot]);
   const browseKey = combinedView ? "all-open-themes" : (activeTheme?.id ?? page);
   const [reportChoices, setReportChoices] = useState({ excluded: [] as string[] });
   const choicesReady = modelsReady;
@@ -1379,7 +1381,7 @@ export default function FrameworkEditor() {
                       onChange={commit}
                       onOpen={openBuildingBlock}
                       onExplore={() => {setCatalogueGroups(v=>({...v,foundations:''}));setCatalogueSearch('');setSourceProcess('');navigate("foundations");}}
-                      themeIds={relatedQuestionThemes(workspace.openIds,discoveryViews,legacyThemes)}
+                      themeIds={questionThemes}
                     />
                   )}
                   {!editable && visibleLines.length === 0 && (

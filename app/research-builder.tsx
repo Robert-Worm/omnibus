@@ -131,9 +131,13 @@ export default function ResearchBuilder({
   const [chosenSubKeys, setChosenSubKeys] = useState<string[]>([]);
   const [subquestionDetail,setSubquestionDetail]=useState<'broad'|'specific'>('specific');
   const [subFormulations,setSubFormulations]=useState<Record<string,{base:string;text:string}>>({});
+  const [choosing, setChoosing] = useState(false);
+  const composerVisible = !roots.length || choosing;
   const proposalContext = { themeIds, framework, models, direction };
-  const proposals = useMemo(()=>centralProposals(draft,{themeIds,framework,models,direction}),[draft,themeIds,framework,models,direction]);
-  const starts=useMemo(()=>rankedQuestionStarts(draft,{themeIds,framework,models,direction,targetId:centralTarget,includeAccepted:true}),[draft,themeIds,framework,models,direction,centralTarget]);
+  // Closed question setup has no proposal UI. Do not re-validate and rank every
+  // possible plan merely to show saved questions or update their save status.
+  const proposals = useMemo(()=>composerVisible ? centralProposals(draft,{themeIds,framework,models,direction}) : [],[composerVisible,draft,themeIds,framework,models,direction]);
+  const starts=useMemo(()=>composerVisible ? rankedQuestionStarts(draft,{themeIds,framework,models,direction,targetId:centralTarget,includeAccepted:true},proposals) : [],[composerVisible,draft,themeIds,framework,models,direction,centralTarget,proposals]);
   function pickProposal(p: typeof proposals[number]) {
     if(startRoute==='choice'&&chosenProposalKey===p.key&&firstText.trim()&&!ownCentral){setStartRoute('suggested');setFocusId('__composer__');return;}
     const existing=existingQuestionStart(draft,p);
@@ -154,7 +158,6 @@ export default function ResearchBuilder({
     setStartRoute('own');setOwnCentral(true);setFirstText(ownText.current);setFirstOrigin('user');
     setChosenProposalKey('');setChosenModelId('');setChosenTopic('');setModelMode('manual');setChosenSubKeys([]);setDirectPlanIds([]);setFocusId('__composer__');
   }
-  const scopedSubSuggestions = (d: Draft, id: string, target: string | null = null):SubSuggestion[] => mappedQuestionSuggestions(subProposals(d, id, target, proposalContext),d);
   const subSuggestionReuseId = (d: Draft, id: string, key: string) => proposalReuseId(d, id, key, proposalContext);
   const adoptSubSuggestion = (d: Draft, id: string, key: string) => adoptSubProposal(d, id, key, proposalContext);
   const freeSuggestionCount = (ids: string[]) => ids.filter(id=>!(draft.research?.links||[]).some(link=>link.line_id===id)).length;
@@ -166,15 +169,18 @@ export default function ResearchBuilder({
   const firstText = firstChoice ?? "";
   const activeProposal = ownCentral ? undefined : proposals.find(p => p.key === chosenProposalKey && p.text === firstText) || proposals.find(p => p.text === firstText);
   const selectedModelId = ownCentral ? "" : chosenModelId || activeProposal?.modelId || "";
-  const modelPlan = selectedModelId ? modelQuestionPlan(draft, selectedModelId, proposalContext) : null;
+  const modelPlan = useMemo(()=>composerVisible && selectedModelId ? modelQuestionPlan(draft,selectedModelId,{themeIds,framework,models,direction}) : null,
+    [composerVisible,selectedModelId,draft,themeIds,framework,models,direction]);
   const selectedSourceId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || "").match(/^source:([^:]+)/)?.[1];
-  const composerContext={...proposalContext,allowOverlap:true,subquestionDetail:selectedSourceId===cioSourceId?subquestionDetail:'specific'};
-  const sourcePlan = !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,composerContext.subquestionDetail) : null;
+  const sourceDetail=selectedSourceId===cioSourceId?subquestionDetail:'specific';
+  const composerContext={...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail};
+  const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail) : null,
+    [composerVisible,modelPlan,selectedSourceId,draft,direction,sourceDetail]);
   const selectedProcessId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || '').match(/^process:([^:]+)/)?.[1];
-  const processPlan = selectedProcessId ? processQuestionPlan(draft,selectedProcessId,direction) : null;
+  const processPlan = useMemo(()=>composerVisible && selectedProcessId ? processQuestionPlan(draft,selectedProcessId,direction) : null,
+    [composerVisible,selectedProcessId,draft,direction]);
   const designTopic = chosenTopic || activeProposal?.topic || (proposals.length === 1 ? proposals[0].topic : "");
   const selectedDesign = !modelPlan && direction && designTopic ? {direction, topic: designTopic} : null;
-  const [choosing, setChoosing] = useState(false);
   const pendingQuestion = Boolean((firstText.trim() || ownSubs.some(t=>t.trim()) || subject.trim() !== (draft.investigation?.goal?.subject || '').trim()) && (!roots.length || choosing));
   useEffect(() => { onPendingQuestionChange?.(pendingQuestion); }, [pendingQuestion, onPendingQuestionChange]);
   useEffect(() => () => { onPendingQuestionChange?.(false); }, [onPendingQuestionChange]);
@@ -224,6 +230,11 @@ export default function ResearchBuilder({
   const removingQuestion=r.questions.find(q=>q.id===remove);
   const removingChildren=r.questions.filter(q=>q.parent_id===remove).length;
   const [suggestFor, setSuggestFor] = useState("");
+  const suggestionsByQuestion = useMemo(()=>new Map<string,SubSuggestion[]>((researchOf(draft).questions as ResearchQuestion[])
+    .filter(q=>!q.parent_id || q.id===suggestFor || !q.text.trim() || q.id===editing)
+    .map(q=>[q.id,mappedQuestionSuggestions(subProposals(draft,q.parent_id??q.id,q.parent_id?q.id:null,
+      {themeIds,framework,models,direction}),draft) as SubSuggestion[]])),
+    [draft,themeIds,framework,models,direction,suggestFor,editing]);
   const [picker, setPicker] = useState<{ lineId: string; from: string | null } | null>(null);
   const [target, setTarget] = useState("");
   const [targetQuery, setTargetQuery] = useState("");
@@ -630,19 +641,7 @@ export default function ResearchBuilder({
       total = questionLineIds(draft, q.id, true).length;
     const siblings = r.questions.filter((s) => s.parent_id === q.parent_id),
       position = siblings.findIndex((s) => s.id === q.id);
-    const proposed = scopedSubSuggestions(
-      draft,
-      q.parent_id ?? q.id,
-      q.parent_id ? q.id : null,
-    ) as {
-      key: string;
-      text: string;
-      ids: string[];
-      label?: string;
-      scopeNote?: string;
-      missingCriteria?: MissingCriterion[];
-      hint?: string;
-    }[];
+    const proposed = suggestionsByQuestion.get(q.id) || [];
     const material=()=> (<>
         <div className="question-norms">
           {selected.some(l=>direct.includes(l.id)&&l.collectionGroup) ?
