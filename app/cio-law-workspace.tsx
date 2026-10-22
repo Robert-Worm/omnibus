@@ -25,6 +25,7 @@ import {
   cioGoalFor,
 } from "@/lib/cio-law-adapter.mjs";
 import "./cio-law-workspace.css";
+import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
 
 type Actor = { label: string; role: string; condition?: string | null };
 type Phase = {
@@ -114,9 +115,9 @@ const catalogue = cioCatalogue as unknown as { objectives: Objective[]; criteria
 const points = cioPoints as unknown as Point[];
 const records = (cioSourceBank as unknown as { records: RecordEntry[] }).records;
 const pages = cioPages as unknown as { page: number; text: string }[];
-const limits = (cioIssues as unknown as { issues: Issue[] }).issues.filter(
-  (i) => i.status === "ACCEPTED_SOURCE_LIMIT",
-);
+const limits: Issue[] = [];
+catalogueDerived(() => limits.splice(0, limits.length,
+  ...(cioIssues as unknown as { issues: Issue[] }).issues.filter(i => i.status === "ACCEPTED_SOURCE_LIMIT")));
 const source = cioStatus as unknown as {
   title: string;
   official_publication: string;

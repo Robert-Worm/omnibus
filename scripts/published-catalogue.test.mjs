@@ -8,6 +8,9 @@ import {publishedCataloguePlugin,runtimeContractHash} from './published-catalogu
 import {parseDatabaseBuildArgs} from './database-build-options.mjs';
 import {parsePreviewArgs,startDatabasePreview} from './serve-database-web.mjs';
 import {backupRuntime} from '../local-data/runtime-backup.mjs';
+import {CatalogueRepository} from '../local-data/repository.mjs';
+import {readRuntimePublication,publishRuntime} from '../local-data/runtime-publication.mjs';
+import './deferred-catalogue-metadata.test.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 
@@ -67,6 +70,41 @@ await test('workers share the pinned read-only catalogue but only the main build
   assert.equal(worker.load(id),main.load(id));
   await assert.rejects(publishedCataloguePlugin({...options,emitManifest:false,
     publication:'f'.repeat(64)}).buildStart(),/missing or changed publication/);
+});
+
+await test('deferred browser metadata is a known dynamic module, without changing pinned data or default readers',async t=>{
+  const options=fixture(t), repository=new CatalogueRepository(options.databasePath);
+  const moduleId='lib/cio-content.mjs', boundary='foundation:synthetic:points';
+  const original={catalogue:{source_identity:{source_id:'synthetic'},source_dispositions:[{quote:'Exact <source> 🦉'}]}};
+  try{
+    const content=readRuntimePublication(repository,{...options,contract:runtimeContractHash});
+    content.modules[moduleId]=original;
+    content.refs[boundary]=content.refs.test;
+    content.registrations[moduleId]=[boundary];
+    options.publication=publishRuntime(repository,content,{...options,contract:runtimeContractHash});
+  }finally{repository.close();}
+  const browser=publishedCataloguePlugin({...options,deferMetadata:true});
+  const worker=publishedCataloguePlugin({...options,deferMetadata:true,emitManifest:false});
+  const defaultReader=publishedCataloguePlugin(options);
+  for(const plugin of [browser,worker,defaultReader])await plugin.buildStart();
+  const id=browser.resolveId('omnibus-data:'+moduleId);
+  const emitted=[],context={emitFile:asset=>{emitted.push(asset);return 'syntheticMetadata';}};
+  const source=browser.load.call(context,id);
+  assert.equal(worker.load.call(context,id),source,'Preview worker follows the same load boundary');
+  assert(!source.includes('Exact'),'Background source metadata is absent from initial data');
+  assert.match(source,/registerCatalogueResource\("foundation:synthetic:metadata:/);
+  assert.match(source,/featureLoader\(attempt=>import\(/);
+  assert.match(source,/\?retry=/,'Failed requests must not stay in the native module cache');
+  assert(emitted.every(asset=>asset.type==='asset'&&/^assets\/catalogue-metadata-[a-f0-9]{64}\.js$/.test(asset.fileName)),
+    'Data must not become extra worker entry chunks');
+  assert.deepEqual(emitted[0],emitted[1],'Main and worker share the same immutable metadata asset');
+  const loaded=await import('data:text/javascript,'+encodeURIComponent(emitted[0].source));
+  assert.deepEqual(loaded.default,[{path:['catalogue','source_dispositions'],value:original.catalogue.source_dispositions}]);
+  assert(!emitted[0].source.includes('<source>'),'Generated strings escape surrounding HTML contexts');
+  assert(defaultReader.load(id).includes('Exact'),'Build-time and agent readers retain their complete initial metadata');
+  const reader=new CatalogueRepository(options.databasePath,{readOnly:true});
+  try{assert.deepEqual(readRuntimePublication(reader,{...options,contract:runtimeContractHash}).modules[moduleId],original);}
+  finally{reader.close();}
 });
 
 await test('preview validates the publication, serves the app and cannot write or expose the database',async t=>{

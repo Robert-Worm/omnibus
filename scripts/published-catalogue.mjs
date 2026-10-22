@@ -1,11 +1,13 @@
 import {dirname, resolve, isAbsolute, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 import {CatalogueRepository} from '../local-data/repository.mjs';
 import {readRuntimePublication,validateRuntimeModules} from '../local-data/runtime-publication.mjs';
 import {runtimeContract} from '../lib/runtime-contract.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 import {buildCatalogueOverviews} from './build-catalogue-overviews.mjs';
 import {validCodeRevision} from './build-code-revision.mjs';
+import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -18,11 +20,11 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
 
 /** Build code against an already published database. Never imports author files.
  * @param {{release?:string, publication?:string, databasePath?:string,
- * transportModule?:string, reportOverviews?:boolean, emitManifest?:boolean, codeRevision?:string, runtimeTarget?:'local-preview'|'portable-local'}} options
+ * transportModule?:string, reportOverviews?:boolean, deferMetadata?:boolean, emitManifest?:boolean, codeRevision?:string, runtimeTarget?:'local-preview'|'portable-local'}} options
  */
-export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
+export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, deferMetadata=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
   if(codeRevision && !validCodeRevision(codeRevision))throw Error('Invalid explicit code revision.');
-  let content, overviews, foundationSearch;
+  let content, overviews, foundationSearch, metadata;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
     name:'omnibus-published-catalogue', enforce:'pre',
@@ -33,6 +35,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
         content = readRuntimePublication(repository, {release,publication,contract:runtimeContractHash});
       } finally { repository.close(); }
       validateRuntimeModules(content, runtimeContract);
+      if(deferMetadata)metadata=deferredCatalogueMetadata(content);
       if(reportOverviews){
         const projections=await buildCatalogueOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
         overviews=projections.reports;foundationSearch=projections.foundationSearch;
@@ -90,13 +93,29 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       }
       const original = key.slice('data:'.length);
       // JSON.parse preserves literal __proto__ keys as data, unlike a JS object literal.
-      const lines = [`const data=/*#__PURE__*/JSON.parse(${code(quote(content.modules[original]))});`];
+      const lines = [`const data=/*#__PURE__*/JSON.parse(${code(quote(metadata?.modules[original] ?? content.modules[original]))});`];
       const keys = content.registrations[original] || [];
-      if (keys.length) {
+      const metadataKeys=metadata?.registrations[original] ?? [];
+      if (keys.length || metadataKeys.length) {
         lines.push(`import {registerCatalogueResource,applyCatalogueEdits} from ${quote(resolve(root,'lib/catalogue-runtime.mjs'))};`);
+      }
+      if (keys.length) {
         lines.push(`import {databaseSourceClient} from ${quote(resolve(root,'lib/database-source-client.mjs'))};`);
         for (const key of keys) lines.push(`registerCatalogueResource(${code(key)},()=>databaseSourceClient.content(${code(content.refs[key])}),value=>applyCatalogueEdits(data,value),${code(content.refs[key])});`);
       }
+      if(metadataKeys.length)lines.push(`import {featureLoader} from ${quote(resolve(root,'lib/feature-loader.mjs'))};`);
+      metadataKeys.forEach((key,index)=>{
+        // Reuse the shared retryable loader: browsers cache failed native imports.
+        // A retry addresses only this build's hashed asset, never arbitrary code.
+        const source=`export default JSON.parse(${code(quote(metadata.resources.get(key)))});`;
+        const hash=createHash('sha256').update(source).digest('hex');
+        // Data-only ESM assets have no imports. Do not create extra entry chunks:
+        // the worker bundler must retain the calculator as its sole entry point.
+        const chunk=this.emitFile({type:'asset',fileName:'assets/catalogue-metadata-'+hash+'.js',source});
+        lines.push(`const metadataUrl${index}=import.meta.ROLLUP_FILE_URL_${chunk};`,
+          `const metadataLoad${index}=featureLoader(attempt=>import(/* @vite-ignore */ attempt?metadataUrl${index}+'?retry='+attempt:metadataUrl${index}));`,
+          `registerCatalogueResource(${code(key)},()=>metadataLoad${index}().then(m=>m.default),value=>applyCatalogueEdits(data,value));`);
+      });
       lines.push('export default data;');
       return lines.join('\n');
     },
