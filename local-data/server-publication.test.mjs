@@ -11,6 +11,7 @@ import { createStaticWeb } from './static-web.mjs';
 import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
 import { createDatabaseSourceClient } from '../lib/database-source-client.mjs';
 import { startDatabasePreview } from '../scripts/serve-database-web.mjs';
+import {contentBatchLimits} from '../lib/content-batch-contract.mjs';
 
 const scratch = fileURLToPath(new URL('../.tmp/', import.meta.url));
 // Normal runs use ephemeral ports; an isolated review can reserve an adjacent pair.
@@ -109,6 +110,56 @@ async function denied(url, paths) {
     assert.deepEqual(await response.json(), { error: 'Not found' }, path);
   }
 }
+
+test('batched reads retain exact pinned sources, transport controls and unchanged database bytes',async t=>{
+  const f=fixture(t),extraValue={text:'Second synthetic source 😀é',selection_status:'HOLD'};
+  const extra=prepareWebResources(f.repository,f.release,{extra:extraValue});
+  f.value.refs={...f.value.refs,...extra};f.writeManifest({...f.manifest,publication:f.publish()});
+  f.readOnly();const before=digest(readFileSync(f.databasePath)),app=await f.start(),calls=[];
+  const client=createDatabaseSourceClient({batchContent:true,fetchImpl:(url,options)=>{
+    if(typeof url!=='string')throw Error('Expected relative source URL');
+    calls.push(url);return fetch(app.url+url,options);
+  }});
+  assert.deepEqual(await Promise.all([f.refs.selected,extra.extra].map(ref=>client.content(ref))),[f.selectedContent,extraValue]);
+  assert.equal(calls.length,1);assert(calls[0].startsWith('/api/v1/content-batch?'));
+  const response=await fetch(app.url+calls[0]);assert.equal(response.status,200);
+  assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('x-content-type-options'),'nosniff');
+  assert.equal((await fetch(app.url+calls[0],{method:'POST'})).status,405);
+  assert.equal((await fetch(app.url+calls[0],{headers:{Origin:'https://example.invalid'}})).status,403);
+  assert.equal((await fetch(app.url+calls[0],{headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);
+  assert.equal(digest(readFileSync(f.databasePath)),before);
+});
+
+test('one hidden, foreign or ambiguous batch member refuses the whole response without leaking other entries',async t=>{
+  const f=fixture(t);f.readOnly();const {url}=await f.start();
+  const base=`/api/v1/content-batch?release=${f.release}&hash=${f.refs.selected.hash}`;
+  await denied(url,[
+    ...[f.privateRefs.other,f.privateRefs.orphan,f.foreignRefs.other].map(ref=>base+'&hash='+ref.hash),
+    base.replace(f.release,f.foreignRelease),base+'&hash='+'f'.repeat(64),
+  ]);
+  for(const path of [
+    '/api/v1/content-batch','/api/v1/content-batch?release='+f.release,
+    '/api/v1/content-batch?hash='+f.refs.selected.hash,
+    base+'&release='+f.release,base+'&hash='+f.refs.selected.hash,
+    base+'&hash=../private',base+'&publication='+f.otherPublication,
+    base+'&hash='+f.refs.selected.hash.toUpperCase(),
+    '/api/v1/content-batch?release='+f.release+Array.from({length:contentBatchLimits.entries+1},(_,i)=>'&hash='+digest('Synthetic '+i)).join(''),
+  ])assert.equal((await fetch(url+path)).status,400,path);
+});
+
+test('batch byte budgets use actual stored sizes, not client claims, before parsing or returning contents',async t=>{
+  const f=fixture(t);
+  const large=prepareWebResources(f.repository,f.release,{a:{text:'A'.repeat(1100000)},b:{text:'B'.repeat(1100000)}});
+  f.value.refs={...f.value.refs,...large};f.writeManifest({...f.manifest,publication:f.publish()});
+  const {url}=await f.start();
+  const base=`/api/v1/content-batch?release=${f.release}&hash=${large.a.hash}`;
+  assert.equal((await fetch(url+base)).status,200);
+  const oversized=await fetch(url+base+'&hash='+large.b.hash);
+  assert.equal(oversized.status,400);assert.deepEqual(await oversized.json(),{error:'Invalid request'});
+  f.repository.db.prepare('UPDATE web_resources SET payload=? WHERE release_id=? AND hash=?')
+    .run(JSON.stringify({text:'Changed fixture'.repeat(180000)}),f.release,large.a.hash);
+  assert.equal((await fetch(url+base)).status,400);
+});
 
 test('pinned viewer keeps exact content, source index, Unicode pages and static assets', async t => {
   const f = fixture(t);

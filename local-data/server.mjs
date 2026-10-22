@@ -4,7 +4,8 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {CatalogueRepository} from './repository.mjs';
 import {createStaticWeb} from './static-web.mjs';
-import {webResource} from './web-resources.mjs';
+import {webResource,webResourceBatch} from './web-resources.mjs';
+import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
 import {Readable,pipeline} from 'node:stream';
 import {createGzip} from 'node:zlib';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
@@ -162,10 +163,18 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     if(!state.ready)res.setHeader('Retry-After','1');
     return reply(state.ready?200:503,{status:state.ready?'ready':'not-ready',mode:hosting.mode,schema:1});
    }
+   const isContentBatch=u.pathname==='/api/v1/content-batch';
    if(readScope){
     if(q.getAll('release').length>1)return reply(400,{error:'Invalid request'});
-    if((release!==null&&release!==readScope.release)||!readScope.allows(u.pathname))
+    if((release!==null&&release!==readScope.release)||(!isContentBatch&&!readScope.allows(u.pathname)))
      return reply(404,{error:'Not found'});
+   }
+   if(isContentBatch){
+    const {release,hashes}=parseContentBatchQuery(q);
+    if(readScope&&hashes.some(hash=>!readScope.allows('/api/v1/content/'+hash)))
+      return reply(404,{error:'Not found'});
+    const value=webResourceBatch(repository,release,hashes);
+    return reply(value?200:404,value||{error:'Not found'});
    }
    if((match=u.pathname.match(/^\/api\/v1\/content\/([a-f0-9]{64})$/))){
     if(!/^[a-f0-9]{64}$/.test(release||''))return reply(400,{error:'Explicit release required'});

@@ -1,6 +1,6 @@
 export type DatabaseSource = { schema: 1; release: string; version: string; indexHash: string };
-export type ContentRef = {release:string;hash:string};
-export type ContentTransfer = ContentRef & {bytes:ArrayBuffer};
+export type ContentRef = {release:string;hash:string;bytes?:number};
+export type ContentTransfer = Omit<ContentRef,'bytes'> & {bytes:ArrayBuffer};
 export type DatabasePage = { page: number; text: string; incompleteText?: boolean };
 export type SourceIndex = {
   version: string;
@@ -11,7 +11,7 @@ export type SourceIndex = {
 export function sourceJsonHash(value: unknown): Promise<string>;
 export function assertDatabaseSource(ref: unknown): asserts ref is DatabaseSource;
 export function createDatabaseSourceClient(options?: {
-  fetchImpl?: typeof fetch; maxEntries?: number; maxBytes?: number; timeoutMs?: number; transferBytes?:number;
+  fetchImpl?: typeof fetch; maxEntries?: number; maxBytes?: number; timeoutMs?: number; transferBytes?:number; batchContent?:boolean;
 }): {
   content(ref:ContentRef, options?:{signal?:AbortSignal}):Promise<unknown>;
   copyContentTransfers(refs:ContentRef[],known?:ReadonlySet<string>):ContentTransfer[];

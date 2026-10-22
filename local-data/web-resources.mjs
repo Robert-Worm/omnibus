@@ -1,4 +1,5 @@
 import {digest} from './repository.mjs';
+import {contentBatchLimits as batchLimits} from '../lib/content-batch-contract.mjs';
 
 // Delivery projections are separate from signed content releases. They preserve
 // JSON field order (some historic project traces compare their literal JSON).
@@ -26,6 +27,26 @@ export function webResource(repository, release, hash) {
   if (!repository.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='web_resources'").get()) return null;
   const row = repository.db.prepare('SELECT payload FROM web_resources WHERE release_id=? AND hash=?').get(release, hash);
   return row ? JSON.parse(row.payload) : null;
+}
+
+// Scope is checked for EVERY hash by the server before this reader is called.
+// Preflight actual database lengths before loading/parsing any payload. No writes.
+export function webResourceBatch(repository,release,hashes) {
+  if(!repository.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='web_resources'").get())return null;
+  const sizes=repository.db.prepare('SELECT length(CAST(payload AS BLOB)) AS bytes FROM web_resources WHERE release_id=? AND hash=?');
+  let bytes=batchLimits.overhead;
+  for(const hash of hashes){
+    const row=sizes.get(release,hash);if(!row)return null;
+    bytes+=row.bytes;if(bytes>batchLimits.bytes)throw Error('Invalid content batch size');
+  }
+  const select=repository.db.prepare('SELECT payload FROM web_resources WHERE release_id=? AND hash=? AND length(CAST(payload AS BLOB))<=?');
+  let remaining=batchLimits.bytes-batchLimits.overhead;
+  return {release,items:hashes.map(hash=>{
+    const row=select.get(release,hash,remaining);
+    if(!row)throw Error('Invalid changed content batch');
+    remaining-=Buffer.byteLength(row.payload);
+    return {hash,value:JSON.parse(row.payload)};
+  })};
 }
 
 // Call only with an integrity-checked runtime publication. A release can also
