@@ -34,7 +34,7 @@ export function createResponseCompressor(encoding, bytes) {
   return createBrotliCompress({ params: {
     // Deliberately avoid expensive default quality 11. Fixed settings bound work;
     // the 1 MiB dictionary captures repeated evidence across larger JSON batches.
-    [constants.BROTLI_PARAM_QUALITY]: 4,
+    [constants.BROTLI_PARAM_QUALITY]: 5,
     [constants.BROTLI_PARAM_LGWIN]: 20,
     [constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
     [constants.BROTLI_PARAM_SIZE_HINT]: bytes,
