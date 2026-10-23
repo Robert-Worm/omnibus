@@ -39,7 +39,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Financiën · 119 open
 
-<details><summary><b>Financiën</b> · 119 open van 123</summary>
+<details><summary><b>Rapporten</b> · 119 open van 123</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -171,7 +171,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Defensie · 70 open
 
-<details><summary><b>Defensie</b> · 70 open van 72</summary>
+<details><summary><b>Rapporten</b> · 70 open van 72</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -252,7 +252,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Binnenlandse Zaken en Koninkrijksrelaties · 56 open
 
-<details><summary><b>Binnenlandse Zaken en Koninkrijksrelaties</b> · 56 open van 60</summary>
+<details><summary><b>Rapporten</b> · 56 open van 60</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -321,7 +321,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Onderwijs, Cultuur en Wetenschap · 54 open
 
-<details><summary><b>Onderwijs, Cultuur en Wetenschap</b> · 54 open van 58</summary>
+<details><summary><b>Rapporten</b> · 54 open van 58</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -388,7 +388,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Justitie en Veiligheid · 50 open
 
-<details><summary><b>Justitie en Veiligheid</b> · 50 open van 52</summary>
+<details><summary><b>Rapporten</b> · 50 open van 52</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -449,7 +449,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Economische Zaken en Klimaat · 29 open
 
-<details><summary><b>Economische Zaken en Klimaat</b> · 29 open van 30</summary>
+<details><summary><b>Rapporten</b> · 29 open van 30</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -488,7 +488,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Infrastructuur en Waterstaat · 27 open
 
-<details><summary><b>Infrastructuur en Waterstaat</b> · 27 open van 30</summary>
+<details><summary><b>Rapporten</b> · 27 open van 30</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -527,7 +527,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Volksgezondheid, Welzijn en Sport · 26 open
 
-<details><summary><b>Volksgezondheid, Welzijn en Sport</b> · 26 open van 27</summary>
+<details><summary><b>Rapporten</b> · 26 open van 27</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -563,7 +563,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Landbouw, Visserij, Voedselzekerheid en Natuur · 21 open
 
-<details><summary><b>Landbouw, Visserij, Voedselzekerheid en Natuur</b> · 21 open van 24</summary>
+<details><summary><b>Rapporten</b> · 21 open van 24</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -596,7 +596,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Buitenlandse Zaken · 23 open
 
-<details><summary><b>Buitenlandse Zaken</b> · 23 open van 23</summary>
+<details><summary><b>Rapporten</b> · 23 open van 23</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -628,7 +628,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Rijksbreed · 19 open
 
-<details><summary><b>Rijksbreed</b> · 19 open van 22</summary>
+<details><summary><b>Rapporten</b> · 19 open van 22</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -659,7 +659,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Sociale Zaken en Werkgelegenheid · 18 open
 
-<details><summary><b>Sociale Zaken en Werkgelegenheid</b> · 18 open van 20</summary>
+<details><summary><b>Rapporten</b> · 18 open van 20</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |
@@ -688,7 +688,7 @@ Kies een ministerie dat je kent. Een rapport uit je eigen vakgebied verwerk je h
 
 ### Algemene Zaken · 1 open
 
-<details><summary><b>Algemene Zaken</b> · 1 open van 1</summary>
+<details><summary><b>Rapporten</b> · 1 open van 1</summary>
 
 | Bron | Status | Actie |
 | --- | --- | --- |

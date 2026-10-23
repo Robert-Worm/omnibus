@@ -596,7 +596,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         return [
           `### ${ministerieKop(m)}`,
           "",
-          `<details><summary><b>${m}</b> · ${count(list, "open")} open van ${list.length}</summary>`,
+          `<details><summary><b>Rapporten</b> · ${count(list, "open")} open van ${list.length}</summary>`,
           "",
           "| Bron | Status | Actie |",
           "| --- | --- | --- |",

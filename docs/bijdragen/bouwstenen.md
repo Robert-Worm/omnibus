@@ -211,7 +211,7 @@ Klap alleen in wat niet iedereen nodig heeft. Wat de lezer nodig heeft om de taa
 </details>
 ```
 
-- De kop is **Technische details** met een korte aanvulling, of de naam van een groep met een aantal: `<b>Financiën</b> · 12 open van 40`.
+- De kop is **Technische details** met een korte aanvulling, of de naam van een groep met een aantal: `<b>Rapporten</b> · 12 open van 40`. Herhaal de kop erboven niet.
 - Laat na `</summary>` een lege regel, anders toont GitHub de opmaak niet.
 - Zet geen `#`-koppen in een uitklapblok; GitHub toont ze niet in de inhoudsopgave. Gebruik vette woorden.
 
