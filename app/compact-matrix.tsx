@@ -1,6 +1,6 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
-import { useRef, useState, useEffect, useId, useMemo } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback, useId, useMemo } from "react";
 import { Info } from 'lucide-react';
 import {Tooltip,TooltipTrigger,TooltipContent,TooltipProvider} from '@/components/ui/tooltip';
 import "./matrix-readability.css";
@@ -14,6 +14,7 @@ import FullTextPreview from "./full-text-preview";
 import DeferredMatrixRows from './deferred-matrix-rows';
 import DeferredViewerSection from './deferred-viewer-section';
 import {viewerRowBatches} from '@/lib/viewer-rendering.mjs';
+import {matrixAnchorId,matrixScrollView,matrixScrollPosition} from '@/lib/viewer-scroll.mjs';
 import { fieldIncluded } from "@/lib/research-plan.mjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,6 +141,8 @@ export default function CompactMatrix({
     subjects: [] as string[],
     top: 0,
     left: 0,
+    anchorId: '',
+    anchorOffset: 0,
     lastId: "",
     revealNonce: 0,
   });
@@ -164,7 +167,7 @@ export default function CompactMatrix({
       resetHandled.current=resetRequest;
       restored.current=true;
       scroller.current?.querySelector<HTMLElement>('[data-slot=table-container]')?.scrollTo(0,0);
-      setView(v=>({...resetReportView(v),group:''}));
+      setView(v=>({...resetReportView(v),group:'',anchorId:'',anchorOffset:0}));
       onResetComplete?.();
     }
   },[ready,resetRequest,setView,onResetComplete]);
@@ -223,13 +226,23 @@ export default function CompactMatrix({
   const options = optionsFor(lines)
     .map((o) => ({ ...o, count: counts.find((c) => c.id === o.id)?.count ?? 0 }))
     .filter((o) => o.count > 0 || view.subjects.includes(o.id));
-  useEffect(() => {
-    if (ready && !restored.current) {
-      restored.current = true;
+  // Capture initial presentation once; live scroll updates must not turn on the
+  // legacy full-render fallback or restart restoration after a filter change.
+  const [restoreView,setRestoreView]=useState<Pick<typeof view,'top'|'left'|'anchorId'|'anchorOffset'>|null>(null);
+  if(ready&&!restoreView)setRestoreView({top:view.top,left:view.left,anchorId:matrixAnchorId(rows,view),anchorOffset:view.anchorOffset});
+  const restoreId=restoreView?.anchorId||'';
+  useLayoutEffect(() => {
+    if (restoreView && !restored.current) {
+      restored.current=true;
       const el = scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
-      el?.scrollTo(view.left, view.top);
+      if(el){const position=matrixScrollPosition(el,restoreView,restoreId);el.scrollTo(position.left,position.top);}
     }
-  }, [ready, view.left, view.top]);
+  }, [restoreView, restoreId]);
+  const rememberScroll=useCallback((element:HTMLElement)=>{
+    if(!ready||!restored.current||!element.matches('[data-slot=table-container]'))return;
+    const position=matrixScrollView(element);
+    setView(v=>v.top===position.top&&v.left===position.left&&v.anchorId===position.anchorId&&v.anchorOffset===position.anchorOffset?v:{...v,...position});
+  },[ready,setView]);
   useEffect(() => {
     if (
       !ready ||
@@ -281,22 +294,31 @@ export default function CompactMatrix({
   const allPage = selectableRows(rows).length > 0 && selectableRows(rows).every((l) => rowAll(l.id));
   const somePage = rows.some((l) => rowSome(l.id));
   const keys = (Object.keys(labels) as ElementKey[]).filter((k) => columns.includes(k));
-  // Filters change the full result set, not the need to mount off-screen controls.
-  // Explicit navigation and restored scroll retain their existing eager fallback.
-  const deferPresentation=deferRows&&!reveal&&view.top===0;
-  // Keep batch identity stable when scrolling or revealing forces eager mounting.
+  // Old preferences without a usable row anchor retain exact pixel restoration.
+  // Ordinary scrolling never switches the complete matrix to eager rendering.
+  const restorePixels=Boolean(restoreView&&restoreView.top>0&&!restoreId);
+  const deferPresentation=deferRows&&!reveal&&!restorePixels;
+  // Keep mounted controls alive when the restored/revealed batch changes.
   const rowBatches=viewerRowBatches(rows,deferRows);
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
   useEffect(()=>{
     const element=scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
     if(!element)return;
-    const update=()=>setScrollEdges({left:element.scrollLeft>1,right:element.scrollLeft+element.clientWidth<element.scrollWidth-1});
-    const observer=new ResizeObserver(update);
+    const update=()=>{
+      const left=element.scrollLeft>1,right=element.scrollLeft+element.clientWidth<element.scrollWidth-1;
+      setScrollEdges(old=>old.left===left&&old.right===right?old:{left,right});
+    };
+    const observer=new ResizeObserver(()=>{
+      update();
+      // New batches change geometry without necessarily emitting a scroll event.
+      // Group wrappers leave each embedded matrix in charge of its own position.
+      if(!groupLines||embedded)rememberScroll(element);
+    });
     observer.observe(element);
     if(element.firstElementChild)observer.observe(element.firstElementChild);
     element.addEventListener("scroll",update,{passive:true});update();
     return ()=>{observer.disconnect();element.removeEventListener("scroll",update);};
-  },[columns,rows.length,viewKey]);
+  },[columns,rows.length,viewKey,rememberScroll,groupLines,embedded]);
   const names: Record<string, string> = labels;
   const provenance: Record<string, string> = basisNames ?? basisLabels;
   function renderNorm(line:Line){
@@ -483,8 +505,7 @@ export default function CompactMatrix({
         className={`compact-table identified-table${combineIdentity ? ' combined-identity-table' : ''}${descriptiveTitles&&!combineIdentity?' matrix-explained-table':''}`}
         ref={scroller}
         onScrollCapture={(e) => {
-          const el = e.target as HTMLElement;
-          setView((v) => ({ ...v, top: el.scrollTop, left: el.scrollLeft }));
+          rememberScroll(e.target as HTMLElement);
         }}
       >
         <Table style={{ minWidth: `calc(${identityColumnRem}rem + ${(combineIdentity ? 0 : descriptiveTitles?288:230) + keys.length * (descriptiveTitles?185:215)}px)` }}>
@@ -509,7 +530,7 @@ export default function CompactMatrix({
             </TableRow>
           </TableHeader>
           {rowBatches.map((chunk,batch)=>{
-           return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
+           return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0||chunk.some(line=>line.id===restoreId)} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
             {()=>chunk.map((l) => (
               <TableRow
                 key={l.id}
