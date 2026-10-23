@@ -12,6 +12,8 @@ import {CatalogueRepository} from '../local-data/repository.mjs';
 import {readRuntimePublication,publishRuntime} from '../local-data/runtime-publication.mjs';
 import {prepareWebResources} from '../local-data/web-resources.mjs';
 import './deferred-catalogue-metadata.test.mjs';
+import './report-delivery-projection.test.mjs';
+import '../lib/report-asset-loader.test.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 
@@ -134,6 +136,32 @@ await test('web and preview worker partition identical model assets while agent 
   const first=await import('data:text/javascript,'+encodeURIComponent(emitted[1].source));assert.deepEqual(first.default,[{path:['models'],value:[models[0]]}]);
   assert(!emitted[1].source.includes('<question>'));assert(!emitted[1].source.includes('second'));
   assert.match(agent.load(agent.resolveId('omnibus-data:'+moduleId)),/registerCatalogueResource\("models:library:0"/);
+});
+
+await test('report parts use identical pinned data-only assets in browser and worker, with original agent fallback',async t=>{
+  const options=fixture(t),repository=new CatalogueRepository(options.databasePath),moduleId='app/report-point-catalogue.json';
+  try{
+    const content=readRuntimePublication(repository,{...options,contract:runtimeContractHash});
+    content.modules[moduleId]={points:[]};content.routing.reports={'R-1':'R'};
+    const refs=prepareWebResources(repository,options.release,{'report:R:points':[{path:['points'],value:[{id:'R-1/P',legacy_line_id:'R-1',text:'Exact <point> 🦉'}]}]});
+    Object.assign(content.refs,refs);content.registrations[moduleId]=['report:R:points'];
+    options.publication=publishRuntime(repository,content,{...options,contract:runtimeContractHash});
+  }finally{repository.close();}
+  const main=publishedCataloguePlugin({...options,deferMetadata:true}),worker=publishedCataloguePlugin({...options,deferMetadata:true,emitManifest:false}),agent=publishedCataloguePlugin(options);
+  for(const plugin of [main,worker,agent])await plugin.buildStart();
+  const importer=join(root,'app/client.tsx'),route=main.resolveId('@/lib/report-resource-routing.mjs',importer);
+  const routing=(await import('data:text/javascript,'+encodeURIComponent(main.load(route)))).default;
+  assert.equal(routing['R-1'].length,1);assert.equal(agent.resolveId('@/lib/report-resource-routing.mjs',importer),null);
+  const emitted=[],context={emitFile:asset=>{emitted.push(asset);return 'reportAsset';}};
+  const source=main.load.call(context,main.resolveId('omnibus-data:'+moduleId));
+  assert(!source.includes('Exact'));assert.match(source,/registerCatalogueResource\("report:R:part:/);
+  const original=structuredClone(emitted);emitted.length=0;
+  assert.equal(worker.load.call(context,worker.resolveId('omnibus-data:'+moduleId)),source);assert.deepEqual(emitted,original);
+  assert.match(emitted[0].fileName,/^assets\/report-content-[a-f0-9]{64}\.js$/);
+  const loaded=(await import('data:text/javascript,'+encodeURIComponent(emitted[0].source))).default;
+  assert.deepEqual(loaded[moduleId][0].positions,[0]);assert.equal(loaded[moduleId][0].value[0].text,'Exact <point> 🦉');
+  assert(!emitted[0].source.includes('<point>'));
+  assert.match(agent.load(agent.resolveId('omnibus-data:'+moduleId)),/registerCatalogueResource\("report:R:points"/);
 });
 
 await test('preview validates the publication, serves the app and cannot write or expose the database',async t=>{

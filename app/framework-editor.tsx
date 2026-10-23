@@ -59,6 +59,7 @@ import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
 import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
+import {reportContentKeys} from '@/lib/report-loading.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
 import {foundationOverviewKey} from '@/lib/foundation-overviews.mjs';
@@ -842,7 +843,7 @@ export default function FrameworkEditor() {
     }else if(field){openField(id,field);}else{openStructure(id);}
   }
   function openPointViewer(id:string,field?:string){
-    const keys=['report:'+catalogueRouting.reports[id]];
+    const keys=reportContentKeys([id],catalogueRouting.reports);
     if(!catalogueReady(keys)){withContent(keys,()=>openPointViewer(id,field));return;}
     if(reportPointCatalogue.blocks.some(b=>b.id===id) && (!field || ['objective','risk','controlObjective','control','criterion','finding','procedure'].includes(field))){
       setDetailsOpen(false);
@@ -853,7 +854,7 @@ export default function FrameworkEditor() {
   const pointCounts=useMemo(()=>({...reportPointCounts(catalogueSnapshot.pointCatalogue,draft),
     ...(overview?reportPointCounts(overview,draft):{})}),[draft,catalogueSnapshot,overview]);
   function selectReportOverviewRows(ids:string[],selected:boolean){
-    const keys=[...new Set(ids.map(id=>'report:'+catalogueRouting.reports[id]))];
+    const keys=reportContentKeys(ids,catalogueRouting.reports);
     withContent(keys,()=>commit(selectReportRows(draftRef.current,reportPointCatalogue,ids,selected) as Draft));
   }
   function showEvidence(id: string) {
@@ -1238,7 +1239,7 @@ export default function FrameworkEditor() {
             <>
             <DiscoveryCatalogue views={discoveryViews}
               onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map(reportOverviewKey));}}
-              included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent([...new Set(ids.map(id=>'report:'+catalogueRouting.reports[id]))],()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
+              included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
               guided={page==='risk-start'}
               area={page==='risk-start'?riskArea:undefined}
               onSources={()=>chooseRiskArea('laws')} onFrameworks={()=>chooseRiskArea('frameworks')} onModels={()=>chooseRiskArea('models')}
@@ -1445,7 +1446,7 @@ export default function FrameworkEditor() {
                         />
                       </DeferredDetails>
                     ) : (
-                      <ReportNormBrowser key={browseKey} title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Normen'} lines={visibleLines} draft={draft} viewDraft={viewDraft} counts={pointCounts} searchPoints={overview?.points} viewKey={browseKey} disabled={!loaded} onChange={commit} onOpen={openPointViewer} onPrepare={id=>{void prefetchCatalogue(['report:'+catalogueRouting.reports[id]]);}} onSelect={selectReportOverviewRows} reveal={reveal} onRevealComplete={()=>setReveal(undefined)} resetRequest={activeReportView&&!combinedView?reportViewReset:0} onResetComplete={()=>setReportViewReset(0)}/>
+                      <ReportNormBrowser key={browseKey} title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Normen'} lines={visibleLines} draft={draft} viewDraft={viewDraft} counts={pointCounts} searchPoints={overview?.points} viewKey={browseKey} disabled={!loaded} onChange={commit} onOpen={openPointViewer} onPrepare={id=>{void prefetchCatalogue(reportContentKeys([id],catalogueRouting.reports));}} onSelect={selectReportOverviewRows} reveal={reveal} onRevealComplete={()=>setReveal(undefined)} resetRequest={activeReportView&&!combinedView?reportViewReset:0} onResetComplete={()=>setReportViewReset(0)}/>
                     )}
                     <Sheet open={detailsOpen && !!line} onOpenChange={setDetailsOpen}>
                       {line && <>

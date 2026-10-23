@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, lstatSync, realpathSync, createReadStream } from 'node:fs';
 import { join, relative, extname } from 'node:path';
 import { responseEncoding, createResponseCompressor } from './response-compression.mjs';
-import { pipeline } from 'node:stream';
+import { pipeline, Readable } from 'node:stream';
 import { createHash } from 'node:crypto';
 import { readRuntimePublication } from './runtime-publication.mjs';
 import { publicationReadScope } from './web-resources.mjs';
@@ -32,9 +32,12 @@ export function createStaticWeb(root, repository) {
     const stat = lstatSync(path);
     if (stat.isSymbolicLink() || !stat.isFile()) throw Error('Invalid public build file');
     if (!types[extname(path)]) return;
+    const reportContent = url.match(/^\/assets\/report-content-([a-f0-9]{64})\.js$/);
+    if (reportContent && stat.size > 4 * 1024 * 1024) throw Error('Invalid report delivery asset');
     const bytes = readFileSync(path);
     const sha256 = createHash('sha256').update(bytes).digest('hex');
-    files.set(url, { path, sha256, bytes: bytes.length, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
+    if (reportContent && (reportContent[1] !== sha256 || bytes.length > 4 * 1024 * 1024)) throw Error('Invalid report delivery asset');
+    files.set(url, { path, sha256, verifiedContent: Boolean(reportContent), bytes: bytes.length, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
   }
   const manifest = JSON.parse(readFileSync(join(root, 'omnibus-release.json'), 'utf8'));
   if (manifest.schema !== 1 || manifest.contract !== runtimeContractHash)
@@ -70,11 +73,31 @@ export function createStaticWeb(root, repository) {
     if (req.headers['if-none-match'] === file.etag) { res.writeHead(304); res.end(); return true; }
     const encoding = responseEncoding(req.headers['accept-encoding'], file.bytes);
     if (!encoding) { res.writeHead(406); res.end(); return true; }
-    const stream = createReadStream(file.path);
-    if (encoding !== 'identity') {
-      res.setHeader('Content-Encoding', encoding);
-      pipeline(stream, createResponseCompressor(encoding, file.bytes), res, () => {});
-    } else pipeline(stream, res, () => {});
+    const send = stream => {
+      if (encoding !== 'identity') {
+        res.setHeader('Content-Encoding', encoding);
+        pipeline(stream, createResponseCompressor(encoding, file.bytes), res, () => {});
+      } else pipeline(stream, res, () => {});
+    };
+    if (file.verifiedContent) {
+      // Derived report parts retain the original content route's fail-closed
+      // byte check, including changes after startup. Send the checked buffer,
+      // not a second file read that could race with replacement.
+      const stream = createReadStream(file.path, {start: 0, end: file.bytes}), chunks = [];
+      const fail = () => {
+        if (res.destroyed) return;
+        res.setHeader('Cache-Control', 'no-store'); res.removeHeader('ETag'); res.writeHead(500); res.end();
+      };
+      // One extra byte detects growth without ever reading an unbounded file.
+      stream.on('data', chunk => chunks.push(chunk)); stream.once('error', fail);
+      res.once('close', () => stream.destroy());
+      stream.once('end', () => {
+        if (res.destroyed) return;
+        const bytes = Buffer.concat(chunks);
+        if (bytes.length !== file.bytes || createHash('sha256').update(bytes).digest('hex') !== file.sha256) { fail(); return; }
+        send(Readable.from([bytes]));
+      });
+    } else send(createReadStream(file.path));
     return true;
   };
   return { serve, readScope, version, pins: Object.freeze({ release: manifest.release,

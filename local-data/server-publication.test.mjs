@@ -253,6 +253,21 @@ test('web reads reject other releases, other publications and unselected same-re
   ]);
 });
 
+test('report delivery assets verify their immutable bytes before serving, even after startup',async t=>{
+  const f=fixture(t),source='export default '+JSON.stringify({text:'Exact synthetic source 🧭'.repeat(100)});
+  const filename='report-content-'+digest(source)+'.js',path=join(f.webRoot,'assets',filename),url='/assets/'+filename;
+  writeFileSync(path,source);f.readOnly();const app=await f.start();
+  const original=await fetch(app.url+url,{headers:{'Accept-Encoding':'br'}});
+  assert.equal(original.status,200);assert.equal(await original.text(),source);
+  writeFileSync(path,source.replace('Exact','False'));
+  const changed=await fetch(app.url+url);
+  assert.equal(changed.status,500);assert.equal(await changed.text(),'');
+  assert.equal(changed.headers.get('etag'),null);assert.equal(changed.headers.get('cache-control'),'no-store');
+  assert.throws(()=>createStaticWeb(f.webRoot,f.repository),/Invalid report delivery asset/);
+  writeFileSync(path,source+'extra bytes');
+  const grown=await fetch(app.url+url);assert.equal(grown.status,500);assert.equal(await grown.text(),'');
+});
+
 test('request parameters cannot widen or ambiguously replace the pinned identity', async t => {
   const f = fixture(t);
   f.readOnly();
