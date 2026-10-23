@@ -1,7 +1,7 @@
 import type { Draft } from "@/lib/framework-types";
 import {useMemo} from 'react';
 import {catalogueRevision} from '@/lib/catalogue-runtime.mjs';
-import { legacyCioMaterials, supersededCioMaterials } from "@/lib/foundation-workspace.mjs";
+import {cioSelectionNotices} from '@/lib/foundation-workspace.mjs';
 
 export default function LegacyCioNotice({ draft }: { draft: Draft }) {
   const investigation=draft.investigation,selectionKey=JSON.stringify(draft.included),revision=catalogueRevision();
@@ -9,7 +9,7 @@ export default function LegacyCioNotice({ draft }: { draft: Draft }) {
   // material and catalogue changes affect this notice, not fonts or authors.
   const {legacy,superseded}=useMemo(()=>{
     const selection={investigation,included:JSON.parse(selectionKey)};
-    return {revision,legacy:legacyCioMaterials(selection),superseded:supersededCioMaterials(selection)};
+    return {revision,...cioSelectionNotices(selection)};
   },[investigation,selectionKey,revision]);
   if (!legacy.length && !superseded.length) return null;
   return <aside className="legacy-cio-notice" aria-label="Eerdere CIO-selectie">
