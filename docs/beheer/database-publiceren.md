@@ -8,7 +8,7 @@
 
 - De **private verwerkingsomgeving**: een schone checkout van de broncode, met de broncollectie, reviewdossiers en Python. Deze omgeving staat niet op GitHub.
 - Een **goedgekeurde bronrelease** (een hash van 64 tekens) en de bijbehorende **commit** (40 tekens).
-- Node 24.17 en deze repository, met geïnstalleerde onderdelen.
+- Node 24.21 en deze repository, met geïnstalleerde onderdelen.
 
 ## Stap voor stap
 

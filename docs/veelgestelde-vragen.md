@@ -26,7 +26,7 @@ Nee. Een norm kiezen zegt niet dat hij geldt, of dat de organisatie eraan voldoe
 
 ### Wat heb ik nodig om Omnibus te gebruiken?
 
-Niets, als je de [proefversie online](https://omnibus.sliplane.app) gebruikt. Zelf installeren: Git en Node.js 24.17; `node scripts/installeer.mjs` haalt de database zelf op. Met Docker heb je alleen Docker nodig. Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
+Niets, als je de [proefversie online](https://omnibus.sliplane.app) gebruikt. Zelf installeren: Git en Node.js 24.21; `node scripts/installeer.mjs` haalt de database zelf op. Met Docker heb je alleen Docker nodig. Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
 
 ### Kan ik Omnibus gebruiken zonder iets te installeren?
 

@@ -36,7 +36,7 @@ Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, co
 
 ## Met één opdracht
 
-**Wat heb je nodig?** [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/). Eén opdracht doet de rest: hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
+**Wat heb je nodig?** [Git](https://git-scm.com/) en [Node.js 24.21](https://nodejs.org/). Eén opdracht doet de rest: hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
 
 **Windows (PowerShell)**
 
@@ -63,7 +63,7 @@ Deze route is voor ontwikkelaars, of voor wie precies wil zien wat er gebeurt.
 | Wat | Waarom | Hoe controleer je het |
 | --- | --- | --- |
 | [Git](https://git-scm.com/) | Om de code op te halen | `git --version` |
-| [Node.js 24.17](https://nodejs.org/) met npm 11.13 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
+| [Node.js 24.21](https://nodejs.org/) met npm 11.19 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
 | De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
 
 ```mermaid

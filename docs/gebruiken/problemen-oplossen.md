@@ -19,7 +19,7 @@ bash: node: command not found
 ```
 
 - **Oorzaak:** Git of Node.js is niet geïnstalleerd, of je terminal kent het nog niet.
-- **Herstellen:** installeer [Git](https://git-scm.com/) en [Node.js 24.17](https://nodejs.org/). Sluit daarna je terminal en open hem opnieuw. Controleer met `git --version` en `node --version`.
+- **Herstellen:** installeer [Git](https://git-scm.com/) en [Node.js 24.21](https://nodejs.org/). Sluit daarna je terminal en open hem opnieuw. Controleer met `git --version` en `node --version`.
 
 ### Een verkeerde versie van Node.js
 
@@ -28,8 +28,8 @@ npm warn EBADENGINE Unsupported engine
 No such built-in module: node:sqlite
 ```
 
-- **Oorzaak:** je gebruikt een oudere versie van Node.js. Omnibus heeft versie 24.17 of hoger nodig.
-- **Herstellen:** installeer Node.js 24.17 en controleer met `node --version`. Gebruik je `nvm`? Typ dan `nvm use` in de map van Omnibus.
+- **Oorzaak:** je gebruikt een oudere versie van Node.js. Omnibus heeft versie 24.21 of hoger nodig.
+- **Herstellen:** installeer Node.js 24.21 en controleer met `node --version`. Gebruik je `nvm`? Typ dan `nvm use` in de map van Omnibus.
 
 ### De opdracht vraagt om instellingen
 

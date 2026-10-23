@@ -40,7 +40,7 @@ body:
     id: node
     attributes:
       label: Uitkomst van node --version
-      placeholder: "Bijvoorbeeld: v24.17.0 (niet nodig bij Docker of online)"
+      placeholder: "Bijvoorbeeld: v24.21.0 (niet nodig bij Docker of online)"
   - type: input
     id: database
     attributes:

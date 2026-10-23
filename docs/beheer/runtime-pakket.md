@@ -133,7 +133,7 @@ Een geslaagde lokale controle zegt niets over snelheid op de host, de controles 
 
 #### Nog te bewijzen op de host
 
-Eerder bewijs: het pakket is getest op Windows en Ubuntu 24.04 met Node 24.17.0 (59 geslaagde tests). Selecties, vraagkoppelingen, bronmarkeringen, projecten en de drie Excel-werkvormen bleven gelijk. Dat geldt niet automatisch voor latere wijzigingen.
+Eerder bewijs: het pakket is getest op Windows en Ubuntu 24.04 met Node 24 (toen versie 24.17.0; 59 geslaagde tests). Selecties, vraagkoppelingen, bronmarkeringen, projecten en de drie Excel-werkvormen bleven gelijk. Dat geldt niet automatisch voor latere wijzigingen.
 
 Voor de officiële demo ontbreken nog:
 

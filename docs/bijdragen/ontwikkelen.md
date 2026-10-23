@@ -6,7 +6,7 @@
 
 ## Wat heb je nodig?
 
-- Git, Node **24.17.0** en npm **11.13.0**. Die combinatie is getest op Windows en Ubuntu 24.04.
+- Git, Node **24.21.0** en npm **11.19.0** (zit bij Node). Omnibus is getest op Windows en Ubuntu 24.04.
 - Een eigen kopie (fork) van de repository.
 - Voor de applicatie in de browser: de database uit de [releases](https://github.com/Robert-Worm/omnibus/releases/latest). Voor de tests is die niet nodig.
 
@@ -58,7 +58,7 @@ Draai voor je commit altijd ook `npm run check:code-only`. Die controleert dat e
 | Controle | Wat moet kloppen |
 | --- | --- |
 | Links en ankers | Elk gelinkt bestand bestaat; elk `#anker` hoort bij een kop of een `<a id>` op die pagina |
-| Node-versie | Elke genoemde versie (zoals "Node 24.17") past bij `.nvmrc`, net als `package.json` en de GitHub-workflows |
+| Node-versie | Elke genoemde versie (zoals "Node 24.21") past bij `.nvmrc`, net als `package.json` en de GitHub-workflows |
 | Installatieopdracht | In codeblokken en GitHub-workflows staat altijd `npm ci --ignore-scripts --no-audit --no-fund` |
 | Tabellen | Elke kolom heeft een kop; verder de regels uit de [bouwstenen](bouwstenen.md#tabellen), zoals hooguit vier kolommen en vaste statuslabels |
 | Paginapatroon | Elke pagina in `docs/` heeft een [paginatype](bouwstenen.md#paginatypen), *In het kort*, *Volgende stap* en de navigatieregel. Een `README.md` in een map heeft *In het kort*. |
@@ -121,7 +121,7 @@ Hoe de code in elkaar zit, staat in [architectuur](architectuur.md).
 | De controle meldt een afwijkende hash | De database en het instellingenbestand horen niet bij elkaar. Pak de zip opnieuw uit; pas nooit zelf een hash aan. |
 | De preview start niet | De poort is al in gebruik. Kies een andere met `--port`. |
 | Mijn project is weg | Elk adres en elke poort heeft eigen browseropslag. Open je projectbestand met **Open project**. |
-| Tests falen door de Node-versie | Gebruik Node 24.17.0. Controleer met `node --version`. |
+| Tests falen door de Node-versie | Gebruik Node 24.21.0. Controleer met `node --version`. |
 
 Meer meldingen met uitleg staan bij [problemen bij installeren en starten](../gebruiken/problemen-oplossen.md). Kom je er niet uit? Stel je vraag in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 

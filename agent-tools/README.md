@@ -91,7 +91,7 @@ node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools
 
 De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder `work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken; een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`. Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
 
-Uitvoeren vanuit deze repositorymap, met Node 24.17.0 en de instellingen uit [installeren](../docs/gebruiken/installeren.md):
+Uitvoeren vanuit deze repositorymap, met Node 24.21.0 en de instellingen uit [installeren](../docs/gebruiken/installeren.md):
 
 ```text
 npm ci --ignore-scripts --no-audit --no-fund
