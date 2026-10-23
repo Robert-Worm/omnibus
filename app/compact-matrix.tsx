@@ -303,6 +303,12 @@ export default function CompactMatrix({
   // Keep mounted controls alive when the restored/revealed batch changes.
   const rowBatches=viewerRowBatches(rows,deferRows);
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
+  // Filtering creates fresh arrays on every render. Only changed column values
+  // should restart geometry observation, not selection or saved scroll updates.
+  const columnLayoutKey=columns.join(',');
+  // Equal-sized filters can contain different rows; refresh their scroll anchor.
+  const rowLayoutKey=JSON.stringify(rows.map(row=>row.id));
+  const ownsScroll=!groupLines||embedded;
   useEffect(()=>{
     const element=scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
     if(!element)return;
@@ -314,13 +320,13 @@ export default function CompactMatrix({
       update();
       // New batches change geometry without necessarily emitting a scroll event.
       // Group wrappers leave each embedded matrix in charge of its own position.
-      if(!groupLines||embedded)rememberScroll(element);
+      if(ownsScroll)rememberScroll(element);
     });
     observer.observe(element);
     if(element.firstElementChild)observer.observe(element.firstElementChild);
     element.addEventListener("scroll",update,{passive:true});update();
     return ()=>{observer.disconnect();element.removeEventListener("scroll",update);};
-  },[columns,rows.length,viewKey,rememberScroll,groupLines,embedded]);
+  },[columnLayoutKey,rowLayoutKey,viewKey,rememberScroll,ownsScroll]);
   const names: Record<string, string> = labels;
   const provenance: Record<string, string> = basisNames ?? basisLabels;
   function renderNorm(line:Line){
