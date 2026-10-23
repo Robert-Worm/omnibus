@@ -64,7 +64,7 @@ import QuestionSubjectInput from './question-subject-input';
 import QuestionWordingCycle from './question-wording-cycle';
 import {proposalFormulation} from '@/lib/research-question-formulations.mjs';
 import { appendUniqueQuestion, addOwnSubquestions, mappedQuestionSuggestions, setQuestionSubject } from '@/lib/question-writing.mjs';
-import {questionStartPreview,rankedQuestionStarts,existingQuestionStart} from '@/lib/question-start.mjs';
+import {questionStartSelection,rankedQuestionStarts,existingQuestionStart} from '@/lib/question-start.mjs';
 import {questionMenuChoices,applyQuestionMenu,savedSubquestionKey} from '@/lib/question-menu.mjs';
 import {cioSourceId} from '@/lib/cio-law-data.mjs';
 import { normDrop, applyGroupDrop } from "@/lib/research-flow.mjs";
@@ -144,7 +144,7 @@ export default function ResearchBuilder({
     if(startRoute==='choice'&&existing?.id===centralTarget&&firstText.trim()&&!ownCentral){setStartRoute('suggested');setFocusId('__composer__');return;}
     if(existing&&(!centralTarget||centralTarget===existing.id)){chooseCentral(existing.id);return;}
     const detail=roots.find(q=>q.id===centralTarget)?.subquestionDetail || 'specific';
-    const preview=questionStartPreview(draft,p,{...proposalContext,targetId:centralTarget,subquestionDetail:detail});
+    const preview=questionStartSelection(draft,p,{...proposalContext,targetId:centralTarget,subquestionDetail:detail});
     setSubquestionDetail(detail);setSubFormulations({});
     setOwnCentral(false);setFirstText(p.text);setChosenTopic(p.topic||'');setChosenModelId(p.modelId||'');setChosenProposalKey(p.key);
     setChosenSubKeys(centralTarget?r.questions.filter(q=>q.parent_id===centralTarget).map(savedSubquestionKey):preview.defaultKeys);setModelMode('dimensions');setFirstOrigin('suggested');
