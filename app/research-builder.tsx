@@ -10,7 +10,7 @@ import QuestionBuildingBlocks from './question-building-blocks';
 import {ResearchDisclosure, ResearchMaterialGroup, ResearchMaterialList} from './research-material-list';
 import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions -- Drag surfaces supplement explicit keyboard/touch controls and retain section/list semantics. */
-import { useRef, useState, useEffect, useMemo, useId } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback, useId } from "react";
 import { GripVertical, Plus, MoreHorizontal, X, PenLine, Layers, ArrowRight, ArrowLeft } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -133,7 +133,7 @@ export default function ResearchBuilder({
   const [subFormulations,setSubFormulations]=useState<Record<string,{base:string;text:string}>>({});
   const [choosing, setChoosing] = useState(false);
   const composerVisible = !roots.length || choosing;
-  const proposalContext = { themeIds, framework, models, direction };
+  const proposalContext = useMemo(()=>({themeIds,framework,models,direction}),[themeIds,framework,models,direction]);
   // Closed question setup has no proposal UI. Do not re-validate and rank every
   // possible plan merely to show saved questions or update their save status.
   const proposals = useMemo(()=>composerVisible ? centralProposals(draft,{themeIds,framework,models,direction}) : [],[composerVisible,draft,themeIds,framework,models,direction]);
@@ -173,14 +173,14 @@ export default function ResearchBuilder({
     [composerVisible,selectedModelId,draft,themeIds,framework,models,direction]);
   const selectedSourceId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || "").match(/^source:([^:]+)/)?.[1];
   const sourceDetail=selectedSourceId===cioSourceId?subquestionDetail:'specific';
-  const composerContext={...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail};
+  const composerContext=useMemo(()=>({...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail}),[proposalContext,sourceDetail]);
   const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail) : null,
     [composerVisible,modelPlan,selectedSourceId,draft,direction,sourceDetail]);
   const selectedProcessId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || '').match(/^process:([^:]+)/)?.[1];
   const processPlan = useMemo(()=>composerVisible && selectedProcessId ? processQuestionPlan(draft,selectedProcessId,direction) : null,
     [composerVisible,selectedProcessId,draft,direction]);
   const designTopic = chosenTopic || activeProposal?.topic || (proposals.length === 1 ? proposals[0].topic : "");
-  const selectedDesign = !modelPlan && direction && designTopic ? {direction, topic: designTopic} : null;
+  const selectedDesign = useMemo(()=>!modelPlan && direction && designTopic ? {direction,topic:designTopic} : null,[modelPlan,direction,designTopic]);
   const pendingQuestion = Boolean((firstText.trim() || ownSubs.some(t=>t.trim()) || subject.trim() !== (draft.investigation?.goal?.subject || '').trim()) && (!roots.length || choosing));
   useEffect(() => { onPendingQuestionChange?.(pendingQuestion); }, [pendingQuestion, onPendingQuestionChange]);
   useEffect(() => () => { onPendingQuestionChange?.(false); }, [onPendingQuestionChange]);
@@ -350,27 +350,28 @@ export default function ResearchBuilder({
   }
   // Preview and save use the same root and the same selectable proposal list.
   // Creating a preview never changes the workspace.
-  function prepareCentral() {
-      const current=roots.find(q=>q.id===centralTarget);
+  const prepareCentral = useCallback(() => {
+      const text=firstChoice??'';
+      const current=(researchOf(draft).questions as ResearchQuestion[]).find(q=>q.parent_id===null&&q.id===centralTarget);
       if(current&&(current.planKey===chosenProposalKey || current.modelId===selectedModelId && Boolean(selectedModelId) || !chosenProposalKey)) {
         // Reopening is an edit, not a fresh adoption: retain direct links,
         // identity, manual link mode and custom research design.
-        return {draft:editQuestion(draft,current.id,firstText,firstOrigin),questionId:current.id};
+        return {draft:editQuestion(draft,current.id,text,firstOrigin),questionId:current.id};
       }
       if (modelPlan) {
         return adoptModelQuestionPlan(draft, selectedModelId, modelMode, proposalContext,
-          {targetId: centralTarget, text: firstText, origin: firstOrigin, design: selectedDesign, selectedKeys: []});
+          {targetId: centralTarget, text, origin: firstOrigin, design: selectedDesign, selectedKeys: []});
       }
       if(sourcePlan) {
         return adoptSourceQuestionPlan(draft,selectedSourceId,modelMode,
-          {targetId:centralTarget,text:firstText,origin:firstOrigin,design:selectedDesign,selectedKeys:[],subquestionDetail:composerContext.subquestionDetail});
+          {targetId:centralTarget,text,origin:firstOrigin,design:selectedDesign,selectedKeys:[],subquestionDetail:sourceDetail});
       }
       if(processPlan) {
         return adoptProcessQuestionPlan(draft,selectedProcessId,modelMode,
-          {targetId:centralTarget,text:firstText,origin:firstOrigin,design:selectedDesign,selectedKeys:[]});
+          {targetId:centralTarget,text,origin:firstOrigin,design:selectedDesign,selectedKeys:[]});
       }
-      const added = centralTarget ? {draft: editQuestion(draft, centralTarget, firstText, firstOrigin), question: {id: centralTarget}}
-        : addQuestion(draft, null, firstText, firstOrigin);
+      const added = centralTarget ? {draft: editQuestion(draft, centralTarget, text, firstOrigin), question: {id: centralTarget}}
+        : addQuestion(draft, null, text, firstOrigin);
       const savedId = added.question.id;
       let next = setQuestionDesign(added.draft, savedId, selectedDesign);
       if (ownCentral || chosenProposalKey.startsWith('item:') || (chosenProposalKey && activeProposal && !activeProposal.modelId)) next = {...next, research: {...researchOf(next), questions: researchOf(next).questions.map((q: ResearchQuestion) => {
@@ -381,10 +382,16 @@ export default function ResearchBuilder({
         delete ownQuestion.linkMode;
         return ownQuestion;})}};
       return {draft: next as Draft, questionId: savedId};
-  }
-  const centralPreview = firstText.trim() && (!roots.length || choosing) && (centralTarget || r.questions.length < 200) ? prepareCentral() : null;
+  },[draft,centralTarget,chosenProposalKey,selectedModelId,firstChoice,firstOrigin,modelPlan,modelMode,
+    proposalContext,selectedDesign,sourcePlan,selectedSourceId,sourceDetail,processPlan,selectedProcessId,ownCentral,activeProposal]);
+  // Checkbox choices, focus and save-status updates do not change the available
+  // questions. Retain this render-only preview until its actual inputs change;
+  // accepting still calls prepareCentral afresh and validates the current draft.
+  const canPreview=Boolean(firstText.trim()&&composerVisible&&(centralTarget||r.questions.length<200));
+  const centralPreview = useMemo(()=>canPreview?prepareCentral():null,[canPreview,prepareCentral]);
   const canSwitchDetail=!ownCentral&&selectedSourceId===cioSourceId;
-  const allSelectableSubs:SubSuggestion[]=centralPreview&&!chosenProposalKey.startsWith('item:') ? questionMenuChoices(centralPreview.draft,centralPreview.questionId,composerContext) : [];
+  const allSelectableSubs:SubSuggestion[]=useMemo(()=>centralPreview&&!chosenProposalKey.startsWith('item:')
+    ? questionMenuChoices(centralPreview.draft,centralPreview.questionId,composerContext) : [],[centralPreview,chosenProposalKey,composerContext]);
   const selectableSubs=canSwitchDetail?allSelectableSubs.filter(s=>s.detail===subquestionDetail):allSelectableSubs;
   const chosenSubs=chosenSubKeys.flatMap(key=>allSelectableSubs.filter(s=>s.key===key));
   const broadChosen=chosenSubs.filter(s=>s.key.includes(':broad:')).length;
