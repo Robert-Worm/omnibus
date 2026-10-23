@@ -203,6 +203,26 @@ test('pinned viewer keeps exact content, source index, Unicode pages and static 
   assert.equal(digest(readFileSync(f.databasePath)), before, 'read-only requests preserve the database bytes');
 });
 
+test('static assets negotiate bounded Brotli, gzip or identity without changing bytes or build identity', async t => {
+  const f=fixture(t),source='/* Exact synthetic Unicode 🧭 */\n'.repeat(500);
+  writeFileSync(join(f.webRoot,'assets','large.js'),source);
+  f.readOnly();const before=digest(readFileSync(f.databasePath)),app=await f.start();
+  const version=await (await fetch(app.url+'/api/v1/version')).json();
+  let etag;
+  for(const [offer,expected] of [['br, gzip','br'],['br;q=0, gzip','gzip'],['identity',null],['br;q=0, gzip;q=0',null]]){
+    const response=await fetch(app.url+'/assets/large.js',{headers:{'Accept-Encoding':offer}});
+    assert.equal(response.status,200);assert.equal(response.headers.get('content-encoding'),expected);
+    assert.equal(response.headers.get('vary'),'Accept-Encoding');assert.equal(await response.text(),source);
+    if(etag)assert.equal(response.headers.get('etag'),etag);etag=response.headers.get('etag');
+  }
+  const denied=await fetch(app.url+'/assets/large.js',{headers:{'Accept-Encoding':'identity;q=0, br;q=0, gzip;q=0'}});
+  assert.equal(denied.status,406);assert.equal(await denied.text(),'');
+  const cached=await fetch(app.url+'/assets/large.js',{headers:{'Accept-Encoding':'br','If-None-Match':etag}});
+  assert.equal(cached.status,304);assert.equal(await cached.text(),'');
+  assert.deepEqual(await (await fetch(app.url+'/api/v1/version')).json(),version);
+  assert.equal(digest(readFileSync(f.databasePath)),before);
+});
+
 test('web reads reject other releases, other publications and unselected same-release data', async t => {
   const f = fixture(t);
   f.readOnly();

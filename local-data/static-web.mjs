@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, lstatSync, realpathSync, createReadStream } from 'node:fs';
 import { join, relative, extname } from 'node:path';
-import { createGzip } from 'node:zlib';
+import { responseEncoding, createResponseCompressor } from './response-compression.mjs';
 import { pipeline } from 'node:stream';
 import { createHash } from 'node:crypto';
 import { readRuntimePublication } from './runtime-publication.mjs';
@@ -34,7 +34,7 @@ export function createStaticWeb(root, repository) {
     if (!types[extname(path)]) return;
     const bytes = readFileSync(path);
     const sha256 = createHash('sha256').update(bytes).digest('hex');
-    files.set(url, { path, sha256, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
+    files.set(url, { path, sha256, bytes: bytes.length, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
   }
   const manifest = JSON.parse(readFileSync(join(root, 'omnibus-release.json'), 'utf8'));
   if (manifest.schema !== 1 || manifest.contract !== runtimeContractHash)
@@ -68,13 +68,12 @@ export function createStaticWeb(root, repository) {
     res.setHeader('ETag', file.etag);
     res.setHeader('Vary', 'Accept-Encoding');
     if (req.headers['if-none-match'] === file.etag) { res.writeHead(304); res.end(); return true; }
+    const encoding = responseEncoding(req.headers['accept-encoding'], file.bytes);
+    if (!encoding) { res.writeHead(406); res.end(); return true; }
     const stream = createReadStream(file.path);
-    if ((req.headers['accept-encoding'] || '').split(',').some(value => {
-      const match = value.trim().match(/^gzip(?:\s*;\s*q=([\d.]+))?$/);
-      return match && (match[1] === undefined || Number(match[1]) > 0);
-    })) {
-      res.setHeader('Content-Encoding', 'gzip');
-      pipeline(stream, createGzip(), res, () => {});
+    if (encoding !== 'identity') {
+      res.setHeader('Content-Encoding', encoding);
+      pipeline(stream, createResponseCompressor(encoding, file.bytes), res, () => {});
     } else pipeline(stream, res, () => {});
     return true;
   };
