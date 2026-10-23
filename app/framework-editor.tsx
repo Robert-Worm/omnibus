@@ -30,7 +30,7 @@ import {
   FoundationCatalogue,
   MaterialEditor,
 } from "./investigation-workspace";
-import { investigationFramework, foundations, foundationProposals, validateInvestigation } from "@/lib/investigation.mjs";
+import { investigationFramework, prepareInvestigationFramework, foundations, foundationProposals, validateInvestigation } from "@/lib/investigation.mjs";
 import {admittedMaterialTarget} from '@/lib/admitted-foundation.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
 import { flushSync } from "react-dom";
@@ -670,12 +670,13 @@ export default function FrameworkEditor() {
     // A delayed selection must never replace edits made while it was loading.
     contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
     if (action === "Laatste wijziging") setResetNotice("");
-    const validated=validateInvestigation(next.investigation);
+    const prepared=prepareInvestigationFramework(baseFramework,next);
+    const validated=prepared.investigation;
     // Always validate first. Preserve unchanged content identity so a presentation
     // setting does not rebuild the framework or resend every source to a worker.
     next = {...next,investigation:projectContentEqual(validated,draftRef.current.investigation)
       ? draftRef.current.investigation : validated};
-    const cleaned = cleanScopeDraft(investigationFramework(baseFramework, next), next);
+    const cleaned = cleanScopeDraft(prepared.framework, next);
     next = cleaned.draft;
     if(track && autoLink)next=linkNewSelections(draftRef.current,next) as Draft;
     if (cleaned.removed.length)
