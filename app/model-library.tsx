@@ -7,17 +7,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ModelVariable from "./model-variable";
 import DeferredViewerSection from './deferred-viewer-section';
 import CevWorkbench from "./cev-workbench";
-import ModelIntroduction from './model-introduction';
 import ModelInformation from './model-information';
 import ModelAbout from './model-about';
 import CatalogueCardActions from './catalogue-card-actions';
-import {modelCatalogueSelection} from '@/lib/catalogue-selection.mjs';
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
 import DirectorySearch from './directory-search';
 import {TermText} from './term-help';
 import {CatalogueHeader,ModelChoice} from './catalogue-navigation';
-import {modelChoiceSearchText} from '@/lib/content-adapters/model-choice-guide.mjs';
 import { usesQuestionWorkbench } from "@/lib/content-adapters/research-models.mjs";
 import { normalizeOpenModelIds, resolveOpenModel } from "@/lib/open-models.mjs";
 import {
@@ -32,9 +29,12 @@ import {
   modelDisplayName,
 } from "@/lib/interview-structure.mjs";
 import type {LibraryQuestion,LibraryItem,LibraryModel,ModelLibraryState} from '@/lib/model-library-types';
+import type {ModelDirectoryEntry} from '@/lib/model-directory-core.mjs';
 export type {LibraryIndicator,LibraryQuestion,LibraryItem,LibraryModel,ModelLibraryState} from '@/lib/model-library-types';
 export default function ModelLibrary({
   value,
+  directory,
+  onOpenViewer,
   onChange,
   ready,
   error,
@@ -45,7 +45,6 @@ export default function ModelLibrary({
   onOpenModel,
   onCloseModel,
   onCatalogue,
-  onWorkspace,
   onBuilder,
   overview,
   onOverviewChange:setOverview,
@@ -55,6 +54,8 @@ export default function ModelLibrary({
   guided = false,
 }: {
   value: ModelLibraryState;
+  directory: ModelDirectoryEntry[];
+  onOpenViewer:(id:string)=>void;
   onChange: (v: ModelLibraryState) => void;
   ready: boolean;
   overview:'questions'|'about';
@@ -68,7 +69,6 @@ export default function ModelLibrary({
   onOpenModel:(id:string)=>void;
   onCloseModel:(id:string)=>void;
   onCatalogue:()=>void;
-  onWorkspace:()=>void;
   onBuilder:()=>void;
   suggestedSubject?: string;
   directoryGroup?:string;
@@ -85,19 +85,15 @@ export default function ModelLibrary({
   const showList=Boolean(directoryGroup||query.trim()||filtered);
   const setQuery=(modelQuery:string)=>onViewChange({modelQuery});
   const setActive=(id:string|null)=>onViewChange({activeModel:id??'',modelDimension:''});
-  const models: LibraryModel[] = filterModels(
-    value.models.filter((m) => m.id !== "L01" &&
-      modelChoiceSearchText(m).includes(query.trim().toLowerCase()),
-    ),
+  const models: ModelDirectoryEntry[] = filterModels(
+    directory.filter(m=>m.searchText.includes(query.trim().toLowerCase())),
     { subject, processId, selectedOnly },
   );
   const openIds = normalizeOpenModelIds(openModelIds, value.models);
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
   const current: LibraryModel | undefined = mode === 'workspace' ? resolveOpenModel(openIds, active, value.models) : undefined;
   function openModel(id:string) {
-    onOpenModel(id);
-    setActive(id);
-    onWorkspace();
+    onOpenViewer(id);
   }
   function edit(id: string, patch: Partial<LibraryModel>) {
     onChange({ ...value, models: value.models.map((m) => (m.id === id ? { ...m, ...patch } : m)) });
@@ -129,7 +125,7 @@ export default function ModelLibrary({
       {guided&&<DirectorySearch id="model-search" label="Zoek model of modelcategorie" value={query} onChange={setQuery} placeholder="Bijvoorbeeld: gedrag of verandering"/>}
       {!guided&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek op model, auteur of vraagstuk…"/>}
       <CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}
-        groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:value.models.filter(m=>m.id!=='L01'&&g.modelIds.includes(m.id)).length}))}
+        groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:directory.filter(m=>g.modelIds.includes(m.id)).length}))}
         onChange={id=>{setSubject(id);setQuery('');setProcessId('');setSelectedOnly(false);}}/>
       {showList&&!guided&&filtered&&<p className="creator-help">
         Zoekfilters beperken de getoonde modellen; onderwerp en proces zijn zoekhulp, geen oordeel over geschiktheid.{' '}
@@ -145,17 +141,17 @@ export default function ModelLibrary({
                 <span className="catalogue-card-id">Wetenschappelijk model</span>
                 <h4>
                 <Button variant="link" disabled={!ready} onClick={() => openModel(m.id)}>
-                  {modelDisplayName(m)}{m.id === "L01" && " · oorspronkelijke indeling 2008"}
+                  {m.title}
                 </Button>
                 </h4>
-                <ModelIntroduction model={m} compact showDetails={false}>
-                <div className="catalogue-card-stats"><span><strong>{modelCatalogueSelection(m).total}</strong> vragen</span><span><strong>{m.items.length}</strong> {m.items.length===1?'onderdeel':'onderdelen'}</span><span className="catalogue-card-selected"><strong>{modelCatalogueSelection(m).selected}</strong> gekozen in model</span></div>
-                </ModelIntroduction>
+                <div className="model-introduction"><p className="model-orientation">{m.summary}</p>
+                <div className="catalogue-card-stats"><span><strong>{m.questionCount}</strong> vragen</span><span><strong>{m.itemCount}</strong> {m.itemCount===1?'onderdeel':'onderdelen'}</span><span className="catalogue-card-selected"><strong>{m.selectedCount}</strong> gekozen in model</span></div>
+                </div>
               </div>
-              <CatalogueCardActions layout="buttons" openId={'model-open-'+m.id} title={modelDisplayName(m)} opened={openIds.includes(m.id)} disabled={!ready} onOpen={()=>openModel(m.id)} onToggle={value=>value?onOpenModel(m.id):onCloseModel(m.id)}/>
+              <CatalogueCardActions layout="buttons" openId={'model-open-'+m.id} title={m.title} opened={openIds.includes(m.id)} disabled={!ready} onOpen={()=>openModel(m.id)} onToggle={value=>value?onOpenModel(m.id):onCloseModel(m.id)}/>
             </article>
           ))}
-          {!models.length && <p>{selectedOnly && !value.models.some((m) => m.selected)
+          {!models.length && <p>{selectedOnly && !directory.some((m) => m.selected)
             ? 'Nog geen model gekozen. Zet het filter uit om alle modellen te zien.'
             : filtered
               ? 'Geen model binnen deze filters. Zet de filters uit om alle modellen te zien.'

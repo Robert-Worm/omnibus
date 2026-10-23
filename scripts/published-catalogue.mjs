@@ -24,7 +24,7 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
  */
 export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, deferMetadata=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
   if(codeRevision && !validCodeRevision(codeRevision))throw Error('Invalid explicit code revision.');
-  let content, overviews, foundationSearch, foundationOverviews, metadata;
+  let content, overviews, foundationSearch, foundationOverviews, modelDirectory, metadata;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
     name:'omnibus-published-catalogue', enforce:'pre',
@@ -39,6 +39,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       if(reportOverviews){
         const projections=await buildCatalogueOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
         overviews=projections.reports;foundationSearch=projections.foundationSearch;foundationOverviews=projections.foundationOverviews;
+        modelDirectory=projections.modelDirectory;
       }
     },
     resolveId(source, importer) {
@@ -55,6 +56,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       if(id==='lib/report-overview-resources.mjs'&&reportOverviews)return virtualPrefix+'overview-resources';
       if(id==='lib/foundation-search-resources.mjs'&&reportOverviews)return virtualPrefix+'foundation-search-resources';
       if(id==='lib/foundation-overview-resources.mjs'&&reportOverviews)return virtualPrefix+'foundation-overview-resources';
+      if(id==='lib/model-directory-resource.mjs'&&reportOverviews)return virtualPrefix+'model-directory-resource';
       if (id === 'lib/database-source-client.mjs' && transportModule) return resolve(transportModule).replaceAll('\\','/');
       if (id === 'lib/application-mode.mjs') return virtualPrefix+'mode';
       const entry = runtimeContract[id];
@@ -64,6 +66,14 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
     load(id) {
       if (!id.startsWith(virtualPrefix)) return null;
       if (!content) throw Error('Publication must be verified before loading modules.');
+      if(id===virtualPrefix+'model-directory-resource'){
+        const source=`export default JSON.parse(${code(quote(modelDirectory))});`,hash=createHash('sha256').update(source).digest('hex');
+        const chunk=this.emitFile({type:'asset',fileName:'assets/model-directory-'+hash+'.js',source});
+        return `import {featureLoader} from ${quote(resolve(root,'lib/feature-loader.mjs'))};
+          const url=import.meta.ROLLUP_FILE_URL_${chunk};
+          const load=featureLoader(attempt=>import(/* @vite-ignore */ attempt?url+'?retry='+attempt:url));
+          export default ()=>load().then(m=>m.default);`;
+      }
       if(id===virtualPrefix+'foundation-overview-resources'){
         // Retryable, publication-derived assets with no imports: also safe for
         // the worker build, which must retain a single calculator entry point.

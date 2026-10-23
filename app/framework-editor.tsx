@@ -62,6 +62,7 @@ import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,them
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
 import {foundationOverviewKey} from '@/lib/foundation-overviews.mjs';
+import {modelDirectory,modelDirectoryKey,publishedModelDirectory} from '@/lib/model-directory.mjs';
 import {
   chooseReport,
   reportEnabled,
@@ -160,6 +161,8 @@ export default function FrameworkEditor() {
     });
   }
   const [modelLibrary, setModelLibrary] = useState<ModelLibraryState>(() => initialModelLibrary());
+  const publishedModels=publishedModelDirectory();
+  const modelDirectoryEntries=useMemo(()=>modelDirectory(modelLibrary,publishedModels),[modelLibrary,publishedModels]);
   const [modelsReady, setModelsReady] = useState(false);
   const [exportOpened,setExportOpened]=useState(false);
   const [modelError, setModelError] = useState("");
@@ -504,12 +507,13 @@ export default function FrameworkEditor() {
       const current=projectRef.current;
       const reportId=window.location.hash.replace('#rapport-','');
       const keys=['entry','start','framework','export'].includes(route)?[]:['catalogue'];
-      if(['models','model-workspace'].includes(route))keys.push('models');
+      if(route==='models')keys.push(modelDirectoryKey());
+      if(route==='model-workspace')keys.push('models');
       if(route==='reader')keys.push('report:'+reportId);
       if(route==='foundation-workspace')keys.push(foundationOverviewKey(current.view.foundationFocus||current.draft.investigation?.sourceIds[0],Boolean(current.view.aboutViews?.laws)));
       if(route==='topics')for(const id of current.view.combined?current.workspace.openIds:[current.workspace.activeId])keys.push(...(catalogueRouting.workspaces[id||'']??[]).map(reportOverviewKey));
       if(!catalogueReady(keys)){withContent(keys,sync);return;}
-      if(['models','model-workspace'].includes(route))prepareModelLibrary();
+      if(['models','model-workspace'].includes(route)&&catalogueReady(['models']))prepareModelLibrary();
       if(route==='export')setExportOpened(true);
       contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
       setPage(route);
@@ -623,7 +627,8 @@ export default function FrameworkEditor() {
       next=landing.page;
     }
     const keys=['entry','start','framework','export'].includes(next)?[]:['catalogue'];
-    if(['models','model-workspace'].includes(next))keys.push('models');
+    if(next==='models')keys.push(modelDirectoryKey());
+    if(next==='model-workspace')keys.push('models');
     if(next==='reader')keys.push('report:'+reportId);
     if(next==='foundation-workspace'){
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
@@ -631,7 +636,7 @@ export default function FrameworkEditor() {
     }
     if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map(reportOverviewKey));
     if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
-    if(['models','model-workspace'].includes(next))prepareModelLibrary();
+    if(['models','model-workspace'].includes(next)&&catalogueReady(['models']))prepareModelLibrary();
     if(next==='export')setExportOpened(true);
     contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
     if(next==='start')setResearchRoute('question');
@@ -912,8 +917,8 @@ export default function FrameworkEditor() {
   }
   function chooseRiskArea(area:typeof riskArea) {
     if(area==='models'){
-      if(!catalogueReady(['models'])){withContent(['models'],()=>chooseRiskArea(area));return;}
-      prepareModelLibrary();
+      if(!catalogueReady([modelDirectoryKey()])){withContent([modelDirectoryKey()],()=>chooseRiskArea(area));return;}
+      if(catalogueReady(['models']))prepareModelLibrary();
     }
     if(area===riskArea||area==='laws'||area==='frameworks'){
       if(area==='themes'||area==='processes')setDirectoryViews(v=>({...v,[area]:emptyDirectoryView()}));
@@ -948,21 +953,30 @@ export default function FrameworkEditor() {
               navigate={navigate}
             />
   );
-  const renderModels = () => !catalogueReady(['models']) ? <output data-status-block="">Modellen laden…</output> : (
+  function openModel(id:string,viewer=false) {
+    withContent(['models'],()=>{
+      prepareModelLibrary();
+      const models=projectRef.current.modelLibrary.models;
+      if(!models.some(model=>model.id===id))return;
+      setOpenModelIds(ids=>addOpenModel(ids,id,models));
+      if(viewer){setModelView(v=>({...v,activeModel:id,modelDimension:''}));navigate('model-workspace');}
+    });
+  }
+  const renderModels = () => !catalogueReady([page==='model-workspace'?'models':modelDirectoryKey()]) ? <output data-status-block="">Modellen laden…</output> : (
             <>
               <ModelLibrary
                 guided={page==='risk-start'}
                 directoryGroup={catalogueGroups.models} onDirectoryGroup={id=>setCatalogueGroups(v=>({...v,models:id}))}
                 key={page==='risk-start'?`risk-${builderGeneration}-${riskBrowseGeneration}`:builderGeneration}
                 mode={page==='model-workspace'?'workspace':'catalogue'} openModelIds={openModelIds}
-                onOpenModel={id=>setOpenModelIds(ids=>addOpenModel(ids,id,modelLibrary.models))}
+                onOpenModel={id=>openModel(id)} onOpenViewer={id=>openModel(id,true)}
                 onCloseModel={id=>setOpenModelIds(ids=>removeOpenModel(ids,id,modelLibrary.models))}
-                onCatalogue={()=>navigate('models')} onWorkspace={()=>navigate('model-workspace')}
+                onCatalogue={()=>navigate('models')}
                 onBuilder={()=>navigate('framework')}
                 overview={aboutViews.models?'about':'questions'}
                 onOverviewChange={value=>setAboutViews(v=>({...v,models:value==='about'}))}
                 suggestedSubject={draft.investigation?.goal?.subject || draft.investigation?.scope || ''}
-                value={modelLibrary}
+                value={modelLibrary} directory={modelDirectoryEntries}
                 view={modelView}
                 onViewChange={patch=>setModelView(v=>({...v,...patch}))}
                 onChange={changeModels}

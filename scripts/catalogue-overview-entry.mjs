@@ -19,11 +19,14 @@ import {projectWwkeOverview} from './wwke-overview-projection.mjs';
 import {wwkeSourceId,wwkeCatalogue,wwkePoints,wwkePointContext,wwkeBank,wwkeFilters} from '../lib/wwke-law-data.mjs';
 import {wwkeBrowserGroups} from '../lib/wwke-browser-view.mjs';
 import {readableWwkeCriterion} from '../lib/wwke-readable-criteria.mjs';
+import {initialModelLibrary} from '../lib/model-library.mjs';
+import {describeModel} from '../lib/model-directory.mjs';
 export {configureCatalogueReader} from '../agent-tools/catalogue-transport.mjs';
 
 export async function catalogueOverviews() {
-  await ensureCatalogue(['catalogue', 'report', 'foundation']);
+  await ensureCatalogue(['catalogue', 'report', 'foundation', 'models']);
   return {
+    modelDirectory:initialModelLibrary().models.map(describeModel),
     reports:projectReportOverviews(admittedLines(baseFramework), corpus.map(c => c.framework), catalogue.points, sourceElement),
     foundationSearch:projectFoundationSearch(preparedFoundationItems,foundations),
     foundationOverviews:Object.fromEntries([
