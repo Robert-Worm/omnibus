@@ -264,7 +264,7 @@ export default function CevWorkbench({
             // Editing a supplied question also sets origin=user; those questions remain protected.
             const ownQuestion=q.origin==='user'&&!reviewedModels.find(m=>m.id===model.id)?.items.some(i=>i.questions?.some(original=>original.id===q.id));
             return (
-              <DeferredViewerSection key={q.id} immediate={index<4||Boolean(indicatorId||onlySelected||editing===q.id)} label={`Toon vraag: ${q.title}`}>
+              <DeferredViewerSection key={q.id} immediate={index<4||editing===q.id} label={`Toon vraag: ${q.title}`}>
               <article className={"cev-question" + (included ? " is-chosen" : "")}>
                 <div className="cev-question-heading">
                 <label className="cev-question-choice" htmlFor={q.id + "-choose"}>

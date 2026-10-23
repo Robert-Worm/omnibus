@@ -281,7 +281,9 @@ export default function CompactMatrix({
   const allPage = selectableRows(rows).length > 0 && selectableRows(rows).every((l) => rowAll(l.id));
   const somePage = rows.some((l) => rowSome(l.id));
   const keys = (Object.keys(labels) as ElementKey[]).filter((k) => columns.includes(k));
-  const deferPresentation=deferRows&&!query&&!selectedOnly&&!view.group&&!view.subjects.length&&!reveal&&view.top===0;
+  // Filters change the full result set, not the need to mount off-screen controls.
+  // Explicit navigation and restored scroll retain their existing eager fallback.
+  const deferPresentation=deferRows&&!reveal&&view.top===0;
   // Keep batch identity stable when scrolling or revealing forces eager mounting.
   const rowBatches=viewerRowBatches(rows,deferRows);
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
@@ -508,7 +510,7 @@ export default function CompactMatrix({
           </TableHeader>
           {rowBatches.map((chunk,batch)=>{
            return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
-            {chunk.map((l) => (
+            {()=>chunk.map((l) => (
               <TableRow
                 key={l.id}
                 data-norm-id={l.id}
