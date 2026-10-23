@@ -34,6 +34,7 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Brontekst blijft via de gedeelde bronviewer per pagina laden, met exacte versie- en passagecontrole. Het openen van een overzicht mag niet alle onderliggende bronbestanden ophalen.
 - De gedeelde kaderviewer gebruikt `foundationOverviewKey` voor alleen bladeren. Bouw de overzichtsgegevens uit de bestaande bronadapters; behoud alle zoekvelden, groepsindelingen, aantallen en HOLD-statussen. Details, Over en selectie laden eerst het volledige kader via `prepareDetails`. Overzichtsregels met `displayOnly` mogen nooit in een project of export belanden. Nieuwe toegelaten kaders volgen deze route automatisch; onbekende viewerfamilies houden de volledige laadroute als fallback.
 - Projectcompressie gebruikt de gedeelde achtergrondopslag. Voeg geen synchrone volledige projectcompressie toe aan gewone navigatie. Behoud de bewaarbeveiligingen, synchrone afsluitfallback en herkenbare opslagstatus.
+- WWKE-overzichten en volledige bronweergave delen dezelfde filter- en rijopbouw. Behoud doelgroepafhankelijke normtekst, sectoruitzonderingen, contextpunten en HOLD; selectie wacht op volledige gegevens en bevestigt nooit juridische toepasselijkheid.
 - Controleer nieuwe viewers met een omvangrijke collectie, zoeken naar late items, selectie buiten beeld, herladen en smalle schermen. De gedeelde contracttests staan in `lib/viewer-rendering.test.mjs`.
 
 ## Versiebeheer

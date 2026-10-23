@@ -15,6 +15,10 @@ import {cioFunctionRows,cioFunctionGroups} from '../lib/cio-function-view.mjs';
 import {topicalPackages,topicalRows,topicalGroups} from '../lib/topical-content.mjs';
 import {foundationProposals} from '../lib/investigation.mjs';
 import {isAdmittedFoundation,flatLawPresentation} from '../lib/admitted-foundation.mjs';
+import {projectWwkeOverview} from './wwke-overview-projection.mjs';
+import {wwkeSourceId,wwkeCatalogue,wwkePoints,wwkePointContext,wwkeBank,wwkeFilters} from '../lib/wwke-law-data.mjs';
+import {wwkeBrowserGroups} from '../lib/wwke-browser-view.mjs';
+import {readableWwkeCriterion} from '../lib/wwke-readable-criteria.mjs';
 export {configureCatalogueReader} from '../agent-tools/catalogue-transport.mjs';
 
 export async function catalogueOverviews() {
@@ -23,6 +27,7 @@ export async function catalogueOverviews() {
     reports:projectReportOverviews(admittedLines(baseFramework), corpus.map(c => c.framework), catalogue.points, sourceElement),
     foundationSearch:projectFoundationSearch(preparedFoundationItems,foundations),
     foundationOverviews:Object.fromEntries([
+      [wwkeSourceId,projectWwkeOverview(wwkeSourceId,{criteria:wwkeCatalogue.criteria,points:wwkePoints,contextFor:wwkePointContext,criterionText:readableWwkeCriterion,records:wwkeBank.records,filters:wwkeFilters,groups:wwkeBrowserGroups})],
       [cioSourceId,projectFoundationOverview(cioSourceId,{rows:cioFunctionRows,groups:cioFunctionGroups,points:cioPoints,records:cioSourceBank.records})],
       ...topicalPackages.map(p=>[p.id,projectFoundationOverview(p.id,{rows:topicalRows(p),groups:topicalGroups(p),points:p.catalogue.points,records:p.bank.records})]),
       ...foundations.filter(isAdmittedFoundation).map(source=>{

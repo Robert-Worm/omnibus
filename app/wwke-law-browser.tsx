@@ -1,14 +1,16 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
-import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
-import {useId,useState} from 'react';
+import {catalogueDerived,catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
+import {useId,useState,useRef,useEffect,useLayoutEffect,useSyncExternalStore} from 'react';
+import {foundationOverview,foundationOverviewSelection} from '@/lib/foundation-overviews.mjs';
+import {wwkeOverviewRows,wwkeOverviewExcluded} from '@/lib/wwke-overview.mjs';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Input} from '@/components/ui/input';
 import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription,SheetClose} from '@/components/ui/sheet';
 import type {Draft,Line,ElementKey} from '@/lib/framework-types';
-import {wwkeCatalogue,wwkePoints,wwkePointMap,wwkePointContext,wwkeMetadata,wwkeFilters,wwkeLabels,wwkeExcludedForSector} from '@/lib/wwke-law-data.mjs';
+import {wwkeCatalogue,wwkePoints,wwkePointMap,wwkePointContext,wwkeMetadata,wwkeFilters,wwkeLabels,wwkeExcludedForSector,wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {wwkeSelection,chooseWwkePoints,selectWwkePointsDirect} from '@/lib/wwke-law-adapter.mjs';
 import {useBrowseState} from './browse-state';
 import {useLawOverview,type LawOverviewProps} from './law-overview-state';
@@ -32,7 +34,7 @@ import './cio-source-about.css';
 import './wwke-law-browser.css';
 
 type Point=typeof wwkePoints[number];
-type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void};
+type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};
 const labels=wwkeLabels as Record<string,string>;
 const vocab=wwkeFilters.vocabularies;
 const textList=(title:string,items:string[])=>items.length>0&&<section className="wwke-text"><h4>{title}</h4><ul>{items.map((s,i)=><li key={i}>{s}</li>)}</ul></section>;
@@ -55,7 +57,19 @@ function PointConditions({point,draft}:{point:Point;draft:Draft}){
  {assessment&&<details><summary>{assessment.mode==='SELECTION'?'Toepasselijkheid nog te beoordelen':'Jouw beoordeling van toepasselijkheid'}</summary>{assessment.mode==='SELECTION'&&<p>Deze bouwsteen is direct aan je onderzoeksselectie toegevoegd. De toepasselijkheid is nog niet bevestigd.</p>}<p>{assessment.basis}</p><p>{assessment.boundary}</p></details>}</section>;
 }
 export default function WwkeLawBrowser(props:Props){return <Browser key={props.initialPointId||'catalogue'} {...props}/>;}
-function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,...overviewProps}:Props){
+function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,prepareDetails,...overviewProps}:Props){
+ useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
+ const preview=foundationOverview(wwkeSourceId);
+ const latestDraft=useRef(draft);useLayoutEffect(()=>{latestDraft.current=draft;},[draft]);
+ const actionGeneration=useRef(0);useEffect(()=>()=>{actionGeneration.current++;},[]);
+ function withDetails(action:()=>void){
+  const generation=++actionGeneration.current;
+  if(!preview){action();return;}
+  if(!prepareDetails){setError('De volledige kadergegevens zijn nog niet beschikbaar. Open het kader opnieuw.');return;}
+  prepareDetails(()=>{if(generation===actionGeneration.current)action();});
+ }
+ const select=(ids?:string[])=>preview?foundationOverviewSelection(preview,draft,ids):wwkeSelection(draft,ids);
+ const excludedForSector=(id:string,sector:string)=>preview?wwkeOverviewExcluded(preview,id,sector):wwkeExcludedForSector(id,sector);
  const checkboxId=useId();
  const [openId,setOpenId]=useState(allRows.find(r=>r.pointIds.includes(initialPointId||''))?.id||'');
  const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('comfortable');
@@ -65,39 +79,40 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  // Old government/role preferences must not override the new entity-first default.
  const [storedView,setView]=useBrowseState('wwke-browser-audience-v3',defaultView);
  const view={...storedView,audience:wwkeAudiences.some(a=>a.id===storedView.audience)?storedView.audience:'entities'};
- const selection=wwkeSelection(draft),selected=new Set(selection.selectedIds);
- const rows=wwkeBrowserRows({...view,section:'norms'},selection.selectedIds) as BrowseRow[];
+ const selection=select(),selected=new Set(selection.selectedIds);
+ const browseFilters={...view,section:'norms' as const};
+ const rows=(preview?wwkeOverviewRows(preview,browseFilters,selection.selectedIds):wwkeBrowserRows(browseFilters,selection.selectedIds)) as BrowseRow[];
  const groups=wwkeBrowserGroups.map(group=>({...group,...(view.audience==='entities'&&group.id==='toezicht'?{title:'Opgelegd onderzoek en aanwijzingen',description:'Verplichtingen voor de entiteit wanneer een onderzoek of bindende aanwijzing is opgelegd.'}:{}),rows:rows.filter(r=>r.groupId===group.id)})).filter(group=>group.rows.length);
- const counts=Object.fromEntries(rows.map(r=>[r.id,wwkeSelection(draft,r.pointIds)]));
- const visiblePointIds=[...new Set(rows.flatMap(r=>r.pointIds))].filter(id=>wwkePointMap.get(id)?.selection_status==='SELECTABLE'&&!wwkeExcludedForSector(id,view.sector));
- const visibleSelection=wwkeSelection(draft,visiblePointIds);
+ const counts=Object.fromEntries(rows.map(r=>[r.id,select(r.pointIds)]));
+ const visiblePointIds=[...new Set(rows.flatMap(r=>r.pointIds))].filter(id=>!excludedForSector(id,view.sector));
+ const visibleSelection=select(visiblePointIds);
  const [detailAudience,setDetailAudience]=useState('');
  const detailRows=detailAudience?wwkeBrowserRows({audience:detailAudience}) as BrowseRow[]:allRows;
- const row=detailRows.find(r=>r.id===openId),children=row?.pointIds.map(id=>wwkePointMap.get(id)!).filter(Boolean)||[];
+ const row=preview?undefined:detailRows.find(r=>r.id===openId),children=row?.pointIds.map(id=>wwkePointMap.get(id)!).filter(Boolean)||[];
  const point=wwkePointMap.get(pointId),parent=wwkeCatalogue.criteria.find(c=>c.id===row?.criterionId),rowSelection=wwkeSelection(draft,row?.pointIds||[]);
  const visibleColumns=view.columns.filter(id=>columns.some(c=>c.id===id));
  function choose(ids:string[],value:boolean){
   if(disabled)return;
-  try{onChange((value?selectWwkePointsDirect(draft,ids,view.sector):chooseWwkePoints(draft,ids,false)) as Draft);setError('');}catch(e){setError(e instanceof Error?e.message:'Selectie mislukt.');}
+  withDetails(()=>{try{onChange((value?selectWwkePointsDirect(latestDraft.current,ids,view.sector):chooseWwkePoints(latestDraft.current,ids,false)) as Draft);setError('');}catch(e){setError(e instanceof Error?e.message:'Selectie mislukt.');}});
  }
  function selectAll(){
   choose(visiblePointIds,!visibleSelection.all);
  }
- function open(id:string,focus?:string,fullSource=false){const audience=fullSource?'':view.audience;const row=(audience?wwkeBrowserRows({audience}):allRows).find(r=>r.id===id);if(!row)return;setDetailAudience(audience);setOpenId(id);setPointId(focus||row.pointIds[0]);setTab('points');}
+ function open(id:string,focus?:string,fullSource=false){withDetails(()=>{const audience=fullSource?'':view.audience;const row=(audience?wwkeBrowserRows({audience}):allRows).find(r=>r.id===id);if(!row)return;setDetailAudience(audience);setOpenId(id);setPointId(focus||row.pointIds[0]);setTab('points');});}
  function openPoint(id:string){const row=allRows.find(r=>r.pointIds.includes(id));if(row)open(row.id,id,true);}
  function close(){setOpenId('');setPointId('');onClose?.();}
  return <section className="law-browser wwke-browser" aria-label="WWKE">
- {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>setAbout(false)}>Normen</button><button aria-pressed={about} onClick={()=>setAbout(true)}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
+ {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>{actionGeneration.current++;setAbout(false);}}>Normen</button><button aria-pressed={about} onClick={()=>withDetails(()=>setAbout(true))}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
  {about?<WwkeSourceAbout initialSector={view.sector} onPoint={id=>{openPoint(id);setTab('source');}}/>:<>
  <div className="law-browse-intro"><div className="law-viewer-heading"><h2>Wet weerbaarheid kritieke entiteiten</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(rows)}</output></div><div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled||!visibleSelection.total} title={visibleSelection.all?'Verwijder de normen binnen de huidige filters uit je selectie. Andere bronnen en bewerkingen blijven behouden.':'Voeg alle normen binnen de huidige filters direct toe aan je selectie. Toepasselijkheid blijft afzonderlijk te beoordelen; punten met open bronvragen blijven uitgesloten.'} onClick={selectAll}><ListChecks size={15}/>{visibleSelection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
  <div className="law-browse-filters" aria-label="Normen filteren">
  <label className="law-search-label" htmlFor="wwke-search">Zoeken in dit kader<div className="law-search"><Search size={16}/><Input id="wwke-search" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))} placeholder="Zoek op norm, onderwerp of artikel…"/></div></label>
  <label htmlFor="wwke-audience">Voor wie?<select id="wwke-audience" aria-label="Voor wie?" value={view.audience} onChange={e=>setView(v=>({...v,audience:e.target.value}))}>{wwkeAudiences.map(a=><option value={a.id} key={a.id}>{a.title}</option>)}</select></label>
- <label htmlFor="wwke-sector">Sector<select id="wwke-sector" aria-label="Sector" value={view.sector} onChange={e=>setView(v=>({...v,sector:e.target.value}))}><option value="">Alle sectoren</option>{vocab.sectors.map(s=><option value={s.id} key={s.id}>{labels[s.id]}</option>)}</select></label>
+ <label htmlFor="wwke-sector">Sector<select id="wwke-sector" aria-label="Sector" value={view.sector} onChange={e=>setView(v=>({...v,sector:e.target.value}))}><option value="">Alle sectoren</option>{((preview?.sectors||vocab.sectors) as typeof vocab.sectors).map(s=><option value={s.id} key={s.id}>{labels[s.id]}</option>)}</select></label>
  <div className="law-column-control"><span>Weergave</span><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={cols=>setView(v=>({...v,columns:cols}))}/></div>
  <LawReadingControls value={readingDensity} onChange={setReadingDensity}/>
  </div>
- <div className="law-group-stack">{groups.map((group,index)=>{const ids=group.rows.flatMap(r=>r.pointIds),state=wwkeSelection(draft,ids);return <section className="law-group" key={group.id} data-wwke-group={group.id}><header className="law-group-heading"><div><h3>{group.title}</h3><p className="law-group-description">{group.description}</p><p className="law-group-location">Bron: hoofdstuk {[...new Set(group.rows.map(r=>r.sourceChapter))].join(' · ')}</p><p className="law-group-count">{state.selected} van {countLabel(state.total,'toetspunten')} gekozen</p></div><label className="law-select-group" htmlFor={checkboxId+group.id}><Checkbox id={checkboxId+group.id} checked={state.all} indeterminate={state.partial} disabled={disabled||!state.total} aria-label={'Selecteer hele groep '+group.title} onCheckedChange={v=>choose(ids,v===true)}/><span>Selecteer hele groep<small>{countLabel(state.total,'toetspunten')}</small></span></label></header>
+ <div className="law-group-stack">{groups.map((group,index)=>{const ids=group.rows.flatMap(r=>r.pointIds),state=select(ids);return <section className="law-group" key={group.id} data-wwke-group={group.id}><header className="law-group-heading"><div><h3>{group.title}</h3><p className="law-group-description">{group.description}</p><p className="law-group-location">Bron: hoofdstuk {[...new Set(group.rows.map(r=>r.sourceChapter))].join(' · ')}</p><p className="law-group-count">{state.selected} van {countLabel(state.total,'toetspunten')} gekozen</p></div><label className="law-select-group" htmlFor={checkboxId+group.id}><Checkbox id={checkboxId+group.id} checked={state.all} indeterminate={state.partial} disabled={disabled||!state.total} aria-label={'Selecteer hele groep '+group.title} onCheckedChange={v=>choose(ids,v===true)}/><span>Selecteer hele groep<small>{countLabel(state.total,'toetspunten')}</small></span></label></header>
  <DeferredViewerSection count={group.rows.length} immediate={index===0}>
  <CompactMatrix lines={group.rows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={'wwke-group-'+group.id+'-v3'} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]} onOpen={id=>open(id)} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:id=>open(id),onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
  </DeferredViewerSection>
