@@ -72,15 +72,17 @@ export function rondleidingHtml({ stap, uitleg, voortgang, beeld, schema = "ligh
 
 /** De banner bovenaan de README: naam, belofte en twee schermen van Omnibus, in licht of donker. Formaat 1280 × 480, gemaakt op dubbele dichtheid. */
 export const BANNER = { breed: 1280, hoog: 480 };
-export function bannerHtml({ schema = "light", lettertypen = "", voor, achter }) {
+export const SOCIAL_PREVIEW = { hoog: 640, pad: ".github/social-preview.png" };
+export function bannerHtml({ schema = "light", lettertypen = "", voor, achter, hoog = BANNER.hoog }) {
+  const extra = Math.round((hoog - BANNER.hoog) / 2); // een hoger beeld (de social preview) houdt alles in het midden
   const d = schema === "dark";
   const c = d
     ? { bg: "linear-gradient(135deg,#0f1722,#172231)", titel: "#cfe0f5", lijn: "#5aa9e6", kop: "#e6edf5", tekst: "#a9b6c6", raam: "#1c2633", rand: "#2c3a4a", stip: "#3a4a5c", schaduw: "0 18px 40px rgba(0,0,0,.45)" }
     : { bg: "linear-gradient(135deg,#f5f7fa,#e8edf3)", titel: "#1b3f6e", lijn: "#1b3f6e", kop: "#15233b", tekst: "#3b4a5c", raam: "#fff", rand: "#d9e0e8", stip: "#d3d9e0", schaduw: "0 18px 40px rgba(21,35,59,.16)" };
   const raam = (beeld, stijl, bijsnijden = 0) => `<div class="raam" style="${stijl}"><div class="balk"><i></i><i></i><i></i></div><img style="margin-top:-${bijsnijden}px" src="data:image/png;base64,${beeld.toString("base64")}"></div>`;
   return `<!doctype html><meta charset="utf-8"><style>${lettertypen}
-    body{margin:0;width:${BANNER.breed}px;height:${BANNER.hoog}px;overflow:hidden;background:${c.bg};font-family:Inter,sans-serif;position:relative}
-    .tekst{position:absolute;left:58px;top:104px;width:520px}
+    body{margin:0;width:${BANNER.breed}px;height:${hoog}px;overflow:hidden;background:${c.bg};font-family:Inter,sans-serif;position:relative}
+    .tekst{position:absolute;left:58px;top:${104 + extra}px;width:520px}
     h1{margin:0 0 30px;padding-left:24px;border-left:5px solid ${c.lijn};font:700 96px/1 Spectral,Georgia,serif;color:${c.titel};letter-spacing:-1px}
     .belofte{margin:0 0 18px;font:600 32px/1.2 Inter,sans-serif;color:${c.kop}}
     .uitleg{margin:0;font:400 22px/1.45 Inter,sans-serif;color:${c.tekst}}
@@ -89,8 +91,8 @@ export function bannerHtml({ schema = "light", lettertypen = "", voor, achter })
     .raam i{width:9px;height:9px;border-radius:50%;background:${c.stip}}
     .raam img{display:block;width:100%}
   </style>
-  ${raam(achter, "left:770px;top:22px;width:450px")}
-  ${raam(voor, "left:600px;top:120px;width:500px")}
+  ${raam(achter, `left:770px;top:${22 + extra}px;width:450px`)}
+  ${raam(voor, `left:600px;top:${120 + extra}px;width:500px`)}
   <div class="tekst"><h1>Omnibus</h1><p class="belofte">Van brondocument naar referentiekader</p>
   <p class="uitleg">Rapporten, wetten, kaders en modellen<br>→ normen, toetspunten en onderzoeksvragen</p></div>`;
 }
@@ -270,6 +272,16 @@ async function main() {
         verklein(doel);
         gemaakt.push(`${naam}.png`); console.log(`✓ ${naam}.png`);
       }
+    }
+    if (wil("social-preview")) {
+      // De afbeelding bij een gedeelde link naar de repository (1280 × 640). Upload: Settings → General → Social preview.
+      const kader = await browser.newPage({ viewport: { width: BANNER.breed, height: SOCIAL_PREVIEW.hoog }, deviceScaleFactor: 1 });
+      const lees = (n) => readFileSync(path.join(uit, `${n}.png`));
+      await kader.setContent(bannerHtml({ lettertypen: lettertypenUitBuild(), voor: lees("stap-4-exporteer"), achter: lees("stap-3-bouw-je-kader"), hoog: SOCIAL_PREVIEW.hoog }), { waitUntil: "load" });
+      await kader.evaluate(() => document.fonts.ready);
+      await kader.screenshot({ path: path.join(root, SOCIAL_PREVIEW.pad) });
+      await kader.close();
+      console.log(`✓ ${SOCIAL_PREVIEW.pad} (niet in de stand: upload hem met de hand)`);
     }
     if (wil("rondleiding")) {
       for (const schema of ["light", "dark"]) {
