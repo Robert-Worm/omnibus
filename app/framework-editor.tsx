@@ -61,6 +61,7 @@ import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefe
 import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
+import {foundationOverviewKey} from '@/lib/foundation-overviews.mjs';
 import {
   chooseReport,
   reportEnabled,
@@ -505,7 +506,7 @@ export default function FrameworkEditor() {
       const keys=['entry','start','framework','export'].includes(route)?[]:['catalogue'];
       if(['models','model-workspace'].includes(route))keys.push('models');
       if(route==='reader')keys.push('report:'+reportId);
-      if(route==='foundation-workspace')keys.push('foundation:'+(current.view.foundationFocus||current.draft.investigation?.sourceIds[0]));
+      if(route==='foundation-workspace')keys.push(foundationOverviewKey(current.view.foundationFocus||current.draft.investigation?.sourceIds[0],Boolean(current.view.aboutViews?.laws)));
       if(route==='topics')for(const id of current.view.combined?current.workspace.openIds:[current.workspace.activeId])keys.push(...(catalogueRouting.workspaces[id||'']??[]).map(reportOverviewKey));
       if(!catalogueReady(keys)){withContent(keys,sync);return;}
       if(['models','model-workspace'].includes(route))prepareModelLibrary();
@@ -626,7 +627,7 @@ export default function FrameworkEditor() {
     if(next==='reader')keys.push('report:'+reportId);
     if(next==='foundation-workspace'){
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
-      if(source)keys.push('foundation:'+source);
+      if(source)keys.push(foundationOverviewKey(source,Boolean(aboutViews.laws||foundationCriterion)));
     }
     if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map(reportOverviewKey));
     if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
@@ -927,7 +928,7 @@ export default function FrameworkEditor() {
   }
   const renderFoundations = () => (
             <FoundationCatalogue
-              onPrepareSource={id=>{void prefetchCatalogue(['foundation:'+id]);}}
+              onPrepareSource={id=>{void prefetchCatalogue([foundationOverviewKey(id,aboutViews.laws)]);}}
               prepareSources={(ids,action)=>withContent(ids.map(id=>'foundation:'+id),action)}
               prepareSearch={ids=>withContent(foundationSearchKeys(ids),()=>{})}
               sourceScope={page==='risk-start'?(riskArea==='laws'?'laws':'frameworks'):foundationCatalogueScope}
@@ -936,7 +937,7 @@ export default function FrameworkEditor() {
               directoryGroup={catalogueGroups.foundations} onDirectoryGroup={id=>setCatalogueGroups(v=>({...v,foundations:id}))}
               key={page==='risk-start'?`risk-${builderGeneration}-${riskBrowseGeneration}`:builderGeneration}
               searchQuery={catalogueSearch} onSearchQuery={setCatalogueSearch}
-              onCriteria={(id,criterionId) => withContent(['catalogue','foundation:'+id],()=>{ setFoundationFocus(id);setFoundationCriterion(criterionId||'');
+              onCriteria={(id,criterionId) => withContent(['catalogue',foundationOverviewKey(id,Boolean(criterionId||aboutViews.laws))],()=>{ setFoundationFocus(id);setFoundationCriterion(criterionId||'');
                 if(criterionId) setFoundationBrowse({sourceId:id,query:criterionId,topic:'',groupId:'',page:0,selectedOnly:false,reviewedOnly:false,grouped:false});
                 navigate("foundation-workspace"); })}
               initialProcess={page==='risk-start'?'':sourceProcess}
@@ -1238,7 +1239,8 @@ export default function FrameworkEditor() {
             renderFoundations()
           ) : page === "foundation-workspace" ? (
             <FoundationWorkspace
-              prepareSource={(id,action)=>withContent(['foundation:'+id],action)}
+              prepareSource={(id,action)=>withContent([foundationOverviewKey(id,aboutViews.laws)],action)}
+              prepareDetails={(id,action)=>withContent(['foundation:'+id],action)}
               overview={aboutViews.laws?'source':'norms'}
               onOverviewChange={value=>setAboutViews(v=>({...v,laws:value==='source'}))}
               key={builderGeneration}

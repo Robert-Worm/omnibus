@@ -1,5 +1,6 @@
 'use client';
-import {useMemo,useState} from 'react';
+import {useMemo,useState,useSyncExternalStore} from 'react';
+import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import {BookOpen} from 'lucide-react';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
 import CioNormSummary from './cio-norm-summary';
@@ -48,19 +49,20 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  notice={<><p className="cio-meta">{chosen.document.title} · fysieke PDF-pagina’s</p>{chosen.passages.length!==chosen.spans.length&&<p role="alert">Niet alle bronmarkeringen konden worden bevestigd.</p>}</>}/></>:<p role="alert">De exacte bron is niet beschikbaar.</p>;
  return <LawPointSourceLayout label={'Bron bij '+point.title} summary={<CioNormSummary point={point}/>} publication={<a href={bundle.status.official_url} target="_blank" rel="noreferrer">Officiële publicatie ↗</a>} criterion={criterion} source={source} active={active} onActive={setActive}/>;
 }
-type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void};
+type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};
 export function TopicalSavedSource({serialized}:{serialized:string}){
  const trace=JSON.parse(serialized),bundle=topicalPackage(trace.sourceId);
  if(!bundle)return <p role="alert">Dit bronpakket is niet beschikbaar.</p>;
  return <CatalogueContent resource={'source:'+bundle.id}>{()=> <SourceContent key={trace.point.id} bundle={bundle} point={trace.point} parent={trace.criterion}/>}</CatalogueContent>;
 }
 export default function TopicalLawBrowser({sourceId,...props}:Props){
+ const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const bundle=topicalPackage(sourceId)!;
- const adapter=useMemo(()=>({sourceId,title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
+ const adapter=useMemo(()=>({revision,sourceId,title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
   catalogue:bundle.catalogue,points:bundle.catalogue.points,records:bundle.bank.records,rows:topicalRows(bundle),groups:topicalGroups(bundle),
   goalFor:(id:string)=>topicalGoal(bundle,id),measureFor:(id:string)=>topicalMeasure(bundle,id),
   selection:(draft:Draft,ids?:string[])=>topicalSelection(draft,sourceId,ids),choose:(draft:Draft,ids:string[],include:boolean)=>chooseTopicalPoints(draft,sourceId,ids,include),
   About:()=> <TopicalAbout bundle={bundle}/>,Source:(sourceProps:{point:Point;parent:Criterion})=><CatalogueContent resource={'source:'+sourceId}>{()=> <SourceContent bundle={bundle} {...sourceProps}/>}</CatalogueContent>,
- }) as unknown as LawBrowserAdapter,[bundle,sourceId]);
+ }) as unknown as LawBrowserAdapter,[bundle,sourceId,revision]);
  return <CioLawBrowser {...props} hideOpenStrip adapter={adapter}/>;
 }

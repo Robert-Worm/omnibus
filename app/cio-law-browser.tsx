@@ -1,7 +1,7 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
 
-import {useEffect,useState,type ComponentType} from 'react';
+import {useEffect,useLayoutEffect,useState,useRef,useSyncExternalStore,type ComponentType} from 'react';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -12,7 +12,8 @@ import {cioCatalogue as rawCatalogue,cioPoints as rawPoints,cioStatus,cioSourceB
 import {cioFunctionGroups,cioFunctionRows} from '@/lib/cio-function-view.mjs';
 import {cioSourceId,cioKindLabels} from '@/lib/cio-law-data.mjs';
 import {cioControlMeasureFor} from '@/lib/cio-content.mjs';
-import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
+import {catalogueDerived,catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
+import {foundationOverview,foundationOverviewSelection} from '@/lib/foundation-overviews.mjs';
 import {closeFoundation} from '@/lib/foundation-workspace.mjs';
 import CompactMatrix from './compact-matrix';
 import DeferredViewerSection from './deferred-viewer-section';
@@ -33,7 +34,7 @@ import './control-objective-pilot.css';
 import './cio-law-browser.css';
 
 export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>};
-type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter};
+type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[]};
 type Tab='points'|'source'|'approach';
 const catalogue=rawCatalogue as unknown as {objectives:Objective[];criteria:Criterion[]};
@@ -62,11 +63,24 @@ export default function CioLawBrowser(props:Props){return <Browser key={props.in
 export function CioPointViewer({pointId,onClose,...props}:Omit<Props,'navigate'|'initialPointId'> & {pointId:string;onClose:()=>void}){
  return <CioLawBrowser {...props} initialPointId={pointId} viewerOnly onClose={onClose} navigate={onClose}/>;
 }
-function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,hideOpenStrip=false,adapter,...overviewProps}:Props){
+function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,hideOpenStrip=false,adapter,prepareDetails,...overviewProps}:Props){
+ useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const sourceId=adapter?.sourceId||cioSourceId,title=adapter?.title||cioStatus.title;
- const activeCatalogue=adapter?.catalogue||cioDefaults.catalogue,activePoints=adapter?.points||cioDefaults.points,activeRows=adapter?.rows||cioDefaults.rows;
- const activePointMap=adapter?new Map(activePoints.map(p=>[p.id,p])):cioDefaults.pointMap,activeRecordMap=adapter?new Map(adapter.records.map(r=>[r.id,r])):cioDefaults.recordMap;
- const groupsForSource=adapter?.groups||cioFunctionGroups,select=adapter?.selection||cioSelection,choosePoints=adapter?.choose||chooseCioPoints;
+ // Projection objects are for this overview only. Detail panels and adoption
+ // first cross the complete source boundary; they never consume these subsets.
+ const preview=foundationOverview(sourceId) as Pick<LawBrowserAdapter,'points'|'rows'|'records'|'groups'>|undefined;
+ const activeCatalogue=adapter?.catalogue||cioDefaults.catalogue,activePoints=preview?.points||adapter?.points||cioDefaults.points,activeRows=preview?.rows||adapter?.rows||cioDefaults.rows;
+ const activePointMap=preview||adapter?new Map(activePoints.map(p=>[p.id,p])):cioDefaults.pointMap,activeRecordMap=preview||adapter?new Map((preview?.records||adapter!.records).map(r=>[r.id,r])):cioDefaults.recordMap;
+ const groupsForSource=preview?.groups||adapter?.groups||cioFunctionGroups,select=preview?(value:Draft,ids?:string[])=>foundationOverviewSelection(preview,value,ids):adapter?.selection||cioSelection,choosePoints=adapter?.choose||chooseCioPoints;
+ const latestDraft=useRef(draft);useLayoutEffect(()=>{latestDraft.current=draft;},[draft]);
+ const actionGeneration=useRef(0);
+ useEffect(()=>()=>{actionGeneration.current++;},[]);
+ function withDetails(action:()=>void){
+  const generation=++actionGeneration.current;
+  if(!preview){action();return;}
+  if(!prepareDetails){setError('De volledige kadergegevens zijn nog niet beschikbaar. Open het kader opnieuw.');return;}
+  prepareDetails(()=>{if(generation===actionGeneration.current)action();});
+ }
  const goalFor=adapter?.goalFor||cioGoalFor,measureFor=adapter?.measureFor||cioControlMeasureFor;
  const About=adapter?.About||CioSourceAbout,Source=adapter?.Source||CioPointSource;
  const PointApproach=adapter?.Approach||Approach;
@@ -84,7 +98,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  useEffect(()=>{if(viewReady&&view.columnsVersion===0)setView(v=>({...v,columns:v.columns.join(',')==='objective,risk,controlObjective,criterion'?columns.map(c=>c.id):v.columns,columnsVersion:1}));},[viewReady,view.columnsVersion,setView]);
  const visibleColumns=columns.filter(c=>chosenColumns.includes(c.id)).map(c=>c.id);
  const selection=select(draft),selected=new Set<string>(selection.selectedIds);
- const row=rows.find(r=>r.id===openId);
+ const row=preview?undefined:rows.find(r=>r.id===openId);
  const children=row?row.pointIds.map(id=>pointMap.get(id)).filter((p):p is Point=>Boolean(p)):[];
  const point=children.find(p=>p.id===pointId)||children[0];
  const parent=catalogue.criteria.find(c=>c.id===row?.criterionId);
@@ -105,16 +119,17 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const counts=Object.fromEntries(rows.map(r=>{const s=select(draft,r.pointIds);return [r.id,{selected:s.selected,total:s.total}];}));
  function choose(ids:string[],value:boolean){
   if(disabled)return;
-  try{onChange(choosePoints(draft,unique(ids),value) as Draft);setError('');}
+  withDetails(()=>{try{onChange(choosePoints(latestDraft.current,unique(ids),value) as Draft);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Selectie kon niet worden bewaard.');}
+  });
  }
- function open(id:string){const next=rows.find(r=>r.id===id);setOpenId(id);setPointId(next?.pointIds[0]||'');setTab('points');}
+ function open(id:string){withDetails(()=>{const next=rows.find(r=>r.id===id);setOpenId(id);setPointId(next?.pointIds[0]||'');setTab('points');});}
  function close(){setOpenId('');onClose?.();}
  const resetFilters=()=>setView(v=>({...v,query:'',group:'',selectedOnly:false}));
  return <section className="law-browser" aria-label={title}>
   {!viewerOnly&&<>
   {!hideOpenStrip&&<OpenItemStrip id="cio-open" items={[{id:sourceId,title}]} activeId={sourceId} onActivate={()=>{}} onClose={()=>{onChange(closeFoundation(draft,sourceId) as Draft);navigate('foundations');}} onExplore={()=>navigate('foundations')} exploreLabel="Wet of kader openen" disabled={disabled}/>}
-  <div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={overview==='norms'} onClick={()=>setOverview('norms')}>Normen</button><button aria-pressed={overview==='source'} onClick={()=>setOverview('source')}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
+  <div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={overview==='norms'} onClick={()=>{actionGeneration.current++;setOverview('norms');}}>Normen</button><button aria-pressed={overview==='source'} onClick={()=>withDetails(()=>setOverview('source'))}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}
   {overview==='norms'&&<>

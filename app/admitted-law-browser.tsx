@@ -1,5 +1,6 @@
 'use client';
-import {useMemo,useState} from 'react';
+import {useMemo,useState,useSyncExternalStore} from 'react';
+import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
 import {LawAboutIntro,LawAboutSpecifications} from './law-about-layout';
 import {LawPointSourceLayout} from './law-point-source';
@@ -34,24 +35,27 @@ function Approach({item}:{item:Item}){
   {item.testOperation&&<section className="cio-phase"><h4>Werking · uit te werken voor je onderzoek</h4><p>{item.testOperation}</p></section>}
   <section className="cio-phase"><h4>Bewijsmateriaal · suggesties</h4><p>{item.documents}</p></section></div>;
 }
-type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(draft:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void};
+type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(draft:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};
 export default function AdmittedLawBrowser({sourceId,...props}:Props){
+ const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const source=foundations.find(s=>s.id===sourceId)!;
  const adapter=useMemo(()=>{
   const members=foundationProposals.filter(p=>p.sourceId===sourceId),presentation=flatLawPresentation(source,members);
   const item=(id:string)=>members.find(p=>p.id===id)!;
-  return {...presentation,sourceId,title:source.title,heading:source.title,viewKey:'admitted-'+sourceId+'-v1',
+  return {...presentation,revision,sourceId,title:source.title,heading:source.title,viewKey:'admitted-'+sourceId+'-v1',
    analysisNotice:'Doel, risico en beheersing zijn analytische voorstellen bij de norm, geen aanvullende wettelijke eisen.',
    selection:(draft:Draft,ids?:string[])=>flatLawSelection(draft,members,ids),
    choose:(draft:Draft,ids:string[],include:boolean)=>{
     const sourceIds=draft.investigation?.sourceIds||[];
     const opened={...draft,investigation:{...draft.investigation,sourceIds:[...new Set([...sourceIds,sourceId])]}};
-    const next=chooseFoundationItems(opened,presentation.items.filter((p:Item)=>ids.includes(p.id)),include);
+    // This callback may have been created before full content finished loading.
+    const current=flatLawPresentation(source,foundationProposals.filter(p=>p.sourceId===sourceId));
+    const next=chooseFoundationItems(opened,current.items.filter((p:Item)=>ids.includes(p.id)),include);
     return {...next,investigation:{...next.investigation,sourceIds}};
    },
    About:()=> <About source={source} items={members}/>,Source:({point}:{point:{id:string}})=><SourceContent item={item(point.id)}/>,
    Approach:({point}:{point:{id:string}})=><Approach item={item(point.id)}/>,
   } as unknown as LawBrowserAdapter;
- },[sourceId,source]);
+ },[sourceId,source,revision]);
  return <CioLawBrowser {...props} adapter={adapter} hideOpenStrip/>;
 }

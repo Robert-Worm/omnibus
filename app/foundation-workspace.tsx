@@ -54,9 +54,9 @@ import TopicalLawBrowser from './topical-law-browser';
 import AdmittedLawBrowser from './admitted-law-browser';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 
-export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void)=>void}) {
+export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void)=>void;prepareDetails?:(id:string,action:()=>void)=>void}) {
   const [overview,setOverview]=useLawOverview(props);
-  const overviewProps={overview,onOverviewChange:setOverview};
+  const overviewProps={overview,onOverviewChange:setOverview,prepareDetails:(action:()=>void)=>props.prepareDetails?props.prepareDetails(current||'',action):action()};
   const admitted=foundations.filter(isAdmittedFoundation).map(s=>s.id);
   const known=[cioSourceId,wwkeSourceId,...topicalIds,...admitted],opened=foundations.filter(s=>known.includes(s.id)&&props.draft.investigation?.sourceIds.includes(s.id));
   const [active,setActive]=useState(props.initialSource||props.initialBrowse.sourceId||opened[0]?.id||'');
