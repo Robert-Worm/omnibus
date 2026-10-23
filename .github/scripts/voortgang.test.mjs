@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { crc32 } from "node:zlib";
 import { blokWaarschuwingen, KORTE_PAGINA as KORT_CHECK, paginatypeMeldingen, tabelControle, tekstWaarschuwingen, vormWaarschuwingen, zinWaarschuwingen } from "../../scripts/check-docs.mjs";
-import { KORTE_PAGINA, beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
+import { KORTE_PAGINA, afbreekbaar, beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
 
 const DAG = 24 * 60 * 60 * 1000;
 const START = Date.parse("2026-10-01T09:00:00Z");
@@ -461,4 +461,12 @@ test("gegenereerde pagina's halen dezelfde controles als de rest van de document
     assert.deepEqual(meldingen, [], rel);
     assert.ok(tekst.trimEnd().endsWith("---\n\n[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)"), `${rel}: vaste voetregel`);
   }
+});
+
+test("lange woorden in titels kunnen afbreken, zonder dat de tekst verandert", () => {
+  const t = "Cyberweerbaarheidsverordening en 43MECHBRIG/43HRSTCIE";
+  const uit = afbreekbaar(t);
+  assert.equal(uit.replace(/[\u00ad\u200b]/g, ""), t, "alleen onzichtbare tekens erbij");
+  assert.ok(uit.split(/[\s\u00ad\u200b]/).every((w) => w.length <= 18), "geen stuk langer dan 18 tekens");
+  assert.equal(afbreekbaar("Kort rapport"), "Kort rapport");
 });

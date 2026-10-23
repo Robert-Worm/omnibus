@@ -35,7 +35,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [Wet open overheid (Woo)](https://wetten.overheid.nl/BWBR0045754)<br>`WOO` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20open%20overheid%20%28Woo%29&bron=WOO "Claimen: Wet open overheid (Woo)") |
 | [Wet digitale overheid (Wdo)](https://wetten.overheid.nl/BWBR0048156)<br>`WDO` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20digitale%20overheid%20%28Wdo%29&bron=WDO "Claimen: Wet digitale overheid (Wdo)") |
 | [Archiefwet 2026](https://wetten.overheid.nl/BWBR0052739)<br>`ARCHIEF2026` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Archiefwet%202026&bron=ARCHIEF2026 "Claimen: Archiefwet 2026") |
-| [Uitvoeringswet Algemene verordening gegevensbescherming](https://wetten.overheid.nl/BWBR0040940)<br>`UAVG` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Uitvoeringswet%20Algemene%20verordening%20gegevensbescherming&bron=UAVG "Claimen: Uitvoeringswet Algemene verordening gegevensbescherming") |
+| [Uitvoeringswet Algemene verordening gegevensbesc­herming](https://wetten.overheid.nl/BWBR0040940)<br>`UAVG` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Uitvoeringswet%20Algemene%20verordening%20gegevensbescherming&bron=UAVG "Claimen: Uitvoeringswet Algemene verordening gegevensbescherming") |
 | [Aanbestedingswet 2012](https://wetten.overheid.nl/BWBR0032203)<br>`AW` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Aanbestedingswet%202012&bron=AW "Claimen: Aanbestedingswet 2012") |
 | [Wet bescherming klokkenluiders](https://wetten.overheid.nl/BWBR0037852)<br>`WBK` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20bescherming%20klokkenluiders&bron=WBK "Claimen: Wet bescherming klokkenluiders") |
 | [Wet politiegegevens](https://wetten.overheid.nl/BWBR0022463)<br>`WPG` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20politiegegevens&bron=WPG "Claimen: Wet politiegegevens") |
@@ -48,13 +48,13 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 
 | Bron | Status | Actie |
 | --- | --- | --- |
-| [Algemene verordening gegevensbescherming (AVG)](https://eur-lex.europa.eu/eli/reg/2016/679/oj)<br>`AVG` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Algemene%20verordening%20gegevensbescherming%20%28AVG%29&bron=AVG "Claimen: Algemene verordening gegevensbescherming (AVG)") |
+| [Algemene verordening gegevensbesc­herming (AVG)](https://eur-lex.europa.eu/eli/reg/2016/679/oj)<br>`AVG` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Algemene%20verordening%20gegevensbescherming%20%28AVG%29&bron=AVG "Claimen: Algemene verordening gegevensbescherming (AVG)") |
 | [AI-verordening](https://eur-lex.europa.eu/eli/reg/2024/1689/oj)<br>`AIA` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20AI-verordening&bron=AIA "Claimen: AI-verordening") |
 | [NIS2-richtlijn](https://eur-lex.europa.eu/eli/dir/2022/2555/oj)<br>`NIS2` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NIS2-richtlijn&bron=NIS2 "Claimen: NIS2-richtlijn") |
 | [DORA, digitale weerbaarheid van de financiële sector](https://eur-lex.europa.eu/eli/reg/2022/2554/oj)<br>`DORA` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20DORA%2C%20digitale%20weerbaarheid%20van%20de%20financi%C3%ABle%20sector&bron=DORA "Claimen: DORA, digitale weerbaarheid van de financiële sector") |
-| [Cyberweerbaarheidsverordening (Cyber Resilience Act)](https://eur-lex.europa.eu/eli/reg/2024/2847/oj)<br>`CRA` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Cyberweerbaarheidsverordening%20%28Cyber%20Resilience%20Act%29&bron=CRA "Claimen: Cyberweerbaarheidsverordening (Cyber Resilience Act)") |
-| [CSRD, duurzaamheidsrapportering](https://eur-lex.europa.eu/eli/dir/2022/2464/oj)<br>`CSRD` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20CSRD%2C%20duurzaamheidsrapportering&bron=CSRD "Claimen: CSRD, duurzaamheidsrapportering") |
-| [Richtlijn energie-efficiëntie (EED)](https://eur-lex.europa.eu/eli/dir/2023/1791/oj)<br>`EED` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Richtlijn%20energie-effici%C3%ABntie%20%28EED%29&bron=EED "Claimen: Richtlijn energie-efficiëntie (EED)") |
+| [Cyberweerbaa­rheidsverord­ening (Cyber Resilience Act)](https://eur-lex.europa.eu/eli/reg/2024/2847/oj)<br>`CRA` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Cyberweerbaarheidsverordening%20%28Cyber%20Resilience%20Act%29&bron=CRA "Claimen: Cyberweerbaarheidsverordening (Cyber Resilience Act)") |
+| [CSRD, duurzaamheid­srapporterin­g](https://eur-lex.europa.eu/eli/dir/2022/2464/oj)<br>`CSRD` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20CSRD%2C%20duurzaamheidsrapportering&bron=CSRD "Claimen: CSRD, duurzaamheidsrapportering") |
+| [Richtlijn energie-effi­ciëntie (EED)](https://eur-lex.europa.eu/eli/dir/2023/1791/oj)<br>`EED` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Richtlijn%20energie-effici%C3%ABntie%20%28EED%29&bron=EED "Claimen: Richtlijn energie-efficiëntie (EED)") |
 
 ## Kaders van de Nederlandse overheid
 
@@ -62,7 +62,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 
 | Bron | Status | Actie |
 | --- | --- | --- |
-| [Baseline Informatiebeveiliging Overheid 2 (BIO2)](https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/)<br>`BIO2` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Baseline%20Informatiebeveiliging%20Overheid%202%20%28BIO2%29&bron=BIO2 "Claimen: Baseline Informatiebeveiliging Overheid 2 (BIO2)") |
+| [Baseline Informatiebe­veiliging Overheid 2 (BIO2)](https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/)<br>`BIO2` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Baseline%20Informatiebeveiliging%20Overheid%202%20%28BIO2%29&bron=BIO2 "Claimen: Baseline Informatiebeveiliging Overheid 2 (BIO2)") |
 | [Rijksbreed cloudbeleid 2026](https://www.tweedekamer.nl/downloads/document?id=2026D35295)<br>`CLOUD2026` | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Rijksbreed%20cloudbeleid%202026&bron=CLOUD2026 "Claimen: Rijksbreed cloudbeleid 2026") |
 
 ## Internationale kaders die vrij te gebruiken zijn
@@ -87,12 +87,12 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [IIA Topical Requirement Organizational Resilience](https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-resilience/)<br>`TR-RESIL` | ✅ In database | – |
 | [IIA Global Internal Audit Standards](https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/)<br>`GIAS` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 | [IIA Three Lines Model](https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/)<br>`3LINES` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
-| [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)<br>`ISO27001` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
-| [ISO/IEC 27002:2022](https://www.iso.org/standard/75652.html)<br>`ISO27002` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [ISO/​IEC 27001:2022](https://www.iso.org/standard/27001)<br>`ISO27001` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [ISO/​IEC 27002:2022](https://www.iso.org/standard/75652.html)<br>`ISO27002` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 | [ISO 31000:2018](https://www.iso.org/standard/65694.html)<br>`ISO31000` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 | [COBIT 2019 (ISACA)](https://www.isaca.org/resources/cobit)<br>`COBIT` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 | [COSO Internal Control – Integrated Framework](https://www.coso.org/)<br>`COSOIC` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
-| [NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [NOREA-handre­ikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 | [Nederlandse Corporate Governance Code](https://www.mccg.nl/)<br>`GOVCODE` | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 
 ## Samengevat

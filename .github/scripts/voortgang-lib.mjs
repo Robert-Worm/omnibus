@@ -4,6 +4,11 @@
 
 export const VOET = "[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
 const DAG = 24 * 60 * 60 * 1000;
+// Lange woorden (zoals "Cyberweerbaarheidsverordening") maken een tabel op een telefoon te breed.
+// Een zacht afbreekstreepje is onzichtbaar, behalve als het woord echt moet afbreken.
+export const afbreekbaar = (tekst) => String(tekst)
+  .replace(/\//g, "/\u200b")
+  .replace(/[^\s/\u200b]{19,}/g, (woord) => woord.match(/.{1,12}/gu).join("\u00ad"));
 export const MAX_CLAIMS = 5;
 export const KORTE_PAGINA = 60; // gelijk aan scripts/check-docs.mjs
 const CLAIM_TEMPLATE = "bron-claimen.yml";
@@ -424,7 +429,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         "",
         "| Bron | Status | Actie |",
         "| --- | --- | --- |",
-        ...items.map((b) => `| [${esc(b.titel)}](${b.link})<br>\`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
+        ...items.map((b) => `| [${afbreekbaar(esc(b.titel))}](${b.link})<br>\`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
         "",
       ]),
       "## Samengevat",
@@ -507,7 +512,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "| Bron | Status | Actie |",
       "| --- | --- | --- |",
-      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(r.ministerie)} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
+      ...suggestions.map((r) => `| [${afbreekbaar(esc(short(r.titel)))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(r.ministerie)} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
       "",
       "Meer kiezen:",
       "",
@@ -595,7 +600,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
           "",
           "| Bron | Status | Actie |",
           "| --- | --- | --- |",
-          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap})<br>${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
+          ...list.map((r) => `| [${afbreekbaar(esc(short(r.titel, 100)))}](${r.rijksmap})<br>${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
           "",
           "</details>",
           "",
