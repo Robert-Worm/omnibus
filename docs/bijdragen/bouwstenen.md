@@ -55,7 +55,7 @@ Gebruik een tabel alleen voor informatie die je naast elkaar vergelijkt. Er zijn
 | Overzicht | `<Ding> \| Wat het is` | Begrippen, mappen, pagina's of opties uitleggen |
 | Leesroute | `Stap \| Lees \| Wat je daarna kunt` | De volgorde waarin je pagina's leest |
 | Status | `Onderdeel \| Status \| Toelichting` | Laten zien hoe ver iets is |
-| Werklijst | `Bron \| Datum \| Status \| Actie` | Bronnen die je kunt claimen of volgen. Bij wetten en kaders staat `Code` in plaats van `Datum` |
+| Werklijst | `Bron \| Status \| Actie` | Bronnen die je kunt claimen of volgen. Datum of code staat onder de titel, na `<br>` |
 | Uitkomst | `Uitkomst \| Betekenis \| Wat je doet` | Meldingen of uitkomsten van een controle |
 
 **Regels voor elke tabel**
@@ -65,6 +65,7 @@ Gebruik een tabel alleen voor informatie die je naast elkaar vergelijkt. Er zijn
 - Een cel is kort: hooguit 25 woorden en één gedachte.
 - Getallen staan rechts (`---:`). Datums in een tabel schrijf je als `2026-10-21`; in lopende tekst als *21 oktober 2026*.
 - De eerste kolom is gewone tekst, een link of `code`. Niet vet.
+- Een telefoon is 390 pixels breed. Zet een actie, zoals *Claimen*, nooit achter een lange kolom, want dan valt hij buiten beeld. Een code die niet kan afbreken, zoals `FINAL_VERIFICATION`, zet je liever in een lijst.
 
 **Voorbeelden**
 
@@ -95,9 +96,9 @@ Status:
 
 Werklijst:
 
-| Bron | Datum | Status | Actie |
-| --- | --- | --- | --- |
-| Voorbeeldrapport | 2026-03-01 | ⬜ Open | Claimen |
+| Bron | Status | Actie |
+| --- | --- | --- |
+| Voorbeeldrapport<br>2026-03-01 | ⬜ Open | Claimen |
 
 Uitkomst:
 

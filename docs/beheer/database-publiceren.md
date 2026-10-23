@@ -119,11 +119,9 @@ In het kort:
 
 De foutmelding noemt de stap waar het misging. Bewaar de melding en gebruik de mislukte uitvoer niet.
 
-| Stap | Wat te doen |
-| --- | --- |
-| `INPUT_CHECK` | Corrigeer paden, een verkeerd overgenomen hash of de uitvoermap. Kies geen andere commit of release alleen om de controle te laten slagen. |
-| `CONTENT_REVIEW` | Herstel de gemelde reviewvoorwaarde in de verwerkingsomgeving, bijvoorbeeld ontbrekend bewijs of Python. Verandert er inhoud, dan volgt een nieuwe review en een nieuwe release-hash. |
-| `FINAL_VERIFICATION` | De eindcontrole of het wegschrijven is mislukt. Zoek de oorzaak in de invoer of de omgeving. Bewerk nooit de gegenereerde database. |
+- **`INPUT_CHECK`:** corrigeer paden, een verkeerd overgenomen hash of de uitvoermap. Kies geen andere commit of release alleen om de controle te laten slagen.
+- **`CONTENT_REVIEW`:** herstel de gemelde reviewvoorwaarde in de verwerkingsomgeving, bijvoorbeeld ontbrekend bewijs of Python. Verandert er inhoud, dan volgt een nieuwe review en een nieuwe release-hash.
+- **`FINAL_VERIFICATION`:** de eindcontrole of het wegschrijven is mislukt. Zoek de oorzaak in de invoer of de omgeving. Bewerk nooit de gegenereerde database.
 
 Probeer daarna opnieuw, **met een nieuwe uitvoermap**:
 

@@ -329,7 +329,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   };
   // Anker zoals GitHub het van een kop maakt (zelfde regels als scripts/check-docs.mjs).
   // In smalle tabelkolommen mogen een statuslabel en een datum niet over twee regels breken.
-const heel = (tekst) => tekst.replace(/ /g, "\u00a0");
+const heel = (tekst) => tekst.replace(" ", "\u00a0"); // icoon en eerste woord blijven bij elkaar; de rest mag afbreken
 const datumCel = (datum) => String(datum).replace(/-/g, "\u2011");
 const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-");
   // Claimlink met een titel die de bron noemt, zodat elke link herkenbaar is (ook voor een schermlezer).
@@ -422,9 +422,9 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         "",
         `**Rechten:** ${g.rechten}`,
         "",
-        "| Bron | Code | Status | Actie |",
-        "| --- | --- | --- | --- |",
-        ...items.map((b) => `| [${esc(b.titel)}](${b.link}) | \`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
+        "| Bron | Status | Actie |",
+        "| --- | --- | --- |",
+        ...items.map((b) => `| [${esc(b.titel)}](${b.link})<br>\`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
         "",
       ]),
       "## Samengevat",
@@ -505,9 +505,9 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrapporten met veel bruikbare normen en toetspunten. Klik op **Claimen** om er een op je naam te zetten.",
       "",
-      "| Bron | Datum | Status | Actie |",
-      "| --- | --- | --- | --- |",
-      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${datumCel(r.datum)} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
+      "| Bron | Status | Actie |",
+      "| --- | --- | --- |",
+      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(r.ministerie)} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
       "",
       "Meer kiezen:",
       "",
@@ -518,23 +518,21 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "## Nu in bewerking",
       "",
       busy.length
-        ? ["| Bron | Claim | Sinds | Status |", "| --- | --- | --- | --- |", ...busy.map((c) => `| [${esc(short(nameOf(c)))}](${linkOf(c)}) | [#${c.number}](${c.url}) · @${c.user} · ${esc(c.model || "–")}${c.model && !isAanbevolen(c.model) ? " ⚠️" : ""} | ${c.since} | ${statusLabel[c.status]} |`)].join("\n")
+        ? ["| Bron | Claim | Status |", "| --- | --- | --- |", ...busy.map((c) => `| [${esc(short(nameOf(c)))}](${linkOf(c)}) | [#${c.number}](${c.url}) · @${c.user} · ${esc(c.model || "–")}${c.model && !isAanbevolen(c.model) ? " ⚠️" : ""}<br>sinds ${datumCel(c.since)} | ${statusLabel[c.status]} |`)].join("\n")
         : "Nog niemand. Kies hierboven een bron.",
       "",
       "## Wacht op de beheerder",
       "",
       wachtend.length
-        ? ["Deze pakketten zijn ingeleverd en wachten op een controle. Na 7 dagen krijgt de beheerder een herinnering.", "", "| Bron | Door | Ingeleverd | Wacht |", "| --- | --- | --- | --- |",
-            ...wachtend.map((c) => `| [${esc(short(nameOf(c)))}](${c.url}) | @${c.user} | ${c.ingeleverd.slice(0, 10)} | ${c.dagen} ${c.dagen === 1 ? "dag" : "dagen"}${c.dagen >= 7 ? " ⏰" : ""} |`)].join("\n")
+        ? ["Deze pakketten zijn ingeleverd en wachten op een controle. Na 7 dagen krijgt de beheerder een herinnering.", "", "| Bron | Door | Wacht |", "| --- | --- | --- |",
+            ...wachtend.map((c) => `| [${esc(short(nameOf(c)))}](${c.url}) | @${c.user}<br>ingeleverd ${datumCel(c.ingeleverd.slice(0, 10))} | ${c.dagen} ${c.dagen === 1 ? "dag" : "dagen"}${c.dagen >= 7 ? " ⏰" : ""} |`)].join("\n")
         : "Er wacht nu niets op de beheerder.",
       "",
       "## Al in de database",
       "",
       "<details><summary><b>Rapporten</b> · " + inDb.length + "</summary>",
       "",
-      "| Bron | Datum |",
-      "| --- | --- |",
-      ...inDb.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${datumCel(r.datum)} |`),
+      ...inDb.map((r) => `- [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} · ${datumCel(r.datum)}`),
       "",
       "</details>",
       "",
@@ -595,9 +593,9 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
           "",
           `<details><summary><b>${m}</b> · ${count(list, "open")} open van ${list.length}</summary>`,
           "",
-          "| Bron | Datum | Status | Actie |",
-          "| --- | --- | --- | --- |",
-          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap}) | ${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
+          "| Bron | Status | Actie |",
+          "| --- | --- | --- |",
+          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap})<br>${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
           "",
           "</details>",
           "",

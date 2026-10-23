@@ -375,7 +375,7 @@ test("ingeleverde claims staan bij 'wacht op de beheerder'; na 7 dagen één her
   let v = await draai(g);
   let md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/voortgang.md"];
   assert.match(md, /## Wacht op de beheerder\n\nDeze pakketten/);
-  assert.match(md, /\| @anna \| 2026-10-02 \| 0 dagen \|/);
+  assert.match(md, /\| @anna<br>ingeleverd 2026\u201110\u201102 \| 0 dagen \|/);
   g.wacht(6);
   await draai(g);
   assert.doesNotMatch(g.botTekst(n), /wacht al 7 dagen/);
