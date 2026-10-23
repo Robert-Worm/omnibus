@@ -1,4 +1,5 @@
 import {digest} from './repository.mjs';
+import {createHash} from 'node:crypto';
 import {contentBatchLimits as batchLimits} from '../lib/content-batch-contract.mjs';
 
 // Delivery projections are separate from signed content releases. They preserve
@@ -31,7 +32,7 @@ export function webResource(repository, release, hash) {
 
 // Scope is checked for EVERY hash by the server before this reader is called.
 // Preflight actual database lengths before loading/parsing any payload. No writes.
-export function webResourceBatch(repository,release,hashes) {
+export function webResourceBatchPayload(repository,release,hashes) {
   if(!repository.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='web_resources'").get())return null;
   const sizes=repository.db.prepare('SELECT length(CAST(payload AS BLOB)) AS bytes FROM web_resources WHERE release_id=? AND hash=?');
   let bytes=batchLimits.overhead;
@@ -39,14 +40,22 @@ export function webResourceBatch(repository,release,hashes) {
     const row=sizes.get(release,hash);if(!row)return null;
     bytes+=row.bytes;if(bytes>batchLimits.bytes)throw Error('Invalid content batch size');
   }
-  const select=repository.db.prepare('SELECT payload FROM web_resources WHERE release_id=? AND hash=? AND length(CAST(payload AS BLOB))<=?');
+  const select=repository.db.prepare('SELECT CAST(payload AS BLOB) AS payload FROM web_resources WHERE release_id=? AND hash=? AND length(CAST(payload AS BLOB))<=?');
   let remaining=batchLimits.bytes-batchLimits.overhead;
-  return {release,items:hashes.map(hash=>{
+  const parts=[Buffer.from('{"release":'+JSON.stringify(release)+',"items":[')];
+  for(const [index,hash] of hashes.entries()){
     const row=select.get(release,hash,remaining);
     if(!row)throw Error('Invalid changed content batch');
-    remaining-=Buffer.byteLength(row.payload);
-    return {hash,value:JSON.parse(row.payload)};
-  })};
+    remaining-=row.payload.byteLength;
+    // Stored resources already are canonical JSON. Check the exact pinned bytes
+    // before inserting them as JSON, without allocating another full object tree
+    // and serializing it again. Never interpolate unverified database text.
+    // Read UTF-8 bytes directly, avoiding a large UTF-16 decode/encode round trip.
+    if(createHash('sha256').update(row.payload).digest('hex')!==hash)throw Error('Invalid changed content resource');
+    parts.push(Buffer.from((index?',':'')+'{"hash":'+JSON.stringify(hash)+',"value":'),row.payload,Buffer.from('}'));
+  }
+  parts.push(Buffer.from(']}'));
+  return Buffer.concat(parts);
 }
 
 // Call only with an integrity-checked runtime publication. A release can also

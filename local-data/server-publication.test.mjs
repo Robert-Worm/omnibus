@@ -136,6 +136,15 @@ test('batched reads retain exact pinned sources, transport controls and unchange
   assert.equal(digest(readFileSync(f.databasePath)),before);
 });
 
+test('a changed batch payload is refused before delivery, including after server startup',async t=>{
+  const f=fixture(t),{url}=await f.start();
+  f.repository.db.prepare('UPDATE web_resources SET payload=? WHERE release_id=? AND hash=?')
+    .run(JSON.stringify({text:'Changed synthetic evidence'}),f.release,f.refs.selected.hash);
+  const response=await fetch(url+`/api/v1/content-batch?release=${f.release}&hash=${f.refs.selected.hash}`);
+  assert.equal(response.status,400);
+  assert.deepEqual(await response.json(),{error:'Invalid request'});
+});
+
 test('one hidden, foreign or ambiguous batch member refuses the whole response without leaking other entries',async t=>{
   const f=fixture(t);f.readOnly();const {url}=await f.start();
   const base=`/api/v1/content-batch?release=${f.release}&hash=${f.refs.selected.hash}`;

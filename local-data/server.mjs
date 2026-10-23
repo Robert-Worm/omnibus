@@ -4,7 +4,7 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {CatalogueRepository} from './repository.mjs';
 import {createStaticWeb} from './static-web.mjs';
-import {webResource,webResourceBatch} from './web-resources.mjs';
+import {webResource,webResourceBatchPayload} from './web-resources.mjs';
 import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
 import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
@@ -80,8 +80,8 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
   res.setHeader('X-Robots-Tag','noindex, nofollow');
   if(expectation)res.setHeader('Connection','close');
-  const reply=(status,value)=>{
-   const raw=JSON.stringify(value),bytes=Buffer.byteLength(raw);
+  const replyJson=(status,raw)=>{
+   const bytes=Buffer.byteLength(raw);
    const encoding=responseEncoding(req.headers['accept-encoding'],bytes);
    res.setHeader('Vary','Accept-Encoding');
    if(encoding===null){res.writeHead(406);res.end();return;}
@@ -90,6 +90,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     pipeline(Readable.from([raw]),createResponseCompressor(encoding,bytes),res,()=>{});
    }else{res.writeHead(status);res.end(raw);}
   };
+  const reply=(status,value)=>replyJson(status,JSON.stringify(value));
   if(req.rawHeaders.length/2>32)return reply(431,{error:'Too many headers'});
   if(hosting.publicMode){
    let hosts=0,origins=0;
@@ -171,8 +172,8 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     const {release,hashes}=parseContentBatchQuery(q);
     if(readScope&&hashes.some(hash=>!readScope.allows('/api/v1/content/'+hash)))
       return reply(404,{error:'Not found'});
-    const value=webResourceBatch(repository,release,hashes);
-    return reply(value?200:404,value||{error:'Not found'});
+    const payload=webResourceBatchPayload(repository,release,hashes);
+    return payload===null?reply(404,{error:'Not found'}):replyJson(200,payload);
    }
    if((match=u.pathname.match(/^\/api\/v1\/content\/([a-f0-9]{64})$/))){
     if(!/^[a-f0-9]{64}$/.test(release||''))return reply(400,{error:'Explicit release required'});
