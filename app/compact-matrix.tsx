@@ -14,7 +14,7 @@ import FullTextPreview from "./full-text-preview";
 import DeferredMatrixRows from './deferred-matrix-rows';
 import DeferredViewerSection from './deferred-viewer-section';
 import {viewerRowBatches} from '@/lib/viewer-rendering.mjs';
-import {matrixAnchorId,matrixScrollView,matrixScrollPosition} from '@/lib/viewer-scroll.mjs';
+import {matrixAnchorId,matrixScrollView,matrixScrollPosition,revealMatrixRow} from '@/lib/viewer-scroll.mjs';
 import { fieldIncluded } from "@/lib/research-plan.mjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -161,6 +161,7 @@ export default function CompactMatrix({
   const resetHandled=useRef(0);
   const restored = useRef(false);
   const handled = useRef(0);
+  const revealed = useRef(0);
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(()=>{
     if(ready&&resetRequest&&resetHandled.current!==resetRequest){
@@ -229,7 +230,7 @@ export default function CompactMatrix({
   // Capture initial presentation once; live scroll updates must not turn on the
   // legacy full-render fallback or restart restoration after a filter change.
   const [restoreView,setRestoreView]=useState<Pick<typeof view,'top'|'left'|'anchorId'|'anchorOffset'>|null>(null);
-  if(ready&&!restoreView)setRestoreView({top:view.top,left:view.left,anchorId:matrixAnchorId(rows,view),anchorOffset:view.anchorOffset});
+  if(ready&&!restoreView)setRestoreView({top:reveal?0:view.top,left:view.left,anchorId:reveal?'':matrixAnchorId(rows,view),anchorOffset:view.anchorOffset});
   const restoreId=restoreView?.anchorId||'';
   useLayoutEffect(() => {
     if (restoreView && !restored.current) {
@@ -279,13 +280,14 @@ export default function CompactMatrix({
     };
   }, [reveal, ready, lines, filtered, setView, profile, onProfileChange]);
   useEffect(() => {
-    if (reveal && ready && view.revealNonce === reveal.nonce) {
-      scroller.current
-        ?.querySelector<HTMLElement>('[data-norm-id="' + reveal.id + '"]')
-        ?.scrollIntoView({ block: "nearest" });
+    // Group wrappers delegate to the target matrix, which knows when its page
+    // and rows are ready. Never consume a request while the row is absent.
+    if ((!groupLines || embedded) && reveal && ready && view.revealNonce === reveal.nonce && revealed.current !== reveal.nonce
+      && revealMatrixRow(scroller.current,reveal.id)) {
+      revealed.current=reveal.nonce;
       onRevealComplete?.();
     }
-  }, [view.revealNonce, ready, reveal, onRevealComplete]);
+  }, [view.revealNonce, ready, reveal, onRevealComplete, groupLines, embedded, rows]);
   const rowAll = (id:string) => pointChoices?.counts[id] ? pointChoices.counts[id].total>0 && pointChoices.counts[id].selected === pointChoices.counts[id].total : included.has(id);
   const rowSome = (id:string) => pointChoices?.counts[id] ? pointChoices.counts[id].selected > 0 || Boolean(pointChoices.counts[id].legacySelected) : included.has(id);
   const selectRows = (ids:string[], selected:boolean) => pointChoices ? pointChoices.onSelect(ids,selected) : onChange(selectLines(draft,ids,selected) as Draft);
@@ -297,7 +299,7 @@ export default function CompactMatrix({
   // Old preferences without a usable row anchor retain exact pixel restoration.
   // Ordinary scrolling never switches the complete matrix to eager rendering.
   const restorePixels=Boolean(restoreView&&restoreView.top>0&&!restoreId);
-  const deferPresentation=deferRows&&!reveal&&!restorePixels;
+  const deferPresentation=deferRows&&!restorePixels;
   // Keep mounted controls alive when the restored/revealed batch changes.
   const rowBatches=viewerRowBatches(rows,deferRows);
   const [scrollEdges,setScrollEdges]=useState({left:false,right:false});
@@ -498,8 +500,8 @@ export default function CompactMatrix({
       )}
       {groupLines&&!embedded?<div className="matrix-group-stack" ref={scroller}>{groupLines(filtered).map((group,index)=><section className="matrix-browse-group" key={group.id} data-report-group={group.id}>
         <header><h3>{group.title}</h3><span>{countLabel(group.lines.length,'onderdelen')}</span></header>
-        <DeferredViewerSection count={group.lines.length} immediate={index===0||!deferPresentation}>
-        <CompactMatrix lines={group.lines} draft={draft} viewDraft={viewDraft} disabled={disabled} onChange={onChange} onOpen={onOpen} onOpenField={onOpenField} onOpenReport={onOpenReport} selected={selected||view.lastId} viewKey={`${viewKey}-group-${group.id}`} embedded deferRows={deferPresentation} combineIdentity={!descriptiveTitles} descriptiveTitles={descriptiveTitles} subjectColumnLabel={subjectColumnLabel} showProvenance={showProvenance} initialColumns={columns} columnOptions={availableColumns} textDensity={density} pointChoices={pointChoices} pointSelection={pointSelection}/>
+        <DeferredViewerSection count={group.lines.length} immediate={index===0||!deferPresentation||group.lines.some(line=>line.id===reveal?.id)}>
+        <CompactMatrix lines={group.lines} draft={draft} viewDraft={viewDraft} disabled={disabled} onChange={onChange} onOpen={onOpen} onOpenField={onOpenField} onOpenReport={onOpenReport} selected={selected||view.lastId} viewKey={`${viewKey}-group-${group.id}`} embedded deferRows={deferRows} reveal={ready&&view.revealNonce===reveal?.nonce&&group.lines.some(line=>line.id===reveal?.id)?reveal:undefined} onRevealComplete={onRevealComplete} combineIdentity={!descriptiveTitles} descriptiveTitles={descriptiveTitles} subjectColumnLabel={subjectColumnLabel} showProvenance={showProvenance} initialColumns={columns} columnOptions={availableColumns} textDensity={density} pointChoices={pointChoices} pointSelection={pointSelection}/>
         </DeferredViewerSection>
       </section>)}</div>:<div
         className={`compact-table identified-table${combineIdentity ? ' combined-identity-table' : ''}${descriptiveTitles&&!combineIdentity?' matrix-explained-table':''}`}
@@ -530,7 +532,7 @@ export default function CompactMatrix({
             </TableRow>
           </TableHeader>
           {rowBatches.map((chunk,batch)=>{
-           return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0||chunk.some(line=>line.id===restoreId)} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
+           return <DeferredMatrixRows key={batch} immediate={!deferPresentation||batch===0||chunk.some(line=>line.id===restoreId||line.id===reveal?.id)} count={chunk.length} columns={1+(combineIdentity?0:1)+keys.length}>
             {()=>chunk.map((l) => (
               <TableRow
                 key={l.id}
