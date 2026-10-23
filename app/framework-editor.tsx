@@ -63,6 +63,7 @@ import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
 import {foundationOverviewKey} from '@/lib/foundation-overviews.mjs';
 import {modelDirectory,modelDirectoryKey,publishedModelDirectory} from '@/lib/model-directory.mjs';
+import {modelContentKeys,projectModelIds} from '@/lib/model-loading.mjs';
 import {
   chooseReport,
   reportEnabled,
@@ -166,8 +167,9 @@ export default function FrameworkEditor() {
   const [modelsReady, setModelsReady] = useState(false);
   const [exportOpened,setExportOpened]=useState(false);
   const [modelError, setModelError] = useState("");
-  function prepareModelLibrary() {
-    const current=projectRef.current.modelLibrary,catalogue=initialModelLibrary();
+  function prepareModelLibrary(ids:string[]=[]) {
+    const current=projectRef.current.modelLibrary,known=new Set([...current.models.map(m=>m.id),...ids]);
+    const catalogue=initialModelLibrary([...known]);
     if(catalogue.models.every(seed=>current.models.some(model=>model.id===seed.id)))return;
     const next=restoreModelLibrary(current,catalogue);
     projectRef.current={...projectRef.current,modelLibrary:next};setModelLibrary(next);
@@ -451,7 +453,7 @@ export default function FrameworkEditor() {
         const choices=localStorage.getItem('rijksmap-view-report-choices-v1');
         const failures:string[]=[];
         if(saved)await ensureCatalogue(projectCatalogueKeys(JSON.parse(saved)));
-        if(models)await ensureCatalogue(['models']);
+        if(models)await ensureCatalogue(modelContentKeys(projectModelIds({modelLibrary:JSON.parse(models)})));
         if(oldWorkspace)await ensureCatalogue(projectCatalogueKeys({workspace:JSON.parse(oldWorkspace)}));
         if(cancelled)return;
         const salvage=<T,>(raw:string|null,restore:(v:unknown)=>T,fallback:T,label:string):T=>{
@@ -508,12 +510,12 @@ export default function FrameworkEditor() {
       const reportId=window.location.hash.replace('#rapport-','');
       const keys=['entry','start','framework','export'].includes(route)?[]:['catalogue'];
       if(route==='models')keys.push(modelDirectoryKey());
-      if(route==='model-workspace')keys.push('models');
+      if(route==='model-workspace')keys.push(...modelContentKeys(projectModelIds(current)));
       if(route==='reader')keys.push('report:'+reportId);
       if(route==='foundation-workspace')keys.push(foundationOverviewKey(current.view.foundationFocus||current.draft.investigation?.sourceIds[0],Boolean(current.view.aboutViews?.laws)));
       if(route==='topics')for(const id of current.view.combined?current.workspace.openIds:[current.workspace.activeId])keys.push(...(catalogueRouting.workspaces[id||'']??[]).map(reportOverviewKey));
       if(!catalogueReady(keys)){withContent(keys,sync);return;}
-      if(['models','model-workspace'].includes(route)&&catalogueReady(['models']))prepareModelLibrary();
+      if(route==='model-workspace')prepareModelLibrary(projectModelIds(current));
       if(route==='export')setExportOpened(true);
       contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
       setPage(route);
@@ -628,7 +630,7 @@ export default function FrameworkEditor() {
     }
     const keys=['entry','start','framework','export'].includes(next)?[]:['catalogue'];
     if(next==='models')keys.push(modelDirectoryKey());
-    if(next==='model-workspace')keys.push('models');
+    if(next==='model-workspace')keys.push(...modelContentKeys(projectModelIds(projectRef.current)));
     if(next==='reader')keys.push('report:'+reportId);
     if(next==='foundation-workspace'){
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
@@ -636,7 +638,7 @@ export default function FrameworkEditor() {
     }
     if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map(reportOverviewKey));
     if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
-    if(['models','model-workspace'].includes(next)&&catalogueReady(['models']))prepareModelLibrary();
+    if(next==='model-workspace')prepareModelLibrary(projectModelIds(projectRef.current));
     if(next==='export')setExportOpened(true);
     contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
     if(next==='start')setResearchRoute('question');
@@ -918,7 +920,6 @@ export default function FrameworkEditor() {
   function chooseRiskArea(area:typeof riskArea) {
     if(area==='models'){
       if(!catalogueReady([modelDirectoryKey()])){withContent([modelDirectoryKey()],()=>chooseRiskArea(area));return;}
-      if(catalogueReady(['models']))prepareModelLibrary();
     }
     if(area===riskArea||area==='laws'||area==='frameworks'){
       if(area==='themes'||area==='processes')setDirectoryViews(v=>({...v,[area]:emptyDirectoryView()}));
@@ -954,15 +955,15 @@ export default function FrameworkEditor() {
             />
   );
   function openModel(id:string,viewer=false) {
-    withContent(['models'],()=>{
-      prepareModelLibrary();
+    withContent(modelContentKeys([id]),()=>{
+      prepareModelLibrary([id]);
       const models=projectRef.current.modelLibrary.models;
       if(!models.some(model=>model.id===id))return;
       setOpenModelIds(ids=>addOpenModel(ids,id,models));
       if(viewer){setModelView(v=>({...v,activeModel:id,modelDimension:''}));navigate('model-workspace');}
     });
   }
-  const renderModels = () => !catalogueReady([page==='model-workspace'?'models':modelDirectoryKey()]) ? <output data-status-block="">Modellen laden…</output> : (
+  const renderModels = () => !catalogueReady(page==='model-workspace'?modelContentKeys(projectModelIds(projectRef.current)):[modelDirectoryKey()]) ? <output data-status-block="">Modellen laden…</output> : (
             <>
               <ModelLibrary
                 guided={page==='risk-start'}

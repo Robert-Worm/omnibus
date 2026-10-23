@@ -2,7 +2,7 @@
 import type {Draft,Framework} from './framework-types.js';
 import type {LibraryItem,LibraryModel,LibraryQuestion,ModelLibraryState} from './model-library-types.js';
 
-export function initialModelLibrary():ModelLibraryState;
+export function initialModelLibrary(ids?:string[]):ModelLibraryState;
 export function restoreModelLibrary(value:unknown,catalogue?:ModelLibraryState):ModelLibraryState;
 export function hasReviewedQuestion(question:LibraryQuestion):boolean|undefined;
 export function scopedExportSelection(framework:Framework,draft:Draft):{

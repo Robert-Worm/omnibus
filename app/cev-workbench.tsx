@@ -7,8 +7,6 @@ import DeferredViewerSection from './deferred-viewer-section';
 import { hasReviewedQuestion, initialModelLibrary } from '@/lib/model-library.mjs';
 import { practiceQuestionRevision } from '@/lib/content-adapters/interview-practice-review.mjs';
 import { questionWorkbenchPresentation } from '@/lib/content-adapters/research-models.mjs';
-const reviewedQuestions = activeIntegrityModel().items.flatMap(i=>i.questions);
-const reviewedModels: LibraryModel[] = initialModelLibrary().models;
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +43,10 @@ export default function CevWorkbench({
   onActiveChange:(id:string)=>void;
   suggestedSubject?: string;
 }) {
+  // The viewer mounts after its model and shared wording data have loaded.
+  // Never capture empty templates at module initialization before lazy loading.
+  const [reviewedQuestions]=useState(()=>activeIntegrityModel().items.flatMap(i=>i.questions));
+  const [reviewedModel]=useState(()=>initialModelLibrary([model.id]).models[0]);
   const setActiveId=onActiveChange;
   const isCev = model.id === 'CEV-AI';
   const presentation = questionWorkbenchPresentation(model);
@@ -260,9 +262,9 @@ export default function CevWorkbench({
             const wording = contextualQuestion(q.variants?.[level] ?? "", subject);
             const formulations = questionFormulations(q, level);
             const practiceRevision = practiceQuestionRevision(model.id, q,
-              reviewedModels.find(m => m.id === model.id)?.items.flatMap(i => i.questions ?? []).find(p => p.id === q.id));
+              reviewedModel?.items.flatMap(i => i.questions ?? []).find(p => p.id === q.id));
             // Editing a supplied question also sets origin=user; those questions remain protected.
-            const ownQuestion=q.origin==='user'&&!reviewedModels.find(m=>m.id===model.id)?.items.some(i=>i.questions?.some(original=>original.id===q.id));
+            const ownQuestion=q.origin==='user'&&!reviewedModel?.items.some(i=>i.questions?.some(original=>original.id===q.id));
             return (
               <DeferredViewerSection key={q.id} immediate={index<4||editing===q.id} label={`Toon vraag: ${q.title}`}>
               <article className={"cev-question" + (included ? " is-chosen" : "")}>

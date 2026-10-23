@@ -10,6 +10,7 @@ import {parsePreviewArgs,startDatabasePreview} from './serve-database-web.mjs';
 import {backupRuntime} from '../local-data/runtime-backup.mjs';
 import {CatalogueRepository} from '../local-data/repository.mjs';
 import {readRuntimePublication,publishRuntime} from '../local-data/runtime-publication.mjs';
+import {prepareWebResources} from '../local-data/web-resources.mjs';
 import './deferred-catalogue-metadata.test.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -105,6 +106,34 @@ await test('deferred browser metadata is a known dynamic module, without changin
   const reader=new CatalogueRepository(options.databasePath,{readOnly:true});
   try{assert.deepEqual(readRuntimePublication(reader,{...options,contract:runtimeContractHash}).modules[moduleId],original);}
   finally{reader.close();}
+});
+
+await test('web and preview worker partition identical model assets while agent readers keep the original resources',async t=>{
+  const options=fixture(t),repository=new CatalogueRepository(options.databasePath),moduleId='lib/model-library.mjs';
+  const models=[{id:'first',items:[{question:'Exact <question> 🦉'}]},{id:'second',items:[]}];
+  try{
+    const content=readRuntimePublication(repository,{...options,contract:runtimeContractHash});
+    content.modules[moduleId]={models:[],history:[]};
+    const refs=prepareWebResources(repository,options.release,{'models:library:0':[{path:['models'],value:models},{path:['history'],value:['Original wording']}]});
+    Object.assign(content.refs,refs);content.registrations[moduleId]=['models:library:0'];
+    options.publication=publishRuntime(repository,content,{...options,contract:runtimeContractHash});
+  }finally{repository.close();}
+  const main=publishedCataloguePlugin({...options,deferMetadata:true}),worker=publishedCataloguePlugin({...options,deferMetadata:true,emitManifest:false}),agent=publishedCataloguePlugin(options);
+  for(const plugin of [main,worker,agent])await plugin.buildStart();
+  const importer=join(root,'app/client.tsx'),routing=main.resolveId('@/lib/model-resource-routing.mjs',importer);
+  assert.deepEqual((await import('data:text/javascript,'+encodeURIComponent(main.load(routing)))).default,['first','second']);
+  assert.equal(agent.resolveId('@/lib/model-resource-routing.mjs',importer),null);
+  const emitted=[],context={emitFile:asset=>{emitted.push(asset);return 'asset'+emitted.length;}};
+  const source=main.load.call(context,main.resolveId('omnibus-data:'+moduleId));
+  assert.match(source,/registerCatalogueResource\("models:item:first"/);assert.match(source,/registerCatalogueResource\("models:shared:library"/);
+  assert(!source.includes('Exact'));assert(!source.includes('models:library:0'));
+  assert(emitted.every(asset=>/^assets\/model-content-[a-f0-9]{64}\.js$/.test(asset.fileName)&&asset.type==='asset'));
+  const mainAssets=[...emitted];emitted.length=0;
+  assert.equal(worker.load.call(context,worker.resolveId('omnibus-data:'+moduleId)),source);
+  assert.deepEqual(emitted,mainAssets);assert.equal(emitted.length,3);
+  const first=await import('data:text/javascript,'+encodeURIComponent(emitted[1].source));assert.deepEqual(first.default,[{path:['models'],value:[models[0]]}]);
+  assert(!emitted[1].source.includes('<question>'));assert(!emitted[1].source.includes('second'));
+  assert.match(agent.load(agent.resolveId('omnibus-data:'+moduleId)),/registerCatalogueResource\("models:library:0"/);
 });
 
 await test('preview validates the publication, serves the app and cannot write or expose the database',async t=>{

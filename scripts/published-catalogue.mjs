@@ -8,6 +8,8 @@ import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 import {buildCatalogueOverviews} from './build-catalogue-overviews.mjs';
 import {validCodeRevision} from './build-code-revision.mjs';
 import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
+import {projectModelDelivery} from './model-delivery-projection.mjs';
+import {webResource} from '../local-data/web-resources.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -24,7 +26,7 @@ const code = (value) => JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) 
  */
 export function publishedCataloguePlugin({release, publication, databasePath, transportModule, reportOverviews=false, deferMetadata=false, emitManifest=true, codeRevision, runtimeTarget='local-preview'} = {}) {
   if(codeRevision && !validCodeRevision(codeRevision))throw Error('Invalid explicit code revision.');
-  let content, overviews, foundationSearch, foundationOverviews, modelDirectory, metadata;
+  let content, overviews, foundationSearch, foundationOverviews, modelDirectory, metadata, modelDelivery;
   const moduleId = source => relative(root, source).replaceAll('\\','/');
   return {
     name:'omnibus-published-catalogue', enforce:'pre',
@@ -33,6 +35,12 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       const repository = new CatalogueRepository(resolve(databasePath), {readOnly:true});
       try {
         content = readRuntimePublication(repository, {release,publication,contract:runtimeContractHash});
+        if(deferMetadata)modelDelivery=projectModelDelivery(content,ref=>{
+          if(!ref||ref.release!==release)throw Error('Invalid model resource boundary.');
+          const value=webResource(repository,release,ref.hash);
+          if(createHash('sha256').update(JSON.stringify(value)).digest('hex')!==ref.hash)throw Error('Model resource integrity mismatch.');
+          return value;
+        });
       } finally { repository.close(); }
       validateRuntimeModules(content, runtimeContract);
       if(deferMetadata)metadata=deferredCatalogueMetadata(content);
@@ -57,6 +65,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       if(id==='lib/foundation-search-resources.mjs'&&reportOverviews)return virtualPrefix+'foundation-search-resources';
       if(id==='lib/foundation-overview-resources.mjs'&&reportOverviews)return virtualPrefix+'foundation-overview-resources';
       if(id==='lib/model-directory-resource.mjs'&&reportOverviews)return virtualPrefix+'model-directory-resource';
+      if(id==='lib/model-resource-routing.mjs'&&modelDelivery)return virtualPrefix+'model-resource-routing';
       if (id === 'lib/database-source-client.mjs' && transportModule) return resolve(transportModule).replaceAll('\\','/');
       if (id === 'lib/application-mode.mjs') return virtualPrefix+'mode';
       const entry = runtimeContract[id];
@@ -66,6 +75,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
     load(id) {
       if (!id.startsWith(virtualPrefix)) return null;
       if (!content) throw Error('Publication must be verified before loading modules.');
+      if(id===virtualPrefix+'model-resource-routing')return `export default ${code(modelDelivery.ids)};`;
       if(id===virtualPrefix+'model-directory-resource'){
         const source=`export default JSON.parse(${code(quote(modelDirectory))});`,hash=createHash('sha256').update(source).digest('hex');
         const chunk=this.emitFile({type:'asset',fileName:'assets/model-directory-'+hash+'.js',source});
@@ -118,16 +128,24 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       const original = key.slice('data:'.length);
       // JSON.parse preserves literal __proto__ keys as data, unlike a JS object literal.
       const lines = [`const data=/*#__PURE__*/JSON.parse(${code(quote(metadata?.modules[original] ?? content.modules[original]))});`];
-      const keys = content.registrations[original] || [];
+      const registrations = modelDelivery?.registrations[original] ?? (content.registrations[original]||[]).map(key=>({key,ref:content.refs[key]}));
+      const network=registrations.filter(entry=>entry.ref),assets=registrations.filter(entry=>entry.edits);
       const metadataKeys=metadata?.registrations[original] ?? [];
-      if (keys.length || metadataKeys.length) {
+      if (registrations.length || metadataKeys.length) {
         lines.push(`import {registerCatalogueResource,applyCatalogueEdits} from ${quote(resolve(root,'lib/catalogue-runtime.mjs'))};`);
       }
-      if (keys.length) {
+      if (network.length) {
         lines.push(`import {databaseSourceClient} from ${quote(resolve(root,'lib/database-source-client.mjs'))};`);
-        for (const key of keys) lines.push(`registerCatalogueResource(${code(key)},()=>databaseSourceClient.content(${code(content.refs[key])}),value=>applyCatalogueEdits(data,value),${code(content.refs[key])});`);
+        for (const {key,ref} of network) lines.push(`registerCatalogueResource(${code(key)},()=>databaseSourceClient.content(${code(ref)}),value=>applyCatalogueEdits(data,value),${code(ref)});`);
       }
-      if(metadataKeys.length)lines.push(`import {featureLoader} from ${quote(resolve(root,'lib/feature-loader.mjs'))};`);
+      if(metadataKeys.length||assets.length)lines.push(`import {featureLoader} from ${quote(resolve(root,'lib/feature-loader.mjs'))};`);
+      assets.forEach(({key,edits},index)=>{
+        const source=`export default JSON.parse(${code(quote(edits))});`,hash=createHash('sha256').update(source).digest('hex');
+        const chunk=this.emitFile({type:'asset',fileName:'assets/model-content-'+hash+'.js',source});
+        lines.push(`const modelUrl${index}=import.meta.ROLLUP_FILE_URL_${chunk};`,
+          `const modelLoad${index}=featureLoader(attempt=>import(/* @vite-ignore */ attempt?modelUrl${index}+'?retry='+attempt:modelUrl${index}));`,
+          `registerCatalogueResource(${code(key)},()=>modelLoad${index}().then(m=>m.default),value=>applyCatalogueEdits(data,value));`);
+      });
       metadataKeys.forEach((key,index)=>{
         // Reuse the shared retryable loader: browsers cache failed native imports.
         // A retry addresses only this build's hashed asset, never arbitrary code.
