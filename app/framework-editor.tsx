@@ -58,7 +58,7 @@ import {expandProject} from '@/lib/project-codec.mjs';
 import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
-import {baseFramework,previousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
+import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
 import {foundationOverviewKey} from '@/lib/foundation-overviews.mjs';
@@ -124,15 +124,17 @@ const names: Record<string, string> = labels;
 const provenance: Record<string, string> = basisLabels;
 const statuses: Record<string, string> = statusLabels;
 const storageKey = "rijksmap-framework-v425-structure-" + baselineId(baseFramework);
-const previousStorageKeys = previousFrameworks.map(f=>"rijksmap-framework-v425-structure-"+baselineId(f));
 function previousStoredDraft() {
-  for(const key of previousStorageKeys){const raw=localStorage.getItem(key);if(raw!==null)return raw;}
+  for(const framework of getPreviousFrameworks()){
+    const raw=localStorage.getItem("rijksmap-framework-v425-structure-"+baselineId(framework));
+    if(raw!==null)return raw;
+  }
   return null;
 }
 const restoreOptions = {
   restoreDraft:(value:unknown) => {
     assertNoRemovedReportContent(value);
-    const restored=personalDraft(upgradeDraft(value,baseFramework,baseFramework,previousFrameworks),baseFramework) as Draft;
+    const restored=personalDraft(upgradeDraft(value,baseFramework,baseFramework,getPreviousFrameworks),baseFramework) as Draft;
     return cleanScopeDraft(investigationFramework(baseFramework,restored),restored).draft as Draft;
   },
   restoreModels:restoreModelLibrary,

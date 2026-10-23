@@ -3,7 +3,7 @@ import type {Theme} from '../app/workspace-catalogues';
 type NavigationView=Theme & {axis:'themes'|'processes';categoryId:string;description:string};
 export const corpus:{framework:Framework;source:{id:string;source_sha256:string;pages:{page:number;text:string}[]}}[];
 export let baseFramework:Framework;
-export let previousFrameworks:Framework[];
+export function getPreviousFrameworks():Framework[];
 export const legacyThemes:Theme[];
 export const discoveryViews:NavigationView[];
 export const themes:Theme[];
