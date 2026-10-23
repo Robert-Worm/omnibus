@@ -88,7 +88,16 @@ Controleer de nieuwe inhoud en een kopie van een bestaand project. Zie [inhoud t
 <a id="een-release-uitbrengen"></a>
 ### 6. Een release uitbrengen
 
-Als de nieuwe database is goedgekeurd, open je een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml). Daarin staan alle stappen, van controle tot aankondiging, om af te vinken. In het kort:
+Als de nieuwe database is goedgekeurd, open je een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml). Daarin staan alle stappen, van controle tot aankondiging, om af te vinken.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/releasechecklist-donker.png">
+  <img src="../images/releasechecklist.png" alt="De releasechecklist op GitHub, met vier groepen afvinkpunten: inhoud, database maken, uitbrengen en afronden">
+</picture>
+
+*De releasechecklist. Je vinkt de stappen af in het issue.*
+
+In het kort:
 
 1. **Maak de releasebestanden** met één opdracht:
 

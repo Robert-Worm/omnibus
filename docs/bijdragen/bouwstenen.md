@@ -228,7 +228,7 @@ Klap alleen in wat niet iedereen nodig heeft. Wat de lezer nodig heeft om de taa
 
 ## Afbeeldingen en schema's
 
-**Afbeeldingen.** Elke schermafbeelding komt uit `npm run docs:screenshots`. Dat script maakt elk scherm in licht en donker (`-donker.png`), de banner en de rondleiding. Zet een afbeelding altijd zo neer, met een kort bijschrift eronder:
+**Afbeeldingen.** Elke schermafbeelding komt uit `npm run docs:screenshots`. Dat script maakt elk scherm in licht en donker (`-donker.png`), de banner en de rondleiding. Alleen de beelden van GitHub zelf (`claimformulier`, `botreactie`, `voortgang-beginnen` en `releasechecklist`) maak je met de hand: neem het beeld in licht, zet GitHub in de pagina op donker en neem het opnieuw. Zet een afbeelding altijd zo neer, met een kort bijschrift eronder:
 
 ```text
 <picture>

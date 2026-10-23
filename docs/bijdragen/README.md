@@ -43,6 +43,24 @@ flowchart LR
 
 Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voor iemand anders. Geen probleem.
 
+**Zo ziet het eruit.** Het claimformulier vraagt welke bron je kiest, met welk AI-model je werkt en wanneer je klaar denkt te zijn:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/claimformulier-donker.png">
+  <img src="../images/claimformulier.png" alt="Het claimformulier op GitHub met de vragen naar de bron, het AI-model en de verwachte einddatum">
+</picture>
+
+*Het claimformulier. De titel en het label claim staan al ingevuld.*
+
+Binnen een paar minuten reageert de bot in je claim:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/botreactie-donker.png">
+  <img src="../images/botreactie.png" alt="Reactie van de bot: de bron staat op jouw naam, met de volgende stappen en de opdrachten inleveren en vrijgeven">
+</picture>
+
+*De bot bevestigt je claim en zegt wat je daarna doet.*
+
 ## Welke bron kies je?
 
 | Werklijst | Wat erin staat |
@@ -53,6 +71,13 @@ Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voo
 | [Wetten en kaders](werklijst-wetten-en-kaders.md) | Wetten, regels en normenkaders, met per bron of je hem openbaar mag verwerken |
 
 Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikbare normen op.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../images/voortgang-beginnen-donker.png">
+  <img src="../images/voortgang-beginnen.png" alt="De voortgang op GitHub: een tabel met aanbevolen rapporten, hun datum, de status Open en een link Claimen">
+</picture>
+
+*In de voortgang staan aanbevolen rapporten om mee te beginnen, elk met een link om te claimen.*
 
 ## Afspraken
 
