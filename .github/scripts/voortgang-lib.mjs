@@ -328,7 +328,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     return (spatie > n / 2 ? kort.slice(0, spatie) : kort).replace(/[\s,;:.–-]+$/, "") + "…";
   };
   // Anker zoals GitHub het van een kop maakt (zelfde regels als scripts/check-docs.mjs).
-  const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-");
+  // In smalle tabelkolommen mogen een statuslabel en een datum niet over twee regels breken.
+const heel = (tekst) => tekst.replace(/ /g, "\u00a0");
+const datumCel = (datum) => String(datum).replace(/-/g, "\u2011");
+const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-");
   // Claimlink met een titel die de bron noemt, zodat elke link herkenbaar is (ook voor een schermlezer).
   const claimActie = (titel, url) => `[Claimen](${url} "Claimen: ${String(titel).replace(/"/g, "”")}")`;
   const AUTOMATISCH = "*Automatisch bijgewerkt door het voortgangsscript. Pas deze pagina niet met de hand aan; de gegevens staan in `.github/voortgang/`.*";
@@ -378,7 +381,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     }) }));
     const allKaders = kaderRows.flatMap((k) => k.items);
 
-    const statusLabel = { "in database": "✅ In database", "in bewerking": "🔄 In bewerking", ingeleverd: "📦 Ingeleverd", open: "⬜ Open", "toestemming nodig": "🔒 Toestemming nodig", "niet openbaar": "🔒 Niet openbaar", "mogelijk dubbel": "🔁 Mogelijk dubbel" };
+    const statusLabel = Object.fromEntries(Object.entries({ "in database": "✅ In database", "in bewerking": "🔄 In bewerking", ingeleverd: "📦 Ingeleverd", open: "⬜ Open", "toestemming nodig": "🔒 Toestemming nodig", "niet openbaar": "🔒 Niet openbaar", "mogelijk dubbel": "🔁 Mogelijk dubbel" }).map(([k, v]) => [k, heel(v)]));
     const legenda = (extra = []) => [
       "**Legenda**",
       "",
@@ -504,7 +507,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       "| Bron | Datum | Status | Actie |",
       "| --- | --- | --- | --- |",
-      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${r.datum} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
+      ...suggestions.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${datumCel(r.datum)} | ${statusLabel[r.status]} | ${claimActie(r.titel, r.claimen)} |`),
       "",
       "Meer kiezen:",
       "",
@@ -531,7 +534,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       "",
       "| Bron | Datum |",
       "| --- | --- |",
-      ...inDb.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${r.datum} |`),
+      ...inDb.map((r) => `| [${esc(short(r.titel))}](${r.rijksmap}) · ${esc(r.ministerie)} | ${datumCel(r.datum)} |`),
       "",
       "</details>",
       "",
@@ -594,7 +597,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
           "",
           "| Bron | Datum | Status | Actie |",
           "| --- | --- | --- | --- |",
-          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap}) | ${r.datum} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
+          ...list.map((r) => `| [${esc(short(r.titel, 100))}](${r.rijksmap}) | ${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
           "",
           "</details>",
           "",
