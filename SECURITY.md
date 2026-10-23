@@ -25,7 +25,10 @@ Zijn er mogelijk wachtwoorden of sleutels uitgelekt? Meld dat direct. Een bestan
 
 ## Automatische meldingen
 
-GitHub waarschuwt de beheerder automatisch op drie manieren:
+GitHub kan de beheerder automatisch waarschuwen, op drie manieren. Zo is het afgesproken in [besluit B-014](docs/beheer/besluiten.md#b-014).
+
+> [!IMPORTANT]
+> **Stand 23 oktober 2026:** Dependabot-updates werken al. Dependabot-meldingen en geheimen scannen staan nog uit; de beheerder zet ze aan onder *Settings → Code security*.
 
 | Wat | Wat het doet | Wie, en binnen welke termijn |
 | --- | --- | --- |

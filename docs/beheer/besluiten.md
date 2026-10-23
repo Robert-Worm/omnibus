@@ -14,6 +14,7 @@ Een besluit geldt tot er een nieuw besluit is dat het vervangt. Wil je een beslu
 
 | ID | Datum | Besluit | Reden | Gevolg |
 | --- | --- | --- | --- | --- |
+| <a id="b-014"></a>B-014 | 2026-10-23 | Dependabot-meldingen en geheimen scannen gaan aan; de beheerder beoordeelt een melding binnen 7 dagen, *critical* of *high* binnen 2 werkdagen, een gelekte sleutel direct | Kwetsbare onderdelen en gelekte sleutels wil je weten voordat iemand ze misbruikt | Zie [automatische meldingen](../../SECURITY.md#automatische-meldingen) en het [beheerhandboek](handboek.md) |
 | <a id="b-013"></a>B-013 | 2026-10-21 | De applicatiecode blijft voorlopig in vier mappen | Verplaatsen vraagt een nieuw runtimecontract en een nieuwe databaserelease | Zie [het onderzoek](../bijdragen/architectuur.md#onderzoek-alle-applicatiecode-in-één-map) |
 | <a id="b-012"></a>B-012 | 2026-10-21 | Vaste bouwstenen voor elke pagina: paginatypen, tabelvormen, statuslabels en GitHub-meldingen met een vet Nederlands woord vooraan | Een professionele, rustige weergave die overal gelijk is | Zie de [bouwstenen](../bijdragen/bouwstenen.md); de documentatiecheck bewaakt paginatypen en meldingen |
 | <a id="b-011"></a>B-011 | 2026-10-21 | De online versie is bereikbaar via links vanaf andere sites (mail, zoekmachine) | Een gedeelde link moet gewoon werken; beveiliging mag de site niet onbruikbaar maken | Alleen het openen van een pagina mag; andere sites kunnen geen gegevens opvragen en Omnibus niet insluiten |
