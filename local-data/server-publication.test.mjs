@@ -112,17 +112,23 @@ async function denied(url, paths) {
 }
 
 test('batched reads retain exact pinned sources, transport controls and unchanged database bytes',async t=>{
-  const f=fixture(t),extraValue={text:'Second synthetic source 😀é',selection_status:'HOLD'};
+  const f=fixture(t),extraValue={points:Array.from({length:200},(_,i)=>({
+    id:`new-report-point-${i}`,text:'Second synthetic source 😀é',selection_status:'HOLD',
+  }))};
   const extra=prepareWebResources(f.repository,f.release,{extra:extraValue});
   f.value.refs={...f.value.refs,...extra};f.writeManifest({...f.manifest,publication:f.publish()});
   f.readOnly();const before=digest(readFileSync(f.databasePath)),app=await f.start(),calls=[];
   const client=createDatabaseSourceClient({batchContent:true,fetchImpl:(url,options)=>{
     if(typeof url!=='string')throw Error('Expected relative source URL');
-    calls.push(url);return fetch(app.url+url,options);
+    const headers=new Headers(options.headers);headers.set('Accept-Encoding','br');
+    calls.push(url);return fetch(app.url+url,{...options,headers});
   }});
   assert.deepEqual(await Promise.all([f.refs.selected,extra.extra].map(ref=>client.content(ref))),[f.selectedContent,extraValue]);
   assert.equal(calls.length,1);assert(calls[0].startsWith('/api/v1/content-batch?'));
-  const response=await fetch(app.url+calls[0]);assert.equal(response.status,200);
+  const response=await fetch(app.url+calls[0],{headers:{'Accept-Encoding':'br'}});assert.equal(response.status,200);
+  assert.equal(response.headers.get('content-encoding'),'br');
+  assert.equal(response.headers.get('vary'),'Accept-Encoding');
+  await response.arrayBuffer();
   assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('x-content-type-options'),'nosniff');
   assert.equal((await fetch(app.url+calls[0],{method:'POST'})).status,405);
   assert.equal((await fetch(app.url+calls[0],{headers:{Origin:'https://example.invalid'}})).status,403);

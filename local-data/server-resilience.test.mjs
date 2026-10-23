@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
-import { gunzipSync } from 'node:zlib';
+import { gunzipSync, brotliDecompressSync } from 'node:zlib';
 import { serveCatalogue, catalogueRequestLimits as limits } from './server.mjs';
 import { CatalogueRepository, digest } from './repository.mjs';
 import { prepareWebResources } from './web-resources.mjs';
@@ -52,9 +52,9 @@ async function start(t, repository, options = {}) {
     for (const client of clients) client.destroy();
     await app.close();
   });
-  function paused(path = pagePath, gzip = true) {
+  function paused(path = pagePath, encoding = 'gzip') {
     return new Promise((resolve, reject) => {
-      const req = http.get(app.url + path, { agent: false, headers: gzip ? { 'Accept-Encoding': 'gzip' } : {} }, res => {
+      const req = http.get(app.url + path, { agent: false, headers: encoding ? { 'Accept-Encoding': encoding } : {} }, res => {
         res.pause();
         // Aborts/expiry intentionally terminate incomplete response streams.
         res.on('error', () => {});
@@ -141,16 +141,42 @@ test('ordinary viewer bursts preserve publication data, gzip, static cache and k
   });
 });
 
-test('global response capacity rejects before reads and recovers exactly once after abort', { timeout: 20000 }, async t => {
+test('JSON transport negotiates Brotli without changing source bytes or response protections', async t => {
+  const value = { text: 'Synthetic source 😀é '.repeat(100), selection_status: 'HOLD' };
+  const app = await start(t, { page() { return value; } });
+  const raw = Buffer.from(JSON.stringify(value));
+  for (const [accept, expected, decode] of [
+    ['gzip,br', 'br', brotliDecompressSync], ['br;q=0,gzip', 'gzip', gunzipSync],
+    ['br;q=0.5,gzip', 'gzip', gunzipSync], ['identity', undefined, bytes => bytes],
+  ]) {
+    const result = await request(app.url, pagePath, { 'Accept-Encoding': accept });
+    assert.equal(result.status, 200); assert.equal(result.headers['content-encoding'], expected);
+    assert.equal(result.headers.vary, 'Accept-Encoding');
+    assert.equal(result.headers['cache-control'], 'no-store');
+    assert.equal(result.headers['x-content-type-options'], 'nosniff');
+    assert.deepEqual(decode(result.body), raw);
+  }
+  const refused = await request(app.url, pagePath, { 'Accept-Encoding': '*;q=0' });
+  assert.equal(refused.status, 406); assert.equal(refused.body.length, 0);
+  const small = await request(app.url, '/api/v1/health', { 'Accept-Encoding': 'br,identity;q=0' });
+  assert.equal(small.status, 406); assert.equal(small.headers['content-encoding'], undefined);
+  assert.equal(small.body.length, 0);
+  const denied = await request(app.url, pagePath, { Host: 'example.invalid', 'Accept-Encoding': 'br,identity;q=0' });
+  assert.equal(denied.status, 406); assert.equal(denied.headers['content-encoding'], undefined);
+  assert.equal(denied.body.length, 0, 'pre-admission errors cannot allocate compressors');
+});
+
+for (const encoding of ['gzip', 'br']) test(`${encoding}: global response capacity rejects before reads and recovers exactly once after abort`, { timeout: 20000 }, async t => {
   let reads = 0;
   const app = await start(t, { page() { reads++; return large; } });
-  const held = await Promise.all(Array.from({ length: 32 }, () => app.paused()));
+  const held = await Promise.all(Array.from({ length: 32 }, () => app.paused(pagePath, encoding)));
   assert(held.every(client => client.res.statusCode === 200));
+  assert(held.every(client => client.res.headers['content-encoding'] === encoding));
   await until(() => app.pending.size === 32, 'all slow responses must remain active');
   await delay(100);
   assert.equal(app.pending.size, 32, 'completed incoming GETs do not release outgoing streams');
   const rejected = await Promise.all(Array.from({ length: 8 }, (_, i) => request(app.url, pagePath, {
-    'Accept-Encoding': 'gzip', 'X-Forwarded-For': `192.0.2.${i}`, 'X-Request-ID': 'PRIVATE-CANARY',
+    'Accept-Encoding': encoding, 'X-Forwarded-For': `192.0.2.${i}`, 'X-Request-ID': 'PRIVATE-CANARY',
   })));
   for (const result of rejected) {
     assert.equal(result.status, 503);
@@ -170,7 +196,7 @@ test('global response capacity rejects before reads and recovers exactly once af
   for (const client of held.slice(0, 4)) client.req.destroy();
   await until(() => app.pending.size === 28, 'abort must release four slots');
   for (let i = 0; i < 40; i++) assert.equal((await request(app.url)).status, 200);
-  const replacements = await Promise.all(Array.from({ length: 4 }, () => app.paused()));
+  const replacements = await Promise.all(Array.from({ length: 4 }, () => app.paused(pagePath, encoding)));
   assert(replacements.every(client => client.res.statusCode === 200));
   assert.equal((await request(app.url, pagePath)).status, 503, 'finish plus close must never double-release');
   for (const client of [...held, ...replacements]) client.req.destroy();
@@ -200,7 +226,7 @@ test('static streams share the bound and release capacity after file errors', { 
   t.diagnostic(`Durable fixture: ${(performance.now() - fixtureStarted).toFixed(1)} ms`);
   await t.test('static runtime after durable fixture', { timeout: 20000 }, async t => {
     const app = await start(t, f.repository, { webRoot: f.webRoot });
-    const held = await Promise.all(Array.from({ length: 32 }, (_, i) => app.paused(f.assetPath, i % 2 === 0)));
+    const held = await Promise.all(Array.from({ length: 32 }, (_, i) => app.paused(f.assetPath, i % 2 === 0 ? 'gzip' : null)));
     assert(held.every(client => client.res.statusCode === 200));
     assert.equal((await request(app.url, '/')).status, 503);
     assert.equal((await request(app.url, '/api/v1/ready')).status, 503, 'readiness cannot bypass capacity');

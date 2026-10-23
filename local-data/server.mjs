@@ -7,13 +7,13 @@ import {createStaticWeb} from './static-web.mjs';
 import {webResource,webResourceBatch} from './web-resources.mjs';
 import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
 import {Readable,pipeline} from 'node:stream';
-import {createGzip} from 'node:zlib';
+import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
 import {createHostingPolicy} from './hosting-policy.mjs';
 import {createRequestRateLimit} from './request-rate-limit.mjs';
 
 // Single-process resource ceilings, not per-user fairness or a request-rate SLA.
-// Leave room for a viewer burst while bounding retained JSON/gzip/file streams.
+// Leave room for a viewer burst while bounding retained JSON/compression/file streams.
 export const catalogueRequestLimits=Object.freeze({activeResponses:32,connections:128,responseMs:30000});
 
 // Loopback by default; public request policy requires explicit configuration.
@@ -81,15 +81,13 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   res.setHeader('X-Robots-Tag','noindex, nofollow');
   if(expectation)res.setHeader('Connection','close');
   const reply=(status,value)=>{
-   const raw=JSON.stringify(value);
-   const acceptsGzip=(req.headers['accept-encoding']||'').split(',').some(value=>{
-    const match=value.trim().match(/^gzip(?:\s*;\s*q=([\d.]+))?$/i);
-    return match&&(match[1]===undefined||(Number(match[1])>0&&Number(match[1])<=1));
-   });
+   const raw=JSON.stringify(value),bytes=Buffer.byteLength(raw);
+   const encoding=responseEncoding(req.headers['accept-encoding'],bytes);
    res.setHeader('Vary','Accept-Encoding');
-   if(Buffer.byteLength(raw)>1024&&acceptsGzip){
-    res.setHeader('Content-Encoding','gzip');res.setHeader('Vary','Accept-Encoding');res.writeHead(status);
-    pipeline(Readable.from([raw]),createGzip(),res,()=>{});
+   if(encoding===null){res.writeHead(406);res.end();return;}
+   if(encoding!=='identity'){
+    res.setHeader('Content-Encoding',encoding);res.writeHead(status);
+    pipeline(Readable.from([raw]),createResponseCompressor(encoding,bytes),res,()=>{});
    }else{res.writeHead(status);res.end(raw);}
   };
   if(req.rawHeaders.length/2>32)return reply(431,{error:'Too many headers'});
