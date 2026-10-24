@@ -187,21 +187,28 @@ export default function FrameworkEditor() {
     commit(next,'Modelkeuze wijzigen',false);
   }
   const [scopeNotice, setScopeNotice] = useState("");
-  const [draft, setDraft] = useState<Draft>(
-    () =>
-      personalDraft(
+  const [draftState, setDraftState] = useState<{
+    draft: Draft;
+    prepared?: {base: Framework; revision: number; framework: Framework};
+  }>(
+    () => ({draft: personalDraft(
         {
           ...initialDraft(baseFramework),
           included: [],
           investigation: validateInvestigation(undefined),
         },
         baseFramework,
-      ) as Draft,
+      ) as Draft}),
   );
+  const {draft,prepared:preparedView} = draftState;
   const investigation = draft.investigation;
+  // The commit already prepared and checked these rows. Keep that view with
+  // its immutable draft, never in a saved project or across a publication.
   const framework = useMemo(
-    () => investigationFramework(catalogueSnapshot.framework, { investigation }) as Framework,
-    [investigation,catalogueSnapshot],
+    () => preparedView?.base===catalogueSnapshot.framework && preparedView.revision===catalogueSnapshot.revision
+      ? preparedView.framework
+      : investigationFramework(catalogueSnapshot.framework, { investigation }) as Framework,
+    [investigation,catalogueSnapshot,preparedView],
   );
   const [ownMaterialOpen, setOwnMaterialOpen] = useState(false);
   const [sourceProcess, setSourceProcess] = useState("");
@@ -401,7 +408,7 @@ export default function FrameworkEditor() {
     setRiskArea(project.view.discoveryAxis);
     projectRef.current=project;
     draftRef.current=project.draft;
-    setDraft(project.draft);setModelLibrary(project.modelLibrary);setWorkspace(project.workspace);
+    setDraftState({draft:project.draft});setModelLibrary(project.modelLibrary);setWorkspace(project.workspace);
     setAboutViews(project.view.aboutViews);
     setLastCollectionPage(project.view.lastCollectionPage);
     setOpenModelIds(normalizeOpenModelIds(project.view.openModelIds,project.modelLibrary.models));
@@ -704,7 +711,13 @@ export default function FrameworkEditor() {
       );
     if (track && !projectContentEqual(next,draftRef.current)) rememberProject(action);
     draftRef.current = next;
-    setDraft(next);
+    const view={base:baseFramework,revision:catalogueRevision(),framework:prepared.framework as Framework};
+    setDraftState(previous=>({draft:next,
+      // Unchanged investigation data retains the existing view identity too.
+      prepared:previous.draft.investigation===next.investigation &&
+        previous.prepared?.base===view.base && previous.prepared.revision===view.revision
+        ? previous.prepared : view,
+    }));
     projectRef.current={...projectRef.current,draft:next};
     // UI onChange accepts an in-memory edit; the save indicator alone reports
     // durability. Mark pending now so an immediate page exit flushes this edit.
