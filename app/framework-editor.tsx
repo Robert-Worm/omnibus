@@ -90,7 +90,7 @@ import {
   selectedReportIds,
 } from "@/lib/corpus-model.mjs";
 import type { Framework, Draft, Evidence, Line } from "@/lib/framework-types";
-import { labels, basisLabels, statusLabels, baselineId, initialDraft, prepareInitialDraft, isEdited, updateValue, draftValue } from "@/lib/framework-model.mjs";
+import { labels, basisLabels, statusLabels, baselineId, emptyDraft, initialDraft, prepareInitialDraft, isEdited, updateValue, draftValue } from "@/lib/framework-model.mjs";
 import { createFrameworkTools, registerFrameworkTools } from "@/lib/framework-tools.mjs";
 import FrameworkStructure from "./framework-structure";
 import FrameworkFields from "./framework-fields";
@@ -293,10 +293,18 @@ export default function FrameworkEditor() {
   const importRequest=useRef(0);
   const evidenceRef = useRef<HTMLElement>(null);
   const editable = page === "framework";
-  // Admission checks compare complete source snapshots. Reuse them while this
-  // immutable framework is unchanged; navigation must not revalidate every norm.
-  const {admitted, draft:sourceDraft} = useMemo(()=>prepareInitialDraft(framework),[framework]);
   const overview = useMemo(()=>reportOverviewCatalogue(browseThemes.flatMap(theme=>theme.reportIds)),[browseThemes]);
+  // Overview rows are display-only and use original text, not an all-source
+  // selection. Keep full admission for the editable workspace and legacy rows;
+  // overview selection still hydrates and validates its real source in commit.
+  const sourceViews = useMemo(()=>{
+    const display={admitted:[], draft:emptyDraft(framework)};
+    let checked:ReturnType<typeof prepareInitialDraft>;
+    // A later visit to the builder prepares once. Returning to it reuses the
+    // result until this immutable framework (including publication) changes.
+    return {display, checked:()=>checked??=prepareInitialDraft(framework)};
+  },[framework]);
+  const {admitted, draft:sourceDraft} = overview && !editable ? sourceViews.display : sourceViews.checked();
   const browseSourceLines = overview?.lines ?? admitted;
   const allBrowseLines = useMemo(()=>browseThemeLines(framework,browseThemes,[],browseSourceLines) as Line[],[framework,browseThemes,browseSourceLines]);
   const browseLines = useMemo(()=>browseThemeLines(framework,browseThemes,reportChoices.excluded,browseSourceLines) as Line[],[framework,browseThemes,reportChoices.excluded,browseSourceLines]);
