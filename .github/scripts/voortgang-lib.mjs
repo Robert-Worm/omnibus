@@ -10,6 +10,8 @@ export const afbreekbaar = (tekst) => String(tekst)
   .replace(/\//g, "/\u200b")
   .replace(/[^\s/\u200b]{19,}/g, (woord) => woord.match(/.{1,12}/gu).join("\u00ad"));
 export const MAX_CLAIMS = 5;
+// Releaseregel (besluit B-017): een nieuwe database bij 5 ingeleverde bronnen, of na een maand als er minstens één klaarligt.
+export const RELEASE_BIJ = 5;
 export const KORTE_PAGINA = 60; // gelijk aan scripts/check-docs.mjs
 const CLAIM_TEMPLATE = "bron-claimen.yml";
 const COMMAND = /^\s*\/(inleveren|vrijgeven)\b/im;
@@ -505,6 +507,8 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "## Zo staat het ervoor",
       "",
       `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap, en *kaders* zijn de wetten en kaders.`,
+      "",
+      `**Volgende database:** bij ${RELEASE_BIJ} ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt. Nu ${wachtend.length === 1 ? "ligt er 1 bron" : `liggen er ${wachtend.length} bronnen`} klaar.`,
       "",
       "| Status | Aanbevolen | Alle | Kaders |",
       "| --- | ---: | ---: | ---: |",

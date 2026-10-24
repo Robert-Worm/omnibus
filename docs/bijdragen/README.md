@@ -83,6 +83,7 @@ Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikba
 
 - **Hooguit vijf bronnen tegelijk.** Zo kun je bronnen naast elkaar verwerken, zonder dat er veel op jouw naam blijft liggen. Een zesde claim wordt gesloten, met uitleg.
 - **Blijf in contact.** Na 30 dagen zonder reactie krijg je een herinnering; na 60 dagen komt de bron automatisch weer vrij.
+- **Een nieuwe database bij 5 bronnen.** Zodra er 5 bronnen zijn ingeleverd, of een maand na de vorige database, volgt een nieuwe. Zo zie je je werk snel terug in Omnibus.
 - **Ook de beheerder heeft een termijn.** Wacht je ingeleverde pakket 7 dagen zonder reactie? Dan krijgt de beheerder automatisch een herinnering. Wat er wacht, zie je op de [voortgang](voortgang.md), onder *Wacht op de beheerder*.
 - **Elke maandag een weekoverzicht.** In [Discussions, categorie General](https://github.com/Robert-Worm/omnibus/discussions/categories/general) staat wat er is geclaimd, ingeleverd en verwerkt. Alleen GitHub-namen en bronnen, nooit inhoud.
 - **Geen vertrouwelijk materiaal** in issues, reacties of pull requests.

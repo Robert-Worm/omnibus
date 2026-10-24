@@ -482,3 +482,13 @@ test("wetten en kaders: op volgorde van belang voor overheidsaudit; laag staat e
   assert.doesNotMatch(md, /LAAG|weinig belang\]/);
   assert.match(md, /## Rechten/);
 });
+
+test("de voortgang zegt hoeveel bronnen klaarliggen voor de volgende database", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  await draai(g);
+  g.reageer(n, "anna", "/inleveren");
+  const v = await draai(g);
+  const md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/voortgang.md"];
+  assert.match(md, /\*\*Volgende database:\*\* bij 5 ingeleverde bronnen[^\n]*Nu ligt er 1 bron klaar\./);
+});

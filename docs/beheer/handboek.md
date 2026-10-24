@@ -33,7 +33,7 @@ flowchart LR
 
 ## Per databaserelease (± 2 tot 4 uur)
 
-Een release is nodig als er genoeg nieuwe bronnen klaarliggen; bijvoorbeeld eens per maand.
+Een nieuwe database volgt bij 5 ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt ([besluit B-017](besluiten.md#b-017)). De [voortgang](../bijdragen/voortgang.md) toont hoeveel bronnen klaarliggen.
 
 1. Open een [checklist voor de databaserelease](https://github.com/Robert-Worm/omnibus/issues/new?template=databaserelease.yml).
 2. Beoordeel de inhoud en maak de database: [inhoud toevoegen](inhoud-toevoegen.md) en [database publiceren](database-publiceren.md).
