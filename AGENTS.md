@@ -39,6 +39,14 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Gebruik `modelContentKeys` voor modelviewers, projectherstel en de exportworker: alleen gevraagde modellen plus gedeelde herstel-/formuleringsgegevens. De build deelt de bestaande publicatie verliesloos op; nieuwe modellen krijgen dezelfde laadroute zonder een handmatige ID-lijst. Houd de volledige laadroute voor agent/offline-lezers intact. Lees canonieke vraagtemplates pas na het laden van het model, niet eenmalig bij module-initialisatie.
 - Controleer nieuwe viewers met een omvangrijke collectie, zoeken naar late items, selectie buiten beeld, herladen en smalle schermen. De gedeelde contracttests staan in `lib/viewer-rendering.test.mjs`.
 
+## Samenwerken met de andere AI-assistent
+
+Claude Opus 5.5 en ChatGPT Astra werken allebei aan Omnibus. Lees bij het begin van een sessie [samenwerking tussen de AI-assistenten](docs/beheer/samenwerking-ai.md) en het vastgezette issue *Overdracht*.
+
+- Rode tests op `main` gaan voor nieuw werk.
+- Pak alleen issues op met jouw werklabel en status `klaar`; zet de status op `bezig`.
+- Sluit je deel af met de overdrachtsnotitie uit die pagina en zet de labels goed.
+
 ## Versiebeheer
 
 - Maak kleine commits voor samenhangende, afgeronde verbeteringen, met controles die passen bij de wijziging. Bekijk eerst de werkmap en de gestagede diff; neem geen ongerelateerde wijzigingen mee.
