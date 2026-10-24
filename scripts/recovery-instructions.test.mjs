@@ -11,14 +11,14 @@ const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 
 await test('host recovery documents the container build target, exact pins and a fresh output',t=>{
   const instructions=read('docs/beheer/storingen-en-herstel.md').split('## Online terug naar')[1].split('## De terugweg lokaal')[0];
-  const target=/npm run (build(?::runtime)?) -- --settings "<herstelinstellingen.json>" --out "<nieuwe-controlemap>"/.exec(instructions)?.[1];
+  const target=/npm run (build(?::runtime)?) -- --settings "?<herstelinstellingen.json>"? --out "?<nieuwe-controlemap>"?/.exec(instructions)?.[1];
   assert.equal(target,'build:runtime');
   assert.ok(read('hosting/container/Dockerfile').includes('npm run '+target+' -- --settings'));
   const script=JSON.parse(read('package.json')).scripts[target];
   assert.equal(script,'node scripts/build-runtime.mjs');
   assert.match(read('scripts/build-runtime.mjs'),/buildDatabase\(process\.argv\.slice\(2\), \{ portable: true \}\)/);
   assert.match(instructions,/nieuwe revert-commit/);assert.match(instructions,/releasehash en publicatiehash/);
-  assert.match(instructions,/--web-root "<nieuwe-controlemap>"/);assert.match(instructions,/\/api\/v1\/ready/);
+  assert.match(instructions,/--web-root "?<nieuwe-controlemap>"?/);assert.match(instructions,/\/api\/v1\/ready/);
 
   // Exercise the real build dispatcher. Only the compiler subprocess is replaced;
   // this fixture creates no application/database and never deploys anything.
