@@ -6,6 +6,9 @@ local-data/runtime
 database-build
 runtime-build
 offline-build
+agent-build/
+agent-output/
+.tmp/
 *.sqlite
 *.zip
 .env*

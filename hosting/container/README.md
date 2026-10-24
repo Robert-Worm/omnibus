@@ -31,8 +31,18 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 | Omgevingsvariabele | `PUBLIC_ORIGIN` = het openbare adres van de app, bijvoorbeeld `https://omnibus.sliplane.app` (zonder `/` aan het eind) |
 | Poort | `PORT`; standaard 8080 |
 | Geheugen | De server gebruikt rond 200 MB bij normaal gebruik |
-| Gezondheidscontrole | Pad `/api/v1/health` |
+| Gezondheidscontrole | Vastgelegd pad `/api/v1/health`: alleen bereikbaarheid; zie hieronder |
 | Automatisch uitrollen | Aan: elke push naar `main` bouwt en rolt opnieuw uit (ongeveer een halve minuut) |
+
+`/api/v1/health` dient als bereikbaarheidscontrole: het proces antwoordt ook als de database niet meer gereed is. De server controleert pakket en database voordat hij begint te luisteren. Dat verklaart de beperkte startcontrole via `/health`, maar bewijst geen gereedheid tijdens gebruik. Gebruik daarvoor `/api/v1/ready`: 200 betekent gereed, 503 betekent niet gereed. Voor een gezondheidscontrole die ook de databasestand bewaakt, is `/ready` het passende pad. De beheerder moet een omschakeling bij Sliplane apart controleren; die is hier niet bevestigd.
+
+De gereedheidscontrole leest vaste metadata via dezelfde databaseverbinding en merkt waargenomen SQLite-wijzigingen op. Hij berekent niet telkens alle controlegetallen opnieuw en detecteert niet elke vervanging van een bestand op schijf. Zie [gereedheid en grenzen](../../docs/beheer/runtime-pakket.md#gereedheid-en-grenzen).
+
+### HTTPS en HSTS
+
+Bij een ingesteld openbaar HTTPS-domein zet de app `Strict-Transport-Security: max-age=31536000` op antwoorden, ook bij HTTP-fouten. Dat vraagt de browser om dit domein een jaar via HTTPS te bezoeken. Er is geen `includeSubDomains`- of `preload`-optie. Lokaal gebruik, HTTP op localhost, HTTPS op `localhost` of een naam die eindigt op `.localhost`, en IP-adressen krijgen deze header niet.
+
+Deze keuze komt uitsluitend uit het ingestelde `PUBLIC_ORIGIN`, nooit uit proxyheaders. De host moet de externe HTTPS-verbinding verzorgen en de header doorgeven. Volgens [RFC 6797, §8.1](https://www.rfc-editor.org/rfc/rfc6797#section-8.1) verwerkt de browser HSTS alleen na een geldige beveiligde verbinding. Of Sliplane de header zelf toevoegt of doorgeeft, is hiermee niet vastgesteld. Controleer na een uitrol de header op het openbare HTTPS-adres.
 
 ## Een nieuwe database online zetten
 

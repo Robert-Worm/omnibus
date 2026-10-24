@@ -61,6 +61,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    super(req,options);
    this.setHeader('Access-Control-Allow-Origin',hosting.publicOrigin);
    this.setHeader('Cache-Control','no-store');
+   if(hosting.hsts)this.setHeader('Strict-Transport-Security',hosting.hsts);
    const socket=req.socket;
    pendingResponses.set(socket,(pendingResponses.get(socket)||0)+1);
    let released=false;
@@ -249,7 +250,8 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    const status=error.code==='HPE_HEADER_OVERFLOW'?431:error.code==='HPE_CHUNK_EXTENSIONS_OVERFLOW'?413:
     error.code==='ERR_HTTP_REQUEST_TIMEOUT'?408:400;
    socket.end(`HTTP/1.1 ${status} ${http.STATUS_CODES[status]}\r\nConnection: close\r\nContent-Length: 0\r\n`+
-    `Cache-Control: no-store\r\nAccess-Control-Allow-Origin: ${hosting.publicOrigin}\r\n\r\n`,()=>socket.destroy());
+    `Cache-Control: no-store\r\nAccess-Control-Allow-Origin: ${hosting.publicOrigin}\r\n`+
+    (hosting.hsts?`Strict-Transport-Security: ${hosting.hsts}\r\n`:'')+'\r\n',()=>socket.destroy());
   });
  }else server.on('checkContinue',(_req,res)=>{res.writeHead(417,{'Connection':'close'});res.end();});
  await startupCheck('listener',()=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,hosting.listenHost,resolve);}));

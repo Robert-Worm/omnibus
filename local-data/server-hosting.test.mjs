@@ -83,6 +83,7 @@ function rawRequest(app,wire,{timeout=5000}={}){
 
 function cors(result,origin=publicOrigin){
  assert.equal(result.headers['access-control-allow-origin'],origin);
+ assert.equal(result.headers['strict-transport-security'],'max-age=31536000');
  for(const name of ['access-control-allow-credentials','access-control-allow-methods','access-control-allow-headers'])
   assert.equal(result.headers[name],undefined);
  assert(!String(result.headers.vary).toLowerCase().includes('origin'));
@@ -276,6 +277,7 @@ test('public HTTP uses only its fixed origin while preserving read and response 
    const raw=await rawRequest(app,wire);
    assert.match(raw,new RegExp(`^HTTP/1.1 ${status} `));
    assert(raw.includes(`Access-Control-Allow-Origin: ${publicOrigin}\r\n`));assert(!raw.includes(canary));
+   assert(raw.includes('Strict-Transport-Security: max-age=31536000\r\n'));
   }
  });
 
@@ -283,6 +285,7 @@ test('public HTTP uses only its fixed origin while preserving read and response 
   const timeout=await rawRequest(app,`GET / HTTP/1.1\r\nHost: ${authority}\r\n`,{timeout:14000});
   assert.match(timeout,/^HTTP\/1.1 408 /);
   assert(timeout.includes(`Access-Control-Allow-Origin: ${publicOrigin}\r\n`));
+  assert(timeout.includes('Strict-Transport-Security: max-age=31536000\r\n'));
   const pipeline=await rawRequest(app,`GET /assets/synthetic.js HTTP/1.1\r\nHost: ${authority}\r\n\r\nBROKEN\r\n\r\n`);
   assert(!pipeline.includes('HTTP/1.1 400'),'never append a parser status inside a pending static response');
   assert.equal((await request(app)).status,200);
@@ -297,7 +300,10 @@ test('public HTTP uses only its fixed origin while preserving read and response 
    const raw=await rawRequest(app,wire+`GET /api/v1/health HTTP/1.1\r\nHost: ${authority}\r\nConnection: close\r\n\r\n`);
    const responses=raw.split(/(?=HTTP\/1\.1 \d{3} )/).filter(Boolean);
    assert.equal(responses.length,2);assert.match(responses[1],/^HTTP\/1.1 503 /);
-   for(const response of responses)assert(response.includes(`Access-Control-Allow-Origin: ${publicOrigin}\r\n`));
+   for(const response of responses){
+    assert(response.includes(`Access-Control-Allow-Origin: ${publicOrigin}\r\n`));
+    assert(response.includes('Strict-Transport-Security: max-age=31536000\r\n'));
+   }
   }finally{app.server.maxRequestsPerSocket=100;}
  });
 
@@ -329,6 +335,7 @@ test('local defaults and standalone routes retain local Host, Origin, mode and a
  for(const path of ['/api/v1/health','/api/v1/releases']){
   const result=await request(app,{path,headers:{Host:local,Origin:app.url}});
   assert.equal(result.status,200);assert.equal(result.headers['access-control-allow-origin'],undefined);
+  assert.equal(result.headers['strict-transport-security'],undefined);
   if(path.endsWith('health'))assert.deepEqual(JSON.parse(result.body),{status:'ok',mode:'local-read-only',schema:1});
  }
  for(const path of ['/api/v1/health?probe=1','/api/v1/ready?probe=1'])
@@ -338,4 +345,26 @@ test('local defaults and standalone routes retain local Host, Origin, mode and a
   const result=await request(app,{headers});assert.equal(result.status,headers.Expect?417:403);
   assert.equal(result.headers['access-control-allow-origin'],undefined);
  }
+});
+
+test('local HTTP, localhost HTTPS and IP origins never enable HSTS through forged proxy headers',async t=>{
+ const f=fixture(t);
+ for(const origin of ['http://localhost:8080','http://127.0.0.1:8080',
+  'https://localhost','https://preview.localhost','https://127.0.0.1','https://[::1]',
+  'https://192.0.2.1','https://[2001:db8::1]']){
+  assert.equal(createHostingPolicy({publicOrigin:origin,webRoot:f.webRoot}).hsts,null);
+  const app=await f.start({publicOrigin:origin});
+  const headers={Host:new URL(origin).host,'X-Forwarded-Proto':'https',
+   'X-Forwarded-Host':authority,Forwarded:'proto=https;host='+authority};
+  for(const path of ['/','/api/v1/health','/api/v1/ready','/missing']){
+   const result=await request(app,{path,headers});
+   assert.equal(result.status,path==='/missing'?404:200);
+   assert.equal(result.headers['strict-transport-security'],undefined);
+  }
+  const raw=await rawRequest(app,'BROKEN\r\n\r\n');
+  assert.match(raw,/^HTTP\/1.1 400 /);assert(!raw.toLowerCase().includes('strict-transport-security'));
+ }
+ const local=await serveCatalogue({});t.after(()=>local.close());
+ const response=await request(local,{headers:{Host:new URL(local.url).host,'X-Forwarded-Proto':'https'}});
+ assert.equal(response.status,200);assert.equal(response.headers['strict-transport-security'],undefined);
 });

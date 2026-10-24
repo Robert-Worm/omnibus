@@ -113,9 +113,11 @@ Het adres komt uitsluitend uit de netwerkverbinding. Proxyheaders zoals `X-Forwa
 
 #### Gereedheid en grenzen
 
-`GET /api/v1/ready` controleert of de database nog leesbaar is en nog dezelfde controlegetallen heeft als bij de start. Gereed: antwoord 200 met `status: "ready"`. Niet gereed: 503 met `status: "not-ready"` en `Retry-After: 1`. De antwoorden tonen geen paden of inhoud.
+`GET /api/v1/ready` leest vaste metadata via dezelfde alleen-lezen databaseverbinding. De controle bekijkt het databaseschema en of de vastgelegde combinatie van release en publicatie nog aanwezig is. Ook wordt de SQLite-wijzigingsteller (`data_version`) met de startstand vergeleken. Het runtimecontract wordt bij de start getoetst. Gereed: antwoord 200 met `status: "ready"`. Niet gereed: 503 met `status: "not-ready"` en `Retry-After: 1`. De antwoorden tonen geen paden of inhoud.
 
-Een tijdelijke blokkade van de database kan vanzelf overgaan. Is de database gewijzigd of vervangen, dan is een nieuwe, gecontroleerde start nodig; de server neemt nooit stilletjes een nieuwe stand over. Schrijf daarom nooit in een database die in gebruik is: publiceer een nieuwe versie en schakel bewust om.
+Dit is geen volledige integriteitscontrole: niet alle bron- en publicatiebytes worden opnieuw gehasht. De controle bewijst ook niet dat elke bestandsvervanging of schijffout wordt gedetecteerd. Een open verbinding kan bijvoorbeeld het oude bestand blijven lezen. `/api/v1/health` zegt alleen dat het proces antwoordt en kan dus 200 geven terwijl `/ready` 503 geeft.
+
+Een tijdelijke blokkade van de database kan vanzelf overgaan. Na een waargenomen wijziging is een nieuwe, gecontroleerde start nodig, ook als de oude bytes worden teruggezet. De server neemt nooit stilletjes een nieuwe stand over. Schrijf daarom nooit in een database die in gebruik is: publiceer een nieuwe versie en schakel bewust om.
 
 ### Grens naar echte hosting
 
