@@ -8,12 +8,15 @@ import {connect} from 'node:net';
 import {once} from 'node:events';
 import {DatabaseSync} from 'node:sqlite';
 import {spawn} from 'node:child_process';
+import childProcess from 'node:child_process';
+import {setTimeout as delay} from 'node:timers/promises';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {StdioClientTransport} from '@modelcontextprotocol/sdk/client/stdio.js';
 import {createIndex, insertEntry, sha256} from './index-store.mjs';
 import {openReadOnlyAgentService} from './read-service.mjs';
 import {createReadOnlyHttpServer, readOnlyHttpLimits} from './read-only-http.mjs';
+import {openIsolatedReadOnlyService, readOnlyWorkLimits} from './read-only-http-service.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const scratch = resolve(root, 'work/read-only-http');
@@ -24,7 +27,7 @@ const readTools = ['get_workflow_guide', 'list_sources', 'search_building_blocks
 const rpc = (method = 'ping', params, id = 1) => ({jsonrpc: '2.0', id, method, ...(params && {params})});
 const call = (name, args = {}) => rpc('tools/call', {name, arguments: args});
 
-async function fixture(t, {limits, override, corrupt = false} = {}) {
+async function fixture(t, {limits, override, corrupt = false, populate} = {}) {
   fs.mkdirSync(scratch, {recursive: true});
   const directory = fs.mkdtempSync(join(scratch, 'fixture-')), build = join(directory, 'build');
   fs.mkdirSync(build);
@@ -39,16 +42,18 @@ async function fixture(t, {limits, override, corrupt = false} = {}) {
           sourceContext: 'Fictieve context', sourceHash: 'c'.repeat(64), reportTrace: '{"status":"fictief"}'}});
     }
     if (corrupt) db.prepare("UPDATE agent_items SET payload = replace(payload, 'Fictieve norm.', 'Andere inhoud.') WHERE key = 'R1|P1'").run();
+    populate?.(db);
   } finally { db.close(); }
   fs.writeFileSync(join(build, 'omnibus-release.json'), JSON.stringify({release, publication}));
   // HTTP must work without workflow.mjs or an output directory.
   const before = sha256(fs.readFileSync(database));
   const service = openReadOnlyAgentService({buildDirectory: build});
-  const server = createReadOnlyHttpServer({service: {...service, ...override}, limits});
+  const reader = await openIsolatedReadOnlyService({buildDirectory: build});
+  const server = createReadOnlyHttpServer({service: {...reader, ...override}, limits});
   t.after(async () => {
     const closed = new Promise(resolve => server.close(resolve));
     server.closeAllConnections(); await closed;
-    service.close();
+    await reader.close(); service.close();
     assert.equal(sha256(fs.readFileSync(database)), before, 'synthetische database blijft bytegelijk');
     assert(!fs.existsSync(join(directory, 'output')), 'HTTP maakt geen projectuitvoer');
     const actual = fs.realpathSync(directory), rel = relative(fs.realpathSync(scratch), actual);
@@ -57,7 +62,7 @@ async function fixture(t, {limits, override, corrupt = false} = {}) {
   });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   const port = server.address().port, url = new URL(`http://127.0.0.1:${port}/mcp`);
-  return {service, server, port, url, build, directory, database};
+  return {service, reader, server, port, url, build, directory, database};
 }
 
 function post(url, body = rpc(), options = {}) {
@@ -217,6 +222,17 @@ test('changed source payload fails the existing integrity check over HTTP', asyn
   assert.equal(payload(await post(url, call('get_building_block', {key: 'R1|P2'}))).selectionStatus, 'HOLD');
 });
 
+test('reopening an isolated reader preserves the startup publication pin', async t => {
+  const {url, build} = await fixture(t);
+  const manifest = join(build, 'omnibus-release.json'), original = fs.readFileSync(manifest);
+  try {
+    fs.writeFileSync(manifest, JSON.stringify({release, publication: 'd'.repeat(64)}));
+    const response = await post(url, call('get_building_block', {key: 'R1|P2'}));
+    assert.equal(response.body.result.isError, true); safe(response);
+  } finally { fs.writeFileSync(manifest, original); }
+  assert.equal(payload(await post(url, call('get_workflow_guide'))).publication, publication);
+});
+
 test('rate budget is shared across connections and ignores forwarded identities', async t => {
   const {url} = await fixture(t, {limits: {requestBurst: 2}});
   assert.equal((await post(url)).status, 200); assert.equal((await post(url)).status, 200);
@@ -315,4 +331,143 @@ test('explicit standalone start uses an available loopback port and only the syn
     assert.equal(payload(response).release, release);
     assert.equal(payload(response).sources[0].id, 'R1');
   } finally { child.kill(); await exited; }
+});
+
+// A compact synthetic billion-row collection forces native COUNT/json_each
+// work past the real five-second deadline without disk/memory amplification
+// or a machine-dependent short timeout. No real catalogue is used.
+function slowCollection(db) {
+  db.exec(`ALTER TABLE agent_items RENAME TO fixture_items;
+    CREATE VIEW agent_items AS WITH RECURSIVE n(v) AS
+      (VALUES(1) UNION ALL SELECT v+1 FROM n WHERE v<1000)
+    SELECT 'R|'||a.v||'|'||b.v||'|'||c.v AS key, 'report' AS kind,
+      'R' AS source_id, 'Synthetic' AS source_title, 'Synthetic' AS title,
+      json_object('themes',json_array(json_object('id','T'||a.v||b.v||c.v))) AS payload, '' AS sha256
+      FROM n a,n b,n c;`);
+}
+const slowSearch = {sourceId: 'absent'};
+function watchReads(t) {
+  const reads = [], fork = childProcess.fork;
+  t.mock.method(childProcess, 'fork', (...args) => {
+    const child = fork(...args);
+    child.on('message', message => {
+      if (message.text !== undefined) assert(Buffer.byteLength(message.text) <= readOnlyWorkLimits.responseBytes, 'cap vóór IPC');
+    });
+    reads.push(child); return child;
+  });
+  return reads;
+}
+function reaped(child) {
+  assert(child.exitCode !== null || child.signalCode !== null, 'leesproces is beëindigd');
+  assert.throws(() => process.kill(child.pid, 0), {code: 'ESRCH'}, 'geen achtergebleven leesproces');
+}
+
+test('native collection work hits service and HTTP deadlines while HTTP stays responsive', {timeout: 20000}, async t => {
+  const {reader, url} = await fixture(t, {populate: slowCollection});
+  const reads = watchReads(t);
+  let settled = false;
+  const blocked = reader.search(slowSearch).finally(() => { settled = true; });
+  const failed = assert.rejects(blocked, /Leesverzoek niet uitgevoerd/);
+  const pulse = await post(url);
+  assert.equal(pulse.status, 200);
+  await delay(1000);
+  assert.equal(settled, false, 'HTTP antwoordt terwijl SQLite nog rekent');
+  await failed;
+  assert.equal(reads.length, 1); reaped(reads[0]);
+  const response = await post(url, call('get_workflow_guide'));
+  assert.equal(payload(response).release, release); safe(response);
+  reaped(reads[1]);
+  const timedOut = await post(url, call('search_building_blocks', slowSearch)).catch(error => ({socketError: error.code}));
+  if (timedOut.socketError) assert.equal(timedOut.socketError, 'ECONNRESET');
+  else { assert.equal(timedOut.body.result.isError, true); safe(timedOut); }
+  if (reads[2].exitCode === null && reads[2].signalCode === null) await once(reads[2], 'close');
+  reaped(reads[2]);
+  assert.equal(payload(await post(url, call('get_workflow_guide'))).release, release);
+});
+
+test('no reader queue, aborted work holds capacity until exit, and close reaps every reader', {timeout: 20000}, async t => {
+  const {reader} = await fixture(t, {populate: slowCollection});
+  const reads = watchReads(t), abort = new AbortController();
+  const pending = Array.from({length: readOnlyWorkLimits.concurrentReads}, () =>
+    assert.rejects(reader.search(slowSearch, {signal: abort.signal}), /Leesverzoek niet uitgevoerd/));
+  assert.equal(reads.length, readOnlyWorkLimits.concurrentReads);
+  await assert.rejects(reader.guide(), /Leesverzoek niet uitgevoerd/);
+  assert.equal(reads.length, readOnlyWorkLimits.concurrentReads, 'weigeren spawnt en wacht niet');
+  abort.abort();
+  await assert.rejects(reader.guide(), /Leesverzoek niet uitgevoerd/);
+  await Promise.all(pending);
+  reads.forEach(reaped);
+  assert.equal((await reader.guide()).release, release);
+  const closing = assert.rejects(reader.search(slowSearch), /Leesverzoek niet uitgevoerd/);
+  await reader.close(); await closing;
+  reads.forEach(reaped);
+  await assert.rejects(reader.guide(), /Leesverzoek niet uitgevoerd/);
+});
+
+test('disconnect during a tool call releases the SDK slot and kills its reader repeatedly', {timeout: 20000}, async t => {
+  const {url, server} = await fixture(t, {populate: slowCollection, limits: {concurrentRequests: 1}});
+  const reads = watchReads(t);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const reached = once(server, 'request');
+    const req = request(url, {method: 'POST', headers: {'content-type': 'application/json', accept: 'application/json, text/event-stream'}});
+    req.on('error', () => {});
+    req.end(JSON.stringify(call('search_building_blocks', slowSearch)));
+    const [, response] = await reached;
+    // Let admission reach the real child; this wait is not a timing assertion.
+    while (reads.length <= attempt) await delay(10);
+    const exited = once(reads[attempt], 'close'), closed = once(response, 'close');
+    req.destroy(); await closed; await exited;
+    reaped(reads[attempt]);
+    assert.equal((await post(url)).status, 200, 'SDK-verzoekslot is opnieuw beschikbaar');
+  }
+});
+
+test('large JSON fails wholly before IPC; sizeable Unicode sections and HOLD stay exact', {timeout: 20000}, async t => {
+  const {url} = await fixture(t, {populate: db => {
+    for (const [key, material] of [
+      ['large-overview', {title: 'Synthetic', body: secret.repeat(30000)}],
+      ['large-section', {title: 'Synthetic', sourceText: '🧭x'.repeat(1024 * 1024)}],
+    ]) insertEntry(db, {key, kind: 'report', sourceId: 'L', sourceTitle: 'Synthetic', material});
+  }});
+  const reads = watchReads(t);
+  const response = await post(url, call('get_building_block', {key: 'large-overview'}));
+  assert.equal(response.body.result.isError, true); safe(response);
+  reaped(reads.at(-1));
+  const part = payload(await post(url, call('get_building_block', {key: 'large-section', section: 'sourceText', limit: 100})));
+  assert.equal(part.text, '🧭x'.repeat(50));
+  assert.equal(part.totalCharacters, 2 * 1024 * 1024); assert.equal(part.nextOffset, 100);
+  const hold = payload(await post(url, call('get_building_block', {key: 'R1|P2'})));
+  assert.equal(hold.selectionStatus, 'HOLD'); assert.equal(hold.material.sourceHash, 'c'.repeat(64));
+  reads.forEach(reaped);
+});
+
+test('abruptly losing the HTTP parent does not leave a native reader process alive', {timeout: 20000}, async t => {
+  const {build, directory} = await fixture(t, {populate: slowCollection});
+  const harness = join(directory, 'parent.mjs');
+  fs.writeFileSync(harness, `import cp from 'node:child_process';
+    import {openIsolatedReadOnlyService} from ${JSON.stringify(pathToFileURL(join(root, 'agent-tools/read-only-http-service.mjs')).href)};
+    const reader = await openIsolatedReadOnlyService({buildDirectory: ${JSON.stringify(build)}});
+    const fork = cp.fork;
+    cp.fork = (...args) => { const child = fork(...args); console.log(child.pid); return child; };
+    await reader.search({sourceId: 'absent'}).catch(() => {});
+    await reader.close();`);
+  const parent = spawn(process.execPath, [harness], {windowsHide: true, stdio: ['ignore', 'pipe', 'ignore']});
+  const parentExited = once(parent, 'close');
+  let pid;
+  const alive = () => {
+    try { process.kill(pid, 0); return true; } catch (error) { if (error.code === 'ESRCH') return false; throw error; }
+  };
+  try {
+    pid = Number((await once(parent.stdout, 'data'))[0].toString().trim());
+    assert(Number.isSafeInteger(pid) && pid > 0);
+    await delay(1000);
+    assert(alive(), 'leesproces is actief vóór het wegvallen van de ouder');
+    parent.kill('SIGKILL'); await parentExited;
+    const end = Date.now() + 10000;
+    while (alive() && Date.now() < end) await delay(50);
+    assert.equal(alive(), false, 'eigen watchdog/disconnect beëindigt ook native werk zonder ouder');
+  } finally {
+    parent.kill('SIGKILL'); await parentExited;
+    if (pid && alive()) process.kill(pid, 'SIGKILL');
+  }
 });

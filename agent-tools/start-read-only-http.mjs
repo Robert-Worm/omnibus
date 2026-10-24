@@ -1,5 +1,5 @@
 import {parseArgs} from 'node:util';
-import {openReadOnlyAgentService} from './read-service.mjs';
+import {openIsolatedReadOnlyService} from './read-only-http-service.mjs';
 import {createReadOnlyHttpServer} from './read-only-http.mjs';
 
 // Separate, explicit local opt-in. Never consulted by npm start or STDIO.
@@ -9,7 +9,7 @@ try {
   const port = Number(values.port);
   if (!values['build-directory'] || !/^\d+$/.test(values.port) || !Number.isInteger(port) || port < 0 || port > 65535)
     throw Error('Ongeldige startopties.');
-  service = openReadOnlyAgentService({buildDirectory: values['build-directory']});
+  service = await openIsolatedReadOnlyService({buildDirectory: values['build-directory']});
   const server = createReadOnlyHttpServer({service});
   server.once('close', () => service.close());
   server.once('error', () => {
@@ -22,7 +22,7 @@ try {
     process.stdout.write(`Lokale leesproef: http://127.0.0.1:${server.address().port}/mcp\n`);
   });
 } catch {
-  service?.close();
+  await service?.close();
   process.stderr.write('De lokale leeskoppeling kon niet starten. Geef --build-directory en eventueel --port op.\n');
   process.exitCode = 1;
 }
