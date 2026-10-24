@@ -10,7 +10,8 @@ test("leesplan: 'volledig' en AGENTS.md zijn altijd, de rest alleen als het nodi
 
 test("skillKosten telt SKILL.md plus de verplichte naslag", () => {
   const bestanden = { "s/SKILL.md": "Lees [a](references/a.md) volledig. Zie [b](references/b.md).", "s/references/a.md": "x".repeat(350), "s/references/b.md": "y".repeat(700) };
-  const k = skillKosten("s", (p) => bestanden[p]);
+  // The in-memory fixture uses portable names; production uses native paths.
+  const k = skillKosten("s", (p) => bestanden[p.replaceAll("\\", "/")]);
   assert.equal(k.altijd, tokens(bestanden["s/SKILL.md"]) + 100);
   assert.equal(k.soms, 200);
 });
