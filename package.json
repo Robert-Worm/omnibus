@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.31.0",
-    "zod": "3.25.76",
+    "zod": "4.6.7",
     "@base-ui/react": "1.7.0",
     "@shadcn/react": "0.3.0",
     "class-variance-authority": "0.7.1",
