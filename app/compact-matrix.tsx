@@ -14,7 +14,7 @@ import FullTextPreview from "./full-text-preview";
 import DeferredMatrixRows from './deferred-matrix-rows';
 import DeferredViewerSection from './deferred-viewer-section';
 import {viewerRowBatches} from '@/lib/viewer-rendering.mjs';
-import {matrixAnchorId,matrixScrollView,matrixScrollPosition,revealMatrixRow} from '@/lib/viewer-scroll.mjs';
+import {matrixAnchorId,matrixScrollView,matrixScrollPosition,settleMatrixRowReveal} from '@/lib/viewer-scroll.mjs';
 import { fieldIncluded } from "@/lib/research-plan.mjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -162,6 +162,9 @@ export default function CompactMatrix({
   const restored = useRef(false);
   const handled = useRef(0);
   const revealed = useRef(0);
+  const revealComplete = useRef(onRevealComplete);
+  useLayoutEffect(()=>{revealComplete.current=onRevealComplete;},[onRevealComplete]);
+  const revealId=reveal?.id,revealNonce=reveal?.nonce;
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(()=>{
     if(ready&&resetRequest&&resetHandled.current!==resetRequest){
@@ -218,6 +221,8 @@ export default function CompactMatrix({
     rows: Line[];
   };
   const included = new Set(draft.included);
+  // Equal-sized filters can contain different rows; refresh their scroll anchor.
+  const rowLayoutKey=JSON.stringify(rows.map(row=>row.id));
   const optionsFor = (items:Line[]) => subjectDefinitions
     ? subjectDefinitions.map(s=>({...s,count:items.filter(l=>filterSubjects([l],[s.id]).length>0).length})).filter(s=>s.count>0)
     : subjectOptions(items);
@@ -282,12 +287,14 @@ export default function CompactMatrix({
   useEffect(() => {
     // Group wrappers delegate to the target matrix, which knows when its page
     // and rows are ready. Never consume a request while the row is absent.
-    if ((!groupLines || embedded) && reveal && ready && view.revealNonce === reveal.nonce && revealed.current !== reveal.nonce
-      && revealMatrixRow(scroller.current,reveal.id)) {
-      revealed.current=reveal.nonce;
-      onRevealComplete?.();
+    if ((!groupLines || embedded) && revealId && revealNonce!==undefined && ready && view.revealNonce === revealNonce && revealed.current !== revealNonce) {
+      const nonce=revealNonce;
+      return settleMatrixRowReveal(scroller.current,revealId,()=>{
+        revealed.current=nonce;
+        revealComplete.current?.();
+      });
     }
-  }, [view.revealNonce, ready, reveal, onRevealComplete, groupLines, embedded, rows]);
+  }, [view.revealNonce, ready, revealId, revealNonce, groupLines, embedded, rowLayoutKey]);
   const rowAll = (id:string) => pointChoices?.counts[id] ? pointChoices.counts[id].total>0 && pointChoices.counts[id].selected === pointChoices.counts[id].total : included.has(id);
   const rowSome = (id:string) => pointChoices?.counts[id] ? pointChoices.counts[id].selected > 0 || Boolean(pointChoices.counts[id].legacySelected) : included.has(id);
   const selectRows = (ids:string[], selected:boolean) => pointChoices ? pointChoices.onSelect(ids,selected) : onChange(selectLines(draft,ids,selected) as Draft);
@@ -306,8 +313,6 @@ export default function CompactMatrix({
   // Filtering creates fresh arrays on every render. Only changed column values
   // should restart geometry observation, not selection or saved scroll updates.
   const columnLayoutKey=columns.join(',');
-  // Equal-sized filters can contain different rows; refresh their scroll anchor.
-  const rowLayoutKey=JSON.stringify(rows.map(row=>row.id));
   const ownsScroll=!groupLines||embedded;
   useEffect(()=>{
     const element=scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
