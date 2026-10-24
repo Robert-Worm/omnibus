@@ -7,8 +7,8 @@
 ## Wat heb je nodig?
 
 - Een **claim** op de bron. Nog niet geclaimd? Doe dat eerst in de [voortgang](voortgang.md).
-- Een **AI-assistent die bestanden kan lezen en schrijven**, zoals Codex of Claude Code.
-- Een **kopie van deze repository**, voor de skills. Zie [installeren](../gebruiken/installeren.md), stap 1 en 2.
+- Een **AI-assistent die de skillbestanden en je bron kan lezen en een concept kan opleveren**. Zie [skills gebruiken](skills-gebruiken.md) voor Codex, Claude Code, de Claude-app en ChatGPT.
+- Een **kopie van deze repository**, voor de skills. Begin bij [de code ophalen](../gebruiken/installeren.md#1-haal-de-code-op). Volg daarna de stappen voor jouw assistent; voor alleen kopiëren of uploaden is geen database nodig.
 
 ## Welk AI-model gebruik je?
 
