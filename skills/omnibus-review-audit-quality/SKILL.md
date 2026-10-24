@@ -114,6 +114,13 @@ geraakte relaties opnieuw zijn gelezen. Rapporteer geen voorspelde verbetering
 als al behaald resultaat. Koppel reviewbesluiten aan de exacte hashes; gewijzigde
 inhoud maakt de geraakte beoordeling verouderd.
 
+Voor herhaalreviews biedt de Omnibus-checkout `scripts/check-review-changes.mjs`;
+zie [reviewwijzigingen](https://github.com/Robert-Worm/omnibus/blob/main/docs/beheer/reviewwijzigingen.md).
+Bewaar de volledige versiegebonden hash bij de werkelijke beoordeling. Vergelijk
+de hele keten, broncontext, toepasselijkheid/HOLD en rubric-/protocolversie.
+`ongewijzigd` is alleen reviewplanning; ontbrekend bewijs blijft `opnieuw`.
+Deze uitkomst heft geen HOLD op en vervangt geen runtime-broncontrole of acceptatie.
+
 Bij gevraagde toepassing blijven de afzonderlijke bronsoortspecifieke acceptatie-
 en integratieprocedures gelden. Bewaar oude versies en gebruikerswerk. Een
 OAK-score vervangt geen bronreview, juridische beoordeling of menselijke acceptatie.
