@@ -275,3 +275,13 @@ test("een geplande stap linkt naar een epic of user story", () => {
   assert.equal(w.length, 1);
   assert.match(w[0], /docs\/a\.md:3/);
 });
+
+test("elke taalregel heeft een voorbeeld dat faalt en een dat slaagt, en een plek in de stijlgids", async () => {
+  const { TAALREGELS } = await import("./taalregels.mjs");
+  const stijlgids = (await import("node:fs")).readFileSync(new URL("../docs/bijdragen/stijlgids.md", import.meta.url), "utf8");
+  for (const r of TAALREGELS) {
+    assert.ok(woordWaarschuwingen("docs/x.md", r.fout).length > 0, `${r.id}: fout voorbeeld geeft geen melding`);
+    assert.deepEqual(woordWaarschuwingen("docs/x.md", r.goed), [], `${r.id}: goed voorbeeld geeft een melding`);
+    assert.ok(stijlgids.includes("### " + r.bron.split(", ")[1]), `${r.id}: kop ${r.bron} ontbreekt in de stijlgids`);
+  }
+});

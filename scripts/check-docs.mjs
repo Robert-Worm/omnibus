@@ -7,6 +7,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatProductVersion } from "../lib/product-release.mjs";
+import { TAALREGELS } from "./taalregels.mjs";
 
 export const INSTALL = "npm ci --ignore-scripts --no-audit --no-fund";
 
@@ -172,29 +173,9 @@ export function controleerBestand(root, rel, { nvmrc, scripts }) {
   return meldingen;
 }
 
-// Woorden en codes waarvoor een gewoon Nederlands alternatief bestaat (zie de stijlgids).
-// Dit zijn waarschuwingen: ze laten de controle niet mislukken.
-export const TE_VERMIJDEN = [
-  [/\bEP\d{2}(?:-S\d{2})?\b/g, "interne projectcode; noem wat er bedoeld wordt"],
-  [/\bK\d{2}\b/g, "code van een acceptatiecontract; noem wat er bedoeld wordt of link naar de afspraak"],
-  [/(?<!GitHub-)\bworkflows?\b/gi, "werkwijze (of: GitHub-workflow)"],
-  [/\bhandoffs?\b/gi, "overdracht"],
-  [/\bdeploy\w*/gi, "online zetten of uitrollen"],
-  [/\bfixtures?\b/gi, "testgegevens"],
-  [/\bevidence\b/gi, "bewijs"],
-  [/\bgates?\b/gi, "controle"],
-  [/\bmaintainers?\b/gi, "beheerder"],
-  [/\bintegrator\b/gi, "beheerder of ontwikkelaar"],
-  [/\bbundles?\b/gi, "pakket"],
-  [/\brollback\b/gi, "terugzetten"],
-  [/\b(?:toetsingskader|auditkader|onderzoekskader)s?\b/gi, "referentiekader (het vaste woord in Omnibus)"],
-  [/\b(?:middels|door middel van)\b/gi, "met of via"],
-  [/\bteneinde\b/gi, "om"],
-  [/\balsmede\b/gi, "en of ook"],
-  [/\b(?:derhalve|dientengevolge)\b/gi, "daarom"],
-  [/\bindien\b/gi, "als of wanneer"],
-  [/\bdien(?:t|en) te\b/gi, "moet of moeten"],
-];
+// Woorden en codes waarvoor een gewoon Nederlands alternatief bestaat: de vaste set in
+// scripts/taalregels.mjs, elk met voorbeeld en plek in de stijlgids. Dit zijn waarschuwingen.
+export const TE_VERMIJDEN = TAALREGELS.map((r) => [r.patroon, r.alternatief, r.soort]);
 const ZONDER_WOORDCONTROLE = "<!-- check-docs: geen-woordcontrole -->";
 // Een pagina die zelf codes uitlegt (zoals de acceptatiecontracten), krijgt geen codewaarschuwingen.
 const CODES_UITGELEGD = "<!-- check-docs: codes-uitgelegd -->";
@@ -208,10 +189,8 @@ export function woordWaarschuwingen(rel, tekst) {
     .replace(/\]\([^)]*\)/g, (b) => " ".repeat(b.length))
     .replace(/<[^>\n]+>/g, (b) => " ".repeat(b.length));
   const uit = [];
-  for (const [re, alternatief] of TE_VERMIJDEN) {
-    if (alternatief.startsWith("interne projectcode") || alternatief.startsWith("code van")) {
-      if (tekst.includes(CODES_UITGELEGD)) continue;
-    }
+  for (const [re, alternatief, soort] of TE_VERMIJDEN) {
+    if (soort === "code" && tekst.includes(CODES_UITGELEGD)) continue;
     for (const m of schoon.matchAll(re)) {
       // Bestandsnamen zoals app/workflow-patterns.tsx tellen niet mee.
       const voor = schoon.slice(0, m.index).match(/\S*$/)[0];

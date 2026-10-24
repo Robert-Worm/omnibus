@@ -58,14 +58,14 @@ Elke pagina in `docs/` is van een vast type, zoals een taakpagina of een naslagp
 | als, wanneer | indien |
 | nodig | benodigd, noodzakelijk |
 
-De documentatiecheck waarschuwt bij de woorden uit de kolom *Niet* die bijna nooit nodig zijn, zoals *middels*, *teneinde*, *alsmede*, *derhalve* en *indien*.
+De documentatiecheck waarschuwt bij de woorden uit de kolom *Niet* die bijna nooit nodig zijn, zoals *middels*, *teneinde*, *alsmede*, *derhalve* en *indien*. Alle woorden waarbij de check waarschuwt, staan met een fout en een goed voorbeeld in `scripts/taalregels.mjs`.
 
 Termen uit GitHub zelf (*issue*, *pull request*, *release*, *Discussions*) en namen van opdrachten blijven zoals ze zijn.
 
 ### Te vermijden
 
 - **Interne projectcodes** zoals `EP13-S01` of `K06` zonder uitleg. Noem wat er bedoeld wordt; zet de code er hooguit tussen haakjes achter.
-- **Onnodig Engels**, zoals *workflow*, *handoff* of *deploy*. Gebruik *werkwijze*, *overdracht* en *online zetten*. *Intake* is goed als je het intakegesprek of de intake van een onderzoek bedoelt.
+- **Onnodig Engels**, zoals *workflow*, *handoff*, *deploy* of *rollback*. Gebruik *werkwijze*, *overdracht*, *online zetten* en *terugzetten*. *Intake* is goed als je het intakegesprek of de intake van een onderzoek bedoelt.
 - **Beloftes over de toekomst** buiten de [routekaart](../routekaart.md).
 
 ## Getallen
