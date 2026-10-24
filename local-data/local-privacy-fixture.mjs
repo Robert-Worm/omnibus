@@ -13,10 +13,13 @@ export const saveJson = (path, value) => writeFileSync(path, JSON.stringify(valu
 export async function createPrivacyPackage(dir) {
   const folder = join(dir, 'synthetic-package');
   mkdirSync(folder);
-  const model = {id:'PRIVACY_TEST', title:'Fictief privacymodel', question:'Hoe verloopt de fictieve oefening?',
+  const model = {id:'PRIVACY_TEST', kind:'own', version:'synthetic-1', source:'Fictieve testbron', selected:false,
+    title:'Fictief privacymodel', question:'Hoe verloopt de fictieve oefening?',
     selection_status:'HOLD', limitations:'Uitsluitend softwaretest; geen inhoudelijke goedkeuring.',
     items:[{id:'TEST', title:'Fictief begrip', definition:syntheticSource,
-      questions:[{id:'TEST-1', title:'Fictieve vraag', question:'Hoe beschrijf je deze oefening?', origin:'synthetic-test'}]}]};
+      question:'Hoe beschrijf je deze oefening?', probes:'', included:false,
+      questions:[{id:'TEST-1', title:'Fictieve vraag', question:'Hoe beschrijf je deze oefening?',
+        probes:'', included:false, origin:'synthetic-test'}]}]};
   writeFileSync(join(folder, 'source.txt'), syntheticSource, {flag:'wx'});
   writeFileSync(join(folder, 'contract.txt'), 'Synthetic model-review-1 test only.', {flag:'wx'});
   saveJson(join(folder, 'model.json'), model);
