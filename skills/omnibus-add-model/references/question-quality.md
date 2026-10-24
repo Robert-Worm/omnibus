@@ -28,7 +28,7 @@ tests, heuristieken en een inventaris vervangen geen toepassing van deze rubriek
 | Taal | Begrijpelijk gesproken Nederlands, concrete actor/object/context, weinig jargon. Open uitnodiging; alleen een vraagteken of 'hoe' is geen kwaliteitsbewijs. |
 | Niveau | Operationeel: eigen handelingen/ervaringen. Management: inrichting, ondersteuning, afwegingen. Strategisch: richting, prioriteiten, toezicht. Geen simpel toevoegen van functietitels. |
 | Bewijsgrens | Perceptie en illustratief voorbeeld zijn geen bewezen werking of causaal effect. Een vervolgvraag mag om concreet voorbeeld/tegenvoorbeeld vragen. |
-| Dekking | Geen onverklaarde lege dimensies, nauwelijks verschillende dubbelvragen of kunstmatige quota. Overlap met andere dimensies wordt verklaard. |
+| Dekking | Geen onverklaarde lege dimensies, nauwelijks verschillende dubbelvragen of kunstmatige quota. Overlap met andere dimensies wordt verklaard. Elk deel van de `definition` heeft een indicator met een vraag, en geen vraag valt buiten de `boundary`. |
 
 Vergelijk niveauvarianten op hetzelfde bedoelde construct. Onderwerpvervanging
 (`{{onderwerp}}`) moet grammaticaal werken bij een proces, organisatieonderdeel

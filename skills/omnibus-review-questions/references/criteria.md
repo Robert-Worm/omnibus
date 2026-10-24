@@ -59,6 +59,10 @@ iemand zag, deed of besloot, niet naar een oordeel over het begrip zelf.
 | --- | --- | --- |
 | **Waarneembaar** | ‘Kunt u vertellen wat collega’s meekrijgen van uw dagelijkse werk bij {{onderwerp}}?’ (AI05, indicator zichtbaarheid) | Afgeleid: ‘Hoe integer is uw afdeling?’ |
 | **Herleidbaar** naar een indicator en een bron | Elke modelvraag heeft `indicatorId` en `sourceIds` | Een vraag zonder koppeling: die verdwijnt |
+| **Dekt het begrip**: elk deel van de `definition` van de dimensie heeft een indicator met een vraag | SQ-TANGIBLES: eigen gebruik van een zichtbare voorziening (I01) én reacties van afnemers daarop (I02) | Afgeleid: alleen I01; wat afnemers ervan merken, wordt niet gevraagd |
+| **Meet niets anders mee**: de vraag blijft binnen de `boundary` van de dimensie | SQ-TANGIBLES-Q01 vraagt naar een ruimte of middel dat afnemers zagen; de grens sluit technische werking uit | Afgeleid: ‘Hoe goed werkt de apparatuur achter de balie?’ meet technische werking |
+
+Stel per dimensie twee vragen: welk deel van het begrip mist een vraag, en wat meet een vraag ongewild mee? Een gat of een vraag buiten de grens is **herschrijven** of **HOLD**, nooit stil goedgekeurd.
 
 ## Uitkomst per vraag
 
@@ -72,6 +76,7 @@ iemand zag, deed of besloot, niet naar een oordeel over het begrip zelf.
 ## Bronnen
 
 - Het idee ‘vraag naar gedrag, niet naar wat iemand zou doen’ komt uit [deanpeters/discovery-interview-prep](https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/discovery-interview-prep); alleen het idee, niet de tekst.
+- Het idee om dekking en ongewild meemeten per dimensie na te gaan komt uit [GarethManning/assessment-validity-checker](https://github.com/GarethManning/education-agent-skills/tree/main/skills/curriculum-assessment/assessment-validity-checker); alleen het idee, niet de tekst.
 - Rijksuniversiteit Groningen, Taalcentrum: [Interviewen: vragen](https://www.rug.nl/language-centre/develop-yourself/academic/spreken/interviewen/vragen?lang=nl). Eén vraag tegelijk, neutraal, geen voorbeeldantwoorden, geen sociaal wenselijke antwoorden, actieve vorm, concreet, afgestemd op de geïnterviewde.
 - PCAOB, [AS 2201](https://pcaobus.org/oversight/standards/auditing-standards/details/AS2201), paragrafen 42–45: toetsen van opzet (design effectiveness) en werking (operating effectiveness). Omnibus houdt bestaan apart; zie `lib/testing-aspects.mjs`.
 - The IIA, Global Internal Audit Standards (2024), domein V, standaard 14.1: informatie verzamelen die relevant, betrouwbaar en voldoende is. Een interview alleen is meestal niet voldoende.
