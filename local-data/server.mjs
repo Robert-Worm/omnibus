@@ -68,6 +68,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
  const handle=(req,res,expectation=false)=>{
   // Never trust caller/proxy request IDs or log URLs, headers, SQL or exceptions.
   const requestId=randomUUID();
+  let failureLogged=false;
+  const requestFailed=()=>{
+   if(failureLogged)return;failureLogged=true;
+   console.error(JSON.stringify({event:'catalogue_request_failed',requestId,status:500,time:new Date().toISOString()}));
+  };
   res.setHeader('X-Request-ID',requestId);
   const expected=hosting.publicMode?hosting.authority:'127.0.0.1:'+server.address().port;
   const expectedOrigin=hosting.publicMode?hosting.publicOrigin:`http://${expected}`;
@@ -148,7 +153,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   res.once('finish',releaseResponse);res.once('close',releaseResponse);
   try{
    const u=new URL(req.url,expectedOrigin),q=u.searchParams;
-   if(staticWeb?.serve(u.pathname,req,res))return;
+   if(staticWeb?.serve(u.pathname,req,res,requestFailed))return;
    const limit=q.has('limit')?Number(q.get('limit')):25,offset=q.has('offset')?Number(q.get('offset')):0;
    const release=q.get('release');let match;
    if(['/api/v1/health','/api/v1/ready','/api/v1/version'].includes(u.pathname)&&req.url.includes('?'))
@@ -201,7 +206,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   }catch(error){
    if((error instanceof Error&&error.message.startsWith('Invalid'))||error instanceof URIError)
     return reply(400,{error:'Invalid request'});
-   console.error(JSON.stringify({event:'catalogue_request_failed',requestId,status:500,time:new Date().toISOString()}));
+   requestFailed();
    return reply(500,{error:'Request failed'});
   }
  };

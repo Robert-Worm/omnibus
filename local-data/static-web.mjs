@@ -80,7 +80,7 @@ export function createStaticWeb(root, repository) {
   }
   walk(join(root, 'assets'));
   const version = publicBuildIdentity(manifest, files);
-  const serve = (pathname, req, res) => {
+  const serve = (pathname, req, res, requestFailed = () => {}) => {
     const file = files.get(pathname);
     if (!file) return false;
     res.setHeader('Content-Type', file.type);
@@ -93,26 +93,37 @@ export function createStaticWeb(root, repository) {
     if (req.headers['if-none-match'] === file.etag) { res.writeHead(304); res.end(); return true; }
     const encoding = responseEncoding(req.headers['accept-encoding'], file.bytes);
     if (!encoding) { res.writeHead(406); res.end(); return true; }
+    // A disconnected reader is not an application fault. Never pass paths,
+    // request headers or raw errors to the request-scoped, fixed-shape logger.
+    const completed = error => {
+      if (error && !['ERR_STREAM_PREMATURE_CLOSE', 'ECONNRESET'].includes(error.code)) requestFailed();
+    };
     const send = stream => {
       if (encoding !== 'identity') {
         res.setHeader('Content-Encoding', encoding);
-        pipeline(stream, createResponseCompressor(encoding, file.bytes), res, () => {});
-      } else pipeline(stream, res, () => {});
+        pipeline(stream, createResponseCompressor(encoding, file.bytes), res, completed);
+      } else pipeline(stream, res, completed);
     };
     if (file.verifiedContent) {
       // Derived report parts retain the original content route's fail-closed
       // byte check, including changes after startup. Send the checked buffer,
       // not a second file read that could race with replacement.
       const fail = () => {
-        if (res.destroyed) return;
+        if (res.destroyed || res.writableEnded) return;
+        requestFailed();
         res.setHeader('Cache-Control', 'no-store'); res.removeHeader('ETag'); res.writeHead(500); res.end();
       };
       const readVerified = (input, done) => {
         const stream = createReadStream(input.path, {start: 0, end: input.bytes}), chunks = [];
+        const cancel = () => stream.destroy();
+        const release = () => res.off('close', cancel);
         // One extra byte detects growth without ever reading an unbounded file.
-        stream.on('data', chunk => chunks.push(chunk)); stream.once('error', fail);
-        res.once('close', () => stream.destroy());
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.once('error', () => { release(); fail(); });
+        stream.once('close', release);
+        res.once('close', cancel);
         stream.once('end', () => {
+          release();
           if (res.destroyed) return;
           const bytes = Buffer.concat(chunks);
           if (bytes.length !== input.bytes || createHash('sha256').update(bytes).digest('hex') !== input.sha256) { fail(); return; }
@@ -125,7 +136,7 @@ export function createStaticWeb(root, repository) {
         // Precompression cannot conceal a changed/deleted original source asset.
         readVerified(file.brotli, compressed => {
           res.setHeader('Content-Encoding', 'br'); res.setHeader('Content-Length', compressed.length);
-          pipeline(Readable.from([compressed]), res, () => {});
+          pipeline(Readable.from([compressed]), res, completed);
         });
       });
     } else send(createReadStream(file.path));
