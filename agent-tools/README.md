@@ -42,6 +42,8 @@ Elke treffer en detailaanroep toont `selectionStatus`, `selectionReason` en `dra
 
 `passageStatus: "NOT_AVAILABLE"` meldt expliciet wanneer geen letterlijke bronpassage aanwezig is. Dat kan bijvoorbeeld gelden voor modelvragen met alleen een publicatie- en paginaverwijzing. Eigen interviewvragen, normparafrases en broncontext worden niet als citaten aangevuld. Lees `sourceContext` en `trace` voor modelgrenzen en theoretische herkomst. Een synthetische test bevestigt de route, niet de inhoudelijke juistheid of volledigheid van een echte bronrelease. Bestaande agent-builds moeten opnieuw worden opgebouwd voordat deze uitgebreidere zoekindex beschikbaar is; dit verandert de bronrelease niet.
 
+**Tien vaste testvragen.** In [`evaluatie/testvragen.mjs`](evaluatie/testvragen.mjs) staan tien realistische vragen met het verwachte antwoord. Een AI-agent beantwoordt ze via de koppeling; jij vergelijkt het antwoord. `npm run agent:testvragen` controleert zonder AI of de verwachte antwoorden nog kloppen met de huidige agent-build, bijvoorbeeld na een nieuwe database.
+
 **Bekende gaten**, elk met een eigen user story:
 
 - Vragen die de AI voorstelt, gaan nog niet door de [vraagcontrole](../skills/omnibus-review-questions/README.md): [#147](https://github.com/Robert-Worm/omnibus/issues/147).
