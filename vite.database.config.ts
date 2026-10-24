@@ -7,6 +7,7 @@ import { publishedCataloguePlugin } from './scripts/published-catalogue.mjs';
 import { jsonDataTagPlugin } from './scripts/json-data-tags.mjs';
 import { fontLicenseNotices, textLicenseNotice } from './scripts/font-license-notices.mjs';
 import {deferredFeaturesPlugin} from './scripts/deferred-features.mjs';
+import {precompressReportAssets} from './scripts/precompress-report-assets.mjs';
 
 const portable = process.env.OMNIBUS_PORTABLE_RUNTIME === '1';
 const candidateOutput = process.env.OMNIBUS_BUILD_OUTPUT;
@@ -20,7 +21,7 @@ export default defineConfig({
       const stylesNotice = textLicenseNotice('shadcn 4.18.0 stylesheet license',readFileSync(new URL('./app/vendor/shadcn-LICENSE.txt',import.meta.url),'utf8'));
       return html.replace('</head>', notices + '\n' + stylesNotice + '\n</head>');
     } },
-  }],
+  }, precompressReportAssets()],
   resolve: { alias: { '@': fileURLToPath(new URL('.', import.meta.url)) } },
   worker: {format:'es',plugins:()=>[publishedCataloguePlugin({release:process.env.OMNIBUS_DATABASE_RELEASE,
     publication:process.env.OMNIBUS_RUNTIME_PUBLICATION,databasePath:process.env.OMNIBUS_DATABASE_PATH,

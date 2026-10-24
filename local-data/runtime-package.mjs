@@ -37,6 +37,7 @@ export const bytesHash = (bytes) => createHash("sha256").update(bytes).digest("h
 export const isWebFile = (path) =>
   ["database.html", "omnibus-release.json"].includes(path) ||
   /^assets\/[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]{8,}\.(js|css|woff2)$/.test(path) ||
+  /^assets\/report-content-[a-f0-9]{64}\.js\.br$/.test(path) ||
   // Vite keeps the .worker suffix in fingerprinted background entry points.
   // This is still compiled JavaScript, not an allowance for arbitrary dotfiles.
   /^assets\/[a-zA-Z0-9_-]+\.worker-[a-zA-Z0-9_-]{8,}\.js$/.test(path);

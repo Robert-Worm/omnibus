@@ -12,6 +12,7 @@ import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
 import { createDatabaseSourceClient } from '../lib/database-source-client.mjs';
 import { startDatabasePreview } from '../scripts/serve-database-web.mjs';
 import {contentBatchLimits} from '../lib/content-batch-contract.mjs';
+import {brotliCompressSync} from 'node:zlib';
 
 const scratch = fileURLToPath(new URL('../.tmp/', import.meta.url));
 // Normal runs use ephemeral ports; an isolated review can reserve an adjacent pair.
@@ -266,6 +267,47 @@ test('report delivery assets verify their immutable bytes before serving, even a
   assert.throws(()=>createStaticWeb(f.webRoot,f.repository),/Invalid report delivery asset/);
   writeFileSync(path,source+'extra bytes');
   const grown=await fetch(app.url+url);assert.equal(grown.status,500);assert.equal(await grown.text(),'');
+});
+
+test('precompressed report responses verify both representations, preserve negotiation and refuse changed bytes',async t=>{
+  const f=fixture(t),source='export default '+JSON.stringify(Array.from({length:200},(_,i)=>({id:i,text:'Exact source 🧭 '+i,status:'HOLD'})));
+  const filename='report-content-'+digest(source)+'.js',path=join(f.webRoot,'assets',filename),url='/assets/'+filename;
+  const compressed=brotliCompressSync(source);
+  writeFileSync(path,source);writeFileSync(path+'.br',compressed);f.readOnly();
+  const before=digest(readFileSync(f.databasePath)),app=await f.start();let etag;
+  for(const [offer,encoding] of [['br, gzip','br'],['br;q=0, gzip','gzip'],['identity',null]]){
+    const response=await fetch(app.url+url,{headers:{'Accept-Encoding':offer}});
+    assert.equal(response.status,200);assert.equal(response.headers.get('content-encoding'),encoding);
+    assert.equal(response.headers.get('vary'),'Accept-Encoding');assert.equal(await response.text(),source);
+    if(encoding==='br')assert.equal(Number(response.headers.get('content-length')),compressed.length,'Serve the verified prebuilt bytes');
+    if(etag)assert.equal(response.headers.get('etag'),etag);etag=response.headers.get('etag');
+  }
+  assert.equal((await fetch(app.url+url+'.br')).status,404,'Sidecars are not independent public endpoints');
+  assert.equal((await fetch(app.url+url,{headers:{'If-None-Match':etag}})).status,304);
+  const altered=Buffer.from(compressed);altered[altered.length-1]^=1;
+  for(const value of [altered,Buffer.concat([compressed,Buffer.from('extra')]),null]){
+    if(value)writeFileSync(path+'.br',value);else rmSync(path+'.br');
+    const response=await fetch(app.url+url,{headers:{'Accept-Encoding':'br'}});
+    assert.equal(response.status,500);assert.equal(await response.text(),'');
+    assert.equal(response.headers.get('etag'),null);assert.equal(response.headers.get('cache-control'),'no-store');
+  }
+  writeFileSync(path+'.br',compressed);writeFileSync(path,source.replace('Exact','False'));
+  const changed=await fetch(app.url+url,{headers:{'Accept-Encoding':'br'}});
+  assert.equal(changed.status,500);assert.equal(await changed.text(),'','A valid compressed copy cannot conceal changed source bytes');
+  writeFileSync(path,source);
+  assert.equal(await(await fetch(app.url+url,{headers:{'Accept-Encoding':'br'}})).text(),source,'Restoring exact bytes permits retry');
+  assert.equal(digest(readFileSync(f.databasePath)),before);
+});
+
+test('startup rejects mismatched, malformed, over-expanded and appended compressed report representations', t=>{
+  const f=fixture(t),source='/* '+ 'Exact source 🧭 '.repeat(200)+' */';
+  const path=join(f.webRoot,'assets','report-content-'+digest(source)+'.js');
+  writeFileSync(path,source);f.readOnly();
+  for(const value of [Buffer.from('not Brotli'),brotliCompressSync(source.replace('Exact','False')),
+    brotliCompressSync(source.repeat(2)),Buffer.concat([brotliCompressSync(source),Buffer.from('must never be exposed')])]){
+    writeFileSync(path+'.br',value);
+    assert.throws(()=>createStaticWeb(f.webRoot,f.repository),/Invalid compressed report asset/);
+  }
 });
 
 test('request parameters cannot widen or ambiguously replace the pinned identity', async t => {

@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawn } from "node:child_process";
+import { brotliCompressSync } from "node:zlib";
 import { CatalogueRepository } from "../local-data/repository.mjs";
 import { publishRuntime } from "../local-data/runtime-publication.mjs";
 import { prepareWebResources } from "../local-data/web-resources.mjs";
@@ -55,6 +56,9 @@ function fixture(t) {
     "<!doctype html><title>Synthetic packaging test</title>",
   );
   writeFileSync(join(webRoot, "assets/app-12345678.js"), "// synthetic test asset");
+  const reportSource='/* Synthetic report 🧭 */\n'.repeat(100),reportPath='assets/report-content-'+bytesHash(reportSource)+'.js';
+  writeFileSync(join(webRoot,reportPath),reportSource);
+  writeFileSync(join(webRoot,reportPath+'.br'),brotliCompressSync(reportSource));
   for (const name of ['project-encoder.worker--1234567.js', 'preview-calculator.worker-12345678.js', 'file-encoder.worker-12345678.js'])
     writeFileSync(join(webRoot, 'assets', name), '// synthetic worker: ' + name);
   writeFileSync(
@@ -67,7 +71,7 @@ function fixture(t) {
       contract: runtimeContractHash,
     }),
   );
-  return { dir, databasePath, webRoot, out };
+  return { dir, databasePath, webRoot, out, reportSource, reportPath };
 }
 
 test("package contains only runtime and unchanged web bytes; database stays separate", (t) => {
@@ -85,6 +89,7 @@ test("package contains only runtime and unchanged web bytes; database stays sepa
   for (const path of Object.keys(receipt.files).filter(path => path.includes('.worker-')))
     assert.deepEqual(readFileSync(join(f.out, path)), readFileSync(join(f.webRoot, path.slice('database-build/'.length))));
   assert.equal(Object.keys(receipt.files).filter(path => path.includes('.worker-')).length, 3);
+  assert.deepEqual(readFileSync(join(f.out,'database-build',f.reportPath+'.br')),readFileSync(join(f.webRoot,f.reportPath+'.br')));
   const pkg = JSON.parse(readFileSync(join(f.out, "package.json")));
   assert.equal(pkg.engines.node, "24.x");
   assert(!pkg.dependencies && !pkg.devDependencies);
@@ -148,6 +153,11 @@ test(
       assert.equal(worker.status, 200);
       assert.match(worker.headers.get('content-type'), /javascript/);
       assert.equal(await worker.text(), '// synthetic worker: preview-calculator.worker-12345678.js');
+      const report=await fetch(url+'/'+f.reportPath,{headers:{'Accept-Encoding':'br'}});
+      assert.equal(report.status,200);assert.equal(report.headers.get('content-encoding'),'br');
+      assert.equal(Number(report.headers.get('content-length')),readFileSync(join(f.webRoot,f.reportPath+'.br')).length);
+      assert.equal(await report.text(),f.reportSource);
+      assert.equal((await fetch(url+'/'+f.reportPath+'.br')).status,404);
       const ready = await fetch(url + "/api/v1/ready");
       assert.equal(ready.status, 200);
       assert.equal(ready.headers.get("cache-control"), "no-store");
@@ -174,6 +184,13 @@ test('worker names remain fingerprinted JavaScript, not source maps, sources or 
     'assets/encoder.secret-12345678.js', 'assets/.worker-12345678.js',
     'assets/nested/encoder.worker-12345678.js', '../assets/encoder.worker-12345678.js'])
     assert.equal(isWebFile(path), false, path);
+});
+
+test('only fingerprinted report Brotli representations cross the runtime package boundary', () => {
+  assert(isWebFile('assets/report-content-'+'a'.repeat(64)+'.js.br'));
+  for(const file of ['assets/report-content-short.js.br','assets/app-12345678.js.br',
+    'assets/report-content-'+'a'.repeat(64)+'.json.br','assets/private.sqlite.br',
+    'assets/nested/report-content-'+'a'.repeat(64)+'.js.br']) assert.equal(isWebFile(file),false);
 });
 
 test("missing, added or changed files block verification", (t) => {

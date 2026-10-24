@@ -3,6 +3,7 @@ import { join, relative, extname } from 'node:path';
 import { responseEncoding, createResponseCompressor } from './response-compression.mjs';
 import { pipeline, Readable } from 'node:stream';
 import { createHash } from 'node:crypto';
+import { brotliDecompressSync } from 'node:zlib';
 import { readRuntimePublication } from './runtime-publication.mjs';
 import { publicationReadScope } from './web-resources.mjs';
 import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
@@ -15,7 +16,7 @@ export function publicBuildIdentity(manifest, files) {
   const revision = manifest.codeRevision ?? null;
   if (revision !== null && (typeof revision !== 'string' || !/^[a-f0-9]{40}$/.test(revision)))
     throw Error('Invalid web code revision');
-  const entries = [...files].map(([url, file]) => [url, file.sha256])
+  const entries = [...files].flatMap(([url, file]) => [[url, file.sha256], ...(file.brotli ? [[url + '.br', file.brotli.sha256]] : [])])
     .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
   return Object.freeze({ schema: 1,
     code: Object.freeze({ revision, webSha256: createHash('sha256').update(JSON.stringify(entries)).digest('hex') }),
@@ -37,7 +38,26 @@ export function createStaticWeb(root, repository) {
     const bytes = readFileSync(path);
     const sha256 = createHash('sha256').update(bytes).digest('hex');
     if (reportContent && (reportContent[1] !== sha256 || bytes.length > 4 * 1024 * 1024)) throw Error('Invalid report delivery asset');
-    files.set(url, { path, sha256, verifiedContent: Boolean(reportContent), bytes: bytes.length, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
+    let brotli;
+    if (reportContent) {
+      const compressedPath = path + '.br';
+      let compressedStat;
+      try { compressedStat = lstatSync(compressedPath); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (compressedStat) {
+        if (!compressedStat.isFile() || compressedStat.isSymbolicLink() || compressedStat.size > bytes.length)
+          throw Error('Invalid compressed report asset');
+        const compressed = readFileSync(compressedPath);
+        if (compressed.length > bytes.length) throw Error('Invalid compressed report asset');
+        // Bound decompression by the already verified original, not a claim in
+        // the compressed input. A malformed or mismatched sidecar fails closed.
+        let decoded;
+        try { decoded = brotliDecompressSync(compressed, {info: true, maxOutputLength: bytes.length}); }
+        catch { throw Error('Invalid compressed report asset'); }
+        if (decoded.engine.bytesWritten !== compressed.length || !decoded.buffer.equals(bytes)) throw Error('Invalid compressed report asset');
+        brotli = {path: compressedPath, bytes: compressed.length, sha256: createHash('sha256').update(compressed).digest('hex')};
+      }
+    }
+    files.set(url, { path, sha256, brotli, verifiedContent: Boolean(reportContent), bytes: bytes.length, type: types[extname(path)], etag: 'W/"' + sha256 + '"' });
   }
   const manifest = JSON.parse(readFileSync(join(root, 'omnibus-release.json'), 'utf8'));
   if (manifest.schema !== 1 || manifest.contract !== runtimeContractHash)
@@ -83,19 +103,30 @@ export function createStaticWeb(root, repository) {
       // Derived report parts retain the original content route's fail-closed
       // byte check, including changes after startup. Send the checked buffer,
       // not a second file read that could race with replacement.
-      const stream = createReadStream(file.path, {start: 0, end: file.bytes}), chunks = [];
       const fail = () => {
         if (res.destroyed) return;
         res.setHeader('Cache-Control', 'no-store'); res.removeHeader('ETag'); res.writeHead(500); res.end();
       };
-      // One extra byte detects growth without ever reading an unbounded file.
-      stream.on('data', chunk => chunks.push(chunk)); stream.once('error', fail);
-      res.once('close', () => stream.destroy());
-      stream.once('end', () => {
-        if (res.destroyed) return;
-        const bytes = Buffer.concat(chunks);
-        if (bytes.length !== file.bytes || createHash('sha256').update(bytes).digest('hex') !== file.sha256) { fail(); return; }
-        send(Readable.from([bytes]));
+      const readVerified = (input, done) => {
+        const stream = createReadStream(input.path, {start: 0, end: input.bytes}), chunks = [];
+        // One extra byte detects growth without ever reading an unbounded file.
+        stream.on('data', chunk => chunks.push(chunk)); stream.once('error', fail);
+        res.once('close', () => stream.destroy());
+        stream.once('end', () => {
+          if (res.destroyed) return;
+          const bytes = Buffer.concat(chunks);
+          if (bytes.length !== input.bytes || createHash('sha256').update(bytes).digest('hex') !== input.sha256) { fail(); return; }
+          done(bytes);
+        });
+      };
+      readVerified(file, bytes => {
+        if (encoding !== 'br' || !file.brotli) { send(Readable.from([bytes])); return; }
+        // Verify BOTH original and compressed bytes on each uncached response.
+        // Precompression cannot conceal a changed/deleted original source asset.
+        readVerified(file.brotli, compressed => {
+          res.setHeader('Content-Encoding', 'br'); res.setHeader('Content-Length', compressed.length);
+          pipeline(Readable.from([compressed]), res, () => {});
+        });
       });
     } else send(createReadStream(file.path));
     return true;

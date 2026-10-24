@@ -14,6 +14,7 @@ import {prepareWebResources} from '../local-data/web-resources.mjs';
 import './deferred-catalogue-metadata.test.mjs';
 import './report-delivery-projection.test.mjs';
 import '../lib/report-asset-loader.test.mjs';
+import './precompress-report-assets.test.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 
