@@ -40,11 +40,11 @@ function pakUit(zip, destination) {
   return readDatabaseSettings(path.join(destination, "local-build.json"));
 }
 
-test("datum in gewone taal", () => {
+await test("datum in gewone taal", () => {
   assert.equal(datumTekst("2026-11-30"), "30 november 2026");
 });
 
-test("de zip bevat database, instellingen, LEESMIJ en controlegetallen die kloppen", async () => {
+await test("de zip bevat database, instellingen, LEESMIJ en controlegetallen die kloppen", async () => {
   const { dir, settings } = werkmap();
   try {
     const out = path.join(dir, "uit");
@@ -79,7 +79,7 @@ test("de zip bevat database, instellingen, LEESMIJ en controlegetallen die klopp
   }
 });
 
-test("een database die de controle niet haalt, levert niets op", async () => {
+await test("een database die de controle niet haalt, levert niets op", async () => {
   const { dir, settings } = werkmap();
   try {
     const out = path.join(dir, "uit");
@@ -96,7 +96,7 @@ test("een database die de controle niet haalt, levert niets op", async () => {
   }
 });
 
-test("de zip bevat ook de gecommitte publicatie die nog in het WAL staat", async () => {
+await test("de zip bevat ook de gecommitte publicatie die nog in het WAL staat", async () => {
   const { dir, settings } = werkmap();
   const writer = new CatalogueRepository(settings.database);
   try {
@@ -118,7 +118,7 @@ test("de zip bevat ook de gecommitte publicatie die nog in het WAL staat", async
   }
 });
 
-test("de echte CLI houdt ontbrekende koppelingen tegen en maakt daarna een controleerbare bundel", () => {
+await test("de echte CLI houdt ontbrekende koppelingen tegen en maakt daarna een controleerbare bundel", () => {
   const { dir, settings } = werkmap();
   try {
     const cli = fileURLToPath(new URL("prepare-release.mjs", import.meta.url));
@@ -141,13 +141,13 @@ test("de echte CLI houdt ontbrekende koppelingen tegen en maakt daarna een contr
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("de zip-schrijver maakt een geldige zip", () => {
+await test("de zip-schrijver maakt een geldige zip", () => {
   const zip = maakZip([{ naam: "a.txt", inhoud: Buffer.from("hallo") }]);
   assert.equal(leesZip(zip)["a.txt"].toString(), "hallo");
   assert.equal(zip.readUInt32LE(zip.length - 22), 0x06054b50);
 });
 
-test("een voorstel voor verwerkt.json: nieuwe en verdwenen bronnen, en wat nog een Rijksmap-ID mist", () => {
+await test("een voorstel voor verwerkt.json: nieuwe en verdwenen bronnen, en wat nog een Rijksmap-ID mist", () => {
   const huidig = { database: "2026-10-19", toelichting: "t", rapporten: { "2025-oud": "OUD25", "2025-weg": "WEG25" }, wettenEnKaders: ["WWKE", "TR-CYBER"], modellen: 1 };
   const inhoud = inhoudVan([
     { id: "OUD25", kind: "report", title: "Oud rapport" }, { id: "NIEUW26", kind: "report", title: "Nieuw rapport" }, { id: "LOS26", kind: "report", title: "Los rapport" },
@@ -165,7 +165,7 @@ test("een voorstel voor verwerkt.json: nieuwe en verdwenen bronnen, en wat nog e
   assert.doesNotMatch(notities, /vul aan/);
 });
 
-test("kaderCode kiest de langste passende code", () => {
+await test("kaderCode kiest de langste passende code", () => {
   assert.equal(kaderCode("CIO2026-REEXTRACT-1", ["CIO2026", "CIO"]), "CIO2026");
   assert.equal(kaderCode("ONBEKEND", ["WWKE"]), null);
 });

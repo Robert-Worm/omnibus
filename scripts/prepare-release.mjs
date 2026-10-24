@@ -72,7 +72,7 @@ export function verwerktVoorstel({ huidig, inhoud, datum, koppelingen = {}, kade
   kaders.sort((x, y) => plek(x) - plek(y));
   const oudeRapporten = new Set(Object.values(huidig.rapporten ?? {})), oudeKaders = new Set(huidig.wettenEnKaders ?? []);
   return {
-    verwerkt: { database: datum, toelichting: huidig.toelichting, rapporten: Object.fromEntries(Object.entries(rapporten).sort()), wettenEnKaders: kaders, modellen: inhoud.modellen.length },
+    verwerkt: { database: datum, toelichting: huidig.toelichting, rapporten: Object.fromEntries(Object.entries(rapporten).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)), wettenEnKaders: kaders, modellen: inhoud.modellen.length },
     nieuw: { rapporten: inhoud.rapporten.filter((p) => !oudeRapporten.has(p.id)), kaders: kaders.filter((k) => !oudeKaders.has(k)) },
     weg: { rapporten: [...oudeRapporten].filter((id) => !inDb.has(id)), kaders: [...oudeKaders].filter((k) => !kaders.includes(k)) },
     ontbreekt: inhoud.rapporten.filter((p) => !gekoppeld.has(p.id)).map((p) => p.id),
@@ -169,7 +169,9 @@ export async function bereidReleaseVoor({ settings, out, datum, huidig, koppelin
   const grootteMB = Math.round(database.length / 1024 / 1024);
   const catalogusHash = sha256(database);
   const tekst = leesmij({ datum, inhoud, grootteMB });
-  const sums = [["catalogue.sqlite", database], ["local-build.json", instellingen], ["LEESMIJ.txt", Buffer.from(tekst)]]
+  /** @type {[string, Buffer][]} */
+  const checksummedFiles = [["catalogue.sqlite", database], ["local-build.json", instellingen], ["LEESMIJ.txt", Buffer.from(tekst)]];
+  const sums = checksummedFiles
     .map(([n, b]) => `${sha256(b)}  ${n}`).join("\n") + "\n";
   const zipNaam = `omnibus-database-${datum}.zip`;
   const zip = maakZip([

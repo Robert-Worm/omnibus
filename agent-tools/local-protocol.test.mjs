@@ -18,9 +18,9 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const output = resolve(root, 'agent-output');
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
 const hash = path => sha256(readFileSync(path));
-const outputFiles = () => readdirSync(output, {recursive: true}).sort();
+const outputFiles = () => readdirSync(output, {recursive: true}).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
 
-test('current pinned collection: fictitious intake through the real STDIO workflow', {timeout: 180000}, async t => {
+await test('current pinned collection: fictitious intake through the real STDIO workflow', {timeout: 180000}, async t => {
   const pointer = json(resolve(root, 'agent-build/current.json'));
   const rel = relative(resolve(root, 'agent-build'), pointer.directory);
   assert(rel && !rel.startsWith('..') && !isAbsolute(rel), 'Use this checkout\'s isolated build');

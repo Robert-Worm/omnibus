@@ -83,7 +83,7 @@ function repinFixture(f, index = 0) {
   f.plan.packages[index].sha256 = hash(readFileSync(p.intake)); f.savePlan();
 }
 
-test("one command builds two pinned local packages with exact source/review bytes and no runtime approval", async t => {
+await test("one command builds two pinned local packages with exact source/review bytes and no runtime approval", async t => {
   const f = await fixture(t, 2);
   const before = f.packages.flatMap(p => load(p.intake).files.map(file => [join(p.folder, file.path), readFileSync(join(p.folder, file.path))]));
   // Represents a separate, pre-existing catalogue: it must remain byte-identical.
@@ -127,7 +127,8 @@ test("one command builds two pinned local packages with exact source/review byte
   assert.equal(second.release, result.release, "same pinned inputs preserve content identity");
 });
 
-for (const [name, edit, message] of [
+/** @type {[string, (fixture: Awaited<ReturnType<typeof fixture>>) => void, RegExp][]} */
+const rejectedPackages = [
   ["missing source", f => rmSync(join(f.packages[0].folder, "source.txt")), /ENOENT/],
   ["missing review", f => rmSync(join(f.packages[0].folder, "reviews.json")), /ENOENT/],
   ["changed source", f => writeFileSync(join(f.packages[0].folder, "source.txt"), "Changed"), /checksum\/size/],
@@ -157,7 +158,8 @@ for (const [name, edit, message] of [
   ["unresolved review issue", f => { const p = f.packages[0]; p.reviews[0].unresolvedIssues.push("Synthetic unresolved issue"); save(join(p.folder, "reviews.json"), p.reviews); repinFixture(f); }, /unresolved issues/],
   ["incomplete target coverage", f => { const p = f.packages[0]; p.reviews[0].assessments.pop(); save(join(p.folder, "reviews.json"), p.reviews); repinFixture(f); }, /every exact target/],
   ["empty required assessment", f => { const p = f.packages[0]; p.reviews[0].assessments[0].aspects.construct = ""; save(join(p.folder, "reviews.json"), p.reviews); repinFixture(f); }, /missing construct/],
-]) test(`${name} remains HOLD and creates no output`, async t => {
+];
+for (const [name, edit, message] of rejectedPackages) await test(`${name} remains HOLD and creates no output`, async t => {
   const f = await fixture(t); edit(f);
   await assert.rejects(buildLocalDatabase(f.options), error => {
     const result = localDatabaseFailure(error);
@@ -167,13 +169,13 @@ for (const [name, edit, message] of [
   assert.equal(existsSync(f.out), false);
 });
 
-test("a failed second package cannot leave the first package partially imported", async t => {
+await test("a failed second package cannot leave the first package partially imported", async t => {
   const f = await fixture(t, 2); rmSync(join(f.packages[1].folder, "reviews.json"));
   await assert.rejects(buildLocalDatabase(f.options), /PACKAGE_CHECK\[2\].*ENOENT/);
   assert.equal(existsSync(f.out), false);
 });
 
-test("existing output, package output and directory links are refused without overwriting files", async t => {
+await test("existing output, package output and directory links are refused without overwriting files", async t => {
   const f = await fixture(t);
   mkdirSync(f.out); const marker = join(f.out, "catalogue.sqlite"); writeFileSync(marker, "existing sentinel");
   await assert.rejects(buildLocalDatabase(f.options), /Output already exists/);
@@ -186,7 +188,7 @@ test("existing output, package output and directory links are refused without ov
   await assert.rejects(buildLocalDatabase({ ...f.options, out: join(f.dir, "unused") }), /root must not be a link/);
 });
 
-test("malformed plans and CLI options fail closed with machine-readable HOLD", async t => {
+await test("malformed plans and CLI options fail closed with machine-readable HOLD", async t => {
   const f = await fixture(t);
   for (const args of [[], ["--plan", "x", "--force", "y"], ["--out", "x", "--out", "y"],
     ["--plan", "x", "--out", "y", "--skip-review"], ["--plan", "", "--out", "y"]]) {

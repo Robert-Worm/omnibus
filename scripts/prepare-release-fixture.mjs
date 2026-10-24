@@ -26,7 +26,7 @@ export function createReleaseFixture(out) {
           { id: "FICTIEF-NORM", kind: "norm", title: "Fictieve norm", status: "HOLD",
             data: { question: "Hoe wordt de fictieve controle vastgelegd?" } },
           { id: "FICTIEF-BEWIJS", kind: "evidence", title: "Fictieve passage", status: "HOLD",
-            data: { report_id: "FICTIEF-DOCUMENT", quote, start: 0, end: [...quote].length, page: 1 } },
+            data: { report_id: "FICTIEF-DOCUMENT", quote, start: 0, end: Array.from(quote).length, page: 1 } },
         ] },
         ...[["WET", "law"], ["KADER", "foundation"], ["MODEL", "model"]].map(([id, kind]) => ({
           id: "FICTIEF-" + id, kind, title: "Fictief " + id.toLowerCase(),
