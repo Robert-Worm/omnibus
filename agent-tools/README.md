@@ -23,6 +23,25 @@ Deze koppeling laat een eigen AI-client de bestaande Omnibus-werkwijze gebruiken
 - Normtoetsing, Risico-controlmatrix en Interviewleidraad maken met de bestaande Excel-generator, kleuren, lettertype, werkfasen, auteur/team en respondentniveaus.
 - Het gegenereerde project via **Open project** in Omnibus openen en verder bewerken. De huidige browserselectie wordt nooit automatisch vervangen.
 
+## De zes hulpmiddelen
+
+| Hulpmiddel | Wat het doet | Invoer → uitvoer | Grenzen |
+| --- | --- | --- | --- |
+| `get_workflow_guide` | Geeft werkwijze, bronregels, vraagkwaliteit, privacy en limieten | Niets → werkwijze, release, publicatie en sectoren | Alleen tekst; controleert niets |
+| `list_sources` | Toont de bronnen die je in deze release kunt kiezen | Niets → bron, soort en aantal bouwstenen | Alleen wat in de zoekindex staat |
+| `search_building_blocks` | Zoekt op woorden in toetspunten en modelvragen | Zoekterm, bron, soort, pagina → kandidaten met fragment | Hooguit 40 per pagina; woordovereenkomst, geen inhoudelijke relevantie |
+| `get_building_block` | Leest één bouwsteen: overzicht, broncontext, brontekst en herleiding | Sleutel en sectie → tekst in delen tot `nextOffset` leeg is | Hooguit 12.000 tekens per deel; weigert een gewijzigde bouwsteen |
+| `prepare_research_draft` | Maakt een nieuw lokaal project met selecties, redenen en vragen | Concept en `consent: true` → concept-ID en bestandspaden | Hooguit 250 bouwstenen en 200 vragen; elke bouwsteen aan een vraag |
+| `export_research_draft` | Maakt een Excel van een eerder concept | Concept-ID en `consent: true` → pad, grootte en hash | Altijd een nieuw bestand; nooit overschrijven of uploaden |
+
+**Tests met fictieve gegevens.** De vier leestools staan in `read-tools.test.mjs`, de twee schrijftools in `output-safety.test.mjs` en `input-contract.test.mjs`. Ze draaien zonder private database in `npm run test:agent:input`. De integratieproef `local-protocol.test.mjs` doorloopt alle zes met de echte collectie.
+
+**Bekende gaten**, elk met een eigen user story:
+
+- De zoekindex bevat rapporten, het CIO-stelsel, de WWKE en de onderzoeksmodellen, maar nog geen IIA Topical Requirements en andere kaders: [#146](https://github.com/Robert-Worm/omnibus/issues/146).
+- Vragen die de AI voorstelt, gaan nog niet door de [vraagcontrole](../skills/omnibus-review-questions/README.md): [#147](https://github.com/Robert-Worm/omnibus/issues/147).
+- Alleen lokaal via STDIO; een koppeling via de online versie ontbreekt: [#149](https://github.com/Robert-Worm/omnibus/issues/149).
+
 Dit is een **lokale MCP-verbinding via STDIO**, geen online koppeling. De knop **AI koppelen**, naast de weergave- en opslagknoppen, toont de werkwijze en kopieerbare lokale instellingen. De website kan niet vaststellen of een AI-client daadwerkelijk verbonden is en toont daarom geen onbevestigde verbindingsstatus. Een geschikte AI-client start het proces zelf. Cloudclients die uitsluitend een publieke URL ondersteunen kunnen hier nog niet rechtstreeks mee verbinden. Ondersteuning hangt af van de gekozen client en de organisatie-instellingen; een AI-abonnement alleen garandeert geen connectorondersteuning.
 
 ## Verbinden op deze computer
@@ -86,10 +105,10 @@ De voorbereidingsstap maakt een consistente SQLite-kopie met `node:sqlite.backup
 Zonder private database of agent-build zijn deze gerichte controles uitvoerbaar:
 
 ```text
-node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs
+node --test --test-timeout=30000 agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs agent-tools/read-tools.test.mjs
 ```
 
-De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder `work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken; een beperkte runner die dat weigert geeft een fout, geen stille skip. Beide testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`. Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
+De uitvoergrenstest maakt uitsluitend eigen synthetische testgegevens onder `work/mcp-output-safety/` en ruimt alleen die nieuwe testgegevens op. Hij gebruikt de echte service, alleen-lezen index en projectcodec. De domeinwerkwijze levert vaste testbytes: dit test bestandsafhandeling voor alle drie werkvormcodes, geen echte Excelinhoud of bronselectie. Daarvoor blijft de onderstaande bestaande protocolproef leidend. De linkproeven moeten echte symlinks/junctions en hardlinks kunnen maken; een beperkte runner die dat weigert geeft een fout, geen stille skip. De drie testbestanden zijn opgenomen in `test:agent:input` en daarmee in `npm test`. Dit vereist geen extra dependency, bronpublicatie of wijziging van MCP-registratie.
 
 Uitvoeren vanuit deze repositorymap, met Node 24.21.0 en de instellingen uit [installeren](../docs/gebruiken/installeren.md):
 
