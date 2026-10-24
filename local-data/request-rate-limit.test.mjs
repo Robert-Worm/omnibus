@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequestRateLimit, publicRequestRateLimits } from './request-rate-limit.mjs';
+import { createRequestRateLimit, createVisitorRequestRateLimit, publicRequestRateLimits, publicVisitorLimits } from './request-rate-limit.mjs';
 
 const allowed = { allowed: true, retryAfter: 0 };
 const denied = retryAfter => ({ allowed: false, retryAfter });
@@ -199,4 +199,125 @@ test('instances have separate budgets and callers cannot refill by mutating a re
   assert.deepEqual(first.take(), denied(1));
   assert.deepEqual(second.take(), allowed);
   assert.deepEqual(second.take(), denied(1));
+});
+
+function visitors(options = {}) {
+  let time = 0;
+  return {
+    limiter: createVisitorRequestRateLimit({ ...options, now: () => time }),
+    at: value => { time = value; },
+  };
+}
+
+test('one busy transport peer cannot spend another peer or listener budget', () => {
+  const { limiter, at } = visitors({ capacity: 2, refillPerSecond: 1 });
+  for (let i = 0; i < 2; i++) assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  for (let i = 0; i < 1000; i++) assert.deepEqual(limiter.take('192.0.2.1'), denied(1));
+  assert.deepEqual(limiter.take('192.0.2.2'), allowed);
+  assert.deepEqual(limiter.take('192.0.2.2'), allowed);
+  assert.deepEqual(limiter.take('192.0.2.2'), denied(1));
+  assert.deepEqual(visitors().limiter.take('192.0.2.1'), allowed);
+  at(1000);
+  for (const address of ['192.0.2.1', '192.0.2.2']) {
+    assert.deepEqual(limiter.take(address), allowed);
+    assert.deepEqual(limiter.take(address), denied(1));
+  }
+});
+
+test('mapped IPv4 and equivalent IPv6 spellings cannot mint new budgets', () => {
+  const { limiter } = visitors({ capacity: 1 });
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  for (const address of ['::ffff:192.0.2.1', '::FFFF:C000:201', '0:0:0:0:0:ffff:c000:0201'])
+    assert.deepEqual(limiter.take(address), denied(1));
+  assert.deepEqual(limiter.take('2001:db8::1'), allowed);
+  assert.deepEqual(limiter.take('2001:DB8:0:0:0:0:0:0001'), denied(1));
+  assert.equal(limiter.size, 2);
+});
+
+test('unusable transport identities fail closed without retaining input', () => {
+  const { limiter } = visitors();
+  for (const address of [undefined, null, true, 42, {}, '','unknown','192.0.2.1:80',
+    '192.0.2.1, 192.0.2.2','for=192.0.2.1','[::1]','fe80::1%eth0','x'.repeat(10000)]) {
+    assert.deepEqual(limiter.take(address), denied(1));
+    assert.equal(limiter.size, 0);
+  }
+});
+
+test('a full table denies new peers without evicting or charging existing peers', () => {
+  const { limiter, at } = visitors({ capacity: 2, refillPerSecond: 1, maxVisitors: 2 });
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  assert.deepEqual(limiter.take('192.0.2.2'), allowed);
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  for (let i = 3; i < 1000; i++) {
+    assert.deepEqual(limiter.take(`2001:db8::${i.toString(16)}`), denied(60));
+    assert.equal(limiter.size, 2);
+  }
+  assert.deepEqual(limiter.take('192.0.2.1'), denied(1), 'no eviction grants a fresh burst');
+  assert.deepEqual(limiter.take('192.0.2.2'), allowed, 'existing peer retains its credit');
+  at(1000);
+  assert.deepEqual(limiter.take('192.0.2.3'), denied(59));
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  at(60_000);
+  assert.deepEqual(limiter.take('192.0.2.3'), allowed, 'idle peer frees one slot');
+  assert.equal(limiter.size, 2);
+});
+
+test('idle cleanup follows access order, including denials, and restores no early credit', () => {
+  const { limiter, at } = visitors({ capacity: 1, refillPerSecond: 0.25, maxVisitors: 2, idleMs: 4000 });
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  at(1);
+  assert.deepEqual(limiter.take('192.0.2.2'), allowed);
+  at(1000);
+  assert.deepEqual(limiter.take('192.0.2.1'), denied(3));
+  at(4000);
+  assert.deepEqual(limiter.take('192.0.2.3'), denied(1));
+  at(4001);
+  assert.deepEqual(limiter.take('192.0.2.3'), allowed);
+  assert.equal(limiter.size, 2);
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  at(8001);
+  assert.deepEqual(limiter.take('192.0.2.4'), allowed);
+  assert.equal(limiter.size, 1, 'all idle identities are removed on the next valid request');
+});
+
+test('clock faults never expire peers or admit a fresh identity', () => {
+  const { limiter, at } = visitors({ capacity: 1, maxVisitors: 1 });
+  at(1000); assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  for (const time of [999, -1, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, undefined, '60000']) {
+    at(time);
+    assert.deepEqual(limiter.take('192.0.2.1'), denied(1));
+    assert.deepEqual(limiter.take('192.0.2.2'), denied(1));
+    assert.equal(limiter.size, 1);
+  }
+  at(1000);
+  assert.deepEqual(limiter.take('192.0.2.1'), denied(1));
+  assert.deepEqual(limiter.take('192.0.2.2'), denied(60));
+  const throwing = createVisitorRequestRateLimit({ now() { throw Error('synthetic clock failure'); } });
+  assert.deepEqual(throwing.take('192.0.2.1'), denied(1));
+  assert.equal(throwing.size, 0);
+});
+
+test('visitor storage defaults are fixed and configuration cannot shorten natural refill', () => {
+  assert.deepEqual(publicVisitorLimits, { maxVisitors: 4096, idleMs: 60000 });
+  assert(Object.isFrozen(publicVisitorLimits));
+  for (const maxVisitors of [0, -1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, null, true, '2'])
+    assert.throws(() => createVisitorRequestRateLimit({ maxVisitors }), RangeError);
+  for (const idleMs of [0, 1999, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, null, true, '60000'])
+    assert.throws(() => createVisitorRequestRateLimit({ idleMs }), RangeError);
+  assert.throws(() => createVisitorRequestRateLimit({ capacity: 1, refillPerSecond: 0.25, idleMs: 3999 }), RangeError);
+  assert.throws(() => createVisitorRequestRateLimit({ capacity: 0 }), RangeError);
+  assert.throws(() => createVisitorRequestRateLimit({ refillPerSecond: 0 }), RangeError);
+  assert.throws(() => createVisitorRequestRateLimit({ now: null }), TypeError);
+});
+
+test('high-cardinality synthetic peers never exceed the default storage ceiling', () => {
+  const { limiter, at } = visitors();
+  for (let i = 0; i < 8192; i++) {
+    assert.deepEqual(limiter.take(`2001:db8::${i.toString(16)}`), i < 4096 ? allowed : denied(60));
+    assert(limiter.size <= 4096);
+  }
+  assert.equal(limiter.size, 4096);
+  at(60000);
+  assert.deepEqual(limiter.take('192.0.2.1'), allowed);
+  assert.equal(limiter.size, 1);
 });
