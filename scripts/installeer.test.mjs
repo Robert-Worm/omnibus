@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { controleerNode, npmOpdracht, Stop } from "./installeer.mjs";
+import { controleerNode, npmOpdracht, databaseDownloadFout, Stop } from "./installeer.mjs";
 import { DATABASE_SHA256, DATABASE_URL } from "./database-release.mjs";
 
 test("Node-versie: gelijk of nieuwer is goed, ouder stopt met uitleg", () => {
@@ -14,6 +14,18 @@ test("Node-versie: gelijk of nieuwer is goed, ouder stopt met uitleg", () => {
 test("op Windows heet npm npm.cmd en is een shell nodig", () => {
   assert.deepEqual(npmOpdracht("win32"), { bestand: "npm.cmd", shell: true });
   assert.deepEqual(npmOpdracht("linux"), { bestand: "npm", shell: false });
+});
+
+test("download failures retain their cause without advising a validation bypass", () => {
+  for (const reason of ['controlegetal ontbreekt voor een bestand', 'controlegetal van de zip klopt niet', 'zip te groot', 'download duurt te lang', 'fetch failed']) {
+    const error = databaseDownloadFout(new Error(reason));
+    assert.ok(error instanceof Stop);
+    assert.ok(error.message.includes(reason));
+    assert.equal(error.anker, '#de-database-is-beschadigd');
+    assert.match(error.oplossing, /afgewezen zip niet handmatig uit/);
+    assert.match(error.oplossing, /eerst alle controles halen/);
+    assert.doesNotMatch(error.oplossing, /download dan|pak hem uit|internetverbinding/);
+  }
 });
 
 test("de database van het installatiescript is dezelfde als in de Dockerfile", () => {

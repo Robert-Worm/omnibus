@@ -22,6 +22,12 @@ export class Stop extends Error {
   constructor(melding, oplossing, anker = "") { super(melding); this.oplossing = oplossing; this.anker = anker; }
 }
 
+export function databaseDownloadFout(fout) {
+  return new Stop(`De database kon niet worden opgehaald: ${fout.message}.`,
+    "Probeer de installatie opnieuw. Blijft de fout terugkomen, meld deze dan bij de beheerder. Pak een afgewezen zip niet handmatig uit: de database moet eerst alle controles halen.",
+    "#de-database-is-beschadigd");
+}
+
 /** Controleert de Node-versie tegen .nvmrc. Gooit Stop bij een te oude versie. */
 export function controleerNode(huidig, nodig) {
   const deel = (v) => v.replace(/^v/, "").split(".").map(Number);
@@ -69,7 +75,7 @@ export async function installeer({ starten = true } = {}) {
     rmSync(tijdelijk, { recursive: true, force: true });
     await haalDatabase({ url: DATABASE_URL, verwacht: DATABASE_SHA256, out: tijdelijk }).catch((fout) => {
       rmSync(tijdelijk, { recursive: true, force: true });
-      throw new Stop(`De database kon niet worden opgehaald: ${fout.message}.`, `Controleer je internetverbinding. Lukt het niet, download dan de zip zelf: ${DATABASE_URL} en pak hem uit in ${RUNTIME}.`, "#de-database-is-beschadigd");
+      throw databaseDownloadFout(fout);
     });
     if (existsSync(path.join(root, RUNTIME))) rmSync(tijdelijk, { recursive: true, force: true });
     else renameSync(tijdelijk, path.join(root, RUNTIME));
