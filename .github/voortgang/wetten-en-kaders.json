@@ -254,18 +254,24 @@
       ]
     },
     {
-      "id": "licentie",
-      "titel": "Kaders met auteursrecht van de uitgever",
-      "rechten": "Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. Uitzondering: de vier IIA Topical Requirements staan met hun volledige tekst in de database. Dat is een bewust besluit van de beheerder (20 oktober 2026). De rechten blijven bij The Institute of Internal Auditors. Vraagt de IIA erom, dan worden de teksten verwijderd.",
+      "id": "norea",
+      "titel": "Handreikingen van NOREA",
+      "rechten": "Auteursrecht van NOREA. Opgenomen met volledige tekst, bronvermelding en een link naar de uitgave, omdat Omnibus niet-commercieel is en NOREA wil dat haar openbare handreikingen worden gebruikt (besluit B-022).",
       "bronnen": [
         {
           "id": "NOREA",
           "titel": "NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)",
           "link": "https://www.norea.nl/",
           "relevantie": "midden",
-          "waarom": "Nederlandse handreikingen voor IT-audit; opnemen volgens B-022, zonder toestemming alleen als eigen auditpunten"
+          "waarom": "Nederlandse handreikingen voor IT-audit; met volledige tekst en bronvermelding (B-022)"
         }
       ]
+    },
+    {
+      "id": "licentie",
+      "titel": "Kaders met auteursrecht van de uitgever",
+      "rechten": "Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. Uitzondering: de vier IIA Topical Requirements staan met hun volledige tekst in de database. Dat is een bewust besluit van de beheerder (20 oktober 2026). De rechten blijven bij The Institute of Internal Auditors. Vraagt de IIA erom, dan worden de teksten verwijderd.",
+      "bronnen": []
     }
   ]
 }
