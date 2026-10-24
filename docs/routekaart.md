@@ -63,7 +63,7 @@ flowchart TD
 | Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
 | Koppeling via de online versie, alleen lezen · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ⬜ Gepland |
 
-Een koppeling met de Rijksmap kan pas als die als database en applicatie even sterk is als Omnibus. Die voorwaarden staan in [#150](https://github.com/Robert-Worm/omnibus/issues/150).
+Een koppeling met de Rijksmap kan pas als die als database en applicatie even sterk is als Omnibus. De eisen staan in [#151](https://github.com/Robert-Worm/omnibus/issues/151); tot die vervuld zijn, staat de koppeling niet op de routekaart ([B-020](beheer/besluiten.md#b-020)).
 
 ## Pad C · Eigen databases bouwen
 
