@@ -9,12 +9,15 @@
 | `intake.mjs` | Controleert of een pakket compleet en ongewijzigd is |
 | `runtime-delivery.mjs`, `runtime-author-data.mjs` | Gegevens klaarzetten voor een nieuwe publicatie |
 | `model-quality.mjs` | Controleert de structuur van modelreviews |
+| `local-database.mjs` | Laadt gecontroleerde modelpakketten in een nieuwe lokale controledatabase; integratie blijft in HOLD |
 | `identity.mjs` | Controlegetallen (hashes) berekenen |
 | `active-publication-guard.mjs` | Controleert of een nieuwe publicatie alleen de goedgekeurde pakketten en documenten bevat |
 
 ## Wanneer heb je dit nodig?
 
-Als beheerder, bij het controleren van een ingeleverde bron. Bijdragers hebben deze map niet nodig.
+Bij het controleren van een ingeleverde bron of het lokaal klaarzetten van eigen modelpakketten.
+
+Voor eigen modelpakketten is er ook een [lokale controleroute](local-database.md). Die werkt zonder private auteursomgeving en maakt geen viewerpublicatie.
 
 ## Spelregels
 
