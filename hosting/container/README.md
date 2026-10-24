@@ -52,7 +52,7 @@ node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root
 
 Een schone lokale Git-build voegt ook het commitnummer toe. In een container zonder Git kun je dat expliciet meegeven met het build-argument `OMNIBUS_CODE_REVISION` (volledige commit-hash). Bij Sliplane gebruikt de build anders het door de host geleverde [`SLIPLANE_COMMIT_HASH`](https://docs.sliplane.io/services/deploying-a-service/#environment-variables). De bestaande controle weigert ongeldige commitnummers. De server leest dit nummer uit de gebouwde bestanden, niet uit een later gewijzigde omgevingsvariabele.
 
-Zonder een build-argument, of bij lokaal gewijzigde code, blijft het commitnummer onbekend. Het controlegetal van de webbestanden blijft dan wel beschikbaar. Dit is versieherkenning, geen cryptografisch ondertekend herkomstbewijs of vervanging van de demo-tests.
+Zonder een build-argument, of bij lokaal gewijzigde code, blijft het commitnummer onbekend. Het controlegetal van de webbestanden blijft dan wel beschikbaar. Dit is versieherkenning, geen cryptografisch ondertekend herkomstbewijs of vervanging van de tests.
 
 ## Goed om te weten
 
@@ -66,7 +66,7 @@ Eén Dockerfile, één kleine app, geen aparte database of schijf. De database k
 
 ## Volgende stap
 
-Zie de [checklist live demo](../../docs/beheer/live-demo-checklist.md) voor wat er vóór een openbare demo nog moet gebeuren.
+Wat er voor de online versie gepland is, staat in [pad A van de routekaart](../../docs/routekaart.md#pad-a--online-versie).
 
 ---
 

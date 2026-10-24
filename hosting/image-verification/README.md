@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | Hulpmiddel om de image te bouwen en te controleren | ✅ Klaar | Getest |
 | Proef met een echte database | ➖ Niet van toepassing | Dit hulpmiddel gebruikt alleen fictieve gegevens |
-| Werking bij de hostingpartij | ➖ Niet van toepassing | Hoort bij de [checklist live demo](../../docs/beheer/live-demo-checklist.md) |
+| Werking bij de hostingpartij | ➖ Niet van toepassing | Hoort bij de [online versie](../container/README.md) |
 
 ## Wat wordt er gecontroleerd?
 
@@ -80,7 +80,7 @@ python3 hosting/image-verification/inspect-layers.test.py
 
 Deze tests controleren de hulpmiddelen. Ze controleren ook of een [ontvangen back-up](../data-transfer/README.md) aansluit op het pakket. Ze vervangen geen echte imagebuild of proef met een schijf.
 
-Een imageproef op je eigen computer bewijst niet dat je de bronnen mag gebruiken, dat er geen kwetsbaarheden zijn, of dat het bij een hostingpartij werkt. De [eerste vulling van de schijf](../first-start/README.md), de rechten bij de hostingpartij, TLS en probes en de herstelproef blijven aparte stappen van de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
+Een imageproef op je eigen computer bewijst niet dat je de bronnen mag gebruiken, dat er geen kwetsbaarheden zijn, of dat het bij een hostingpartij werkt. De [eerste vulling van de schijf](../first-start/README.md), de rechten bij de hostingpartij, TLS en probes en de herstelproef blijven aparte stappen bij de hostingpartij; zie [pad A van de routekaart](../../docs/routekaart.md#pad-a--online-versie).
 
 </details>
 

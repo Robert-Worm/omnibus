@@ -41,7 +41,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 | Een overzicht van het beheerwerk | [Beheer](beheer/README.md) |
 | Een ingeleverd pakket controleren | [Pakket controleren](beheer/pakket-controleren.md) |
 | Een nieuwe database maken en uitbrengen | [Database publiceren](beheer/database-publiceren.md) |
-| Omnibus online zetten als demo | [Checklist live demo](beheer/live-demo-checklist.md) en [`hosting/`](../hosting/README.md) |
+| Omnibus online zetten | [`hosting/`](../hosting/README.md) en [pad A van de routekaart](routekaart.md#pad-a--online-versie) |
 
 ## Verder
 

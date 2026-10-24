@@ -127,7 +127,7 @@ Meer meldingen met uitleg staan bij [problemen bij installeren en starten](../ge
 
 ## Bekende beperkingen
 
-- De online versie is een proefversie; de officiële demo volgt (zie de [routekaart](../routekaart.md#pad-a--online-versie)).
+- De online versie is een proefversie (zie de [routekaart](../routekaart.md#pad-a--online-versie)).
 - De AI-koppeling werkt alleen met assistenten die een lokaal proces (STDIO) ondersteunen.
 - Met een groot onderzoek (honderden bouwstenen) reageren typen, koppelen en exportkeuzes nog traag ([#82](https://github.com/Robert-Worm/omnibus/issues/82)). Een heel groot gekoppeld onderzoek kan bij export een melding over een te lange Excel-cel geven ([#94](https://github.com/Robert-Worm/omnibus/issues/94)).
 

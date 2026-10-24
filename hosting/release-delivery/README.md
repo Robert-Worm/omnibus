@@ -228,7 +228,7 @@ Omnibus gaat online als image zonder database. De database staat apart op een va
 
 ## Volgende stap
 
-Lees hoe de image wordt [gecontroleerd](../image-verification/README.md), of bekijk wat er voor de demo nog moet gebeuren in de [checklist live demo](../../docs/beheer/live-demo-checklist.md).
+Lees hoe de image wordt [gecontroleerd](../image-verification/README.md), of bekijk wat er voor de online versie gepland is in [pad A van de routekaart](../../docs/routekaart.md#pad-a--online-versie).
 
 ---
 

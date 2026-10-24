@@ -494,6 +494,7 @@ export function tabelControle(rel, tekst) {
         if (/\b\d{1,2}-\d{1,2}-\d{4}\b/.test(c)) waarschuwingen.push(`${rel}:${r.nr}: datum in een tabel als JJJJ-MM-DD schrijven`);
         else if (woorden(c) > 25) waarschuwingen.push(`${rel}:${r.nr}: cel van ${woorden(c)} woorden; maak er een lijst of kaart van`);
         if (k === status && c && c !== "–" && !STATUSLABELS.includes(c.replace(/\u00a0/g, " "))) waarschuwingen.push(`${rel}:${r.nr}: statuscel "${c.slice(0, 40)}" volgt de statuslabels niet`);
+        if (k === status && c === "⬜ Gepland" && !r.cellen.some((x) => /\/issues\/\d+/.test(x))) waarschuwingen.push(`${rel}:${r.nr}: geplande stap zonder issue; leg hem vast in een epic of user story en link ernaar`);
       });
     }
   }

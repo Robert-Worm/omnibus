@@ -268,3 +268,10 @@ test("de eerste kolom van een tabel is niet vet", () => {
   const { waarschuwingen } = tabelControle("docs/a.md", "| Knop | Wat het doet |\n| --- | --- |\n| **Delen** | Maakt een bestand. |\n| Open | Opent een **bestand**. |\n");
   assert.equal(waarschuwingen.filter((w) => /eerste kolom vet/.test(w)).length, 1);
 });
+
+test("een geplande stap linkt naar een epic of user story", () => {
+  const t = "| Stap | Status |\n| --- | --- |\n| Iets bouwen | ⬜ Gepland |\n| Iets anders · [#12](https://github.com/x/y/issues/12) | ⬜ Gepland |\n| Klaar | ✅ Klaar |\n";
+  const w = tabelControle("docs/a.md", t).waarschuwingen.filter((x) => /geplande stap zonder issue/.test(x));
+  assert.equal(w.length, 1);
+  assert.match(w[0], /docs\/a\.md:3/);
+});

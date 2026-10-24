@@ -94,7 +94,7 @@ Je eigen AI-assistent kan zoeken en voorstellen doen, maar slaat pas iets op als
 
 **Voorbeeld:** een nieuw hulpmiddel voor de AI, of een andere manier van opslaan.
 
-<details><summary><b>Technische details</b> · Lokale MCP-demo</summary>
+<details><summary><b>Technische details</b> · Lokale MCP-koppeling</summary>
 
 Eigen AI-client gebruikt de bestaande lokale STDIO-verbinding en dezelfde gepinde bronrelease als de demo-app. Bronpassages zijn data, geen uitvoerinstructies. Alleen-lezen broncatalogus, geldige expliciete selecties, HOLD en toepasselijkheid blijven beschermd. Vragen zijn voorstellen met traceerbare bouwsteenkoppelingen. Opslaan/export volgt expliciete toestemming naar nieuwe aparte uitvoerbestanden; geen bronwijziging, vervanging van een browserproject of willekeurige bestandsactie. Fictieve inname tot heropenbaar project en ingestelde Excel aantonen, inclusief ongeldige invoer en bronintegriteit. Geen echte projectgegevens in Git. Eerlijke client-/installatievereisten; geen onbevestigde verbindingsstatus of claim dat een publieke URL bestaat. Publiek transport en accountbeheer uitgesloten.
 
@@ -137,7 +137,7 @@ Met de testcollectie: een bruikbare start binnen 3 seconden, kiezen binnen 0,1 s
 
 Manifest vermeldt echte aantallen rapporten, normen, punten, pagina's en bytes. Hardware, build, netwerk, cachetoestand en duur horen bij de meting. De voorlopige budgetten blijven staan. Een lege, bruikbare start duurt hooguit 3 seconden op 10 Mbit/s met 100 ms RTT. Eigen initiële HTML/JS/CSS is hooguit 1 MiB gecomprimeerd. Lokale selectie haalt p95 binnen 100 ms. De lees- en zoek-API haalt p95 binnen 500 ms bij een warme cache en binnen 1500 ms bij een koude. Een project bewaren haalt p95 binnen 1000 ms op het gekozen lokale pad. Onder afgesproken belasting minder dan 0,5% onverwachte fouten en nul dataverlies of bronverwisseling. Kleine lokale samples bewijzen geen hosted capaciteit.
 
-De lokale demo wordt nu met de huidige collectie gemeten. De groeiproef met 100 echte gereviewde rapporten is uitgesteld; huidige resultaten niet als bewijs voor die schaal presenteren. Behoud bestaande kaders/modellen in het manifest. Vóór de officiële demo blijft het startvoorstel 20 actieve browsers, circa vijf requests/sec gedurende 30 minuten en twee gelijktijdige browserexports, met vooraf bevestigde capaciteit/meetopzet. Geen login-/serverprojectpad simuleren dat niet bestaat. Grotere 9.000-rapportenproef komt pas bij die groeifase. Geen budget achteraf versoepelen om een proef groen te maken.
+De lokale versie wordt nu met de huidige collectie gemeten. De groeiproef met 100 echte gereviewde rapporten is uitgesteld; huidige resultaten niet als bewijs voor die schaal presenteren. Behoud bestaande kaders/modellen in het manifest. Voor openbaar gebruik online blijft het startvoorstel 20 actieve browsers, circa vijf requests/sec gedurende 30 minuten en twee gelijktijdige browserexports, met vooraf bevestigde capaciteit/meetopzet. Geen login-/serverprojectpad simuleren dat niet bestaat. Grotere 9.000-rapportenproef komt pas bij die groeifase. Geen budget achteraf versoepelen om een proef groen te maken.
 
 </details>
 
@@ -189,7 +189,7 @@ De vier stappen, titels, panelen, toetsenbordbediening en kleine schermen blijve
 
 <details><summary><b>Technische details</b> · Gedeelde bediening</summary>
 
-Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry, smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen. Gerichte handmatige toetsenbord- en leesbaarheidstoets naast technische tests. Een schermlezertest valt voor de demo buiten scope ([besluit B-005](besluiten.md#b-005)) en staat als open punt in ACCESSIBILITY.md.
+Behoud vier stappen, bestaande titels/panelen, marges, keyboardfocus, fout/retry, smalle schermen en opgeslagen viewerkeuzes. Geen account-/betaalknop toevoegen. Gerichte handmatige toetsenbord- en leesbaarheidstoets naast technische tests. Een schermlezertest is nog niet gedaan en staat als open punt in ACCESSIBILITY.md.
 
 </details>
 

@@ -2,9 +2,9 @@
 
 <!-- paginatype: naslag -->
 
-> **In het kort:** Omnibus werkt op je eigen computer en als proefversie online, met een openbare database. Vanaf hier lopen vier paden naast elkaar. Een online versie, AI die rechtstreeks met de database werkt, eigen databases bouwen en samen de openbare database laten groeien.
+> **In het kort:** Omnibus werkt op je eigen computer en als proefversie online, met een openbare database. Vanaf hier lopen vijf paden. Het zwaartepunt ligt bij pad E: betere en goedkopere skills, en AI die de kwaliteit bewaakt.
 
-Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Ideeën en reacties zijn welkom in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
+Elke geplande stap is een user story op GitHub, onder een epic per pad. Volgorde en details kunnen veranderen. Ideeën en reacties zijn welkom in [Discussions](https://github.com/Robert-Worm/omnibus/discussions).
 
 ## Overzicht
 
@@ -12,20 +12,22 @@ Dit zijn voornemens, geen beloftes. Volgorde en details kunnen veranderen. Idee�
 flowchart TD
     N["✅ Nu<br/>Lokaal en online als proef<br/>met openbare database"]
     N --> A["🌐 Pad A<br/>Online versie"]
-    N --> B["🤖 Pad B<br/>AI rechtstreeks<br/>aan de database"]
-    N --> C["🗂️ Pad C<br/>Eigen databases<br/>bouwen"]
+    N --> B["🤖 Pad B<br/>AI-koppeling<br/>met de database"]
+    N --> C["🗂️ Pad C<br/>Eigen database"]
     N --> D["🤝 Pad D<br/>Samen bijdragen"]
+    N --> E["🔍 Pad E<br/>Kwaliteit en efficiëntie<br/>met AI"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
     classDef klaar fill:#e8f5ec,stroke:#2e7d4f,color:#15233b;
     class N klaar;
 ```
 
-| Pad | Status | Stand |
+| Pad | Status | Epic |
 | --- | --- | --- |
-| [🌐 A · Online versie](#pad-a--online-versie) | 🔄 Bezig | Proefversie online |
-| [🤖 B · AI aan de database](#pad-b--ai-rechtstreeks-aan-de-database) | ✅ Klaar | Lokaal werkend |
-| [🗂️ C · Eigen databases](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | Deels mogelijk |
-| [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | ✅ Klaar | Claimsysteem werkt |
+| [🌐 A · Online versie](#pad-a--online-versie) | 🔄 Bezig | [#140](https://github.com/Robert-Worm/omnibus/issues/140) |
+| [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | 🔄 Bezig | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
+| [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
+| [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
+| [🔍 E · Kwaliteit en efficiëntie](#pad-e--kwaliteit-en-efficiëntie-met-ai) | ⬜ Gepland | [#158](https://github.com/Robert-Worm/omnibus/issues/158) · [#165](https://github.com/Robert-Worm/omnibus/issues/165) · [#169](https://github.com/Robert-Worm/omnibus/issues/169) · [#181](https://github.com/Robert-Worm/omnibus/issues/181) |
 
 ## Het vertrekpunt: wat er nu is
 
@@ -35,7 +37,7 @@ flowchart TD
 
 ## Pad A · Online versie
 
-**Doel:** Omnibus in de browser gebruiken, zonder installatie. Als eerste mijlpaal een online demo, met als streefdatum 1 december 2026.
+**Doel:** Omnibus in de browser gebruiken, zonder installatie, met een online versie die je kunt beheren en herstellen. Epic [#140](https://github.com/Robert-Worm/omnibus/issues/140).
 
 | Stap | Status |
 | --- | --- |
@@ -43,54 +45,80 @@ flowchart TD
 | Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ Klaar |
 | Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar |
 | Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
-| Snelheid online aantoonbaar ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | 🔄 Bezig |
-| Online proef: logs, back-up en herstel | ⬜ Gepland |
-| Onafhankelijke beveiligings- en overdrachtsreview | ⬜ Gepland |
-| Gebruikers testen de demo | ⬜ Gepland |
-| Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ Gepland |
-| Online demo | ⬜ Gepland |
-
-Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md). Een test met schermlezer en in desktop-Excel hoort bewust niet bij deze demo ([besluit B-005](beheer/besluiten.md#b-005)). Deze tabel en de checklist volgen dezelfde demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór 1 december.
+| Snelheid online aantoonbaar · [#84](https://github.com/Robert-Worm/omnibus/issues/84) | 🔄 Bezig |
+| Logboek van de online versie bekijken · [#141](https://github.com/Robert-Worm/omnibus/issues/141) | ⬜ Gepland |
+| Online terug naar de vorige werkende versie · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | ⬜ Gepland |
+| AI-review van beveiliging en overdracht · [#143](https://github.com/Robert-Worm/omnibus/issues/143) | ⬜ Gepland |
 
 ## Pad B · AI rechtstreeks aan de database
 
-**Doel:** je eigen AI-assistent laten zoeken in alle bronnen en een onderzoeksopzet laten voorbereiden, die je daarna in Omnibus afmaakt.
+**Doel:** je eigen AI-assistent werkt via de koppeling (MCP) met de hele Omnibus-database: zoeken, bronnen lezen en een onderzoeksopzet voorstellen. Epic [#144](https://github.com/Robert-Worm/omnibus/issues/144).
 
 | Stap | Status |
 | --- | --- |
-| Lokale koppeling via MCP: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
-| Koppeling met andere open datasets, zoals de [Rijksmap](https://www.rijksmap.nl) | ⬜ Gepland |
-| Koppeling met de online versie, zodat ook AI-diensten in de cloud kunnen aansluiten · Na pad A | ⬜ Gepland |
+| Lokale koppeling: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
+| Vastleggen wat de koppeling kan, met tests · [#145](https://github.com/Robert-Worm/omnibus/issues/145) | ⬜ Gepland |
+| Zoeken en lezen in alle soorten bronnen · [#146](https://github.com/Robert-Worm/omnibus/issues/146) | ⬜ Gepland |
+| Onderzoeksopzet die de vraagcontrole haalt · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ⬜ Gepland |
+| Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
+| Koppeling via de online versie, alleen lezen · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ⬜ Gepland |
+
+Een koppeling met de Rijksmap kan pas als die als database en applicatie even sterk is als Omnibus. Die voorwaarden staan in [#150](https://github.com/Robert-Worm/omnibus/issues/150).
 
 ## Pad C · Eigen databases bouwen
 
-**Doel:** met je eigen documenten werken en je eigen database gebruiken, naast de openbare. Denk aan een organisatie met interne rapporten of eigen kaders die de eigen computer of het eigen netwerk niet mogen verlaten.
+**Doel:** met de skills je eigen documenten verwerken en ze in een eigen database gebruiken, naast de openbare. Er verlaat niets je computer of netwerk. Epic [#152](https://github.com/Robert-Worm/omnibus/issues/152).
 
 | Stap | Status |
 | --- | --- |
 | Een eigen document omzetten naar bouwstenen met een AI-skill · [Eigen documenten](gebruiken/eigen-documenten.md) | ✅ Klaar |
-| Dat resultaat zelf in je lokale Omnibus laden, zonder tussenkomst van de beheerder | ⬜ Gepland |
-| Een eigen database maken met de publicatiehulpmiddelen · Kan nu alleen via de [beheerroute](beheer/database-publiceren.md) | 🔄 Bezig |
-| Meerdere databases naast elkaar gebruiken, met een knop in de applicatie | ⬜ Gepland |
+| Een eigen database maken via de [beheerroute](beheer/database-publiceren.md) | ✅ Klaar |
+| Een verwerkt eigen document lokaal laden · [#153](https://github.com/Robert-Worm/omnibus/issues/153) | ⬜ Gepland |
+| Een eigen database bouwen met één opdracht · [#154](https://github.com/Robert-Worm/omnibus/issues/154) | ⬜ Gepland |
+| Meerdere databases naast elkaar · [#155](https://github.com/Robert-Worm/omnibus/issues/155) | ⬜ Gepland |
+| Skill die begeleidt van eigen pdf tot eigen database · [#156](https://github.com/Robert-Worm/omnibus/issues/156) | ⬜ Gepland |
+| Aantonen dat niets je computer verlaat · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | ⬜ Gepland |
 
 ## Pad D · Samen bijdragen
 
-**Doel:** de openbare database samen laten groeien, met bronnen die goed zijn verwerkt en gecontroleerd.
+**Doel:** de openbare database laten groeien met de bronnen die er voor overheidsaudit het meest toe doen, in kleine, regelmatige releases. Epics [#175](https://github.com/Robert-Worm/omnibus/issues/175) en [#178](https://github.com/Robert-Worm/omnibus/issues/178).
 
 | Stap | Status |
 | --- | --- |
 | Claimsysteem: bronnen op je naam zetten, inleveren en volgen · [Meedoen](bijdragen/README.md) | ✅ Klaar |
 | Werklijsten: <!--n:alle-->9.116<!--/n--> rapporten, <!--n:aanbevolen-->542<!--/n--> aanbevolen, wetten en kaders met hun rechten · [Voortgang](bijdragen/voortgang.md) | ✅ Klaar |
 | Vastleggen met welk AI-model een bron is verwerkt | ✅ Klaar |
-| Eerst de [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk · <!--n:aanbevolenInDatabase-->27<!--/n--> in de database | 🔄 Bezig |
-| Alle wetten en kaders die openbaar mogen; afspraken met uitgevers van beschermde kaders · [Werklijst](bijdragen/werklijst-wetten-en-kaders.md) | ⬜ Gepland |
-| Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ✅ Klaar |
-| Vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden | ⬜ Gepland |
+| Automatische controle van een ingeleverd pakket | ✅ Klaar |
+| De [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk · <!--n:aanbevolenInDatabase-->27<!--/n--> in de database | 🔄 Bezig |
+| Volgorde van wetten en kaders voor overheidsaudit · [#176](https://github.com/Robert-Worm/omnibus/issues/176) | ⬜ Gepland |
+| Kaders die je als IIA-lid moet toepassen · [#177](https://github.com/Robert-Worm/omnibus/issues/177) | ⬜ Gepland |
+| Vaste regel voor een nieuwe database · [#179](https://github.com/Robert-Worm/omnibus/issues/179) | ⬜ Gepland |
+| Een release met minder handwerk · [#180](https://github.com/Robert-Worm/omnibus/issues/180) | ⬜ Gepland |
+
+## Pad E · Kwaliteit en efficiëntie met AI
+
+**Doel:** skills die sneller en goedkoper werken zonder kwaliteitsverlies, en AI die de kwaliteit van vragen en inhoud bewaakt. Liever geen vraag dan een slechte vraag. Tests die op een tweede persoon wachtten, doen een AI-agent of GitHub. Epics [#158](https://github.com/Robert-Worm/omnibus/issues/158), [#165](https://github.com/Robert-Worm/omnibus/issues/165), [#169](https://github.com/Robert-Worm/omnibus/issues/169) en [#181](https://github.com/Robert-Worm/omnibus/issues/181).
+
+| Stap | Status |
+| --- | --- |
+| [Kwaliteitsbeoordeling](../skills/omnibus-review-audit-quality/README.md) van normen en toetspunten met een skill | ✅ Klaar |
+| Wat maakt een goede vraag? · [#159](https://github.com/Robert-Worm/omnibus/issues/159) | ⬜ Gepland |
+| Nieuwe skill die vragen beoordeelt · [#160](https://github.com/Robert-Worm/omnibus/issues/160) | ⬜ Gepland |
+| Alle vragen in de database controleren, en afgekeurde vragen schrappen · [#161](https://github.com/Robert-Worm/omnibus/issues/161) · [#162](https://github.com/Robert-Worm/omnibus/issues/162) | ⬜ Gepland |
+| De applicatie toont alleen goedgekeurde vragen · [#163](https://github.com/Robert-Worm/omnibus/issues/163) | ⬜ Gepland |
+| Nieuwe pakketten op vraagkwaliteit controleren · [#164](https://github.com/Robert-Worm/omnibus/issues/164) | ⬜ Gepland |
+| Kwaliteit van de hele database en de bronpassages nalopen · [#166](https://github.com/Robert-Worm/omnibus/issues/166) · [#167](https://github.com/Robert-Worm/omnibus/issues/167) · [#168](https://github.com/Robert-Worm/omnibus/issues/168) | ⬜ Gepland |
+| Meten wat een skill kost en oplevert · [#170](https://github.com/Robert-Worm/omnibus/issues/170) | ⬜ Gepland |
+| Leren van bestaande skillverzamelingen · [#171](https://github.com/Robert-Worm/omnibus/issues/171) | ⬜ Gepland |
+| Leanere instructies, en rapporten in een reeks verwerken · [#172](https://github.com/Robert-Worm/omnibus/issues/172) · [#173](https://github.com/Robert-Worm/omnibus/issues/173) | ⬜ Gepland |
+| Geen optimalisatie die de kwaliteit verlaagt · [#174](https://github.com/Robert-Worm/omnibus/issues/174) | ⬜ Gepland |
+| Installeren op Windows, overdracht en skills getest door AI of GitHub · [#182](https://github.com/Robert-Worm/omnibus/issues/182) · [#183](https://github.com/Robert-Worm/omnibus/issues/183) · [#184](https://github.com/Robert-Worm/omnibus/issues/184) | ⬜ Gepland |
 
 ## Hoe de paden samenhangen
 
 - **Pad D vult de database** die alle andere paden gebruiken.
-- **Pad A en pad B** maken die database beter bereikbaar: via de browser en via AI.
+- **Pad E maakt dat vullen goedkoper en beter**, en bewaakt de kwaliteit van wat erin zit.
+- **Pad A en pad B** maken de database beter bereikbaar: via de browser en via AI.
 - **Pad C** is voor wie (ook) met eigen, niet-openbare bronnen werkt. Het gebruikt dezelfde skills en controles als pad D, maar het resultaat blijft bij jou.
 
 ## Bewust niet
@@ -103,7 +131,7 @@ Dat verandert alleen na een nieuw, bewust besluit.
 
 ## Samengevat
 
-Vier paden vanaf een werkende versie, lokaal en online: online, AI, eigen databases en samen bijdragen. Pad D voedt de rest.
+Vijf paden vanaf een werkende versie, lokaal en online: online, AI-koppeling, eigen database, samen bijdragen, en kwaliteit en efficiëntie met AI. Pad D vult de database; pad E maakt dat beter en goedkoper.
 
 ## Volgende stap
 

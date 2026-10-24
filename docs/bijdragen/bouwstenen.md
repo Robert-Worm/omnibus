@@ -39,7 +39,7 @@ Elke pagina in `docs/` is van één type. Zet het type in een verborgen regel di
 | `taak` | Iets wat de lezer doet, zoals installeren | In het kort · Kies je route\* · Wat heb je nodig? · Stap voor stap · Goed om te weten · Technische details · Samengevat · Volgende stap |
 | `naslag` | Iets wat je opzoekt, zoals begrippen, afspraken of foutmeldingen | In het kort · Zo gebruik je deze pagina · de inhoud · Volgende stap. Samengevat mag. |
 | `data` | Een pagina die een script maakt, zoals de voortgang en de werklijsten | In het kort · de stand · wat je kunt doen · de lijsten · Volgende stap. Met de regel *Automatisch bijgewerkt*. |
-| `logboek` | Een lijst die groeit, zoals de besluiten en de checklist live demo | In het kort · Zo gebruik je deze lijst · de tabel · Volgende stap |
+| `logboek` | Een lijst die groeit, zoals de besluiten | In het kort · Zo gebruik je deze lijst · de tabel · Volgende stap |
 
 \* Alleen als er meer dan één route is.
 
@@ -92,7 +92,7 @@ Status:
 | Onderdeel | Status | Toelichting |
 | --- | --- | --- |
 | Proefversie online | ✅ Klaar | Sinds 21 oktober 2026 |
-| Back-up en herstel online | ⬜ Gepland | Zie de [checklist live demo](../beheer/live-demo-checklist.md) |
+| Back-up en herstel online | ⬜ Gepland | Zie [#142](https://github.com/Robert-Worm/omnibus/issues/142) |
 
 Werklijst:
 

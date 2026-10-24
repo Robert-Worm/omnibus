@@ -54,7 +54,6 @@ flowchart TD
 | [Database publiceren](database-publiceren.md) | Een nieuwe database maken, vergelijken, uitbrengen en herstellen |
 | [Actieve inventaris controleren](actieve-inventaris-controleren.md) | Controleren dat een nieuwe database alleen goedgekeurde inhoud bevat |
 | [Runtimepakket](runtime-pakket.md) | Omnibus verpakken voor een andere computer of voor hosting |
-| [Checklist live demo](live-demo-checklist.md) | Wat er nog moet gebeuren voor een online demo |
 
 **Bij storingen**
 

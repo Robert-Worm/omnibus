@@ -106,7 +106,7 @@ Een kort tijdelijk proces maakt het mogelijk om de database neer te zetten voord
 
 ## Volgende stap
 
-Bekijk in de [checklist live demo](../../docs/beheer/live-demo-checklist.md) wat er nog moet gebeuren.
+Bekijk in [pad A van de routekaart](../../docs/routekaart.md#pad-a--online-versie) wat er voor de online versie gepland is.
 
 ---
 

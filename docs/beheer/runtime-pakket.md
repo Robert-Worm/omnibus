@@ -115,7 +115,7 @@ Een tijdelijke blokkade van de database kan vanzelf overgaan. Is de database gew
 
 ### Grens naar echte hosting
 
-#### Begrensde HTTP-controle vóór de demo
+#### Begrensde HTTP-controle vóór openbaar gebruik
 
 Deze controle test een draaiend pakket van buitenaf, vanuit de map van de repository. Hij start en wijzigt niets. Zonder opties toont hij alleen uitleg.
 
@@ -135,11 +135,11 @@ Een geslaagde lokale controle zegt niets over snelheid op de host, de controles 
 
 Eerder bewijs: het pakket is getest op Windows en Ubuntu 24.04 met Node 24 (toen versie 24.17.0; 59 geslaagde tests). Selecties, vraagkoppelingen, bronmarkeringen, projecten en de drie Excel-werkvormen bleven gelijk. Dat geldt niet automatisch voor latere wijzigingen.
 
-Voor de officiële demo ontbreken nog:
+Bij de hostingpartij is nog niet aangetoond:
 
-- bewijs bij de hostingpartij voor de servergrenzen, de toegestane inhoud en een onafhankelijke beoordeling;
+- de servergrenzen en de toegestane inhoud, met een beoordeling van de beveiliging (zie [#143](https://github.com/Robert-Worm/omnibus/issues/143));
 - aantoonbaar bewaren van de database, alleen-leesrechten, een beveiligde verbinding (TLS) en geteste herstart;
-- begrensd verkeer, privacy in de logs, een aparte back-up met herstelproef en een menselijke beveiligingsbeoordeling.
+- begrensd verkeer, privacy in de logs, en een aparte back-up met herstelproef.
 
 Zet nooit de lokale server of de lokale AI-koppeling rechtstreeks online. Een openbaar adres is geen toegangscontrole voor vertrouwelijke inhoud. Zie de [routekaart](../routekaart.md).
 

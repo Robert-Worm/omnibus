@@ -30,7 +30,7 @@ Niets, als je de [proefversie online](https://omnibus.sliplane.app) gebruikt. Ze
 
 ### Kan ik Omnibus gebruiken zonder iets te installeren?
 
-Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk blijft ook daar in je eigen browser. De officiële online demo volgt; zie de [routekaart (pad A)](routekaart.md#pad-a--online-versie).
+Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk blijft ook daar in je eigen browser.
 
 ### Werkt het op Windows, macOS en Linux?
 
