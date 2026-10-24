@@ -15,7 +15,6 @@ import { publishRuntime } from './runtime-publication.mjs';
 import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
 import { createDatabaseSourceClient } from '../lib/database-source-client.mjs';
 
-const port = 4371, secondPort = 4372;
 const pagePath = '/api/v1/documents/' + 'a'.repeat(64) + '/pages/1';
 const large = { text: randomBytes(4 * 1024 * 1024).toString('base64') };
 
@@ -40,7 +39,7 @@ function request(url, path = '/api/v1/health', headers = {}, agent = false) {
 }
 
 async function start(t, repository, options = {}) {
-  const app = await serveCatalogue(repository, { port, ...options });
+  const app = await serveCatalogue(repository, { port: 0, ...options });
   const pending = new Set(), clients = [];
   app.server.on('request', (_req, res) => {
     if (res.statusCode !== 200) return;
@@ -191,7 +190,7 @@ for (const encoding of ['gzip', 'br']) test(`${encoding}: global response capaci
   assert.equal((await request(app.url, pagePath, { Host: 'example.invalid' })).status, 403);
   assert.equal((await request(app.url, pagePath, { Origin: 'https://example.invalid' })).status, 403);
   // Another listener has its own capacity, not a module-global counter.
-  const independent = await start(t, {}, { port: secondPort });
+  const independent = await start(t, {});
   assert.equal((await request(independent.url)).status, 200);
   for (const client of held.slice(0, 4)) client.req.destroy();
   await until(() => app.pending.size === 28, 'abort must release four slots');
@@ -207,6 +206,7 @@ for (const encoding of ['gzip', 'br']) test(`${encoding}: global response capaci
 test('pipelined requests cannot bypass the shared response ceiling', { timeout: 10000 }, async t => {
   let reads = 0, rejected = 0;
   const app = await start(t, { page() { reads++; return large; } });
+  const port = app.server.address().port;
   app.server.on('request', (_req, res) => { if (res.statusCode === 503) rejected++; });
   const socket = net.connect(port, '127.0.0.1');
   app.clients.push(socket);
@@ -277,6 +277,7 @@ test('absolute response deadline closes slow readers even with socket inactivity
 
 test('partial headers are connection-bounded and capacity returns after disconnect', { timeout: 10000 }, async t => {
   const app = await start(t, {}), sockets = [];
+  const port = app.server.address().port;
   t.after(() => { for (const socket of sockets) socket.destroy(); });
   const count = () => new Promise((resolve, reject) => app.server.getConnections((error, n) => error ? reject(error) : resolve(n)));
   let dropped = 0; app.server.on('drop', () => dropped++);
@@ -294,7 +295,8 @@ test('partial headers are connection-bounded and capacity returns after disconne
 });
 
 test('shutdown still drains for at most five seconds with active and incomplete reads', { timeout: 10000 }, async () => {
-  const app = await serveCatalogue({ page() { return large; } }, { port });
+  const app = await serveCatalogue({ page() { return large; } });
+  const port = app.server.address().port;
   const clients = [];
   try {
     await new Promise((resolve, reject) => {

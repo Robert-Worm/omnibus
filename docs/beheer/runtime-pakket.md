@@ -105,7 +105,11 @@ De tests controleren dat opties goed worden gelezen, dat controlegetallen worden
 
 De server luistert pas als pakket en database gecontroleerd zijn. `GET /api/v1/health` laat zien in welke modus hij draait: `local-read-only` of `public-read-only`. Bij afsluiten krijgen lopende verzoeken nog vijf seconden. Projecten in de browser horen bij het adres waarop ze gemaakt zijn; neem ze mee met **Bewaar project** en **Open project**.
 
-In de openbare modus deelt de hele server één budget voor verzoeken: 120 direct, daarna 60 per seconde erbij tot weer 120. Is het budget op, dan antwoordt de server met 429 en `Retry-After`. Lokaal is er geen extra grens. Daarnaast gelden altijd: hooguit 32 antwoorden tegelijk, 128 verbindingen en 30 seconden per antwoord. Dit zijn beginwaarden, geen garantie tegen overbelasting of aanvallen.
+In de openbare modus heeft elk verbindingsadres een eigen budget voor pagina's, bestanden en gegevens: 120 verzoeken direct, daarna 60 per seconde erbij tot weer 120. Is het budget op, dan antwoordt de server met 429 en `Retry-After`. De exacte routes `/api/v1/health` en `/api/v1/ready`, zonder query, vallen buiten dit budget. Alle controles op verzoeken blijven gelden. Lokaal is er geen extra grens. Daarnaast gelden altijd: hooguit 32 antwoorden tegelijk, 128 verbindingen en 30 seconden per antwoord. Een volle antwoordcapaciteit kan dus ook een gezondheidscontrole weigeren. Dit zijn beginwaarden, geen garantie tegen overbelasting of aanvallen.
+
+De server onthoudt hooguit 4096 adressen. Na een minuut zonder verzoek van een adres kan de volgende aanvraag die plek vrijmaken. Is de tabel vol, dan krijgen nieuwe adressen tijdelijk 429; bestaande budgetten blijven behouden. Een weigering levert één logregel op met een door de server gemaakt verzoeknummer, status en tijd, zonder adres of verzoekinhoud. Herhaalde weigeringen worden geteld: hooguit één regel per minuut voor de hele server, met het aantal sinds de vorige regel onder `suppressed`.
+
+Het adres komt uitsluitend uit de netwerkverbinding. Proxyheaders zoals `X-Forwarded-For` worden niet vertrouwd. Bezoekers achter dezelfde proxy of hetzelfde gedeelde netwerkadres delen daardoor één budget. De lokale tests bewijzen geen bezoekersisolatie achter Sliplane. Daarvoor moet de beheerder vaststellen welke proxy het adres betrouwbaar doorgeeft en welke headers die proxy overschrijft. Ook moet vaststaan dat de app uitsluitend via die proxy bereikbaar is. De huidige startopties hebben geen instelling voor dat vertrouwen.
 
 #### Gereedheid en grenzen
 

@@ -282,7 +282,7 @@ test('hosting failures keep fixed CORS, independent liveness and minimal private
   assert.equal(logs.length, 1, 'health and failed readiness do not dump exceptions or access logs');
 });
 
-test('hosting admission budget is shared by content and probes; forwarded identities cannot reset it', async t => {
+test('one transport peer cannot spend another budget; exact probes stay reachable and refusal logs are bounded', async t => {
   // Freeze the limiter's standard monotonic clock only in this test. No sleeps, parallel
   // pressure or throughput claims: 120 sequential admissions exercise one burst.
   let clock = 1000;
@@ -291,33 +291,88 @@ test('hosting admission budget is shared by content and probes; forwarded identi
   const databaseReads = t.mock.method(f.repository.db, 'prepare');
   const agent = new http.Agent({keepAlive:true, maxSockets:1});
   t.after(() => agent.destroy());
-  const paths = ['/', f.contentPath, '/api/v1/health', '/api/v1/ready'];
+  const paths = ['/', f.contentPath, '/assets/synthetic.js'];
+  // Assign a synthetic transport peer on a separate accepted loopback socket
+  // for platform-independent coverage, never through an HTTP header. This
+  // tests the server boundary, not real proxy forwarding or hosted isolation.
+  let nextPeer;
+  app.server.prependListener('connection', socket => {
+    if (nextPeer) Object.defineProperty(socket, 'remoteAddress', {value:nextPeer});
+  });
   const attempt = (index, target = app, path = paths[index % paths.length], local = false) => request(target, {
     path, agent, headers:{Host:local ? `127.0.0.1:${target.server.address().port}` : publicHost,
       'X-Forwarded-For':`192.0.2.${index % 254 + 1}`, 'X-Real-IP':`198.51.100.${index % 254 + 1}`,
       'CF-Connecting-IP':`203.0.113.${index % 254 + 1}`,
-      Forwarded:`for=192.0.2.${index % 254 + 1};host=${publicHost};proto=https`},
+      Forwarded:`for=192.0.2.${index % 254 + 1};host=${publicHost};proto=https`,
+      'X-Request-ID':canary, Cookie:canary, Authorization:canary},
   });
+  for (const path of ['/api/v1/health', '/api/v1/ready'])
+    assert.equal((await attempt(0, app, path)).status, 200);
   for (let index = 0; index < 120; index++)
     assert.equal((await attempt(index)).status, 200, `public burst admission ${index + 1}`);
   const admittedReads = databaseReads.mock.callCount();
   assert(admittedReads > 0, 'the admitted content and readiness requests used the real database');
-  for (const [index, path] of paths.entries()) {
+  const blockedPaths = [...paths, '/api/v1/version', '/api/v1/health?', '/api/v1/ready?probe=1',
+    '/api/v1/x/../health', '/api/v1/health/', '/'+canary+'?q='+canary];
+  let refusals = 0, firstRefusal;
+  for (const [index, path] of blockedPaths.entries()) {
     const denied = await attempt(120 + index, app, path);
+    refusals++; firstRefusal ??= denied;
     assert.equal(denied.status, 429, path);
     assert.equal(denied.headers['retry-after'], '1');
+    assert.equal(denied.headers.connection, 'close');
+    assert.deepEqual(JSON.parse(denied.body), {error:'Too many requests; retry shortly'});
     assert.equal(denied.headers['cache-control'], 'no-store');fixedCors(denied);noPrivateDetails(denied, f);
-    assert.equal(databaseReads.mock.callCount(), admittedReads, '429 precedes content and readiness database reads');
+    assert.equal(databaseReads.mock.callCount(), admittedReads, '429 precedes content database reads');
   }
+  for (let i = 0; i < 40; i++) {
+    assert.equal((await attempt(i)).status, 429);
+    refusals++;
+  }
+  assert.equal(logs.length, 1, 'repeated refusals cannot create a log flood');
+  assert.equal(logs[0].length, 1, 'one serialized log line');
+  const firstLog = JSON.parse(logs[0][0]);
+  assert.deepEqual(Object.keys(firstLog).sort(), ['event','requestId','status','suppressed','time']);
+  assert.equal(firstLog.event, 'catalogue_request_limited'); assert.equal(firstLog.status, 429);
+  assert.equal(firstLog.requestId, firstRefusal.headers['x-request-id']); assert.equal(firstLog.suppressed, 0);
+  assert.equal(new Date(firstLog.time).toISOString(), firstLog.time);
+  for (const path of ['/api/v1/health', '/api/v1/ready']) {
+    const probe = await attempt(0, app, path);
+    assert.equal(probe.status, 200); fixedCors(probe);
+    assert.equal(probe.headers['retry-after'], undefined);
+  }
+  assert.equal((await request(app, {path:'/api/v1/health', headers:{Host:'hostile.invalid'}})).status, 403);
+  assert.equal((await request(app, {path:'/api/v1/ready', method:'POST'})).status, 405);
+  nextPeer = '192.0.2.200';
+  try {
+    const other = await request(app, {path:f.contentPath, headers:{Host:publicHost, 'X-Forwarded-For':'127.0.0.1'}});
+    assert.equal(other.status, 200); assert.equal(other.body, f.expected.content); fixedCors(other);
+  } finally { nextPeer = undefined; }
+  assert.equal((await attempt(0)).status, 429, 'another peer never resets the busy peer'); refusals++;
   clock += 1000;
   assert.equal((await attempt(124)).status, 200, 'admission recovers after refill');
+  clock = 61_000;
+  for (let i = 0; i < 120; i++) assert.equal((await attempt(i)).status, 200);
+  const later = await attempt(0);
+  assert.equal(later.status, 429); assert.equal(logs.length, 2);
+  const summary = JSON.parse(logs[1][0]);
+  assert.equal(summary.requestId, later.headers['x-request-id']);
+  assert.equal(summary.suppressed, refusals - 1, 'next permitted line counts suppressed refusals');
+  assert.equal(logs.flat().some(line => [canary,'127.0.0.1','192.0.2.200',f.databasePath,f.contentPath]
+    .some(secret => line.includes(secret))), false);
+  const independent = await f.start();
+  assert.equal((await attempt(0, independent)).status, 200, 'listeners have independent budgets');
   const local = await f.start({publicOrigin:undefined});
   for (let index = 0; index < 121; index++) {
-    const result = await attempt(index, local, '/api/v1/health', true);
+    const result = await attempt(index, local, f.contentPath, true);
     assert.equal(result.status, 200, 'local mode does not inherit the public request budget');
     assert.equal(result.headers['access-control-allow-origin'], undefined);
   }
-  assert.equal(logs.length, 0, 'normal admissions and budget rejections create no access/error log');
+  assert.equal(logs.length, 2, 'successful content and probes create no access logs');
+  f.repository.close();
+  const notReady = await attempt(0, app, '/api/v1/ready');
+  assert.equal(notReady.status, 503); assert.equal(JSON.parse(notReady.body).status, 'not-ready');
+  assert.equal((await attempt(0, app, '/api/v1/health')).status, 200);
 });
 
 test('plain HTTP is accepted only for exact loopback origins of a local container', async () => {

@@ -10,7 +10,7 @@ import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
 import {createHostingPolicy} from './hosting-policy.mjs';
-import {createRequestRateLimit} from './request-rate-limit.mjs';
+import {createRequestRateLimit,createVisitorRequestRateLimit} from './request-rate-limit.mjs';
 
 // Single-process resource ceilings, not per-user fairness or a request-rate SLA.
 // Leave room for a viewer burst while bounding retained JSON/compression/file streams.
@@ -32,7 +32,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
  const readScope=staticWeb?.readScope;
  if(hosting.publicMode&&(!readScope||typeof readScope.allows!=='function'))
   throw Error('Runtime readiness startup refused');
- const requestRateLimit=hosting.publicMode?createRequestRateLimit():null;
+ const requestRateLimit=hosting.publicMode?createVisitorRequestRateLimit():null;
+ // One immediate refusal log, then at most one per minute for the listener.
+ // Retain only a saturating count of repeats, never addresses or request input.
+ const refusalLogLimit=hosting.publicMode?createRequestRateLimit({capacity:1,refillPerSecond:1/60}):null;
+ let suppressedRefusals=0;
  let activeResponses=0;
  const indexes=new Map();let indexBytes=0;
  const documentIndex=(release,version)=>{
@@ -125,15 +129,24 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   }
   if(req.url.length>2048)return reply(414,{error:'URL too long'});
   if(!req.url.startsWith('/')||req.url.startsWith('//')||req.url.includes('\\'))return reply(400,{error:'Invalid request'});
-  // One public budget for assets, data and probes; no forwarded/client identity.
+  // Exact probes keep working when a peer exhausts its budget. They still pass
+  // all request checks and the bounded active-response admission below.
+  const probe=req.url==='/api/v1/health'||req.url==='/api/v1/ready';
+  // Assets/data share a budget per transport address, never per forwarded header.
+  // NAT/proxy peers share a bucket until a trusted ingress contract exists.
   // Reject before taking an answer slot or reading any requested content.
-  const admission=requestRateLimit?.take();
+  const admission=probe?null:requestRateLimit?.take(req.socket.remoteAddress);
   if(admission&&!admission.allowed){
+   if(refusalLogLimit.take().allowed){
+    console.error(JSON.stringify({event:'catalogue_request_limited',requestId,status:429,
+     time:new Date().toISOString(),suppressed:suppressedRefusals}));
+    suppressedRefusals=0;
+   }else suppressedRefusals=Math.min(Number.MAX_SAFE_INTEGER,suppressedRefusals+1);
    res.setHeader('Retry-After',String(admission.retryAfter));res.setHeader('Connection','close');
    return reply(429,{error:'Too many requests; retry shortly'});
   }
   // Admit before any database read, JSON serialization or static stream starts.
-  // No waiting queue, client/IP map or trust in forwarded identity headers.
+  // No waiting queue or trust in forwarded identity headers.
   if(activeResponses>=catalogueRequestLimits.activeResponses){
    res.setHeader('Retry-After','1');res.setHeader('Connection','close');
    return reply(503,{error:'Server busy; retry shortly'});
