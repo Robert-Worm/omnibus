@@ -82,7 +82,7 @@ Elke situatie heeft dezelfde kaart. Wat je in elk geval vastlegt, staat bij [wat
 - **Eerst doen:** beperk de toegang. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd.
 - **Herstellen:** ga pas weer verder als alleen toegestane inhoud bereikbaar is en een onafhankelijke beoordeling klaar is.
 
-Bij de container-route is er geen aparte schijf: zet de vorige commit van de Dockerfile terug en push. Let op bij een route met een aparte schijf. Terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
+Bij de container-route is er geen aparte schijf: zie [online terug naar de vorige werkende versie](#online-terug-naar-de-vorige-werkende-versie). Let op bij een route met een aparte schijf. Terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
 
 ## Wat je vastlegt bij een fout
 
@@ -93,6 +93,44 @@ Leg dit vast zonder onderzoeksinhoud.
 - **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500. Hij schrijft dan één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
 - **Start de server niet?** Hij toont dan een vaste, veilige uitleg zonder interne details. Controleer eerst de opties, de database, de publicatie en de webbuild. Voeg bij het zoeken geen volledige lijst van omgevingsvariabelen, headers of databaseinhoud toe.
 - **`GET /api/v1/health`** zegt alleen dat de server antwoordt. Of de database heel is, controleer je met de databasecontrole in [stap 4](#4-herstel-naar-een-nieuw-bestand).
+
+## Het logboek van de online versie
+
+Open bij [Sliplane](https://docs.sliplane.io/services/logging/) de dienst van Omnibus. Daar zie je:
+
+- **Runtime-logs:** wat de server schrijft terwijl hij draait.
+- **Build-logs:** wat er gebeurde bij het bouwen van de image.
+- **Service events:** of een uitrol lukte of mislukte, en of de gezondheidscontrole faalde.
+
+Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 regels van de laatste 7 dagen.
+
+| Regel in de runtime-log | Betekenis | Wat je doet |
+| --- | --- | --- |
+| `Omnibus packaged read-only web runtime: https://…` | De server is gestart | Niets |
+| `Runtime start refused. Check explicit start options, …` | De server weigerde te starten: opties, pakket of database klopt niet | Zie [de server start niet](#de-server-start-niet-of-met-een-verkeerde-versie) |
+| `{"event":"catalogue_request_failed","requestId":"…","status":500,"time":"…"}` | Eén verzoek liep onverwacht mis | Zoek op de `requestId` die de gebruiker meldt; zie [code 500](#code-500-bij-het-openen-van-een-bron) |
+
+**Wat er niet in staat:** geen adressen, zoekopdrachten, headers, cookies, databasepaden of projecttekst. De server maakt de `requestId` zelf; een ID die iemand meestuurt, komt niet in de log. Tests bewaken dit met een geheime testwaarde in de headers: `local-data/server-security.test.mjs` en `local-data/server-hosting.test.mjs`.
+
+Welke versie draait er? Open `https://omnibus.sliplane.app/api/v1/version`. `code.revision` is de commit die online staat.
+
+## Online terug naar de vorige werkende versie
+
+Bij de container-route zit de database in de image. Terug naar de vorige versie is dus: de code terugzetten en opnieuw laten bouwen.
+
+1. **Zoek de foute commit.** Vergelijk `code.revision` uit `/api/v1/version` met `git log --oneline`. In de service events zie je welke uitrol het laatst lukte.
+2. **Zet hem terug** met `git revert --no-edit <commit>` en push naar `main`. Sliplane bouwt en rolt dan automatisch uit. Mislukt het bouwen, dan blijft de huidige versie draaien.
+3. **Volg de uitrol** in de service events tot die gelukt is.
+4. **Controleer de versie** met een build van dezelfde commit:
+
+   ```text
+   npm run build -- --settings local-data/runtime/local-build.json --out runtime-build
+   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root runtime-build
+   ```
+
+*Gelukt als:* je `MATCH` ziet en `code.revision` de teruggezette commit is.
+
+Gebruik `git revert`, niet `git reset`: zo blijft de foute commit in de geschiedenis staan en kun je later uitzoeken wat er misging.
 
 ## De terugweg lokaal oefenen
 

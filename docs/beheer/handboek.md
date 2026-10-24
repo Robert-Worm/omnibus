@@ -20,6 +20,7 @@ flowchart LR
 | --- | --- | --- |
 | Kijk welke claims op je wachten | Bijdragers horen graag snel of hun pakket goed is | De sectie *Wacht op de beheerder* op de [voortgang](../bijdragen/voortgang.md), of de claims met het label [ingeleverd](https://github.com/Robert-Worm/omnibus/issues?q=is%3Aopen+label%3Aingeleverd) |
 | Beantwoord vragen in claims en Discussions | Een vraag zonder antwoord kost een bijdrager | [Discussions](https://github.com/Robert-Worm/omnibus/discussions) |
+| Kijk of de online versie gezond is | Een mislukte uitrol of fout zie je eerst bij de host | De service events en runtime-logs bij Sliplane; zie [het logboek van de online versie](storingen-en-herstel.md#het-logboek-van-de-online-versie) |
 | Kijk of de automatische controles slagen | Een mislukte controle kan betekenen dat de voortgang niet bijwerkt | [Actions](https://github.com/Robert-Worm/omnibus/actions); bij een rode regel: zie het [draaiboek](draaiboek.md) |
 
 ## Elke week (± 30 minuten)
