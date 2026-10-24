@@ -56,7 +56,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [Wet justitiële en strafvorderlijke gegevens](https://wetten.overheid.nl/BWBR0014194)<br>`WJSG` · Justitiële gegevens; voor audits bij justitie | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20justiti%C3%ABle%20en%20strafvorderlijke%20gegevens&bron=WJSG "Claimen: Wet justitiële en strafvorderlijke gegevens") |
 | [NIST Cybersecurity Framework 2.0](https://doi.org/10.6028/NIST.CSWP.29)<br>`NISTCSF` · Veelgebruikt raamwerk voor cyberbeveiliging | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NIST%20Cybersecurity%20Framework%202.0&bron=NISTCSF "Claimen: NIST Cybersecurity Framework 2.0") |
 | [NIST AI Risk Management Framework 1.0](https://doi.org/10.6028/NIST.AI.100-1)<br>`AIRMF` · Raamwerk voor AI-risico's | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NIST%20AI%20Risk%20Management%20Framework%201.0&bron=AIRMF "Claimen: NIST AI Risk Management Framework 1.0") |
-| [NOREA-handre­ikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` · Nederlandse handreikingen voor IT-audit | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [NOREA-handre­ikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` · Nederlandse handreikingen voor IT-audit; opnemen volgens B-022, zonder toestemming alleen als eigen auditpunten | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
 
 ## Rechten
 
