@@ -1,8 +1,9 @@
 import { digest } from "./identity.mjs";
+import { questionReviewIds, questionReviewIssues } from "../lib/question-quality-review.mjs";
 
 // Bump when the review unit, validation or hash input changes. Never rebind an
 // old judgment to a newly calculated hash: only an actual review can do that.
-export const reviewHashVersion = "omnibus-review-sha256-v1";
+export const reviewHashVersion = "omnibus-review-sha256-v2";
 const sha256 = /^[a-f0-9]{64}$/;
 const idPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$/;
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -96,6 +97,7 @@ export function createReviewManifest(basis) {
     const { items, ...sourceContext } = source;
     const pointIds = new Set();
     for (const item of items) {
+      if (item.questions !== undefined) questionReviewIds(item.questions);
       if (item.toetspunten !== undefined) uniqueIds(item.toetspunten, "points");
       for (const point of item.toetspunten ?? []) {
         requireValue(!pointIds.has(point.id), "Duplicate point ID within source");
@@ -141,6 +143,7 @@ export function createReviewManifest(basis) {
         itemId: item.id,
         itemHash: digest({ hashVersion: reviewHashVersion, identity, chain }),
         pointIds: (item.toetspunten ?? []).map((point) => point.id),
+        ...(item.questions === undefined ? {} : { questionIds: questionReviewIds(item.questions) }),
         evidenceIssues: sorted(issues),
       };
     }),
@@ -171,6 +174,10 @@ function indexManifest(manifest) {
         points.add(id);
       }
       requireValue(Array.isArray(item.evidenceIssues) && item.evidenceIssues.every(text), "Missing manifest evidence status");
+      if (item.questionIds !== undefined) {
+        requireValue(Array.isArray(item.questionIds) && item.questionIds.every((id) => typeof id === "string" && idPattern.test(id)) &&
+          new Set(item.questionIds).size === item.questionIds.length, "Invalid or duplicate manifest question identities");
+      }
       items.set(key(source.sourceId, item.itemId), item);
     }
   }
@@ -179,9 +186,30 @@ function indexManifest(manifest) {
     requireValue(object(review) && typeof review.sourceId === "string" && typeof review.itemId === "string", "Invalid review identity");
     const identity = key(review.sourceId, review.itemId);
     requireValue(items.has(identity) && !reviews.has(identity), "Unknown or duplicate review identity");
+    if (review.questionReviews !== undefined) {
+      requireValue(items.get(identity).questionIds !== undefined, "Question receipts require an explicit question inventory");
+      questionReviewIssues({ sourceId: review.sourceId, itemId: review.itemId, itemHash: review.itemHash,
+        questionIds: items.get(identity).questionIds, reviews: review.questionReviews });
+    }
     reviews.set(identity, review);
   }
   return { items, reviews };
+}
+
+// Keep explicit negative decisions visible, including when a question disappears.
+// Removal is only a planning result; the normal package/publication review still
+// has to accept the revised inventory. Never rewrite the retained receipts.
+function questionChanges(sourceId, itemId, before, after, review) {
+  if (before?.questionIds === undefined && after?.questionIds === undefined) return undefined;
+  const currentIds = after?.questionIds ?? [], previousIds = before?.questionIds ?? [];
+  const receipts = review?.questionReviews ?? [];
+  const checks = questionReviewIssues({ sourceId, itemId, itemHash: after?.itemHash,
+    questionIds: currentIds, reviews: receipts.filter(receipt => currentIds.includes(receipt.questionId)) });
+  const disappeared = previousIds.filter(id => !currentIds.includes(id)).map(questionId => {
+    const receipt = receipts.find(entry => entry.questionId === questionId);
+    return { questionId, previousDecision: receipt?.decision ?? null, previousReviewId: receipt?.reviewId ?? null };
+  });
+  return { current: checks, disappeared };
 }
 
 /** Compare a retained reviewed manifest with a fresh, complete JSON basis. */
@@ -196,7 +224,9 @@ export function reviewChangeSet(previous, currentBasis) {
     for (const itemId of itemIds) {
       const identity = key(sourceId, itemId), before = old.items.get(identity), after = now.items.get(identity);
       if (!after) {
-        result.verdwenen.push({ itemId, previousHash: before.itemHash, pointIds: before.pointIds, reason: "absent-from-current-inventory" });
+        const questions = questionChanges(sourceId, itemId, before, undefined, old.reviews.get(identity));
+        result.verdwenen.push({ itemId, previousHash: before.itemHash, pointIds: before.pointIds,
+          ...(questions ? { questions } : {}), reason: "absent-from-current-inventory" });
         continue;
       }
       const reasons = [], review = old.reviews.get(identity);
@@ -216,10 +246,13 @@ export function reviewChangeSet(previous, currentBasis) {
         }
       }
       if (after.evidenceIssues.length) reasons.push("current-evidence-incomplete");
+      const questions = questionChanges(sourceId, itemId, before, after, review);
+      if (before?.questionIds !== undefined && after.questionIds === undefined) reasons.push("question-inventory-missing");
+      if (questions?.current.some(question => question.reasons.length)) reasons.push("question-review-required");
       const entry = {
         itemId, itemHash: after.itemHash, previousHash: before?.itemHash ?? null, pointIds: after.pointIds,
         removedPointIds: (before?.pointIds ?? []).filter((id) => !after.pointIds.includes(id)),
-        reasons, evidenceIssues: after.evidenceIssues,
+        reasons, evidenceIssues: after.evidenceIssues, ...(questions ? { questions } : {}),
       };
       if (reasons.length) result.opnieuw.push(entry);
       else result.ongewijzigd.push({ ...entry, previousReviewId: review.reviewId });

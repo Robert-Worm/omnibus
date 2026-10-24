@@ -39,6 +39,16 @@ function reviewed(basis) {
 const first = (basis) => basis.sources[0].items[0];
 const sourceResult = (result, source = "A") => result.sources.find((entry) => entry.sourceId === source);
 const ids = (entries) => entries.map((entry) => entry.itemId);
+
+function questionFixture(decision = "behouden") {
+  const basis = fixture();
+  first(basis).questions = [{ id: "Q1", kind: "interview", text: "Hoe verliep de fictieve overdracht?", respondent: "uitvoerder" }];
+  const previous = reviewed(basis), parent = previous.reviews[0];
+  parent.questionReviews = [{ sourceId: "A", itemId: "N1", questionId: "Q1", itemHash: parent.itemHash,
+    decision, reviewId: "synthetic-question-review", reviewer: "synthetic-reviewer", reviewDate: "2026-01-01",
+    basis: "Fictief expliciet oordeel over de vraag en de context." }];
+  return { basis, previous };
+}
 function freeze(value) {
   if (value && typeof value === "object") { Object.values(value).forEach(freeze); Object.freeze(value); }
   return value;
@@ -59,6 +69,90 @@ test("identical complete review stays version-bound; input and HOLD remain untou
   assert.equal(result.runtimeSourceChecksRequired, true);
   assert.deepEqual(createReviewManifest(basis).reviews, []);
   assert.ok(!JSON.stringify(result).includes("Fictieve"));
+});
+
+test("explicit question decisions survive comparison; a parent review never approves rejected questions", () => {
+  for (const decision of ["behouden", "herschrijven", "schrappen", "HOLD", "door", "PASS"]) {
+    const { basis, previous } = questionFixture(decision), bytes = JSON.stringify([basis, previous]);
+    const result = reviewChangeSet(freeze(previous), freeze(basis));
+    const source = sourceResult(result), entry = [...source.opnieuw, ...source.ongewijzigd].find(item => item.itemId === "N1");
+    assert.equal(entry.questions.current[0].previousDecision, decision);
+    assert.equal(entry.questions.current[0].previousReviewId, "synthetic-question-review");
+    assert.equal(source.opnieuw.length, decision === "behouden" ? 0 : 1);
+    assert.equal(entry.reasons.includes("question-review-required"), decision !== "behouden");
+    assert.equal(JSON.stringify([basis, previous]), bytes);
+    assert.ok(!JSON.stringify(result).includes("Fictief"));
+  }
+});
+
+test("question rewrites and their full context invalidate the original per-question evidence", () => {
+  const changes = [
+    b => { first(b).questions[0].text = "Hoe registreerde u de fictieve overdracht?"; },
+    b => { first(b).questions[0].respondent = "leidinggevende"; },
+    b => { first(b).questions[0].kind = "onderzoeksvraag"; },
+    b => { first(b).passages[0].context += " Fictieve beperking."; },
+    b => { b.sources[0].context.definitions += " Fictieve uitzondering."; },
+  ];
+  for (const change of changes) {
+    const { basis, previous } = questionFixture();
+    change(basis);
+    // Even replacing the enclosing norm receipt cannot rebind its old question review.
+    previous.reviews[0].itemHash = createReviewManifest(basis).sources[0].items[0].itemHash;
+    const entry = sourceResult(reviewChangeSet(previous, basis)).opnieuw[0];
+    assert.ok(entry.questions.current[0].reasons.includes("question-review-hash-mismatch"));
+    assert.equal(entry.questions.current[0].previousDecision, "behouden");
+  }
+});
+
+test("missing, foreign and ambiguous question receipts cannot disappear under an unchanged parent", () => {
+  const changes = [
+    m => { delete m.reviews[0].questionReviews; },
+    m => { m.reviews[0].questionReviews[0].sourceId = "B"; },
+    m => { m.reviews[0].questionReviews[0].itemId = "N2"; },
+    m => { delete m.reviews[0].questionReviews[0].basis; },
+    m => { delete m.reviews[0].questionReviews[0].reviewer; },
+    m => { delete m.reviews[0].questionReviews[0].reviewDate; },
+    m => { delete m.reviews[0].questionReviews[0].reviewId; },
+  ];
+  for (const change of changes) {
+    const { basis, previous } = questionFixture(); change(previous);
+    assert.ok(sourceResult(reviewChangeSet(previous, basis)).opnieuw[0].reasons.includes("question-review-required"));
+  }
+  for (const change of [
+    m => { m.reviews[0].questionReviews.push(structuredClone(m.reviews[0].questionReviews[0])); },
+    m => { m.reviews[0].questionReviews[0].questionId = "unknown"; },
+    m => { delete m.sources[0].items[0].questionIds; },
+  ]) {
+    const { basis, previous } = questionFixture(); change(previous);
+    assert.throws(() => reviewChangeSet(previous, basis), /Question review|Question receipts/);
+  }
+  for (const change of [
+    b => { first(b).questions.push(structuredClone(first(b).questions[0])); },
+    b => { first(b).questions[0].kind = "unknown"; },
+    b => { first(b).questions[0].text = null; },
+  ]) {
+    const { basis } = questionFixture(); change(basis);
+    assert.throws(() => createReviewManifest(basis), /Question review/);
+  }
+});
+
+test("removal retains the rejected decision; reintroduction needs a fresh question review", () => {
+  const { basis, previous } = questionFixture("schrappen"), originalQuestion = structuredClone(first(basis).questions[0]);
+  first(basis).questions = [];
+  const result = reviewChangeSet(previous, basis), entry = sourceResult(result).opnieuw[0];
+  assert.deepEqual(entry.questions.current, []);
+  assert.deepEqual(entry.questions.disappeared, [{ questionId: "Q1", previousDecision: "schrappen", previousReviewId: "synthetic-question-review" }]);
+  assert.equal(result.automaticApproval, false);
+  assert.equal(result.runtimeSourceChecksRequired, true);
+  const afterRemoval = reviewed(basis);
+  first(basis).questions.push(originalQuestion);
+  const returned = sourceResult(reviewChangeSet(afterRemoval, basis)).opnieuw[0];
+  assert.deepEqual(returned.questions.current[0].reasons, ["question-review-missing"]);
+  // Omitting the inventory is not the same as declaring that it is now empty.
+  delete first(basis).questions;
+  assert.ok(sourceResult(reviewChangeSet(previous, basis)).opnieuw[0].reasons.includes("question-inventory-missing"));
+  basis.sources[0].items.shift();
+  assert.equal(sourceResult(reviewChangeSet(previous, basis)).verdwenen[0].questions.disappeared[0].previousDecision, "schrappen");
 });
 
 test("all chain fields and relevant context invalidate an unchanged norm", () => {
