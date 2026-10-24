@@ -19,7 +19,8 @@ export function sorteer(issues) {
   return [...issues].sort((a, b) => rang(a) - rang(b) || a.number - b.number);
 }
 
-const regel = (i) => `- ${namen(i).includes("rood") ? "❌ " : ""}${prioriteit(i) ? `**${prioriteit(i)}** · ` : ""}#${i.number} ${i.title}`;
+// GitHub toont bij een #nummer in een lijst zelf de titel; zet die er niet nog eens achter.
+const regel = (i) => `- ${namen(i).includes("rood") ? "❌ " : ""}${prioriteit(i) ? `**${prioriteit(i)}** · ` : ""}#${i.number}`;
 
 /**
  * @param {{number:number,title:string,labels:(string|{name:string})[],pull_request?:object}[]} issues open issues
@@ -45,7 +46,7 @@ export function overdrachtTekst(issues, tests, { nu = new Date(), repoUrl = "htt
   const beheerder = sorteer(open.filter((i) => status(i) === "wacht-op-beheerder"));
   r.push("## Wacht op de beheerder", "", ...(beheerder.length ? beheerder.map(regel) : ["- Niets."]), "");
   const zonder = open.filter((i) => !prioriteit(i) || !status(i));
-  if (zonder.length) r.push("## Nog in te delen", "", "Deze issues missen een prioriteit of een status:", "", ...sorteer(zonder).map((i) => `- #${i.number} ${i.title}`), "");
+  if (zonder.length) r.push("## Nog in te delen", "", "Deze issues missen een prioriteit of een status:", "", ...sorteer(zonder).map((i) => `- #${i.number}`), "");
   r.push("---", `*Automatisch bijgewerkt op ${nu.toISOString().slice(0, 16).replace("T", " ")} UTC. Werkwijze: [samenwerking tussen de AI-assistenten](${repoUrl}/blob/main/docs/beheer/samenwerking-ai.md).*`);
   return r.join("\n");
 }
