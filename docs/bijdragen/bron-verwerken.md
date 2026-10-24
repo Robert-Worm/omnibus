@@ -105,7 +105,7 @@ Voor [issue #11](https://github.com/Robert-Worm/omnibus/issues/11) is een concep
 
 De PDF en de officiële publicatiepagina noemen **24 april 2019**; de werklijst noemt 23 april. De PDF-datum bepaalt de gebruikte broneditie. De eerste online publicatiedatum is niet onafhankelijk vastgesteld. Het voorblad vermeldt **TER BESPREKING**. Die status blijft behouden: de publicatie wordt niet als een afzonderlijk vastgesteld assurancerapport voorgesteld.
 
-**Beschikbaarheid:** `omnibus-voorbeeld-adr-2018-v1.zip` is lokaal opgeleverd aan de beheerder; er is nog geen openbare download. Publicatie van de zip als afzonderlijke bijlage of releasebestand en bevestiging door de beheerder zijn nog open. Een link naar de bron hierboven is dus geen link naar het conceptpakket.
+**Download:** [voorbeeldpakket ADR 2018, versie 1](https://github.com/Robert-Worm/omnibus/releases/download/voorbeeld-adr-2018-v1/omnibus-voorbeeld-adr-2018-v1.zip) (circa 95 KiB), met [afzonderlijk SHA-256-controlegetal](https://github.com/Robert-Worm/omnibus/releases/download/voorbeeld-adr-2018-v1/omnibus-voorbeeld-adr-2018-v1.zip.sha256). De [bijbehorende release](https://github.com/Robert-Worm/omnibus/releases/tag/voorbeeld-adr-2018-v1) licht de controle en status toe. Begin na het uitpakken bij `LEESMIJ.md`.
 
 De hele bron is gelezen. De praktische uitwerking bevat één norm met twee toetspunten over voortgangsinformatie bij de invoering van privacyregels. De punten gaan over verschillen tussen overlappende rapportages verklaren en de gemelde status onderbouwen. De overige bevindingen blijven verantwoord in de bronbank en de inclusiebesluiten. Het voorbeeld beweert niet alle onderwerpen uit het rapport tot normen uit te werken.
 
@@ -139,7 +139,9 @@ De tekst wordt hergebruikt op basis van de [CC0-verklaring van Rijksoverheid](ht
 
 De automatische controle bij `/inleveren` kijkt naar de zip en herkenbare onderdelen. Dat is een andere stap dan de formele beheerdersintake met `content:prepare` en `content:intake`, die onder meer een volledige kitbasis en reviewstukken verwacht. Dit voorbeeld is een **bijdragersconcept**, geen formeel vrijgegeven `report-kit-1.1`-pakket. Daarom bevat het geen nagebootst `intake.json` of goedkeuringsbewijs.
 
-De beheerder moet de inhoud en de ontbrekende formele toelatingsstukken beoordelen en expliciet bevestigen dat het voorbeeld door de bedoelde controle komt. Een geslaagde lokale zipcontrole of een gunstige AI-review vervangt die bevestiging niet. Tot die tijd blijft dit acceptatiepunt van issue #11 open. Het pakket is niet in de database geïntegreerd.
+De zip is gecontroleerd met dezelfde bestandscontrole als bij `/inleveren`: alle 13 bestanden zijn leesbaar en de verwachte onderdelen zijn aanwezig. Ook de interne controlegetallen en letterlijke bronverwijzingen zijn gecontroleerd. De bevestiging van de beheerder voor het gebruik als voorbeeld wordt vastgelegd bij [issue #11](https://github.com/Robert-Worm/omnibus/issues/11). Een geslaagde zipcontrole of gunstige AI-review is op zichzelf geen beheerdersbevestiging.
+
+De zip bewaart de voorbereidingsstatus van vóór publicatie. Daarom noemen de bestanden nog open publicatie en beheerdersacceptatie. De release en issue #11 geven de latere status; de gecontroleerde pakketinhoud blijft ongewijzigd. De inhoud blijft een concept voor verdere verwerking. Voor database-integratie zijn de formele toelatingsstukken en beoordeling nog nodig.
 
 Wie het ontvangen voorbeeld opnieuw verpakt, bewaart alle bestanden en bestandsnamen, controleert eerst de meegeleverde hashes en maakt daarna een gewone zip van de pakketmap. Voeg geen ruwe reviewdossiers, lokale paden of uitvoerbare hulpmiddelen toe. Een inhoudelijke correctie krijgt een nieuwe versie met een nieuwe beoordeling.
 
