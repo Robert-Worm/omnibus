@@ -62,9 +62,21 @@ Bij succes staan er twee bestanden:
 
 `viewerShapeValidated: true` bevestigt alleen dat de modelvelden de gedeelde structuurcontrole halen. Het bewijst geen inhoudelijke goedkeuring, complete publicatie of uitgevoerde viewerproef.
 
+### Alleen de invoer controleren
+
+Wil je de pakketten controleren zonder bestanden te maken? Gebruik:
+
+```text
+node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json --check
+```
+
+Deze controle is optioneel: de bouwopdracht controleert de invoer zelf. `--check` leest alle gekozen pakketten en voert dezelfde intake-, bron-, review- en modelstructuurcontroles uit. Bij succes verschijnt `LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED`, met de planhash, pakketversies, intakehashes en aantallen pakketten, bestanden, bronteksten en reviewonderdelen. Er wordt geen database of resultaatbestand gemaakt. Combineer `--check` niet met `--out`.
+
+Een geslaagde controle bevestigt alleen de gecontroleerde invoer. Zij test geen uitvoermap, databaseaanmaak of inhoudelijke toelating. HOLD blijft gelden. De bouwopdracht leest en controleert alle actuele bestanden opnieuw; een eerder controleresultaat kan nooit als pakketplan of goedkeuring dienen.
+
 ## 4. Los een HOLD op
 
-Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete oorzaak. Als één pakket faalt, wordt geen deel van de selectie geladen. Bij een latere schrijf- of eindcontrolefout kan een onvolledige uitvoermap achterblijven; gebruik die niet en kies bij een nieuwe poging een nieuwe map.
+Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete oorzaak. Dit geldt ook voor `--check`; beide opdrachten stoppen bij de eerste fout. Als één pakket faalt, wordt geen deel van de selectie geladen. Bij een latere schrijf- of eindcontrolefout kan een onvolledige uitvoermap achterblijven; gebruik die niet en kies bij een nieuwe poging een nieuwe map.
 
 | Melding | Wat je doet |
 | --- | --- |

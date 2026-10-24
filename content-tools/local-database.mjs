@@ -158,8 +158,9 @@ function verifyDatabase(database, release) {
   } finally { repository.close(); }
 }
 
-/** Build a NEW review database. No package code, private authoring imports or activation. */
-export async function buildLocalDatabase({ plan, out }) {
+// Both modes read and validate the current input bytes. A check result is never
+// accepted as input, a cached snapshot or permission to skip a later check.
+async function runLocalDatabase({ plan, out }, checkOnly) {
   let phase = "INPUT_CHECK";
   try {
     const planPath = resolve(plan), planBytes = readBytes(planPath, intakeLimits.manifestBytes);
@@ -168,7 +169,7 @@ export async function buildLocalDatabase({ plan, out }) {
     requireValue(input.format === "omnibus-local-database" && input.schemaVersion === 1, "Unsupported local database plan");
     requireValue(Array.isArray(input.packages) && input.packages.length > 0 && input.packages.length <= localDatabaseLimits.packages,
       "Select 1 to 64 explicit packages");
-    outputPath(out, []);
+    if (!checkOnly) outputPath(out, []);
     const snapshots = [], ids = new Set(), budget = { bytes: 0 };
     for (const [index, entry] of input.packages.entries()) {
       phase = `PACKAGE_CHECK[${index + 1}]`;
@@ -176,6 +177,17 @@ export async function buildLocalDatabase({ plan, out }) {
       requireValue(!ids.has(id.toLowerCase()), `Duplicate package identity: ${id}`);
       ids.add(id.toLowerCase()); snapshots.push(snapshot);
     }
+    const checkedInputs = { planSha256: sha256(planBytes),
+      inputBytes: budget.bytes, inputFiles: snapshots.reduce((sum, item) => sum + item.checked.files, 0),
+      reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
+      packagesChecked: snapshots.map(item => ({ ...item.manifest.package, manifestSha256: item.checked.manifestSha256,
+        reviewStatus: item.review.status })),
+      reviewStructureValidated: true, viewerShapeValidated: true,
+      contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
+      runtime: { status: "HOLD", code: "INTEGRATION_REVIEW_REQUIRED", contract: runtimeContractHash, publication: null,
+        reason: "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
+    if (checkOnly) return { status: "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
+      packages: snapshots.length, sourceTexts: snapshots.reduce((sum, item) => sum + item.documents.length, 0) };
     phase = "DATABASE_WRITE";
     const destination = outputPath(out, snapshots.map(snapshot => snapshot.root));
     const bundle = { manifest: { format: "omnibus-local-review-database", schemaVersion: 1,
@@ -203,20 +215,22 @@ export async function buildLocalDatabase({ plan, out }) {
     phase = "FINAL_VERIFICATION";
     const totals = verifyDatabase(database, release);
     const result = { status: "LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED", database, release,
-      databaseSha256: sha256(readFileSync(database)), planSha256: sha256(planBytes),
-      ...totals, inputBytes: budget.bytes, inputFiles: snapshots.reduce((sum, item) => sum + item.checked.files, 0),
-      reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
-      packagesChecked: snapshots.map(item => ({ ...item.manifest.package, manifestSha256: item.checked.manifestSha256,
-        reviewStatus: item.review.status })),
-      reviewStructureValidated: true, viewerShapeValidated: true,
-      contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
-      runtime: { status: "HOLD", code: "INTEGRATION_REVIEW_REQUIRED", contract: runtimeContractHash, publication: null,
-        reason: "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
+      databaseSha256: sha256(readFileSync(database)), ...totals, ...checkedInputs };
     writeFileSync(join(destination, "local-database-result.json"), JSON.stringify(result, null, 2) + "\n", { flag: "wx" });
     return result;
   } catch (error) {
     throw new Error(`${phase}: ${error instanceof Error ? error.message : "Unknown local database failure"}`, { cause: error });
   }
+}
+
+/** Check the selected inputs without creating any files or opening a database. */
+export async function checkLocalDatabase({ plan }) {
+  return runLocalDatabase({ plan }, true);
+}
+
+/** Build a NEW review database. No package code, private authoring imports or activation. */
+export async function buildLocalDatabase({ plan, out }) {
+  return runLocalDatabase({ plan, out }, false);
 }
 
 export function localDatabaseFailure(error) {

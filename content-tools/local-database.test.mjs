@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { prepareIntake } from "./intake.mjs";
 import { prepareModelReview, REVIEW_ASPECTS } from "./model-quality.mjs";
-import { buildLocalDatabase, localDatabaseFailure } from "./local-database.mjs";
+import { buildLocalDatabase, checkLocalDatabase, localDatabaseFailure } from "./local-database.mjs";
 import { parseLocalDatabaseArgs } from "../scripts/build-local-database.mjs";
 import { CatalogueRepository } from "../local-data/repository.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
@@ -86,6 +86,51 @@ function repinFixture(f, index = 0) {
   f.plan.packages[index].sha256 = hash(readFileSync(p.intake)); f.savePlan();
 }
 
+await test("check-only CLI validates the complete plan without changing any files or granting approval", async t => {
+  const f = await fixture(t, 2);
+  const existing = join(f.dir, "existing.sqlite");
+  writeFileSync(existing, "Unrelated database sentinel; never opened by check-only.");
+  const contents = () => readdirSync(f.dir, { recursive: true }).sort().map(name =>
+    [name, statSync(join(f.dir, name)).isFile() ? readFileSync(join(f.dir, name)) : null]);
+  const before = contents();
+  const cli = spawnSync(process.execPath, [join(root, "scripts/build-local-database.mjs"), "--plan", f.planPath, "--check"],
+    { encoding: "utf8", cwd: f.dir, timeout: 30000 });
+  assert.ifError(cli.error); assert.equal(cli.status, 0, cli.stderr);
+  const result = JSON.parse(cli.stdout);
+  assert.equal(result.status, "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED");
+  assert.equal(result.packages, 2); assert.equal(result.sourceTexts, 2);
+  assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 6);
+  assert.equal(result.planSha256, hash(readFileSync(f.planPath)));
+  assert.equal(result.inputBytes, f.packages.reduce((sum, p) => sum + readFileSync(p.intake).length +
+    load(p.intake).files.reduce((total, file) => total + file.bytes, 0), 0));
+  assert.deepEqual(result.packagesChecked, f.packages.map(p => ({ ...load(p.intake).package,
+    manifestSha256: hash(readFileSync(p.intake)), reviewStatus: "READY_FOR_INTEGRATION_REVIEW" })));
+  for (const key of ["publishable", "contentValidated", "reviewValidated", "newContentApproval"]) assert.equal(result[key], false);
+  assert.equal(result.reviewStructureValidated, true); assert.equal(result.viewerShapeValidated, true);
+  assert.equal(result.runtime.status, "HOLD"); assert.equal(result.runtime.publication, null);
+  for (const key of ["database", "databaseSha256", "release", "records", "sourceArtifacts"]) assert.equal(Object.hasOwn(result, key), false);
+  assert.deepEqual(contents(), before, "no database, report, code execution or other input/output writes");
+  assert.deepEqual(await checkLocalDatabase({ plan: f.planPath }), result);
+  const built = await buildLocalDatabase(f.options);
+  for (const key of ["planSha256", "inputBytes", "inputFiles", "reviewTargets", "packagesChecked", "runtime"])
+    assert.deepEqual(built[key], result[key]);
+  assert.equal(built.documents, result.sourceTexts);
+});
+
+await test("a successful check cannot authorize changed inputs or substitute for the package plan", async t => {
+  const f = await fixture(t), checked = await checkLocalDatabase({ plan: f.planPath });
+  writeFileSync(join(f.packages[0].folder, "source.txt"), "Changed after the successful check.");
+  const cli = spawnSync(process.execPath, [join(root, "scripts/build-local-database.mjs"), "--plan", f.planPath, "--out", f.out],
+    { encoding: "utf8", timeout: 15000 });
+  assert.ifError(cli.error); assert.equal(cli.status, 1); assert.equal(cli.stdout, "");
+  const failure = JSON.parse(cli.stderr.slice(cli.stderr.indexOf("{"), cli.stderr.lastIndexOf("}") + 1));
+  assert.equal(failure.status, "HOLD"); assert.match(failure.error, /PACKAGE_CHECK\[1\].*checksum\/size/);
+  assert.equal(existsSync(f.out), false);
+  save(f.planPath, checked);
+  await assert.rejects(buildLocalDatabase(f.options), /INPUT_CHECK/);
+  assert.equal(existsSync(f.out), false);
+});
+
 await test("one command builds two pinned local packages with exact source/review bytes and no runtime approval", async t => {
   const f = await fixture(t, 2);
   const before = f.packages.flatMap(p => load(p.intake).files.map(file => [join(p.folder, file.path), readFileSync(join(p.folder, file.path))]));
@@ -149,6 +194,7 @@ await test("reviewable models that cannot reopen in the viewer fail before datab
     const p = f.packages[0];
     assert.equal(p.basis.status, "STRUCTURAL_PASS_REVIEW_REQUIRED");
     await assert.rejects(buildLocalDatabase(f.options), /PACKAGE_CHECK\[1\]: Model viewer shape:/);
+    await assert.rejects(checkLocalDatabase({ plan: f.planPath }), /PACKAGE_CHECK\[1\]: Model viewer shape:/);
     assert.equal(existsSync(f.out), false);
   }
 });
@@ -187,17 +233,20 @@ const rejectedPackages = [
 ];
 for (const [name, edit, message] of rejectedPackages) await test(`${name} remains HOLD and creates no output`, async t => {
   const f = await fixture(t); edit(f);
-  await assert.rejects(buildLocalDatabase(f.options), error => {
+  const held = error => {
     const result = localDatabaseFailure(error);
     assert.equal(result.status, "HOLD"); assert.equal(result.publishable, false);
     assert.match(result.error, /PACKAGE_CHECK\[\d+\]/); assert.match(result.error, message); return true;
-  });
+  };
+  await assert.rejects(buildLocalDatabase(f.options), held);
+  await assert.rejects(checkLocalDatabase({ plan: f.planPath }), held);
   assert.equal(existsSync(f.out), false);
 });
 
 await test("a failed second package cannot leave the first package partially imported", async t => {
   const f = await fixture(t, 2); rmSync(join(f.packages[1].folder, "reviews.json"));
   await assert.rejects(buildLocalDatabase(f.options), /PACKAGE_CHECK\[2\].*ENOENT/);
+  await assert.rejects(checkLocalDatabase({ plan: f.planPath }), /PACKAGE_CHECK\[2\].*ENOENT/);
   assert.equal(existsSync(f.out), false);
 });
 
@@ -212,17 +261,25 @@ await test("existing output, package output and directory links are refused with
   await assert.rejects(buildLocalDatabase({ ...f.options, out: join(alias, "new") }), /outside every input/);
   f.plan.packages[0].intake = "alias/intake.json"; f.savePlan();
   await assert.rejects(buildLocalDatabase({ ...f.options, out: join(f.dir, "unused") }), /root must not be a link/);
+  await assert.rejects(checkLocalDatabase({ plan: f.planPath }), /root must not be a link/);
 });
 
 await test("malformed plans and CLI options fail closed with machine-readable HOLD", async t => {
   const f = await fixture(t);
+  assert.deepEqual(parseLocalDatabaseArgs(["--check", "--plan", "x"]), { checkOnly: true, plan: "x" });
+  assert.deepEqual(parseLocalDatabaseArgs(["--plan", "x", "--check"]), { checkOnly: true, plan: "x" });
+  assert.deepEqual(parseLocalDatabaseArgs(["--out", "y", "--plan", "x"]), { plan: "x", out: "y" });
   for (const args of [[], ["--plan", "x", "--force", "y"], ["--out", "x", "--out", "y"],
-    ["--plan", "x", "--out", "y", "--skip-review"], ["--plan", "", "--out", "y"]]) {
+    ["--plan", "x", "--out", "y", "--skip-review"], ["--plan", "", "--out", "y"],
+    ["--plan", "x", "--check", "--out", "y"], ["--check"], ["--plan", "x"],
+    ["--plan", "x", "--check", "--check"], ["--plan", "x", "--check", "--skip-review"],
+    ["--check", "--plan", "--out"], ["--check", "--plan", "x", "--plan", "x"], ["--check", "--plan", "x", "--force"]]) {
     assert.throws(() => parseLocalDatabaseArgs(args), /Usage:/);
   }
   for (const value of [null, { ...f.plan, skipReview: true }, { ...f.plan, packages: [] }, { ...f.plan, packages: Array(65).fill(f.plan.packages[0]) }]) {
     save(f.planPath, value);
     await assert.rejects(buildLocalDatabase(f.options), /INPUT_CHECK/);
+    await assert.rejects(checkLocalDatabase({ plan: f.planPath }), /INPUT_CHECK/);
     assert.equal(existsSync(f.out), false);
   }
   const cli = spawnSync(process.execPath, [resolve(root, "scripts/build-local-database.mjs"), "--plan", f.planPath, "--out", f.out], { encoding: "utf8", timeout: 15000 });
@@ -230,4 +287,8 @@ await test("malformed plans and CLI options fail closed with machine-readable HO
   // Node may prepend an experimental SQLite warning on stderr; the JSON remains intact.
   const error = JSON.parse(cli.stderr.slice(cli.stderr.indexOf("{"), cli.stderr.lastIndexOf("}") + 1));
   assert.equal(error.status, "HOLD"); assert.match(error.error, /INPUT_CHECK/);
+  const check = spawnSync(process.execPath, [resolve(root, "scripts/build-local-database.mjs"), "--check", "--plan", f.planPath], { encoding: "utf8", timeout: 15000 });
+  assert.ifError(check.error); assert.equal(check.status, 1); assert.equal(check.stdout, "");
+  const checkError = JSON.parse(check.stderr.slice(check.stderr.indexOf("{"), check.stderr.lastIndexOf("}") + 1));
+  assert.equal(checkError.status, "HOLD"); assert.match(checkError.error, /INPUT_CHECK/);
 });
