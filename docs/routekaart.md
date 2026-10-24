@@ -59,7 +59,7 @@ flowchart TD
 | Lokale koppeling: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
 | [Vastleggen wat de koppeling kan, met tests](../agent-tools/README.md#de-zes-hulpmiddelen) · [#145](https://github.com/Robert-Worm/omnibus/issues/145) | ✅ Klaar |
 | Zoeken en lezen in alle soorten bronnen · [#146](https://github.com/Robert-Worm/omnibus/issues/146) | ⬜ Gepland |
-| Onderzoeksopzet die de vraagcontrole haalt · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ⬜ Gepland |
+| Nieuwe AI-vraagvoorstellen door de gedeelde voorcontrole; inhoudelijke review blijft nodig · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ✅ Klaar |
 | Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
 | Koppeling via de online versie, alleen lezen · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ⬜ Gepland |
 | Tien vaste testvragen voor de koppeling: vragen klaar, AI-run nog niet · [#186](https://github.com/Robert-Worm/omnibus/issues/186) | 🔄 Bezig |
@@ -78,7 +78,7 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 | Een eigen database bouwen met één opdracht · [#154](https://github.com/Robert-Worm/omnibus/issues/154) | ⬜ Gepland |
 | Meerdere databases naast elkaar · [#155](https://github.com/Robert-Worm/omnibus/issues/155) | ⬜ Gepland |
 | Skill die begeleidt van eigen pdf tot eigen database · [#156](https://github.com/Robert-Worm/omnibus/issues/156) | ⬜ Gepland |
-| Aantonen dat niets je computer verlaat · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | ⬜ Gepland |
+| [Lokale privacyproef](gebruiken/lokale-privacy.md): pakketverwerking en browserroute getest; eigen runtimepublicatie nog niet · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | 🔄 Bezig |
 
 ## Pad D · Samen bijdragen
 

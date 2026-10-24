@@ -46,9 +46,11 @@ Elke treffer en detailaanroep toont `selectionStatus`, `selectionReason` en `dra
 
 Bij een andere collectierelease stopt deze controle vóór de vraagcontroles met **HOLD** en exitcode 2, ook als aantallen en feiten gelijk zijn. Beoordeel de bronwijziging afzonderlijk; de vaste antwoorden worden niet automatisch aangepast. Volledige binding aan publicatie en afzonderlijke bronnen, en een onafhankelijke AI-evaluatie, staan nog open.
 
+**Vraagvoorstellen controleren (#147).** Nieuwe centrale vragen, deelvragen en interviewvragen gaan vóór het opslaan door de gedeelde vraagvoorcontrole. Een afgekeurde vraag of HOLD blokkeert het hele nieuwe concept, met uitleg per vraag. Er ontstaat dan geen gedeeltelijk project. Een geslaagde voorcontrole bevestigt alleen de vorm; inhoudelijke review blijft nodig. Bestaande opgeslagen vragen en eigen tekst blijven leesbaar en exporteerbaar. Opslaan vraagt nog steeds expliciet akkoord en maakt altijd een nieuwe map.
+
 **Bekende gaten**, elk met een eigen user story:
 
-- Vragen die de AI voorstelt, gaan nog niet door de [vraagcontrole](../skills/omnibus-review-questions/README.md): [#147](https://github.com/Robert-Worm/omnibus/issues/147).
+- De [inhoudelijke vraagreview](../skills/omnibus-review-questions/README.md) blijft een afzonderlijke beoordeling; een geslaagde voorcontrole is geen inhoudelijke goedkeuring.
 - Alleen lokaal via STDIO; een koppeling via de online versie ontbreekt: [#149](https://github.com/Robert-Worm/omnibus/issues/149).
 
 Dit is een **lokale MCP-verbinding via STDIO**, geen online koppeling. De knop **AI koppelen**, naast de weergave- en opslagknoppen, toont de werkwijze en kopieerbare lokale instellingen. De website kan niet vaststellen of een AI-client daadwerkelijk verbonden is en toont daarom geen onbevestigde verbindingsstatus. Een geschikte AI-client start het proces zelf. Cloudclients die uitsluitend een publieke URL ondersteunen kunnen hier nog niet rechtstreeks mee verbinden. Ondersteuning hangt af van de gekozen client en de organisatie-instellingen; een AI-abonnement alleen garandeert geen connectorondersteuning.
