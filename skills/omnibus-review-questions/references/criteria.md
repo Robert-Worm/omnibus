@@ -17,6 +17,7 @@ Een vraag die de auditor hardop stelt aan één geïnterviewde.
 | **Open** (`gesloten`): de geïnterviewde vertelt, en zegt niet alleen ja of nee | ‘Kunt u beschrijven hoe u een ruimte of middel gebruikte dat afnemers konden zien…?’ (SQ-TANGIBLES-Q01) | Afgeleid: ‘Gebruikt u een ruimte of middel dat afnemers kunnen zien?’ |
 | **Neutraal** (`sturend`): geen mening, geen veronderstelde fout, geen voorbeeldantwoord | ‘Hoe komen jullie tot een gezamenlijke richting voor het werk dat jullie samen doen?’ (LVVN26-K01) | Afgeleid: ‘Waarom ontbreekt een gezamenlijke richting voor het werk?’ |
 | **Concreet en eigen ervaring**: vraagt naar een situatie die de geïnterviewde zelf kent | ‘Kunt u beschrijven wat uw leidinggevende zelf deed bij een recente beslissing over {{onderwerp}}?’ (AI02) | De vraag die Omnibus vroeger zelf maakte: ‘Hoe krijgt het toetspunt ‘…’ in de praktijk vorm? Wat is uw eigen rol? …’ |
+| **Echte situaties** (`veronderstellend`): vraag naar wat iemand deed of zag, niet wat hij zou doen | ‘Kunt u beschrijven wat uw leidinggevende zelf deed bij een recente beslissing over {{onderwerp}}?’ (AI02) | Afgeleid: ‘Wat zou uw leidinggevende doen bij een beslissing over {{onderwerp}}?’ |
 | **Begrijpelijk voor de geïnterviewde**: gewone woorden, actieve zin, geen ID's of toetstermen (`technisch`, `te-lang`) | ‘Hoe herkennen en bespreken jullie klachten die met de uitbetaling te maken hebben?’ (TOES26-K09) | Afgeleid: ‘Hoe is C26-P-005-04 belegd?’ |
 | **Past bij het niveau**: operationeel vraagt naar eigen werk, management naar sturing, strategisch naar afwegingen | ‘Kunt u beschrijven hoe u als leidinggevende een keuze maakte over de voor afnemers zichtbare fysieke omgeving of middelen bij {{onderwerp}}?’ (SQ-TANGIBLES-Q01, management) | Dezelfde zin op elk niveau, met alleen een ander zinnetje erachter |
 
@@ -70,6 +71,7 @@ iemand zag, deed of besloot, niet naar een oordeel over het begrip zelf.
 
 ## Bronnen
 
+- Het idee ‘vraag naar gedrag, niet naar wat iemand zou doen’ komt uit [deanpeters/discovery-interview-prep](https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/discovery-interview-prep); alleen het idee, niet de tekst.
 - Rijksuniversiteit Groningen, Taalcentrum: [Interviewen: vragen](https://www.rug.nl/language-centre/develop-yourself/academic/spreken/interviewen/vragen?lang=nl). Eén vraag tegelijk, neutraal, geen voorbeeldantwoorden, geen sociaal wenselijke antwoorden, actieve vorm, concreet, afgestemd op de geïnterviewde.
 - PCAOB, [AS 2201](https://pcaobus.org/oversight/standards/auditing-standards/details/AS2201), paragrafen 42–45: toetsen van opzet (design effectiveness) en werking (operating effectiveness). Omnibus houdt bestaan apart; zie `lib/testing-aspects.mjs`.
 - The IIA, Global Internal Audit Standards (2024), domein V, standaard 14.1: informatie verzamelen die relevant, betrouwbaar en voldoende is. Een interview alleen is meestal niet voldoende.
