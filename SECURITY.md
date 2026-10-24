@@ -32,9 +32,9 @@ GitHub kan de beheerder automatisch waarschuwen, op drie manieren. Zo is het afg
 
 | Wat | Wat het doet | Wie, en binnen welke termijn |
 | --- | --- | --- |
-| **Dependabot-meldingen** | Waarschuwt als een gebruikte bibliotheek een bekende kwetsbaarheid heeft | De beheerder beoordeelt een melding binnen 7 dagen; bij *critical* of *high* binnen 2 werkdagen |
-| **Dependabot-updates** | Stelt elke maand een update voor van de GitHub-workflows en de Node-basis-image van de [container](hosting/container/README.md) | De beheerder bekijkt het voorstel bij de maandelijkse controle |
-| **Geheimen scannen** | Waarschuwt als er een sleutel of wachtwoord in Git terechtkomt, en houdt een push met een herkenbare sleutel tegen | Direct: vervang de sleutel en meld het, zie hierboven |
+| Dependabot-meldingen | Waarschuwt als een gebruikte bibliotheek een bekende kwetsbaarheid heeft | De beheerder beoordeelt een melding binnen 7 dagen; bij *critical* of *high* binnen 2 werkdagen |
+| Dependabot-updates | Stelt elke maand een update voor van de GitHub-workflows en de Node-basis-image van de [container](hosting/container/README.md) | De beheerder bekijkt het voorstel bij de maandelijkse controle |
+| Geheimen scannen | Waarschuwt als er een sleutel of wachtwoord in Git terechtkomt, en houdt een push met een herkenbare sleutel tegen | Direct: vervang de sleutel en meld het, zie hierboven |
 
 Een melding beoordelen betekent: kijken of Omnibus het kwetsbare deel echt gebruikt, en zo ja, bijwerken of een reden vastleggen waarom niet. Leg die reden vast in de melding zelf. De instellingen staan onder *Settings → Code security* van de repository.
 

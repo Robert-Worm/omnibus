@@ -263,3 +263,8 @@ test("nette tekst: geen emoji in koppen, geen afgebroken alinea's, alleen toeges
   assert.deepEqual(tekstWaarschuwingen("docs/a.md", '[Claimen](a "Claimen: A") en [Claimen](b "Claimen: B")\n'), [], "een titel maakt gelijke linkteksten verschillend");
   assert.deepEqual(tekstWaarschuwingen("skills/x/SKILL.md", fout), [], "instructies voor AI-assistenten tellen niet mee");
 });
+
+test("de eerste kolom van een tabel is niet vet", () => {
+  const { waarschuwingen } = tabelControle("docs/a.md", "| Knop | Wat het doet |\n| --- | --- |\n| **Delen** | Maakt een bestand. |\n| Open | Opent een **bestand**. |\n");
+  assert.equal(waarschuwingen.filter((w) => /eerste kolom vet/.test(w)).length, 1);
+});

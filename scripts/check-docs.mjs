@@ -490,6 +490,7 @@ export function tabelControle(rel, tekst) {
     for (const r of t.rijen) {
       r.cellen.forEach((c, k) => {
         if (!c) waarschuwingen.push(`${rel}:${r.nr}: lege cel; schrijf "–"`);
+        if (k === 0 && /^\*\*[^*]+\*\*$/.test(c)) waarschuwingen.push(`${rel}:${r.nr}: eerste kolom vet; maak hem gewone tekst`);
         if (/\b\d{1,2}-\d{1,2}-\d{4}\b/.test(c)) waarschuwingen.push(`${rel}:${r.nr}: datum in een tabel als JJJJ-MM-DD schrijven`);
         else if (woorden(c) > 25) waarschuwingen.push(`${rel}:${r.nr}: cel van ${woorden(c)} woorden; maak er een lijst of kaart van`);
         if (k === status && c && c !== "–" && !STATUSLABELS.includes(c.replace(/\u00a0/g, " "))) waarschuwingen.push(`${rel}:${r.nr}: statuscel "${c.slice(0, 40)}" volgt de statuslabels niet`);

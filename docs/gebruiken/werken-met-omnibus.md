@@ -12,10 +12,10 @@ Een paar begrippen:
 
 | Begrip | Betekenis |
 | --- | --- |
-| **Norm** | Waar de organisatie aan zou moeten voldoen. Bijvoorbeeld: *vertrouwelijke informatie wordt alleen via goedgekeurde kanalen gedeeld*. |
-| **Toetspunt** | Een concrete controle die bij een norm hoort: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
-| **Bouwsteen** | Verzamelnaam voor alles wat je kunt kiezen: normen, toetspunten en modelvragen. |
-| **Bron** | Waar een bouwsteen vandaan komt: een rapport, een wet, een kader of een onderzoeksmodel. |
+| Norm | Waar de organisatie aan zou moeten voldoen. Bijvoorbeeld: *vertrouwelijke informatie wordt alleen via goedgekeurde kanalen gedeeld*. |
+| Toetspunt | Een concrete controle die bij een norm hoort: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
+| Bouwsteen | Verzamelnaam voor alles wat je kunt kiezen: normen, toetspunten en modelvragen. |
+| Bron | Waar een bouwsteen vandaan komt: een rapport, een wet, een kader of een onderzoeksmodel. |
 
 ## Stap voor stap
 
@@ -93,9 +93,9 @@ Kies een werkvorm voor je Excel-bestand:
 
 | Werkvorm | Wanneer |
 | --- | --- |
-| **Normtoetsing** | Je toetst normen, legt bewijs vast en vormt een oordeel. |
-| **Risico-controlmatrix** | Je werkt van doel en risico naar beheersing en toetsing. |
-| **Interviewleidraad** | Je verkent een onderwerp met vragen, voorbeelden en doorvragen. |
+| Normtoetsing | Je toetst normen, legt bewijs vast en vormt een oordeel. |
+| Risico-controlmatrix | Je werkt van doel en risico naar beheersing en toetsing. |
+| Interviewleidraad | Je verkent een onderwerp met vragen, voorbeelden en doorvragen. |
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
@@ -112,10 +112,10 @@ Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen bli
 
 | Knop | Wat het doet |
 | --- | --- |
-| **Bewaar project** | Downloadt je project als bestand. Doe dit regelmatig: browseropslag is geen back-up. |
-| **Open project** | Opent een eerder bewaard projectbestand. |
-| **Delen** | Maakt een bestand dat je naar een collega kunt sturen. |
-| **Nieuw project** | Begint opnieuw. Bewaar eerst je huidige project. |
+| Bewaar project | Downloadt je project als bestand. Doe dit regelmatig: browseropslag is geen back-up. |
+| Open project | Opent een eerder bewaard projectbestand. |
+| Delen | Maakt een bestand dat je naar een collega kunt sturen. |
+| Nieuw project | Begint opnieuw. Bewaar eerst je huidige project. |
 
 ## Samengevat
 

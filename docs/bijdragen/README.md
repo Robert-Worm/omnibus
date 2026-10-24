@@ -18,11 +18,11 @@ Hoe die drie stappen samenhangen, lees je hieronder bij [zo werkt een bron verwe
 
 | Wat | Voor wie | Hoe begin je |
 | --- | --- | --- |
-| **Een bron verwerken** | Auditors en onderzoekers met een AI-assistent | Kies een bron in de [voortgang](voortgang.md) |
-| **Een bron voorstellen** | Iedereen | Noem hem in [Discussions](https://github.com/Robert-Worm/omnibus/discussions) |
-| **Een fout melden** | Iedereen | Open een [issue](https://github.com/Robert-Worm/omnibus/issues/new/choose) |
-| **De uitleg verbeteren** | Iedereen | Stel een wijziging voor via een pull request |
-| **De code verbeteren** | Ontwikkelaars | Lees [ontwikkelen](ontwikkelen.md) |
+| Een bron verwerken | Auditors en onderzoekers met een AI-assistent | Kies een bron in de [voortgang](voortgang.md) |
+| Een bron voorstellen | Iedereen | Noem hem in [Discussions](https://github.com/Robert-Worm/omnibus/discussions) |
+| Een fout melden | Iedereen | Open een [issue](https://github.com/Robert-Worm/omnibus/issues/new/choose) |
+| De uitleg verbeteren | Iedereen | Stel een wijziging voor via een pull request |
+| De code verbeteren | Ontwikkelaars | Lees [ontwikkelen](ontwikkelen.md) |
 
 ## Zo werkt een bron verwerken
 

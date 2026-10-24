@@ -8,10 +8,10 @@
 
 | Assistent | Hoe je de skill laadt | Geschikt voor |
 | --- | --- | --- |
-| **Codex** | Installatieopdracht vanuit de repository | Alles, ook de technische controles |
-| **Claude Code** | Skillmap kopiëren naar je eigen skills-map | Alles, ook de technische controles |
+| Codex | Installatieopdracht vanuit de repository | Alles, ook de technische controles |
+| Claude Code | Skillmap kopiëren naar je eigen skills-map | Alles, ook de technische controles |
 | **Claude-app** (web of desktop) | Skill als zip uploaden | Een bron verwerken tot concept |
-| **ChatGPT** | Skill uploaden of de map als bestanden toevoegen | Een bron verwerken tot concept |
+| ChatGPT | Skill uploaden of de map als bestanden toevoegen | Een bron verwerken tot concept |
 
 Voor bijdragers is een **concept** genoeg: de beheerder doet de technische controles. Elke assistent in de tabel is dus bruikbaar. Gebruik wel het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
 
