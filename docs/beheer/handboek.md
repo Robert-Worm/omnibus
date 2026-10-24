@@ -51,6 +51,21 @@ Een nieuwe database volgt bij 5 ingeleverde bronnen, of een maand na de vorige a
 | Werklijst van de Rijksmap verversen | Nieuwe rapporten komen erbij | Vervang `.github/voortgang/rapporten.csv` door een nieuwe export |
 | Besluitenlijst nalopen | Kloppen de afspraken nog? | [Besluiten](besluiten.md) |
 
+## Wie pakt welk werk op?
+
+Elk issue krijgt het label **Opus 5.5** of **ChatGPT Astra** ([B-019](besluiten.md#b-019)). Deel het werk eerst in, en kies dan het label:
+
+| Soort werk | Voorbeelden | Label |
+| --- | --- | --- |
+| Schrijven en plannen | Pagina's, epics en stories, besluiten, een checklist | Opus 5.5 |
+| Zoeken en vergelijken | Skills zoeken, licenties nagaan, een handleiding testen | Opus 5.5 |
+| Een klein, afgebakend script | Een controle naast een bestaande, zoals `check:questions` | Opus 5.5 |
+| Bronnen verwerken | Een rapport of kader omzetten, vragen in de database herschrijven | ChatGPT Astra |
+| Grote reviews en gemeten runs | De hele database beoordelen, een skill meten op de testset | ChatGPT Astra |
+| Code in de applicatie | Schermen, de zoekindex, snelheid, de AI-koppeling uitbreiden | ChatGPT Astra |
+
+Valt een story in twee rijen, bijvoorbeeld eerst schrijven en dan meten, geef dan beide labels. Blijkt het werk zwaarder dan gedacht, pas het label aan. Een nieuwe story in `.github/backlog/` zonder label wordt geweigerd.
+
 ## Goed om te weten
 
 - **Een technische controle is geen goedkeuring.** Een geslaagde pakketcontrole zegt dat de bestanden compleet zijn, niet dat de inhoud klopt.

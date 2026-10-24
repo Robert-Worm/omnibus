@@ -4,6 +4,7 @@
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { controleerNieuweStory } from "./backlog-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const repo = process.env.GITHUB_REPOSITORY;
@@ -40,10 +41,15 @@ for (const label of ["epic", "story"]) for (let page = 1; ; page++) {
   if (batch.length < 100) break;
 }
 
+// Eerst alles controleren, zodat een fout in één story niet halverwege een deel aanmaakt.
+const backlogs = [];
+for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f.endsWith(".mjs")).sort())
+  backlogs.push((await import(pathToFileURL(join(root, ".github", "backlog", file)))).default);
+for (const b of backlogs) for (const e of b.epics) for (const s of e.stories) if (!known.has(s.id)) controleerNieuweStory(s);
+
 const create = (title, body, labels) => gh("/issues", { method: "POST", body: JSON.stringify({ title, body, labels }) });
 
-for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f.endsWith(".mjs")).sort()) {
-  const backlog = (await import(pathToFileURL(join(root, ".github", "backlog", file)))).default;
+for (const backlog of backlogs) {
   for (const epic of backlog.epics) {
     let epicIssue = known.get(epic.id);
     if (!epicIssue) {
