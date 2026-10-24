@@ -34,7 +34,7 @@ Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk bli
 
 ### Werkt het op Windows, macOS en Linux?
 
-Omnibus is getest op Windows en Linux (Ubuntu 24.04). macOS zou moeten werken, maar is niet getest.
+Ja. [GitHub test de installatie](https://github.com/Robert-Worm/omnibus/actions/workflows/installatie.yml) met één opdracht op Windows, macOS en Linux, elke maand en bij elke wijziging.
 
 ### Waar wordt mijn werk bewaard?
 

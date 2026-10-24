@@ -6,7 +6,7 @@
 
 ## Wat heb je nodig?
 
-- Git, Node **24.21.0** en npm **11.19.0** (zit bij Node). Omnibus is getest op Windows en Ubuntu 24.04.
+- Git, Node **24.21.0** en npm **11.19.0** (zit bij Node). GitHub test de installatie elke maand en bij elke wijziging op Windows, macOS en Linux ([installatietest](https://github.com/Robert-Worm/omnibus/actions/workflows/installatie.yml)).
 - Een eigen kopie (fork) van de repository.
 - Voor de applicatie in de browser: de database uit de [releases](https://github.com/Robert-Worm/omnibus/releases/latest). Voor de tests is die niet nodig.
 
