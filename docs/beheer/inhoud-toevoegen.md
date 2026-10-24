@@ -45,9 +45,12 @@ Hulp hierbij:
 
 - [`omnibus-review-audit-quality`](../../skills/omnibus-review-audit-quality/README.md): beoordeelt de hele keten van doel, risico, beheersing, norm en toetspunten, met een score van 1 tot 10 en verbetervoorstellen.
 - [`omnibus-build-questions`](../../skills/omnibus-build-questions/README.md): ontwerpt of beoordeelt onderzoeks- en interviewvragen.
+- [`omnibus-review-questions`](../../skills/omnibus-review-questions/README.md): beoordeelt elke vraag in het pakket als behouden, herschrijven, schrappen of HOLD.
 - [`omnibus-curate-themes`](../../skills/omnibus-curate-themes/README.md): ordent te grote thema's en zoekt overlap.
 
 Een AI-review is een hulpmiddel, geen menselijke goedkeuring. Twijfels blijven zichtbaar als HOLD.
+
+**Vraagcontrole.** Elke vraag in een pakket gaat door [`omnibus-review-questions`](../../skills/omnibus-review-questions/README.md). Die begint met de vaste voorcontrole (`npm run check:questions`). Een vraag met de uitkomst schrappen gaat niet mee; een herschreven vraag gaat opnieuw door de controle. Zet de telling per uitkomst als reactie bij de claim van de bijdrager, zonder vraagteksten uit niet-openbare bronnen.
 
 Bij een selecteerbare kadernorm horen een ingevuld doel, risico, beheersdoelstelling en beheersmaatregel. Staat een onderdeel niet letterlijk in de bron, werk het dan brongebonden uit vanuit het risico en benoem het als analytisch voorstel. Beoordeel ook deze afleidingen; alleen goedgekeurde normtekst is niet voldoende. Onvoldoende onderbouwing vraagt herstel vóór toelating, niet een leeg veld of standaardtekst. De flat-kaderpublisher controleert deze volledigheid bij nieuwe publicaties; bestaande publicaties blijven leesbaar.
 

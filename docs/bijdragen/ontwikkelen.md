@@ -43,7 +43,7 @@ Een tekstcorrectie vraagt geen volledige testronde. Kies wat past:
 | Alleen documentatie | `npm run check:docs` |
 | Schermen of opmaak | `npm run check:types`, `npm run lint`, `npm run test:frontend` en `npm run check:contrast` |
 | Bronweergave of Excel-export | `npm run test:source` |
-| Onderzoeksmodellen of formuleringen | `npm run test:models` |
+| Onderzoeksmodellen, formuleringen of de vraagcontrole | `npm run test:models` |
 | Database of server | `npm run test:runtime` |
 | Pakketcontrole of publicatie | `npm run test:content-handoff` en `npm run test:publisher` |
 | De AI-koppeling | `npm run test:agent:input` |

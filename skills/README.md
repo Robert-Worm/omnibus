@@ -1,12 +1,12 @@
 # AI-skills (`skills/`)
 
-> **In het kort:** zes werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, drie helpen bij vragen en kwaliteit. Je installeert alleen wat je nodig hebt.
+> **In het kort:** zeven werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, vier helpen bij vragen en kwaliteit. Je installeert alleen wat je nodig hebt.
 
 ## Wat is een skill?
 
 Een skill is een map met instructies (`SKILL.md`) en naslag die een AI-assistent stap voor stap volgt. Het is geen programma of getraind model: de kwaliteit hangt af van je assistent en van jouw controle.
 
-## De zes skills
+## De zeven skills
 
 ```mermaid
 flowchart TD
@@ -17,6 +17,7 @@ flowchart TD
     end
     subgraph Kwaliteit["Vragen en kwaliteit"]
         Q["Onderzoeksvragen<br/>omnibus-build-questions"]
+        V["Vragen beoordelen<br/>omnibus-review-questions"]
         T["Thema's ordenen<br/>omnibus-curate-themes"]
         K["Kwaliteit beoordelen<br/>omnibus-review-audit-quality"]
     end
@@ -32,6 +33,7 @@ flowchart TD
 | [Een wet of normenkader omzetten](omnibus-add-framework/README.md) | `omnibus-add-framework` |
 | [Een onderzoeksmodel met interviewvragen toevoegen](omnibus-add-model/README.md) | `omnibus-add-model` |
 | [Onderzoeks- en interviewvragen ontwerpen](omnibus-build-questions/README.md) | `omnibus-build-questions` |
+| [Vragen beoordelen: behouden, herschrijven of schrappen](omnibus-review-questions/README.md) | `omnibus-review-questions` |
 | [Te grote thema's ordenen en overlap vinden](omnibus-curate-themes/README.md) | `omnibus-curate-themes` |
 | [De kwaliteit van bouwstenen beoordelen](omnibus-review-audit-quality/README.md) | `omnibus-review-audit-quality` |
 
@@ -45,7 +47,7 @@ npm run skills:install -- --skill omnibus-add-report
 ```
 
 - `skills:check` controleert alleen; `skills:install` installeert.
-- Laat `--skill` weg om alle zes te installeren.
+- Laat `--skill` weg om alle zeven te installeren.
 - Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
 - Andere bestemming? Gebruik `--target <map>`.
 

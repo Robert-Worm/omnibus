@@ -48,7 +48,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 - [Routekaart](routekaart.md): wat er nog komt.
 - [Veelgestelde vragen](veelgestelde-vragen.md): korte antwoorden op de meest gestelde vragen.
 - [Begrippen](begrippen.md): de woorden uit Omnibus in gewone taal.
-- [AI-skills](../skills/README.md): de zes werkwijzen voor AI-assistenten.
+- [AI-skills](../skills/README.md): de zeven werkwijzen voor AI-assistenten.
 - [Versiegeschiedenis](../CHANGELOG.md), [beveiliging](../SECURITY.md), [toegankelijkheid](../ACCESSIBILITY.md) en [gedragscode](../CODE_OF_CONDUCT.md).
 
 ## Volgende stap

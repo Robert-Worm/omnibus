@@ -2,6 +2,12 @@
 
 De belangrijkste wijzigingen, nieuwste eerst.
 
+## 24 oktober 2026 · liever geen vraag dan een slechte vraag
+
+- **Geen bedachte interviewvragen meer:** heeft een toetspunt geen eigen vraag, dan maakt Omnibus er geen standaardvraag meer bij. Op die plek staat een korte uitleg. Eigen vragen in bestaande projecten blijven staan.
+- **Vraagcontrole:** `npm run check:questions` controleert alle vragen in de database op vormfouten, zoals twee vragen in één of een gesloten interviewvraag. De nieuwe skill [`omnibus-review-questions`](skills/omnibus-review-questions/README.md) beoordeelt daarna de inhoud.
+- **Installatie getest** op Windows, macOS en Linux, bij elke wijziging van de installatie en elke maand.
+
 ## 22 oktober 2026 · donkere modus en een verzorgde documentatie
 
 - **Grote projecten openen:** minder dubbel selectiewerk en ruimte voor bediening tussen de herstelstappen. Broncontroles, opgeslagen keuzes en vraagkoppelingen blijven behouden.

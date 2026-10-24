@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus: vragen beoordelen"
+  short_description: "Beoordeel vragen als behouden, herschrijven, schrappen of HOLD"
+  default_prompt: "Gebruik $omnibus-review-questions om alle vragen in de Omnibus-database te beoordelen. Draai eerst de voorcontrole, beoordeel daarna inhoudelijk per bron en lever een rapport met per vraag een uitkomst, reden en eventueel voorstel, zonder de tool te wijzigen."
