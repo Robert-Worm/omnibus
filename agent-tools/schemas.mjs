@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {exportPalettes} from '../lib/export-design.mjs';
+import {questionCandidate, voorcontrole} from '../lib/question-quality.mjs';
 
 const text = max => z.string().trim().min(1).max(max);
 const key = text(300);
@@ -46,10 +47,23 @@ const validateSpec = (spec, ctx) => {
   if (new Set(spec.interviewQuestions.map(q => q.selection + '|' + q.level)).size !== spec.interviewQuestions.length) error('Dubbele interviewvraag voor dezelfde bouwsteen en hetzelfde niveau.');
   if (spec.export.profile === 'interview' && !spec.export.interview.levels.length) error('Kies minstens één interviewniveau.');
 };
+// Only new AI proposals pass this gate. Saved specs and user-authored project
+// text must not be reclassified, rewritten or dropped when reading/exporting.
+const validateProposedQuestions = (spec, ctx) => {
+  for (const [field, kind] of [['questions', 'onderzoeksvraag'], ['interviewQuestions', 'interview']]) {
+    spec[field].forEach((question, index) => {
+      if (questionCandidate(question.text, kind)) return;
+      const {uitkomst, meldingen} = voorcontrole(question.text, kind);
+      ctx.addIssue({code: 'custom', path: [field, index, 'text'],
+        message: `Vraagvoorcontrole (${uitkomst}): ${meldingen.map(m => `${m.regel}: ${m.reden}`).join('; ')}. Er wordt geen concept opgeslagen.`});
+    });
+  }
+};
 // Saved concepts predate the explicit call-level consent field. Reading them is
 // compatible; every new write still requires fresh consent on the tool call.
 export const draftSpecSchema = draftFields.superRefine(validateSpec);
 // Publish the structural input contract as JSON Schema. Cross-field semantic
 // checks still run in the service before any write.
-export const prepareInputSchema = draftFields.extend({consent});
-export const prepareSchema = prepareInputSchema.superRefine(validateSpec);
+export const prepareInputSchema = draftFields.extend({consent}).describe(
+  'Nieuwe AI-vragen moeten de vraagvoorcontrole halen: onderzoeksvragen als onderzoeksvraag, interviewvragen als interview. Bij schrappen, herschrijven of HOLD wordt niets opgeslagen; de fout noemt de vraagpositie en reden. Door naar inhoudelijke beoordeling betekent geen inhoudelijke goedkeuring. Vraag opnieuw expliciet akkoord voor een aangepast voorstel.');
+export const prepareSchema = prepareInputSchema.superRefine(validateSpec).superRefine(validateProposedQuestions);

@@ -40,15 +40,18 @@ async function setup(t, {open = true, entryKey = key} = {}) {
     export function configureCatalogueReader() {}
     export async function initialize() {}
     export function options() { return {sectors: []}; }
+    export const calls = {prepare: 0, export: 0};
     let beforeExport = () => {};
     export function setBeforeExport(fn) { beforeExport = fn; }
     export async function prepareProject(spec) {
+      calls.prepare++;
       return {project: {format: 'rijksmap-project', version: 1,
         draft: {title: spec.title, exportSettings: spec.export, investigation: {materials: []}}},
         lines: {synthetic: 'point'}, questions: {central: 'q'}};
     }
     export async function exportProject(project) {
-      await beforeExport();
+      calls.export++;
+      await beforeExport(project);
       return new TextEncoder().encode('SYNTHETIC OUTPUT ONLY: ' + project.draft.exportSettings.profile);
     }
   `);
@@ -112,6 +115,61 @@ test('consent, path, profile and input bounds fail before creating files', async
   const draft = await service.prepare(call());
   await assert.rejects(service.export({draftId: draft.draftId}));
   assert.deepEqual(fs.readdirSync(join(output, draft.draftId)).sort(), ['ai-concept.json', 'omnibus-project.json']);
+});
+
+test('question refusals leave no partial draft and do not reach project creation or export', async t => {
+  const {service, output, workflow} = await setup(t);
+  const spec = call();
+  for (const [field, text, rule] of [
+    ['questions', 'Waarom ontbreekt het dossier?', 'sturend'],
+    ['questions', 'Hoe verloopt de overdracht', 'geen-vraagteken'],
+    ['questions', 'Vraag nog uit te werken', 'leeg'],
+    ['interviewQuestions', 'Heeft u een dossier?', 'gesloten'],
+    ['interviewQuestions', 'Hoe verloopt de overdracht en wie beslist?', 'samengesteld'],
+  ]) {
+    const input = structuredClone(spec);
+    if (field === 'questions') input.questions[1].text = text;
+    else input.interviewQuestions = [{selection: key, level: 'operational', text}];
+    await assert.rejects(service.prepare(input), error => {
+      assert.match(error.message, /Vraagvoorcontrole/);
+      assert(error.issues.some(issue => issue.path[0] === field && issue.message.includes(rule)));
+      return true;
+    });
+    assert.deepEqual(fs.readdirSync(output), [], 'No concept directory or files on refusal');
+    assert.deepEqual(workflow.calls, {prepare: 0, export: 0});
+  }
+  // Recovery still needs fresh explicit consent and reserves a new directory.
+  await assert.rejects(service.prepare({...spec, consent: undefined}));
+  await assert.rejects(service.prepare({...spec, consent: false}));
+  assert.deepEqual(fs.readdirSync(output), []);
+  const first = await service.prepare(spec), original = fs.readFileSync(first.projectPath);
+  const second = await service.prepare(spec);
+  assert.notEqual(first.draftId, second.draftId);
+  assert.deepEqual(fs.readFileSync(first.projectPath), original);
+});
+
+test('export preserves older saved questions and user text without applying the new proposal gate', async t => {
+  const {service, workflow} = await setup(t), draft = await service.prepare(call());
+  // A synthetic pre-existing snapshot, including wording that the new gate
+  // would refuse. Updating its hash is fixture setup, never a production bypass.
+  const project = parseProjectText(fs.readFileSync(draft.projectPath, 'utf8'));
+  project.draft.research = {questions: [{id: 'kept-question', parent_id: null,
+    text: 'Mijn eigen onderzoekstekst zonder vraagteken', origin: 'user'}],
+    links: [{question_id: 'kept-question', line_id: 'kept-line'}]};
+  project.draft.overrides = {'kept-line': {auditQuestion: 'Hoe goed werkt dit?'}};
+  project.draft.included = ['kept-line'];
+  fs.writeFileSync(draft.projectPath, workflow.serializeProject(project));
+  const review = JSON.parse(fs.readFileSync(draft.reviewPath, 'utf8'));
+  review.spec.questions[0].text = project.draft.research.questions[0].text;
+  review.spec.interviewQuestions = [{selection: key, level: 'management', text: 'Heeft u een dossier?'}];
+  review.projectSha256 = sha256(fs.readFileSync(draft.projectPath));
+  fs.writeFileSync(draft.reviewPath, JSON.stringify(review));
+  const before = [draft.projectPath, draft.reviewPath].map(path => fs.readFileSync(path));
+  workflow.setBeforeExport(saved => assert.deepEqual(saved, project));
+  await assert.rejects(service.export({draftId: draft.draftId, consent: false}));
+  const first = await service.export(exportCall(draft)), second = await service.export(exportCall(draft));
+  assert.notEqual(first.path, second.path);
+  assert.deepEqual([draft.projectPath, draft.reviewPath].map(path => fs.readFileSync(path)), before);
 });
 
 test('existing files, hardlinks and UUID collisions are never overwritten or cleaned up', async t => {

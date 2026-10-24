@@ -125,7 +125,7 @@ await test('current pinned collection: fictitious intake through the real STDIO 
       {key: 'recovery', parent: 'central', text: 'Welke herstelafspraken zijn vastgelegd voor verstoringen van de digitale werkplek?', selections: [keys[2]]},
       {key: 'learning', parent: 'central', text: 'Hoe beschrijven medewerkers de samenwerking bij verstoringen?', selections: [keys[3]]},
     ];
-    spec.interviewQuestions = [{selection: keys[0], level: 'operational', text: 'Kunt u beschrijven hoe u bij een verstoring handelt en welke afspraken u daarbij gebruikt?'}];
+    spec.interviewQuestions = [{selection: keys[0], level: 'operational', text: 'Kunt u beschrijven hoe u bij een verstoring handelt?'}];
     spec.export = {...spec.export, testingAspects: ['opzet', 'bestaan'], testingTerminology: 'obw',
       fontFamily: 'Calibri', fontSize: 12, accent: 'teal', colorMode: 'uniform',
       meta: {author: 'Fictieve auditor', team: 'Demoteam', scope: spec.intake.scope, version: '0.1'},
@@ -179,6 +179,15 @@ await test('current pinned collection: fictitious intake through the real STDIO 
       await rejected('export_research_draft', {draftId: '../private', consent: true});
       const error = await rejected('export_research_draft', {draftId: randomUUID(), consent: true}, /Onbekend lokaal concept/);
       assert(!error.includes(root));
+    });
+
+    await check('question precheck explains rejected proposals without publishing files', async () => {
+      await rejected('prepare_research_draft', {...spec, consent: true,
+        questions: [{...spec.questions[0], text: 'Hoe goed werkt de overdracht?'}]}, /sturend/);
+      await rejected('prepare_research_draft', {...spec, consent: true,
+        questions: [{...spec.questions[0], text: 'Hoe verloopt de overdracht'}]}, /geen-vraagteken/);
+      await rejected('prepare_research_draft', {...spec, consent: true,
+        interviewQuestions: [{selection: keys[0], level: 'operational', text: 'Heeft u een dossier?'}]}, /gesloten/);
     });
 
     await check('inconsistent questions, duplicate selections and model rewrites fail', async () => {
