@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { overdrachtTekst, sorteer, MARKERING } from "./overdracht-lib.mjs";
+import { overdrachtTekst, sorteer, MARKERING, overbodigeStatussen } from "./overdracht-lib.mjs";
 
 const issue = (number, title, ...labels) => ({ number, title, labels: labels.map((name) => ({ name })) });
 const issues = [
@@ -47,4 +47,12 @@ test("een rode test gaat voor, en alle P1-taken staan erin", () => {
 
 test("sorteren: prioriteit, dan het oudste issue", () => {
   assert.deepEqual(sorteer([issue(3, "", "P2"), issue(1, ""), issue(2, "", "P2"), issue(4, "", "P1")]).map((i) => i.number), [4, 2, 3, 1]);
+});
+
+test("een issue houdt één status: de net gezette, anders gaat bezig of wachten boven klaar", () => {
+  assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar")), []);
+  assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar", "bezig"), "bezig"), ["klaar"]);
+  assert.deepEqual(overbodigeStatussen(issue(1, "x", "bezig", "klaar"), "klaar"), ["bezig"]);
+  assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar", "bezig")), ["klaar"]);
+  assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar", "wacht-op-beheerder")), ["klaar"]);
 });

@@ -11,6 +11,17 @@ export const PER_ASSISTENT = 3;
 const namen = (issue) => issue.labels.map((l) => (typeof l === "string" ? l : l.name));
 export const prioriteit = (issue) => PRIORITEITEN.find((p) => namen(issue).includes(p)) ?? null;
 export const status = (issue) => STATUSSEN.find((s) => namen(issue).includes(s)) ?? null;
+
+/**
+ * Welke statuslabels er weg moeten, zodat een issue er precies één houdt.
+ * Is er net een status gezet (`nieuw`), dan blijft die. Anders wint de verste stap: bezig of wachten gaat boven klaar.
+ */
+export function overbodigeStatussen(issue, nieuw = null) {
+  const huidig = STATUSSEN.filter((s) => namen(issue).includes(s));
+  if (huidig.length < 2) return [];
+  const blijft = nieuw && huidig.includes(nieuw) ? nieuw : huidig.find((s) => s !== "klaar");
+  return huidig.filter((s) => s !== blijft);
+}
 // Een issue met het label `rood` (de tests op main falen) gaat altijd voor.
 const rang = (issue) => { if (namen(issue).includes("rood")) return -1; const p = prioriteit(issue); return p ? PRIORITEITEN.indexOf(p) : PRIORITEITEN.length; };
 

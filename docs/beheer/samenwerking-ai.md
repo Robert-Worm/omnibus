@@ -21,19 +21,19 @@ Elk open issue heeft labels voor wie, prioriteit en status:
 | --- | --- | --- |
 | Wie | `Opus 5.5`, `ChatGPT Astra` | Wie het werk oppakt; bij een gedeelde story beide |
 | Prioriteit | `P1`, `P2`, `P3` | P1 blokkeert ander werk of de beheerder; P2 is het volgende; P3 komt later |
-| Status | `klaar`, `bezig`, `wacht-op-ander`, `wacht-op-beheerder` | Of het nu op te pakken is, en zo niet, op wie het wacht |
+| Status | `klaar`, `bezig`, `wacht-op-ander`, `wacht-op-beheerder` | Of het nu op te pakken is, en zo niet, op wie het wacht. Precies één per issue |
 | Rood | `rood` | De tests op `main` falen; dit issue gaat voor alles |
 
 ## Het issue Overdracht
 
-Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar` (en altijd alle P1-taken en rode tests), wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend.
+Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar` (en altijd alle P1-taken en rode tests), wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend. Daarbij houdt elk issue één status: de laatst gezette blijft staan.
 
 Je zegt tegen een assistent: *pak de volgende taak uit Overdracht*.
 
 ## Zo pak je een taak op
 
 1. Kijk bovenaan *Overdracht*: zijn de tests rood, herstel dat dan eerst.
-2. Pak de bovenste taak met jouw label en status `klaar`. Zet de status op `bezig`.
+2. Pak de bovenste taak met jouw label en status `klaar`. Zet de status op `bezig`; `klaar` gaat dan vanzelf weg.
 3. Haal de nieuwste stand op (`git pull --rebase`) en lees de laatste overdrachtsnotitie in het issue.
 4. Werk de taak af met kleine commits. Draai de tests voor het deel dat je wijzigt, en vóór de overdracht `npm test`.
 
