@@ -94,6 +94,42 @@ test('acknowledged snapshots still reject changed descriptors and preserve scala
  assert.equal(before.snapshots[0].__proto__,'literal');
 });
 
+test('first snapshots preserve frozen scalar records as independent complete data copies',()=>{
+ const row=Object.freeze(Object.fromEntries([
+  ['id','n1'],['__proto__','literal source field'],['optional',undefined],['absent',null],
+  ['negativeZero',-0],['notANumber',NaN],['infinite',Infinity],['flag',false],['text','Exacte bron 🧭'],
+ ]));
+ const project={draft:{investigation:{materials:[row]}}},packed=packProjectSave(project);
+ const copy=packed.snapshots[0];
+ assert.deepEqual(copy,row);
+ assert.deepEqual(Reflect.ownKeys(copy),Reflect.ownKeys(row));
+ assert.notEqual(copy,row);
+ assert.equal(Object.getPrototypeOf(copy),Object.prototype);
+ assert.deepEqual(Object.getOwnPropertyDescriptor(copy,'__proto__'),{
+  value:'literal source field',enumerable:true,writable:true,configurable:true,
+ });
+ const next=packProjectSave(project,packed.snapshots);
+ assert.deepEqual(next.message.materialReferences,[0]);
+ assert.deepEqual(unpackProjectSave(structuredClone(next.message),[row]),project);
+ copy.text='Private copy edit';
+ assert.equal(row.text,'Exacte bron 🧭');
+ assert.equal(packProjectSave(project,packed.snapshots).message.materialReferences,undefined);
+ let reads=0;
+ const getter={id:'n2',get text(){reads++;return 'Do not read';}};
+ assert.equal(packProjectSave({draft:{investigation:{materials:[getter]}}}).snapshots[0],null);
+ assert.equal(reads,0);
+ // A scalar source field must remain an own data field even if the host has
+ // installed an inherited setter with the same name.
+ let writes=0;
+ Object.defineProperty(Object.prototype,'snapshotHostField',{set(){writes++;},configurable:true});
+ try {
+  const source={id:'host',snapshotHostField:'Own source value'};
+  const result=packProjectSave({draft:{investigation:{materials:[source]}}});
+  assert.deepEqual(result.snapshots[0],source);
+  assert.equal(writes,0);
+ } finally {delete Object.prototype.snapshotHostField;}
+});
+
 test('worker replies are bound to their job; rejected encoding resends complete evidence',async()=>{
  const h=harness(),project=fixture(),first=h.encoder.encode(project),oldReply=h.worker.onmessage;
  await assert.rejects(h.encoder.encode(project),/al een project/);
