@@ -10,6 +10,7 @@ export const runtimeFiles = Object.freeze([
   "scripts/database-build-options.mjs",
   "local-data/runtime-package.mjs",
   "local-data/server.mjs",
+  "local-data/startup-diagnostics.mjs",
   "local-data/response-compression.mjs",
   "local-data/hosting-policy.mjs",
   "local-data/request-rate-limit.mjs",

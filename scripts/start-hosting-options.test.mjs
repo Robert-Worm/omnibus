@@ -10,6 +10,7 @@ import { parseRuntimePackageArgs, startRuntimePackage } from "./start-runtime-pa
 import { packageRuntime } from "./package-runtime.mjs";
 import { runtimeFixture } from "../local-data/test-support/runtime-fixture.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
+import { startupFailureReason } from "../local-data/startup-diagnostics.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const release = "a".repeat(64), publication = "b".repeat(64);
@@ -128,7 +129,10 @@ test("programmatic starts reject incomplete hosting configuration before opening
   for (const key of Object.keys(publicOptions)) {
     const invalid = { ...publicOptions };
     delete invalid[key];
-    await assert.rejects(startDatabasePreview(invalid), /Invalid start options/, key);
+    await assert.rejects(startDatabasePreview(invalid), error => {
+      assert.match(error.message, /Invalid start options/);
+      assert.equal(startupFailureReason(error), 'start-options');return true;
+    }, key);
     if (key !== "webRoot") {
       const { webRoot: _webRoot, ...packaged } = invalid;
       await assert.rejects(startRuntimePackage({ root: "missing-package", ...packaged }), /Invalid start options/, key);
@@ -212,7 +216,7 @@ test("both CLI entry points redact invalid hosting values and filesystem failure
       ["--database", canary, "--public-origin", "https://user:" + canary + "@omnibus.example.invalid"],
       ["--settings", canary],
     ];
-    for (const args of failures) {
+    for (const [index,args] of failures.entries()) {
       const child = spawnSync(process.execPath, [join(root, "scripts", script), ...args], {
         encoding: "utf8", timeout: 10000,
       });
@@ -220,7 +224,49 @@ test("both CLI entry points redact invalid hosting values and filesystem failure
       assert.equal(child.status, 1);
       assert.equal(child.stdout, "");
       assert.match(child.stderr, /start refused/);
+      const reason=index===0?(script==='serve-database-web.mjs'?'web-build':'database-open')
+        :index===1?'start-options':'settings';
+      assert(child.stderr.includes('Failed check: '+reason+'.'));
       assert.doesNotMatch(child.stderr, new RegExp(canary + "|ENOENT|\\n\\s+at "));
     }
   }
+});
+
+test("real startup failures distinguish build, database, publication, readiness, package and listener checks",async t=>{
+  const f=runtimeFixture(t),webRoot=join(f.dir,'web'),out=join(f.dir,'package');
+  const canary='PRIVATE-START-CANARY';
+  mkdirSync(join(webRoot,'assets'),{recursive:true});
+  const html=join(webRoot,'database.html'),manifestPath=join(webRoot,'omnibus-release.json');
+  const manifest={schema:1,runtimeTarget:'portable-local',contract:runtimeContractHash,
+    release:f.release,publication:f.publication};
+  writeFileSync(html,'<!doctype html><title>Synthetic startup</title>');
+  writeFileSync(manifestPath,JSON.stringify(manifest));
+  packageRuntime({databasePath:f.databasePath,webRoot,out});
+  const original=readFileSync(f.databasePath);
+  const verify=(reason,{packaged=false,release=f.release,publication=f.publication,
+    database=f.databasePath,web=webRoot,port='8080'}={})=>{
+    const script=packaged?join(out,'scripts/start-runtime-package.mjs'):join(root,'scripts/serve-database-web.mjs');
+    const args=['--database',database,'--release',release,'--publication',publication,
+      '--public-origin',publicOrigin,'--listen-host','127.0.0.1','--port',port,
+      ...(packaged?[]:['--web-root',web])];
+    const child=spawnSync(process.execPath,[script,...args],{encoding:'utf8',timeout:10000});
+    assert.ifError(child.error);assert.equal(child.status,1,child.stderr);assert.equal(child.stdout,'');
+    assert(child.stderr.includes('Failed check: '+reason+'.'),child.stderr);
+    for(const secret of [canary,f.dir,root,'ENOENT','checksum mismatch','\n    at '])
+      assert(!child.stderr.includes(secret));
+    assert.deepEqual(readFileSync(f.databasePath),original);
+  };
+  verify('web-build',{web:join(f.dir,canary)});
+  verify('database-open',{database:join(f.dir,canary)});
+  verify('web-build',{release:'f'.repeat(64)});
+  writeFileSync(manifestPath,JSON.stringify({...manifest,publication:'f'.repeat(64)}));
+  verify('publication',{publication:'f'.repeat(64)});
+  writeFileSync(manifestPath,JSON.stringify(manifest));
+  rmSync(html);
+  verify('web-readiness');
+  writeFileSync(html,'<!doctype html><title>Synthetic startup</title>');
+  writeFileSync(join(out,'database-build/database.html'),canary);
+  verify('package-integrity',{packaged:true});
+  const app=await startDatabasePreview({databasePath:f.databasePath,webRoot,port:0});
+  try{verify('listener',{port:String(app.server.address().port)});}finally{await app.close();}
 });

@@ -4,13 +4,14 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {CatalogueRepository} from './repository.mjs';
 import {createStaticWeb} from './static-web.mjs';
-import {webResource,webResourceBatchPayload} from './web-resources.mjs';
+import {webResource,webResourceBatchPayload,WebResourceIntegrityError} from './web-resources.mjs';
 import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
 import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
 import {createHostingPolicy} from './hosting-policy.mjs';
 import {createRequestRateLimit,createVisitorRequestRateLimit} from './request-rate-limit.mjs';
+import {startupCheck,startupFailureReason} from './startup-diagnostics.mjs';
 
 // Single-process resource ceilings, not per-user fairness or a request-rate SLA.
 // Leave room for a viewer burst while bounding retained JSON/compression/file streams.
@@ -22,16 +23,18 @@ export const catalogueRequestLimits=Object.freeze({activeResponses:32,connection
 // a webRoot this is the standalone local catalogue tooling API (all releases).
 // There is no option or request parameter to disable the web publication scope.
 export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,listenHost='127.0.0.1'}={}){
- const hosting=createHostingPolicy({publicOrigin,listenHost,webRoot});
- if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid catalogue port');
- const readiness=webRoot===undefined?null:createRuntimeReadiness(repository,()=>{
+ const hosting=startupCheck('start-options',()=>{
+  if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid catalogue port');
+  return createHostingPolicy({publicOrigin,listenHost,webRoot});
+ });
+ const readiness=webRoot===undefined?null:startupCheck('web-readiness',()=>createRuntimeReadiness(repository,()=>{
   const web=createStaticWeb(webRoot,repository);
   return {pins:web.pins,value:web};
- });
+ }));
  const staticWeb=readiness?.value??null;
  const readScope=staticWeb?.readScope;
  if(hosting.publicMode&&(!readScope||typeof readScope.allows!=='function'))
-  throw Error('Runtime readiness startup refused');
+  startupCheck('web-readiness',()=>{throw Error('Runtime readiness startup refused');});
  const requestRateLimit=hosting.publicMode?createVisitorRequestRateLimit():null;
  // One immediate refusal log, then at most one per minute for the listener.
  // Retain only a saturating count of repeats, never addresses or request input.
@@ -217,7 +220,8 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    if((match=u.pathname.match(/^\/api\/v1\/documents\/([a-f0-9]{64})\/pages\/(\d+)$/))){const value=repository.page(match[1],Number(match[2]));return reply(value?200:404,value||{error:'Not found'});}
    return reply(404,{error:'Not found'});
   }catch(error){
-   if((error instanceof Error&&error.message.startsWith('Invalid'))||error instanceof URIError)
+   if(!(error instanceof WebResourceIntegrityError)&&
+      ((error instanceof Error&&error.message.startsWith('Invalid'))||error instanceof URIError))
     return reply(400,{error:'Invalid request'});
    requestFailed();
    return reply(500,{error:'Request failed'});
@@ -248,7 +252,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     `Cache-Control: no-store\r\nAccess-Control-Allow-Origin: ${hosting.publicOrigin}\r\n\r\n`,()=>socket.destroy());
   });
  }else server.on('checkContinue',(_req,res)=>{res.writeHead(417,{'Connection':'close'});res.end();});
- await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,hosting.listenHost,resolve);});
+ await startupCheck('listener',()=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,hosting.listenHost,resolve);}));
  return {server,url:`http://127.0.0.1:${server.address().port}`,close:()=>new Promise((resolve,reject)=>{
   // Drain active reads, but do not let a slow client prevent shutdown indefinitely.
   const deadline=setTimeout(()=>server.closeAllConnections(),5000);deadline.unref();
@@ -258,14 +262,14 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  let repository;
  try{
-  repository=new CatalogueRepository(process.argv[2]||fileURLToPath(new URL('./runtime/catalogue.sqlite',import.meta.url)),{readOnly:true});
+  repository=startupCheck('database-open',()=>new CatalogueRepository(process.argv[2]||fileURLToPath(new URL('./runtime/catalogue.sqlite',import.meta.url)),{readOnly:true}));
   const app=await serveCatalogue(repository,{port:4318,webRoot:process.argv[3]});console.log('Local catalogue API: '+app.url+'/api/v1/health');
   if(process.argv[3])console.log('Local database preview: '+app.url);
   let closing=false;
   const close=async()=>{if(closing)return;closing=true;await app.close();repository.close();};process.once('SIGINT',close);process.once('SIGTERM',close);
- }catch{
+ }catch(error){
   repository?.close();
-  console.error('Catalogue start refused. Check the separate database, web build and local port.');
+  console.error('Catalogue start refused. Failed check: '+startupFailureReason(error)+'.');
   process.exitCode=1;
  }
 }

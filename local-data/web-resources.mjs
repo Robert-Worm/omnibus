@@ -2,6 +2,9 @@ import {digest} from './repository.mjs';
 import {createHash} from 'node:crypto';
 import {contentBatchLimits as batchLimits} from '../lib/content-batch-contract.mjs';
 
+// Storage changed after validation: an internal failure, never a caller error.
+export class WebResourceIntegrityError extends Error {}
+
 // Delivery projections are separate from signed content releases. They preserve
 // JSON field order (some historic project traces compare their literal JSON).
 // Preparing a web build adds immutable blobs, never edits an existing release.
@@ -45,13 +48,13 @@ export function webResourceBatchPayload(repository,release,hashes) {
   const parts=[Buffer.from('{"release":'+JSON.stringify(release)+',"items":[')];
   for(const [index,hash] of hashes.entries()){
     const row=select.get(release,hash,remaining);
-    if(!row)throw Error('Invalid changed content batch');
+    if(!row)throw new WebResourceIntegrityError('Invalid changed content batch');
     remaining-=row.payload.byteLength;
     // Stored resources already are canonical JSON. Check the exact pinned bytes
     // before inserting them as JSON, without allocating another full object tree
     // and serializing it again. Never interpolate unverified database text.
     // Read UTF-8 bytes directly, avoiding a large UTF-16 decode/encode round trip.
-    if(createHash('sha256').update(row.payload).digest('hex')!==hash)throw Error('Invalid changed content resource');
+    if(createHash('sha256').update(row.payload).digest('hex')!==hash)throw new WebResourceIntegrityError('Invalid changed content resource');
     parts.push(Buffer.from((index?',':'')+'{"hash":'+JSON.stringify(hash)+',"value":'),row.payload,Buffer.from('}'));
   }
   parts.push(Buffer.from(']}'));

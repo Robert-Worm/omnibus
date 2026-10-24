@@ -88,10 +88,10 @@ Bij de container-route is er geen aparte schijf: zie [online terug naar de vorig
 
 Leg dit vast zonder onderzoeksinhoud.
 
-- **Bewaar:** het tijdstip, de codeversie (commit), de controlegetallen van release en publicatie, de foutcode en de `X-Request-ID`. De server maakt die ID zelf; een ID die iemand meestuurt, wordt niet vertrouwd.
+- **Bewaar:** het tijdstip, de codeversie (commit), de controlegetallen van release en publicatie, de foutcode en de `X-Request-ID`. Bij een geweigerde bronaanvraag staat die in de foutmelding als **Verzoekreferentie**. De client toont alleen een ID in het vaste UUIDv4-formaat van de server; ontbrekende of afwijkende waarden blijven weg. De server maakt die ID zelf; een ID die iemand meestuurt, wordt niet vertrouwd.
 - **Deel nooit** in een openbaar verslag: databasepaden, zoekopdrachten, ingeleverde pakketten, projecttekst, cookies, headers of volledige adressen.
-- **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500. Hij schrijft dan één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
-- **Start de server niet?** Hij toont dan een vaste, veilige uitleg zonder interne details. Controleer eerst de opties, de database, de publicatie en de webbuild. Voeg bij het zoeken geen volledige lijst van omgevingsvariabelen, headers of databaseinhoud toe.
+- **Foutmeldingen van de server:** bij een onverwachte fout antwoordt de server met code 500. Hij schrijft dan één regel naar de foutuitvoer, met `event`, `requestId`, `status` en `time`. Ook een verkeerd controlegetal of een wijziging tijdens het lezen van een content-batch geeft deze fout. De inhoud wordt dan niet verstuurd. Er is geen gewoon toegangslogboek. Sommige fouten heel vroeg in een verzoek komen niet in die uitvoer; een ontbrekende regel bewijst dus niet dat alles goed ging.
+- **Start de server niet?** Hij toont met `Failed check` welke controle faalde, volgens de tabel hieronder. Voeg bij het zoeken geen volledige lijst van omgevingsvariabelen, headers of databaseinhoud toe.
 - **`GET /api/v1/health`** zegt alleen dat de server antwoordt. Of de database heel is, controleer je met de databasecontrole in [stap 4](#4-herstel-naar-een-nieuw-bestand).
 
 ## Het logboek van de online versie
@@ -107,10 +107,24 @@ Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 reg
 | Regel in de runtime-log | Betekenis | Wat je doet |
 | --- | --- | --- |
 | `Omnibus packaged read-only web runtime: https://…` | De server is gestart | Niets |
-| `Runtime start refused. Check explicit start options, …` | De server weigerde te starten: opties, pakket of database klopt niet | Zie [de server start niet](#de-server-start-niet-of-met-een-verkeerde-versie) |
+| `Runtime start refused. Failed check: …` | De server weigerde te starten bij de genoemde controle | Zie de controletabel hieronder en [de server start niet](#de-server-start-niet-of-met-een-verkeerde-versie) |
 | `{"event":"catalogue_request_failed","requestId":"…","status":500,"time":"…"}` | Eén verzoek liep onverwacht mis | Zoek op de `requestId` die de gebruiker meldt; zie [code 500](#code-500-bij-het-openen-van-een-bron) |
 
 **Wat er niet in staat:** geen adressen, zoekopdrachten, headers, cookies, databasepaden of projecttekst. De server maakt de `requestId` zelf; een ID die iemand meestuurt, komt niet in de log. Tests bewaken dit met een geheime testwaarde in de headers: `local-data/server-security.test.mjs` en `local-data/server-hosting.test.mjs`.
+
+De startmeldingen van het runtimepakket, de lokale preview en de lokale catalogus gebruiken dezelfde vaste namen. Ze benoemen de controle, niet de oorspronkelijke fouttekst.
+
+| `Failed check` | Controleer |
+| --- | --- |
+| `start-options` of `settings` | De startopties of het aparte instellingenbestand |
+| `node-version` | Of Node 24 wordt gebruikt |
+| `package-location` of `package-integrity` | De pakketmap, de afzonderlijke database en de controlegetallen van het pakket |
+| `web-build` | Het webmanifest, het runtimecontract en de gekozen release en publicatie |
+| `database-open` | Of de afzonderlijke database alleen-lezen geopend kan worden |
+| `publication` | Of de vastgelegde publicatie in de database aanwezig en ongewijzigd is |
+| `web-readiness` | De volledige startcontrole van webbestanden, publicatie, bronverwijzingen en databasestand |
+| `listener` | Of de luisterpoort op het ingestelde adres beschikbaar is |
+| `startup` | Een niet nader ingedeelde startfout; controleer de hele combinatie |
 
 Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https://omnibus.sliplane.app/api/v1/version`. `code.revision` is de commit die online staat. Zelf intypen of `curl` werkt. Klik je vanaf een andere site op een link naar `/api/…`, dan krijg je *Cross-site request not allowed*; dat is de beveiliging, geen storing.
 

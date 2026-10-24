@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {digest} from './repository.mjs';
-import {webResourceBatchPayload} from './web-resources.mjs';
+import {webResourceBatchPayload,WebResourceIntegrityError} from './web-resources.mjs';
 import {contentBatchLimits} from '../lib/content-batch-contract.mjs';
 
 const release=digest('Synthetic release');
@@ -45,7 +45,7 @@ test('missing and oversized batches refuse before any payload is read',()=>{
 test('altered JSON cannot be interpolated, even if it has the same size or tries to escape the envelope',()=>{
   for(const changed of ['{"text":"Changed!"}','null}, {"hash":"foreign","value":{}', '{invalid', '0', '']){
     const f=fixture([{text:'Original'}]);f.rows.set(f.hashes[0],changed);
-    assert.throws(()=>webResourceBatchPayload(f.repository,release,f.hashes),/Invalid changed content resource/);
+    assert.throws(()=>webResourceBatchPayload(f.repository,release,f.hashes),WebResourceIntegrityError);
   }
 });
 
@@ -56,7 +56,7 @@ test('a resource removed or enlarged after size preflight still cannot enter the
       if(sql.startsWith('SELECT CAST'))change(f);
       return prepare(sql);
     };
-    assert.throws(()=>webResourceBatchPayload(f.repository,release,f.hashes),/Invalid changed content batch/);
+    assert.throws(()=>webResourceBatchPayload(f.repository,release,f.hashes),WebResourceIntegrityError);
   }
 });
 

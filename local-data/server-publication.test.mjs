@@ -138,12 +138,22 @@ test('batched reads retain exact pinned sources, transport controls and unchange
 });
 
 test('a changed batch payload is refused before delivery, including after server startup',async t=>{
+  const logs=[];t.mock.method(console,'error',line=>logs.push(line));
   const f=fixture(t),{url}=await f.start();
+  const canary='Changed synthetic evidence';
   f.repository.db.prepare('UPDATE web_resources SET payload=? WHERE release_id=? AND hash=?')
-    .run(JSON.stringify({text:'Changed synthetic evidence'}),f.release,f.refs.selected.hash);
-  const response=await fetch(url+`/api/v1/content-batch?release=${f.release}&hash=${f.refs.selected.hash}`);
-  assert.equal(response.status,400);
-  assert.deepEqual(await response.json(),{error:'Invalid request'});
+    .run(JSON.stringify({text:canary}),f.release,f.refs.selected.hash);
+  const response=await fetch(url+`/api/v1/content-batch?release=${f.release}&hash=${f.refs.selected.hash}`,
+    {headers:{'X-Request-ID':canary}});
+  assert.equal(response.status,500);
+  assert.deepEqual(await response.json(),{error:'Request failed'});
+  assert.equal(logs.length,1);
+  const entry=JSON.parse(logs[0]);
+  assert.deepEqual(Object.keys(entry).sort(),['event','requestId','status','time']);
+  assert.equal(entry.event,'catalogue_request_failed');assert.equal(entry.status,500);
+  assert.equal(entry.requestId,response.headers.get('x-request-id'));
+  assert.match(entry.requestId,/^[a-f0-9-]{36}$/);
+  for(const secret of [canary,f.databasePath,f.release,f.refs.selected.hash])assert(!logs[0].includes(secret));
 });
 
 test('one hidden, foreign or ambiguous batch member refuses the whole response without leaking other entries',async t=>{

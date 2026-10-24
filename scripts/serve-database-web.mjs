@@ -7,6 +7,7 @@ import { serveCatalogue } from "../local-data/server.mjs";
 import { createHostingPolicy } from "../local-data/hosting-policy.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { readDatabaseSettings } from "./database-build-options.mjs";
+import { startupCheck, startupFailureReason } from "../local-data/startup-diagnostics.mjs";
 
 const previewUsage =
   "Usage: dev:database -- (--settings <local-build.json> OR --database <private.sqlite> [--release <hash> --publication <hash>]) [--port <port>] [--web-root <candidate-folder>] [--public-origin <canonical-https-origin> --listen-host <127.0.0.1|0.0.0.0>] (hosting requires explicit pins, port 1-65535 and web root; a runtime package supplies its verified web root)";
@@ -82,7 +83,7 @@ export function parsePreviewArgs(args, { packaged = false } = {}) {
   const output = options["web-root"] ? { webRoot: resolve(options["web-root"]) } : {};
   let pins;
   if (options.settings) {
-    const { database, release, publication } = readDatabaseSettings(options.settings);
+    const { database, release, publication } = startupCheck('settings', () => readDatabaseSettings(options.settings));
     pins = { databasePath: database, release, publication };
   } else {
     pins = { databasePath: resolve(options.database),
@@ -105,23 +106,26 @@ export function parsePreviewArgs(args, { packaged = false } = {}) {
 /** Explicit preview/start. Refuses a mismatched build before accepting requests. */
 export async function startDatabasePreview(options) {
   const { databasePath, release, publication } = options;
-  const serverOptions = validatePreviewStartOptions(options);
+  const serverOptions = startupCheck('start-options', () => validatePreviewStartOptions(options));
   const { webRoot } = serverOptions;
-  const manifest = JSON.parse(readFileSync(resolve(webRoot, "omnibus-release.json"), "utf8"));
-  if (manifest.schema !== 1 || manifest.contract !== runtimeContractHash)
-    throw Error("Rebuild this application with its current runtime contract.");
-  if (
-    (release !== undefined && release !== manifest.release) ||
-    (publication !== undefined && publication !== manifest.publication)
-  )
-    throw Error("Build does not match the selected database settings. Rebuild before starting.");
-  const repository = new CatalogueRepository(databasePath, { readOnly: true });
+  const manifest = startupCheck('web-build', () => {
+    const value = JSON.parse(readFileSync(resolve(webRoot, "omnibus-release.json"), "utf8"));
+    if (value.schema !== 1 || value.contract !== runtimeContractHash)
+      throw Error("Rebuild this application with its current runtime contract.");
+    if (
+      (release !== undefined && release !== value.release) ||
+      (publication !== undefined && publication !== value.publication)
+    )
+      throw Error("Build does not match the selected database settings. Rebuild before starting.");
+    return value;
+  });
+  const repository = startupCheck('database-open', () => new CatalogueRepository(databasePath, { readOnly: true }));
   try {
-    readRuntimePublication(repository, {
+    startupCheck('publication', () => readRuntimePublication(repository, {
       release: manifest.release,
       publication: manifest.publication,
       contract: runtimeContractHash,
-    });
+    }));
     const app = await serveCatalogue(repository, serverOptions);
     return {
       ...app,
@@ -138,7 +142,7 @@ export async function startDatabasePreview(options) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const options = parsePreviewArgs(process.argv.slice(2));
+    const options = startupCheck('start-options', () => parsePreviewArgs(process.argv.slice(2)));
     const app = await startDatabasePreview(options);
     console.log((options.publicOrigin ? "Omnibus read-only web runtime: " : "Omnibus local read-only preview: ") + app.url);
     let closing = false;
@@ -149,8 +153,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     };
     process.once("SIGINT", close);
     process.once("SIGTERM", close);
-  } catch {
-    console.error("Preview start refused. Check explicit start options, the pinned database, web build and port.");
+  } catch (error) {
+    console.error("Preview start refused. Failed check: " + startupFailureReason(error) + ".");
     console.error(previewUsage);
     process.exitCode = 1;
   }

@@ -5,6 +5,7 @@ import net from 'node:net';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {serveCatalogue} from './server.mjs';
+import {startupCheck,startupFailureReason} from './startup-diagnostics.mjs';
 
 function request(url,{path='/api/v1/health',method='GET',headers={}}={}) {
  return new Promise((resolve,reject)=>{
@@ -68,13 +69,34 @@ test('errors do not expose database paths, queries or private input',async t=>{
  assert.equal(logs.length,3,'successful health requests produce no access log');
 });
 
-test('local start failures do not print operator paths or stack traces',()=>{
+test('startup reasons come only from fixed checkpoints, never exception properties or text',async()=>{
+ const canary='CANARY-private-start-path';
+ for(const thrown of [Error(canary),null,canary,{reason:'listener',message:canary}]){
+  assert.equal(startupFailureReason(thrown),'startup');
+  assert.throws(()=>startupCheck('web-build',()=>{throw thrown;}),error=>{
+   assert.equal(startupFailureReason(error),'web-build');return true;
+  });
+ }
+ await assert.rejects(startupCheck('publication',()=>Promise.reject(Error(canary))),error=>{
+  assert.equal(startupFailureReason(error),'publication');return true;
+ });
+ assert.throws(()=>startupCheck('start-options',()=>startupCheck('settings',()=>{throw Error(canary);})),error=>{
+  assert.equal(startupFailureReason(error),'settings');return true;
+ });
+ assert.throws(()=>startupCheck(canary,()=>{throw Error(canary);}),error=>{
+  assert.equal(startupFailureReason(error),'startup');return true;
+ });
+ assert.equal(startupCheck('web-build',()=>42),42);
+ assert.equal(await startupCheck('publication',async()=>42),42);
+});
+
+test('local start failures name their check without operator paths or stack traces',()=>{
  const secret='CANARY-private-start-path';
  const root=fileURLToPath(new URL('../',import.meta.url));
  for(const [script,args,message] of [
-  ['local-data/server.mjs',[secret],/Catalogue start refused/],
-  ['scripts/serve-database-web.mjs',['--settings',secret],/Preview start refused/],
-  ['scripts/start-runtime-package.mjs',['--settings',secret],/Runtime start refused/],
+  ['local-data/server.mjs',[secret],/Catalogue start refused\. Failed check: database-open\./],
+  ['scripts/serve-database-web.mjs',['--settings',secret],/Preview start refused\. Failed check: settings\./],
+  ['scripts/start-runtime-package.mjs',['--settings',secret],/Runtime start refused\. Failed check: settings\./],
  ]){
   const child=spawnSync(process.execPath,[script,...args],{cwd:root,encoding:'utf8',timeout:10000});
   assert.equal(child.status,1);assert.match(child.stderr,message);
