@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { inflateRawSync } from "node:zlib";
-import { bereidReleaseVoor, datumTekst, maakZip, sha256 } from "./prepare-release.mjs";
+import { bereidReleaseVoor, datumTekst, inhoudVan, kaderCode, maakZip, releasenotities, sha256, verwerktVoorstel } from "./prepare-release.mjs";
 
 const pakketten = [
   { kind: "report", title: "Rapport A" }, { kind: "report", title: "Rapport B" },
@@ -74,4 +74,27 @@ test("de zip-schrijver maakt een geldige zip", () => {
   const zip = maakZip([{ naam: "a.txt", inhoud: Buffer.from("hallo") }]);
   assert.equal(leesZip(zip)["a.txt"].toString(), "hallo");
   assert.equal(zip.readUInt32LE(zip.length - 22), 0x06054b50);
+});
+
+test("een voorstel voor verwerkt.json: nieuwe en verdwenen bronnen, en wat nog een Rijksmap-ID mist", () => {
+  const huidig = { database: "2026-10-19", toelichting: "t", rapporten: { "2025-oud": "OUD25", "2025-weg": "WEG25" }, wettenEnKaders: ["WWKE", "TR-CYBER"], modellen: 1 };
+  const inhoud = inhoudVan([
+    { id: "OUD25", kind: "report", title: "Oud rapport" }, { id: "NIEUW26", kind: "report", title: "Nieuw rapport" }, { id: "LOS26", kind: "report", title: "Los rapport" },
+    { id: "WWKE-20260815-ASTRA-R1", kind: "law", title: "Wwke" }, { id: "TR-CYBER", kind: "foundation", title: "Cyber" }, { id: "TR-THIRD", kind: "foundation", title: "Third" },
+    { id: "M1", kind: "model", title: "M" }, { id: "M2", kind: "model", title: "M2" },
+  ]);
+  const v = verwerktVoorstel({ huidig, inhoud, datum: "2026-11-30", koppelingen: { "2026-nieuw": "NIEUW26" }, kaderCodes: ["TR-THIRD"] });
+  assert.deepEqual(v.verwerkt, { database: "2026-11-30", toelichting: "t", rapporten: { "2025-oud": "OUD25", "2026-nieuw": "NIEUW26" }, wettenEnKaders: ["WWKE", "TR-CYBER", "TR-THIRD"], modellen: 2 });
+  assert.deepEqual(v.nieuw.rapporten.map((p) => p.id), ["NIEUW26", "LOS26"]);
+  assert.deepEqual(v.nieuw.kaders, ["TR-THIRD"]);
+  assert.deepEqual(v.weg, { rapporten: ["WEG25"], kaders: [] });
+  assert.deepEqual(v.ontbreekt, ["LOS26"]);
+  const notities = releasenotities({ datum: "2026-11-30", inhoud, zipNaam: "z.zip", catalogusHash: "c", release: "a".repeat(64), publicatie: "b".repeat(64), grootteMB: 1, wijzigingen: v, claims: ["12", "15"] });
+  assert.match(notities, /Rapport: Nieuw rapport[\s\S]*Wet of kader: TR-THIRD[\s\S]*Niet meer in de database: rapport WEG25[\s\S]*Claims: #12, #15/);
+  assert.doesNotMatch(notities, /vul aan/);
+});
+
+test("kaderCode kiest de langste passende code", () => {
+  assert.equal(kaderCode("CIO2026-REEXTRACT-1", ["CIO2026", "CIO"]), "CIO2026");
+  assert.equal(kaderCode("ONBEKEND", ["WWKE"]), null);
 });

@@ -3,6 +3,9 @@
 // een concept van de releasenotities. Weigert een database die de runtimecontrole niet haalt.
 //
 //   npm run release:prepare -- --settings <local-build.json> --out <nieuwe-map> [--date jjjj-mm-dd]
+//     [--claims 12,15] [--rapport <rijksmap-id>=<bron-id> ...]
+//
+// Maakt ook een voorstel voor .github/voortgang/verwerkt.json en vult 'Nieuw in deze release' in.
 //
 // Er wordt niets geüpload en niets in de repository gewijzigd.
 import { createHash } from "node:crypto";
@@ -45,6 +48,35 @@ export function inhoudVan(pakketten) {
   return { rapporten: soort("report"), kaders: [...soort("law"), ...soort("foundation")], modellen: soort("model") };
 }
 
+/** De code uit de werklijst wetten en kaders die bij een pakket hoort, bijvoorbeeld WWKE voor WWKE-20260815-ASTRA-R1. */
+export function kaderCode(bronId, codes) {
+  return [...codes].sort((x, y) => y.length - x.length).find((c) => bronId === c || bronId.startsWith(c + "-")) ?? null;
+}
+
+/**
+ * Een voorstel voor .github/voortgang/verwerkt.json bij deze database, plus wat er veranderd is.
+ * `koppelingen` geeft per nieuw rapport de Rijksmap-ID: { "2026-onderzoek-x": "X26" }.
+ * Een rapport zonder Rijksmap-ID komt in `ontbreekt`: dat vult de beheerder aan.
+ */
+export function verwerktVoorstel({ huidig, inhoud, datum, koppelingen = {}, kaderCodes = [] }) {
+  const inDb = new Set(inhoud.rapporten.map((p) => p.id));
+  const rapporten = {};
+  for (const [slug, id] of Object.entries({ ...huidig.rapporten, ...koppelingen })) if (inDb.has(id)) rapporten[slug] = id;
+  const gekoppeld = new Set(Object.values(rapporten));
+  const codes = [...new Set([...(huidig.wettenEnKaders ?? []), ...kaderCodes])];
+  const kaders = [...new Set(inhoud.kaders.map((k) => kaderCode(k.id, codes) ?? k.id))];
+  // Houd de bestaande volgorde; nieuwe kaders komen achteraan.
+  const plek = (k) => { const i = (huidig.wettenEnKaders ?? []).indexOf(k); return i < 0 ? Infinity : i; };
+  kaders.sort((x, y) => plek(x) - plek(y));
+  const oudeRapporten = new Set(Object.values(huidig.rapporten ?? {})), oudeKaders = new Set(huidig.wettenEnKaders ?? []);
+  return {
+    verwerkt: { database: datum, toelichting: huidig.toelichting, rapporten: Object.fromEntries(Object.entries(rapporten).sort()), wettenEnKaders: kaders, modellen: inhoud.modellen.length },
+    nieuw: { rapporten: inhoud.rapporten.filter((p) => !oudeRapporten.has(p.id)), kaders: kaders.filter((k) => !oudeKaders.has(k)) },
+    weg: { rapporten: [...oudeRapporten].filter((id) => !inDb.has(id)), kaders: [...oudeKaders].filter((k) => !kaders.includes(k)) },
+    ontbreekt: inhoud.rapporten.filter((p) => !gekoppeld.has(p.id)).map((p) => p.id),
+  };
+}
+
 export function leesmij({ datum, inhoud, grootteMB }) {
   return [
     `OMNIBUS-DATABASE · ${datumTekst(datum)}`,
@@ -81,7 +113,13 @@ export function leesmij({ datum, inhoud, grootteMB }) {
   ].join("\n");
 }
 
-export function releasenotities({ datum, inhoud, zipNaam, catalogusHash, release, publicatie, grootteMB }) {
+export function releasenotities({ datum, inhoud, zipNaam, catalogusHash, release, publicatie, grootteMB, wijzigingen, claims = [] }) {
+  const nieuw = wijzigingen
+    ? [...wijzigingen.nieuw.rapporten.map((p) => `- Rapport: ${p.title}`), ...wijzigingen.nieuw.kaders.map((k) => `- Wet of kader: ${k}`),
+      ...wijzigingen.weg.rapporten.map((id) => `- Niet meer in de database: rapport ${id}`), ...wijzigingen.weg.kaders.map((k) => `- Niet meer in de database: ${k}`)]
+    : [];
+  if (wijzigingen && !nieuw.length) nieuw.push("- Geen nieuwe bronnen; alleen verbeteringen in bestaande inhoud");
+  if (claims.length) nieuw.push(`- Claims: ${claims.map((c) => "#" + c).join(", ")}`);
   return [
     `# Database ${datumTekst(datum)}`,
     "",
@@ -93,7 +131,7 @@ export function releasenotities({ datum, inhoud, zipNaam, catalogusHash, release
     `- ${inhoud.modellen.length} onderzoeksmodellen`,
     "",
     "**Nieuw in deze release**",
-    "- *(vul aan: welke bronnen zijn erbij gekomen, met de claimnummers)*",
+    ...(nieuw.length ? nieuw : ["- *(vul aan: welke bronnen zijn erbij gekomen, met de claimnummers)*"]),
     "",
     "**Controle**",
     `- \`${zipNaam}\` (${grootteMB} MB uitgepakt)`,
@@ -107,7 +145,7 @@ export function releasenotities({ datum, inhoud, zipNaam, catalogusHash, release
 }
 
 /** Maakt alle releasebestanden. `controleer` is de runtimecontrole (vervangbaar in tests). */
-export async function bereidReleaseVoor({ settings, out, datum, controleer }) {
+export async function bereidReleaseVoor({ settings, out, datum, controleer, huidig, koppelingen = {}, kaderCodes = [], claims = [] }) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) throw new Error("Gebruik --date jjjj-mm-dd.");
   if (existsSync(out)) throw new Error(`De uitvoermap bestaat al: ${out}. Kies een nieuwe map.`);
   const resultaat = controleer(settings);
@@ -131,8 +169,11 @@ export async function bereidReleaseVoor({ settings, out, datum, controleer }) {
   writeFileSync(path.join(out, zipNaam), zip);
   writeFileSync(path.join(out, "SHA256SUMS.txt"), `${sha256(zip)}  ${zipNaam}\n${sums}`);
   writeFileSync(path.join(out, "LEESMIJ.txt"), tekst);
-  writeFileSync(path.join(out, "releasenotities.md"), releasenotities({ datum, inhoud, zipNaam, catalogusHash, release: settings.release, publicatie: settings.publication, grootteMB }));
-  return { zip: zipNaam, zipHash: sha256(zip), catalogusHash, rapporten: inhoud.rapporten.length, kaders: inhoud.kaders.length, modellen: inhoud.modellen.length };
+  const voorstel = huidig ? verwerktVoorstel({ huidig, inhoud, datum, koppelingen, kaderCodes }) : null;
+  if (voorstel) writeFileSync(path.join(out, "verwerkt.json"), JSON.stringify(voorstel.verwerkt, null, 2) + "\n");
+  writeFileSync(path.join(out, "releasenotities.md"), releasenotities({ datum, inhoud, zipNaam, catalogusHash, release: settings.release, publicatie: settings.publication, grootteMB, wijzigingen: voorstel, claims }));
+  return { zip: zipNaam, zipHash: sha256(zip), catalogusHash, rapporten: inhoud.rapporten.length, kaders: inhoud.kaders.length, modellen: inhoud.modellen.length,
+    ...(voorstel ? { nieuw: { rapporten: voorstel.nieuw.rapporten.map((p) => p.id), kaders: voorstel.nieuw.kaders }, ontbreekt: voorstel.ontbreekt } : {}) };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -145,9 +186,17 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     if (!settingsPad || !out) throw new Error("Gebruik: npm run release:prepare -- --settings <local-build.json> --out <nieuwe-map> [--date jjjj-mm-dd]");
     const settings = parseDatabaseBuildArgs(["--settings", settingsPad]);
     const datum = waarde("--date") || new Date().toISOString().slice(0, 10);
-    const uit = await bereidReleaseVoor({ settings, out: path.resolve(out), datum, controleer: (s) => checkRuntimeDatabase(s, { includePackageMetadata: true }) });
+    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+    const huidig = JSON.parse(readFileSync(path.join(root, ".github/voortgang/verwerkt.json"), "utf8"));
+    const kaderCodes = JSON.parse(readFileSync(path.join(root, ".github/voortgang/wetten-en-kaders.json"), "utf8")).groepen.flatMap((g) => (g.bronnen ?? []).map((b) => b.id));
+    // --rapport <rijksmap-id>=<bron-id> koppelt een nieuw rapport aan de Rijksmap; mag vaker.
+    const koppelingen = Object.fromEntries(args.flatMap((a, i) => (a === "--rapport" ? [args[i + 1].split("=")] : [])));
+    const claims = (waarde("--claims") || "").split(",").map((c) => c.trim().replace(/^#/, "")).filter(Boolean);
+    const uit = await bereidReleaseVoor({ settings, out: path.resolve(out), datum, huidig, koppelingen, kaderCodes, claims,
+      controleer: (s) => checkRuntimeDatabase(s, { includePackageMetadata: true }) });
     console.log(JSON.stringify(uit, null, 2));
-    console.log(`\nKlaar. Zet ${uit.zip} bij een nieuwe release met tag database-${datum}, en gebruik releasenotities.md als beschrijving.`);
+    if (uit.ontbreekt?.length) console.warn(`\nHOLD: geen Rijksmap-ID voor ${uit.ontbreekt.join(", ")}. Geef ze mee met --rapport <rijksmap-id>=<bron-id> en draai opnieuw in een nieuwe map.`);
+    console.log(`\nKlaar. Zet ${uit.zip} bij een nieuwe release met tag database-${datum} en gebruik releasenotities.md als beschrijving. Vervang daarna .github/voortgang/verwerkt.json door het voorstel in de uitvoermap.`);
   } catch (fout) {
     console.error(`Release voorbereiden mislukt: ${fout.message}`);
     process.exitCode = 1;

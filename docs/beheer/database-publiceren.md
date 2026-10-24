@@ -114,18 +114,33 @@ In het kort:
 1. **Maak de releasebestanden** met één opdracht:
 
    ```text
-   npm run release:prepare -- --settings work/candidate/local-build.json --out work/release-<jjjj-mm-dd> --date <jjjj-mm-dd>
+   npm run release:prepare -- --settings work/candidate/local-build.json --out work/release-<jjjj-mm-dd> --date <jjjj-mm-dd> --claims 12,15 --rapport <rijksmap-id>=<bron-id>
    ```
 
-   Die controleert de database eerst. Daarna maakt hij `omnibus-database-<jjjj-mm-dd>.zip` (met database, instellingen, `LEESMIJ.txt` en `SHA256SUMS.txt`), de controlegetallen en een concept van de releasenotities (`releasenotities.md`). Haalt de database de controle niet, dan maakt hij niets.
+   Die controleert de database eerst. Daarna maakt hij `omnibus-database-<jjjj-mm-dd>.zip` (met database, instellingen, `LEESMIJ.txt` en `SHA256SUMS.txt`), de controlegetallen, de releasenotities (`releasenotities.md`) en een nieuwe `verwerkt.json`. Haalt de database de controle niet, dan maakt hij niets.
+
+   - **Nieuw in deze release** vult hij zelf in: nieuwe en verdwenen rapporten en kaders, en de claims uit `--claims`.
+   - Geef elk nieuw rapport mee met `--rapport <rijksmap-id>=<bron-id>`; de Rijksmap-ID staat in de link van de claim. Ontbreekt er een, dan meldt hij **HOLD** met de bron-ID. Draai dan opnieuw met een nieuwe uitvoermap.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
 3. **Maak een release** op GitHub met tag `database-<jjjj-mm-dd>`. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe.
 4. **Zet de nieuwe database online en in de installatieopdracht.** Pas de zip-link en het controlegetal aan in `hosting/container/Dockerfile` én `scripts/database-release.mjs`, en push. De online versie bouwt dan opnieuw; controleer daarna of hij de nieuwe database toont.
-5. **Werk de voortgang bij:** pas `.github/voortgang/verwerkt.json` aan (datum, nieuwe rapporten en kaders) en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
+5. **Werk de voortgang bij:** vervang `.github/voortgang/verwerkt.json` door het bestand uit de uitvoermap, bekijk de wijziging met `git diff` en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
 6. **Sluit de verwerkte claims** met het label **verwerkt**.
 
 > [!NOTE]
 > **Goed om te weten:** aantallen in de documentatie staan tussen onzichtbare markeringen, zoals `<!--n:rapporten-->27<!--/n-->`. Het voortgangsscript vult ze in. Pas het getal niet met de hand aan; gebruik een markering als je een aantal ergens nieuw noemt. Beschikbaar: `rapporten`, `kaders`, `modellen`, `alle`, `aanbevolen` en `aanbevolenInDatabase`.
+
+### Met een AI-agent
+
+Een AI-agent mag de release voorbereiden: stap 1 tot en met 5 hierboven, plus `release:prepare` en het bekijken van `verwerkt.json` en de releasenotities. Laat hem de checklist in het release-issue afvinken tot en met de releasenotities.
+
+Wat niet terug te draaien is, doet de agent pas na jouw akkoord in de chat:
+
+| Stap | Waarom eerst akkoord |
+| --- | --- |
+| De release op GitHub maken | Iedereen kan de zip dan downloaden |
+| `verwerkt.json`, de Dockerfile en `database-release.mjs` pushen | De online versie en de voortgang veranderen meteen |
+| Claims sluiten en de aankondiging plaatsen | Bijdragers krijgen een melding |
 
 ## Herstellen na een publicatiefout
 
