@@ -10,6 +10,7 @@ import {CatalogueRepository} from './repository.mjs';
 import {checkRuntimeDatabase} from '../scripts/check-runtime-database.mjs';
 import {readDatabaseSettings} from '../scripts/database-build-options.mjs';
 import {createPrivacyPackage, syntheticMarker, syntheticSource, bytesHash, saveJson} from './local-privacy-fixture.mjs';
+import {privacyProbe,containsProbe} from './local-privacy-probe.mjs';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const guard = new URL('./local-privacy-guard.mjs', import.meta.url).href;
@@ -96,13 +97,19 @@ async function denyProxy() {
     close:() => new Promise(resolve => {server.close(resolve); server.closeAllConnections();})};
 }
 
-export async function runBrowserPrivacy({settings, webRoot, executablePath, playwrightModule}, dir) {
+export async function runBrowserPrivacy({settings, webRoot, executablePath, playwrightModule, probeFile}, dir) {
   const pins = readDatabaseSettings(settings);
   const before = bytesHash(readFileSync(pins.database));
+  const probe = privacyProbe(probeFile,pins);
+  // Use the existing full release/publication/source checks before any browser starts.
+  // In particular, an intake/review database must not be promoted by this rehearsal.
+  checkRuntimeDatabase(pins);
   const manifest = readJson(join(webRoot, 'omnibus-release.json'));
   const result = {status:'running', node:process.version, code:manifest.codeRevision ?? null,
     release:pins.release, publication:pins.publication, steps:[], requests:[], errors:[],
-    scope:'Local supported web build with public reference data and only synthetic user input; not own-package runtime import'};
+    probeSha256:probe.identity,
+    scope:probe.identity ? 'Explicit report point in a pre-existing checked publication; not intake-to-publication approval' :
+      'Local supported web build with public reference data and only synthetic user input; not own-package runtime import'};
   let server, proxy, browser;
   let phase = 'application';
   try {
@@ -124,7 +131,8 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
       const text = request.url() + JSON.stringify(request.headers()) + (request.postData() || '');
       // Evidence contains classifications, never raw headers, text, queries or source URLs.
       const entry = {phase, channel, local, method:request.method(), hasBody:request.postData() !== null,
-        containsSyntheticInput:text.includes(syntheticMarker),
+        containsSyntheticInput:containsProbe(text,syntheticMarker),
+        containsSourceProbe:containsProbe(text,probe.sourceTextMarker),
         kind:url.pathname.startsWith('/api/v1/documents/') ? 'source' : url.pathname.startsWith('/api/') ? 'api' : 'asset'};
       result.requests.push(entry);
       return entry;
@@ -133,12 +141,13 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
       const request = route.request(), entry = record(request);
       if (phase === 'control' && request.url() === 'http://privacy-control.invalid/') {
         await route.fulfill({contentType:'text/html', body:'<!doctype html><title>Synthetic network control</title>'});
-      } else if (entry.local && entry.method === 'GET' && !entry.hasBody && !entry.containsSyntheticInput) await route.continue();
+      } else if (entry.local && entry.method === 'GET' && !entry.hasBody && !entry.containsSyntheticInput && !entry.containsSourceProbe) await route.continue();
       else await route.abort('blockedbyclient');
     });
     await context.routeWebSocket('**/*', socket => {
       result.requests.push({phase, channel:'websocket', local:false, method:'CONNECT', hasBody:false,
-        containsSyntheticInput:socket.url().includes(syntheticMarker), kind:'socket'});
+        containsSyntheticInput:containsProbe(socket.url(),syntheticMarker),
+        containsSourceProbe:containsProbe(socket.url(),probe.sourceTextMarker), kind:'socket'});
       socket.close();
     });
     context.on('page', page => {
@@ -165,22 +174,26 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     await page.reload();
     assert.equal(await page.locator('#goal-subject').inputValue(), syntheticMarker);
     result.steps.push('synthetic input, automatic save and reload');
-    // Read a real public source through the unchanged supported catalogue/viewer.
+    // Use exactly the requested report point, never the first available fallback.
     await page.evaluate(() => {location.hash = '#rapporten';});
-    await page.getByRole('textbox', {name:'Zoek rapport', exact:true}).fill('CIBGBIO24-K01');
+    await page.getByRole('textbox', {name:'Zoek rapport', exact:true}).fill(probe.criterionId);
     await page.getByRole('button', {name:'Bekijk normen en toetspunten →', exact:true}).click();
-    await page.getByRole('button', {name:'Kies toetspunten voor CIBGBIO24-K01', exact:true}).first().click();
-    const detail = page.locator('.bd-pilot-detail'), point = detail.locator('.bd-point').first();
+    await page.getByRole('button', {name:'Kies toetspunten voor '+probe.criterionId, exact:true}).first().click();
+    const detail = page.locator('.bd-pilot-detail'), point = detail.locator('[data-point="'+probe.pointId+'"]');
     await point.getByRole('checkbox').click();
     await point.getByRole('button', {name:'Bronpassage', exact:true}).click();
     await detail.locator('.report-library mark').first().waitFor();
-    result.steps.push('public source read and selection');
+    if(probe.sourceTextMarker) assert((await detail.locator('.report-library').innerText()).includes(probe.sourceTextMarker),
+      'Requested source fragment was not displayed');
+    result.steps.push('pinned report point, source read and selection');
     await page.keyboard.press('Escape');
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', {name:'Bewaar project', exact:true}).click();
     const download = await downloadPromise, project = join(dir, 'synthetic-project.json');
     await download.saveAs(project);
-    assert(JSON.stringify(expandProject(readJson(project))).includes(syntheticMarker), 'Downloaded project must contain the synthetic input');
+    const projectText=JSON.stringify(expandProject(readJson(project)));
+    assert(projectText.includes(syntheticMarker), 'Downloaded project must contain the synthetic input');
+    assert(projectText.includes(probe.pointId), 'Downloaded project must retain the selected point');
     await page.getByRole('button', {name:'Nieuw project', exact:true}).click();
     await page.getByRole('button', {name:'Wis project en begin opnieuw', exact:true}).click();
     await page.locator('.entry-options').waitFor();
@@ -193,6 +206,7 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     await page.locator('.project-save-indicator[data-state="saved"]').waitFor();
     const restored = await page.evaluate(() => localStorage.getItem('rijksmap-project-v1'));
     assert(JSON.stringify(expandProject(JSON.parse(restored))).includes(syntheticMarker));
+    assert(JSON.stringify(expandProject(JSON.parse(restored))).includes(probe.pointId));
     result.steps.push('local project download, reopen and reload');
     await page.evaluate(() => {location.hash = '#kaderexport';});
     await page.getByRole('group', {name:'Werkvorm', exact:true}).waitFor();
@@ -204,7 +218,7 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     for (const open of context.pages()) await open.close();
     const application = result.requests.filter(r => r.phase === 'application');
     assert(application.some(r => r.kind === 'source'), 'Exercise actual source delivery');
-    assert(application.every(r => r.local && r.method === 'GET' && !r.hasBody && !r.containsSyntheticInput),
+    assert(application.every(r => r.local && r.method === 'GET' && !r.hasBody && !r.containsSyntheticInput && !r.containsSourceProbe),
       'Unexpected application request: inspect the local evidence before making any privacy claim');
     assert.deepEqual(result.errors, []);
     // Separate negative controls. These are deliberately injected requests, never
@@ -263,7 +277,7 @@ if (process.argv[1] && resolve(process.argv[1]) === self) {
     const args = process.argv.slice(2), options = {};
     assert(args.length % 2 === 0, 'Use --settings <public settings> --web-root <own build> --browser <executable> --playwright <module>');
     for (let i = 0; i < args.length; i += 2) {
-      assert(['--settings','--web-root','--browser','--playwright'].includes(args[i]) && !Object.hasOwn(options,args[i]));
+      assert(['--settings','--web-root','--browser','--playwright','--probe'].includes(args[i]) && !Object.hasOwn(options,args[i]));
       options[args[i]] = args[i + 1];
     }
     if (args.length) assert(options['--settings'] && options['--web-root'] && options['--browser']);
@@ -271,7 +285,7 @@ if (process.argv[1] && resolve(process.argv[1]) === self) {
     console.log('Local evidence: ' + dir);
     await runPackagePrivacy(dir);
     if (args.length) await runBrowserPrivacy({settings:options['--settings'], webRoot:options['--web-root'],
-      executablePath:options['--browser'], playwrightModule:options['--playwright']}, dir);
+      executablePath:options['--browser'], playwrightModule:options['--playwright'], probeFile:options['--probe']}, dir);
     console.log(args.length ? 'Package and browser rehearsal passed; scope and limits are in the receipts.' :
       'Package rehearsal passed; browser route NOT tested by this command.');
   }

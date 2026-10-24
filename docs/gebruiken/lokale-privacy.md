@@ -31,7 +31,24 @@ Het hulpmiddel [local-privacy.mjs](../../local-data/local-privacy.mjs) houdt de 
 3. **Netwerkcontrole:** verzoeken van de browser mogen alleen naar de eigen loopbackserver, met GET en zonder eigen projecttekst of verzoekinhoud. Andere verzoeken worden geblokkeerd en maken de applicatieproef ongeldig. Een lokale weigeringproxy onderschept aanvullend browserverkeer en stuurt niets door. Uitgaande Node-aanroepen voor HTTP, TLS, TCP, DNS en UDP worden vóór verzending geblokkeerd en geteld, ook als code een fout opvangt.
 4. **Tegenproef:** bewuste fictieve verzoeken via fetch, XHR, beacon, afbeelding, WebSocket en een bronlink in een nieuw tabblad moeten zichtbaar worden onderschept. De Node-test probeert daarnaast onder meer HTTPS, HTTP/2 en DNS. Een nulmeting zonder werkende detectie is onvoldoende.
 
-De browserproef gebruikt de openbare referentiecollectie, met het voorbeeld `CIBGBIO24-K01`. Alle **eigen** invoer is fictief. Gebruik hiervoor geen vertrouwelijke documenten, echte onderzoeksprojecten of database met eigen inhoud. Het hulpmiddel accepteert geen eigen pakket als browserpublicatie.
+Zonder scenario gebruikt de browserproef de openbare referentiecollectie, met toetspunt `CIBGBIO24-K01/TP01`. Alle ingevoerde onderzoeksgegevens zijn fictief. Het hulpmiddel accepteert geen eigen pakket als browserpublicatie. Eerst worden de bestaande volledige database-, publicatie- en broncontroles uitgevoerd; een controledatabase met HOLD opent geen browser.
+
+Voor een andere **al afzonderlijk gecontroleerde publicatie** kun je `--probe work/privacy-probe.json` toevoegen. Daarmee test je één expliciet rapportpunt, niet het eerste beschikbare punt. Wetten/kaders en modellen vallen nog buiten dit browserscenario. Het private scenariobestand bevat:
+
+```json
+{
+  "schema": 1,
+  "release": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "publication": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "criterionId": "FICTIEF-K01",
+  "pointId": "FICTIEF-K01/TP01",
+  "sourceTextMarker": "Een herkenbaar bronfragment"
+}
+```
+
+Vervang de voorbeelden door de gekozen pinnen en een bestaand rapportpunt. Kies een letterlijk bronfragment van 8–256 tekens dat in de bronviewer zichtbaar moet worden. Bewaar dit bestand uitsluitend lokaal: het kan eigen broninformatie bevatten. De proef controleert de weergave van het fragment en het behoud van het exacte punt bij bewaren en heropenen. Zij weigert verzoeken met dat fragment, ook bij gewone URL-codering. Het netwerkverslag bevat alleen een hash van het scenario en booleans, niet het fragment of de punt-ID.
+
+Gebruik bij voorkeur fictieve inhoud in een apart voorbereide testcollectie. Deze optie maakt zelf geen publicatie en keurt geen eigen inhoud goed. De volledige route van eigen intakepakket naar bruikbare runtimepublicatie blijft afzonderlijk te realiseren en te testen. Een geslaagde proef met een bestaande collectie rondt die route niet af.
 
 ## Zelf herhalen
 
