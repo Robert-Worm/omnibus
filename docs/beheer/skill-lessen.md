@@ -33,7 +33,20 @@ Uit [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-
 | [deanpeters/discovery-interview-prep](https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/discovery-interview-prep) | CC BY-NC-SA 4.0 | Vraag naar wat iemand deed, niet naar wat hij zou doen. Alleen het idee; de tekst nemen we niet over |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | CC BY-SA 4.0 | `ask-questions-if-underspecified`: eerst vragen bij een onduidelijke opdracht. Alleen het idee; de tekst nemen we niet over |
 
-Licenties met *ShareAlike* (SA) vragen dat je overgenomen tekst onder dezelfde licentie deelt. Dat past niet bij de licentie van de Omnibus-skills, dus daarvan nemen we alleen ideeën over.
+Tweede ronde, bekeken op 24 oktober 2026:
+
+| Skill | Licentie | Wat Omnibus ervan kan leren |
+| --- | --- | --- |
+| [lawve-ai: proposition-audit](https://github.com/lawve-ai/awesome-legal-skills/tree/main/skills/proposition-audit-anthony-searle) | Apache-2.0 | Elke bewering apart: soort (feit, verwijzing, juridische stelling, interpretatie) en gewicht (dragend, ondersteunend, illustratie). Dragende beweringen grondig controleren |
+| idem | Apache-2.0 | Het oordeel *aangevuld*: de bron bestaat en steunt de bewering deels, maar er zijn details bij verzonnen |
+| [frmoretto/clarity-gate](https://github.com/frmoretto/clarity-gate) | CC BY 4.0 | Controlepunten voor zekerheid: aanname zichtbaar, oud als nieuw gepresenteerd, getallen zonder bron, tegenstrijdige getallen |
+| [GarethManning/assessment-validity-checker](https://github.com/GarethManning/education-agent-skills/tree/main/skills/curriculum-assessment/assessment-validity-checker) | CC BY-SA 4.0 | Meet de vraag wat hij moet meten? Wat meet hij ongewild mee, en welk deel van het begrip mist? Alleen het idee |
+| [anthropics/mcp-builder](https://github.com/anthropics/skills/tree/main/skills/mcp-builder) | Apache-2.0 | Tien realistische vragen waarmee je test of een AI de MCP-koppeling goed gebruikt |
+| [zscole/model-hierarchy-skill](https://github.com/zscole/model-hierarchy-skill) | MIT | Taken vooraf indelen als routine, gemiddeld of complex, en per soort een passend model kiezen |
+| [forjd/better-writing](https://github.com/forjd/better-writing) | MIT | Tekst herschrijven zonder feiten toe te voegen, getest met vaste voorbeelden |
+| [talkstream/ru-text](https://github.com/talkstream/ru-text) | MIT | Een grote, controleerbare set taalregels voor één taal. Voorbeeld voor een Nederlandse B1-set |
+
+Licenties met *ShareAlike* (SA) of een eigen ‘alleen gebruiken’-licentie, zoals [hedralab/eskill](https://github.com/hedralab/eskill), vragen dat je overgenomen tekst onder dezelfde licentie deelt. Dat past niet bij de licentie van de Omnibus-skills, dus daarvan nemen we alleen ideeën over. Bij CC BY 4.0 mag overnemen met naamsvermelding.
 
 ## Ideeën om te meten
 
@@ -48,6 +61,12 @@ Licenties met *ShareAlike* (SA) vragen dat je overgenomen tekst onder dezelfde l
 | Bij een nieuwe database alleen opnieuw beoordelen wat is veranderd, op basis van hashes | cloudflare/security-audit-skill, deusyu/translate-book | De kwaliteitsbeoordeling van [#166](https://github.com/Robert-Worm/omnibus/issues/166) hoeft niet elke keer helemaal | Een oude beoordeling blijft staan terwijl de context wel veranderde |
 | Een vast budget per run, in aantal deelagenten, dat vooraf wordt vastgelegd | cloudflare/security-audit-skill | Geen onverwacht dure runs | Bij een te klein budget blijft het werk onaf; dan HOLD, nooit stil afkappen |
 | De skills door de controlelijst van skill-optimizer halen: lessen naar naslag, kern in `SKILL.md` | hqhq1025/skill-optimizer, GiaSip | Kortere instructies in elke beurt | Een les die ertoe deed, wordt minder gelezen |
+| Beweringen sorteren op gewicht: dragende beweringen uit een norm of toetspunt altijd tegen de bron, illustraties alleen steekproefsgewijs | lawve-ai: proposition-audit | Minder leeswerk in de kwaliteitsbeoordeling van [#166](https://github.com/Robert-Worm/omnibus/issues/166) | Een fout in een ‘illustratie’ blijft staan; daarom het oordeel per bron vastleggen |
+| Het oordeel *aangevuld* toevoegen aan [`omnibus-review-audit-quality`](../../skills/omnibus-review-audit-quality/README.md) | lawve-ai: proposition-audit | Geen besparing; vangt verzonnen details | Klein |
+| Zekerheidscontrole: historisch als actueel, een aanname als feit, een getal zonder bron | frmoretto/clarity-gate | Deels als script te doen, zonder AI | Een script mist betekenis; het blijft een voorcontrole |
+| Bij een model nagaan of de vragen samen het hele begrip dekken, en niets anders meten | GarethManning/assessment-validity-checker | Geen besparing; betere operationalisatie | Klein |
+| Tien vaste testvragen voor de MCP-koppeling, met een verwacht antwoord | anthropics/mcp-builder | Een AI-test voor [#148](https://github.com/Robert-Worm/omnibus/issues/148) en [#146](https://github.com/Robert-Worm/omnibus/issues/146) zonder handwerk | De vragen raken verouderd bij een nieuwe database |
+| Een vaste regel voor de labels Opus 5.5 en ChatGPT Astra ([B-019](besluiten.md#b-019)), naar soort taak | zscole/model-hierarchy-skill | Minder twijfel bij nieuwe issues | Een taak blijkt zwaarder dan gedacht; dan het label aanpassen |
 
 Het aantal volledige lezingen (nu vier) is de grootste kostenpost. Minder lezingen is een besluit van de beheerder en gaat alleen door als de testset laat zien dat de kwaliteit gelijk blijft.
 
