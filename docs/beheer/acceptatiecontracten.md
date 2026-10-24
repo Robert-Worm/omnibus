@@ -31,8 +31,6 @@
 | [K18](#k18) | Het bewijs past bij de wijziging: niet te weinig, niet te veel. |
 | [K20](#k20) | De beveiliging richt zich op echte aanvalsmogelijkheden. |
 
-K10 (redactieportaal), K12 (serverjobs) en K19 (statistieken) zijn nog niet aan de orde.
-
 Dit document zegt niet dat alle afspraken al gehaald zijn; het beschrijft waaraan een wijziging getoetst wordt.
 
 ## De afspraken

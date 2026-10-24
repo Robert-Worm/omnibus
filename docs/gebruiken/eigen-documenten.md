@@ -2,17 +2,13 @@
 
 <!-- paginatype: taak -->
 
-> **In het kort:** je kunt een eigen rapport, wet of kader omzetten naar bouwstenen voor Omnibus met een AI-skill. Er is nog geen knop om een pdf direct in de applicatie te laden; dat staat bovenaan de [routekaart](../routekaart.md).
+> **In het kort:** je kunt een eigen rapport, wet of kader omzetten naar bouwstenen voor Omnibus met een AI-skill. Een pdf laad je niet direct in de applicatie; je zet hem eerst om.
 
-## Wat kan nu wel, en wat nog niet?
+## Wat kan er?
 
-| Onderdeel | Status | Toelichting |
-| --- | --- | --- |
-| De meegeleverde database gebruiken | ✅ Klaar | – |
-| Een eigen document omzetten naar normen en toetspunten, met een AI-skill | ✅ Klaar | – |
-| Dat document openbaar toevoegen aan de database | ✅ Klaar | Via [meedoen](../bijdragen/README.md) |
-| Een eigen document direct in Omnibus laden | ⬜ Gepland | [Routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
-| Een eigen, private database naast de openbare koppelen | ⬜ Gepland | [Routekaart, pad C](../routekaart.md#pad-c--eigen-databases-bouwen) |
+- De meegeleverde database gebruiken.
+- Een eigen document omzetten naar normen en toetspunten, met een AI-skill.
+- Dat document openbaar toevoegen aan de database, via [meedoen](../bijdragen/README.md).
 
 ## Hoe zet je een document om?
 
@@ -53,7 +49,7 @@ Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bi
 ## Samengevat
 
 - Een eigen document omzetten kan nu al, met een AI-skill.
-- Direct laden in de applicatie komt nog.
+- Een pdf laad je niet direct in de applicatie; je zet hem eerst om.
 - Let op rechten, vertrouwelijkheid en de grenzen van AI.
 
 ## Volgende stap

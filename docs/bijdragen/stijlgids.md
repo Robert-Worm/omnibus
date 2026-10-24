@@ -20,6 +20,7 @@ Elke pagina in `docs/` is van een vast type, zoals een taakpagina of een naslagp
 - **Spreek de lezer aan met *je*.** Niet *u*, niet *de gebruiker*.
 - **Schrijf actief.** *De beheerder controleert het pakket*, niet *het pakket wordt gecontroleerd*.
 - **Begin met wat de lezer doet of krijgt.** Achtergrond en uitzonderingen komen daarna.
+- **Beschrijf wat er is.** Noem geen onderdelen, functies of afspraken die er nog niet zijn. Wil je iets bouwen? Leg het vast in een epic of user story; de [routekaart](../routekaart.md) verwijst daarnaar. Een beperking mag je wel noemen, als feit: *een pdf laad je niet direct in de applicatie*.
 - **Leg een vakwoord uit** bij het eerste gebruik op een pagina, of link naar de [begrippenlijst](../begrippen.md).
 - **Breek regels niet af.** Schrijf een alinea als één regel; GitHub zet de tekst zelf om.
 - **Houd zinnen onder de 25 woorden.** De documentatiecheck waarschuwt bij langere zinnen in `docs/`. Splits een lange zin in twee, of maak van een opsomming een lijst.
