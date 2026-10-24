@@ -26,6 +26,8 @@ const LABELS = [
   { name: "kwaliteit", color: "1d76db", description: "Kwaliteit van de repository en documentatie" },
   { name: "presentatie", color: "c5def5", description: "Hoe de documentatie eruitziet: hiërarchie, tabellen, beeld" },
   { name: "routekaart", color: "fbca04", description: "Een stap op de routekaart: wat we gaan bouwen" },
+  { name: "Opus 5.5", color: "d4a373", description: "Licht werk voor Claude Opus 5.5: pagina's, epics en stories, besluiten, skills zoeken" },
+  { name: "ChatGPT Astra", color: "10a37f", description: "Tokenintensief werk voor ChatGPT Astra: bronnen verwerken, grote reviews, code in de applicatie" },
 ];
 const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));
 for (const l of LABELS) if (!existing.has(l.name)) await gh("/labels", { method: "POST", body: JSON.stringify(l) });
