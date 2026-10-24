@@ -1,8 +1,12 @@
-name: Code-only checks (manual)
+name: Alle tests
 
-# Preparation only: confirm Actions availability and free usage before dispatch.
-# No push/PR/schedule trigger, private publication, secrets or deployment.
+# De volledige testsuite (npm test) bij elke push naar main en elk pull request, met fictieve
+# testdata. Geen private publicatie, geheimen of uitrol. De repository is openbaar, dus
+# GitHub Actions kost niets.
 on:
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -15,7 +19,7 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Check out the code and its history for the boundary check
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -30,19 +34,5 @@ jobs:
           package-manager-cache: false
       - name: Install the lockfile without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Check application types
-        run: npm run check:types
-      - name: Lint the supported application surface
-        run: npm run lint
-      - name: Check frontend contracts
-        run: npm run test:frontend
-      - name: Check the code and data boundary and synthetic project fixtures
-        run: npm run test:code-only
-      - name: Check runtime guards with synthetic publications
-        run: npm run test:runtime
-      - name: Check dependency inventory generation
-        run: npm run test:release
-      - name: Check local MCP input contracts without private content
-        run: npm run test:agent:input
-      - name: Check review planning and certainty signals with synthetic content
-        run: npm run test:review-tools
+      - name: Alle tests (npm test)
+        run: npm test

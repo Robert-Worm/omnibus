@@ -1,0 +1,39 @@
+name: Overdracht bijwerken
+
+# Houdt het issue "Overdracht" bij: wat pakt Opus 5.5 en wat pakt ChatGPT Astra als volgende op,
+# en wat wacht op de beheerder. Zie docs/beheer/samenwerking-ai.md.
+on:
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled]
+  workflow_run:
+    workflows: ["Alle tests"]
+    types: [completed]
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+concurrency:
+  group: overdracht
+  cancel-in-progress: true
+
+jobs:
+  overdracht:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - name: Overdracht bijwerken
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/overdracht.mjs

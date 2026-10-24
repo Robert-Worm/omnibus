@@ -64,7 +64,7 @@ Elk issue krijgt het label **Opus 5.5** of **ChatGPT Astra** ([B-019](besluiten.
 | Grote reviews en gemeten runs | De hele database beoordelen, een skill meten op de testset | ChatGPT Astra |
 | Code in de applicatie | Schermen, de zoekindex, snelheid, de AI-koppeling uitbreiden | ChatGPT Astra |
 
-Valt een story in twee rijen, bijvoorbeeld eerst schrijven en dan meten, geef dan beide labels. Blijkt het werk zwaarder dan gedacht, pas het label aan. Een nieuwe story in `.github/backlog/` zonder label wordt geweigerd.
+Hoe de twee assistenten werk aan elkaar doorgeven, staat in [samenwerking tussen de AI-assistenten](samenwerking-ai.md). Valt een story in twee rijen, bijvoorbeeld eerst schrijven en dan meten, geef dan beide labels. Blijkt het werk zwaarder dan gedacht, pas het label aan. Een nieuwe story in `.github/backlog/` zonder label wordt geweigerd.
 
 ## Goed om te weten
 
