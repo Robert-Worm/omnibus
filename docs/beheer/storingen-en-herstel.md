@@ -79,7 +79,7 @@ Elke situatie heeft dezelfde kaart. Wat je in elk geval vastlegt, staat bij [wat
 
 ### Verkeerde inhoud openbaar of een gegevenslek (online)
 
-- **Eerst doen:** beperk de toegang. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd.
+- **Eerst doen:** beperk de toegang. Alleen de beheerder, Robert Worm, heeft toegang tot Sliplane en kan de site offline halen; waarschuw hem. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd.
 - **Herstellen:** ga pas weer verder als alleen toegestane inhoud bereikbaar is en een onafhankelijke beoordeling klaar is.
 
 Bij de container-route is er geen aparte schijf: zie [online terug naar de vorige werkende versie](#online-terug-naar-de-vorige-werkende-versie). Let op bij een route met een aparte schijf. Terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
