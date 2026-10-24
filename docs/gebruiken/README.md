@@ -21,6 +21,7 @@ Eerst proberen, zonder te installeren? Open de [proefversie online](https://omni
 | Je wilt… | Lees |
 | --- | --- |
 | Met je eigen documenten werken | [Eigen documenten](eigen-documenten.md) |
+| Weten wat lokaal blijft en wat cloud-AI kan ontvangen | [Lokale privacy](lokale-privacy.md) |
 | Je AI-assistent laten meezoeken | [AI-koppeling](ai-koppeling.md) |
 | Een woord opzoeken | [Begrippen](../begrippen.md) |
 

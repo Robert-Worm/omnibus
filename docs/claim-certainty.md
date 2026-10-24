@@ -13,7 +13,7 @@ Deze beperkte voorcontrole geeft aanwijzingen voor review. Een tekstpatroon is g
 Gebruik de door het project ondersteunde Node-versie met `node:sqlite`:
 
 ```text
-node scripts/check-certainty.mjs --database catalogue.sqlite --release <release-sha256> --uit work/certainty-review.md
+npm run check:certainty -- --database catalogue.sqlite --release <release-sha256> --uit work/certainty-review.md
 node --test lib/claim-certainty.test.mjs scripts/check-certainty.test.mjs
 ```
 

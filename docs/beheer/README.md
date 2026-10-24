@@ -46,6 +46,8 @@ flowchart TD
 | --- | --- |
 | [Pakket controleren](pakket-controleren.md) | Een ingeleverd pakket technisch controleren |
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
+| [Reviewwijzigingen](reviewwijzigingen.md) | Alleen geraakte bouwstenen opnieuw beoordelen, zonder broncontroles over te slaan |
+| [Zekerheidscontrole](../claim-certainty.md) | Mogelijke overdrijving en getalproblemen signaleren voor inhoudelijke review |
 | [Skills meten](skill-meting.md) | Tijd, tokens en kwaliteit van een skill meten op een vaste testset |
 | [Lessen uit andere skills](skill-lessen.md) | Wat we van openbare skillverzamelingen willen overnemen, en onder welke licentie |
 

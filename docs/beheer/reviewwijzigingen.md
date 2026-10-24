@@ -22,8 +22,8 @@ Werk in de Omnibus-checkout. Bewaar de JSON-bestanden in je eigen genegeerde `wo
 De opdrachten werken in PowerShell en in een gewone terminal. Maak de map `work/` eerst aan als die nog ontbreekt.
 
 ```text
-node scripts/check-review-changes.mjs --snapshot work/basis.json
-node scripts/check-review-changes.mjs work/beoordeeld-manifest.json work/nieuwe-basis.json
+npm run check:review-changes -- --snapshot work/basis.json
+npm run check:review-changes -- work/beoordeeld-manifest.json work/nieuwe-basis.json
 ```
 
 De uitvoer is JSON op standaarduitvoer. Je kunt die met `> work/nieuw-plan.json` naar een nieuw bestand sturen. Het script schrijft zelf geen bestanden. Exitcode 0 betekent dat de vergelijking is uitgevoerd; er kunnen nog bouwstenen onder `opnieuw` staan. Exitcode 1 betekent ongeldige of onleesbare invoer; er is dan geen bruikbare planning.

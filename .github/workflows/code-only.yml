@@ -44,3 +44,5 @@ jobs:
         run: npm run test:release
       - name: Check local MCP input contracts without private content
         run: npm run test:agent:input
+      - name: Check review planning and certainty signals with synthetic content
+        run: npm run test:review-tools
