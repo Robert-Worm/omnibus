@@ -7,7 +7,7 @@
   "scripts": {
     "check:code-only": "node scripts/check-code-only.mjs",
     "release:prepare": "node scripts/prepare-release.mjs",
-    "test:release-prepare": "node --test scripts/prepare-release.test.mjs",
+    "test:release-prepare": "node --test scripts/prepare-release.test.mjs scripts/fetch-release-database.test.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "test:voortgang": "node --test .github/scripts/voortgang.test.mjs",
@@ -62,8 +62,8 @@
     "format": "oxfmt"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.31.0",
-    "zod": "3.25.76",
+    "@modelcontextprotocol/sdk": "1.32.0",
+    "zod": "4.6.6",
     "@base-ui/react": "1.7.0",
     "@shadcn/react": "0.3.0",
     "class-variance-authority": "0.7.1",
@@ -93,7 +93,7 @@
     "oxlint-tsgolint": "7.0.2001",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
-    "vite": "8.2.2"
+    "vite": "8.2.4"
   },
   "engines": {
     "node": ">=24.21.0"
