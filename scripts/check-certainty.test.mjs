@@ -109,7 +109,7 @@ test('fouten en onbetrouwbare ID-velden lekken geen payload of uitvoerbare marku
   const result = scan([{bron:'<script>PRIVATE_ID</script>',versie:'C:/PRIVATE_LOCATION',records:[
     rec('norm','<b>PRIVATE_RECORD</b>',{text:'PRIVATE_CLAIM_SENTINEL 17 dagen.',source_record_ids:['not-found']}),
   ]}]);
-  assert.doesNotMatch(rapport(result,release),/PRIVATE_|<script>|<b>/);
+  assert.doesNotMatch(rapport(result,release),/PRIVATE_|<\s*script\b|<\s*b\b/i);
   const dir = tijdelijkeMap(), bestand = databaseFixture(dir);
   const db = new DatabaseSync(bestand);
   db.prepare('UPDATE records SET payload=? WHERE version=? AND kind=?').run('PRIVATE_BROKEN_JSON','v1','norm');

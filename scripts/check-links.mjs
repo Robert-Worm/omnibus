@@ -15,12 +15,19 @@ export const LABEL = "kapotte-links";
 const TIMEOUT_MS = 20_000;
 const GELIJKTIJDIG = 4;
 
+/** Herhaalt een vervanging tot de tekst niet meer verandert, zodat een verwijderd stuk geen nieuw stuk achterlaat. */
+function totStabiel(tekst, patroon, vervanging = "") {
+  let vorige;
+  do { vorige = tekst; tekst = tekst.replace(patroon, vervanging); } while (tekst !== vorige);
+  return tekst;
+}
+
 /** Haalt externe links uit markdown, zonder codeblokken, inline code en voorbeeldadressen. */
 export function verzamelLinks(tekst) {
-  const schoon = tekst
+  const zonderCode = tekst
     .replace(/^ *```[\s\S]*?^ *```/gm, "")
-    .replace(/`[^`\n]*`/g, "")
-    .replace(/<!--[\s\S]*?-->/g, "");
+    .replace(/`[^`\n]*`/g, "");
+  const schoon = totStabiel(zonderCode, /<!--[\s\S]*?-->/g);
   const uit = new Set();
   for (const m of schoon.matchAll(/\]\((https?:\/\/[^)\s]+)\)|<(https?:\/\/[^>\s]+)>|\bhref="(https?:\/\/[^"]+)"|\bsrc="(https?:\/\/[^"]+)"/g)) {
     const url = (m[1] || m[2] || m[3] || m[4]).replace(/[.,;]$/, "");
