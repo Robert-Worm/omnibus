@@ -36,6 +36,15 @@ test("de testuitslag van main staat bovenaan; rood betekent eerst herstellen", (
   assert.match(overdrachtTekst([], null), /nog geen run bekend/);
 });
 
+test("een rode test gaat voor, en alle P1-taken staan erin", () => {
+  const lijst = [issue(1, "a", "Opus 5.5", "P1", "klaar"), issue(2, "b", "Opus 5.5", "P1", "klaar"), issue(3, "c", "Opus 5.5", "P1", "klaar"),
+    issue(4, "d", "Opus 5.5", "P1", "klaar"), issue(9, "Main rood", "Opus 5.5", "P1", "klaar", "rood"), issue(5, "e", "Opus 5.5", "P2", "klaar")];
+  const opus = overdrachtTekst(lijst, null).split("## Opus 5.5")[1].split("## ChatGPT")[0];
+  assert.match(opus, /Pak als volgende op\*\*\n\n- ❌ \*\*P1\*\* · #9 Main rood/);
+  for (const n of [1, 2, 3, 4]) assert.match(opus, new RegExp(`#${n} `));
+  assert.doesNotMatch(opus, /#5 /);
+});
+
 test("sorteren: prioriteit, dan het oudste issue", () => {
   assert.deepEqual(sorteer([issue(3, "", "P2"), issue(1, ""), issue(2, "", "P2"), issue(4, "", "P1")]).map((i) => i.number), [4, 2, 3, 1]);
 });

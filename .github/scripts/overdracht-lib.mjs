@@ -11,14 +11,15 @@ export const PER_ASSISTENT = 3;
 const namen = (issue) => issue.labels.map((l) => (typeof l === "string" ? l : l.name));
 export const prioriteit = (issue) => PRIORITEITEN.find((p) => namen(issue).includes(p)) ?? null;
 export const status = (issue) => STATUSSEN.find((s) => namen(issue).includes(s)) ?? null;
-const rang = (issue) => { const p = prioriteit(issue); return p ? PRIORITEITEN.indexOf(p) : PRIORITEITEN.length; };
+// Een issue met het label `rood` (de tests op main falen) gaat altijd voor.
+const rang = (issue) => { if (namen(issue).includes("rood")) return -1; const p = prioriteit(issue); return p ? PRIORITEITEN.indexOf(p) : PRIORITEITEN.length; };
 
-/** P1 vóór P2 vóór P3 vóór geen prioriteit; daarbinnen het oudste issue eerst. */
+/** Rood vóór P1 vóór P2 vóór P3 vóór geen prioriteit; daarbinnen het oudste issue eerst. */
 export function sorteer(issues) {
   return [...issues].sort((a, b) => rang(a) - rang(b) || a.number - b.number);
 }
 
-const regel = (i) => `- ${prioriteit(i) ? `**${prioriteit(i)}** · ` : ""}#${i.number} ${i.title}`;
+const regel = (i) => `- ${namen(i).includes("rood") ? "❌ " : ""}${prioriteit(i) ? `**${prioriteit(i)}** · ` : ""}#${i.number} ${i.title}`;
 
 /**
  * @param {{number:number,title:string,labels:(string|{name:string})[],pull_request?:object}[]} issues open issues
@@ -34,7 +35,9 @@ export function overdrachtTekst(issues, tests, { nu = new Date(), repoUrl = "htt
     : "**Tests op main:** nog geen run bekend", "");
   for (const wie of ASSISTENTEN) {
     const eigen = van(wie);
-    const klaar = sorteer(eigen.filter((i) => status(i) === "klaar")).slice(0, PER_ASSISTENT);
+    // Alle P1-taken en rode tests, en verder aangevuld tot PER_ASSISTENT.
+    const alle = sorteer(eigen.filter((i) => status(i) === "klaar"));
+    const klaar = alle.filter((i, n) => n < PER_ASSISTENT || rang(i) <= 0);
     const bezig = sorteer(eigen.filter((i) => status(i) === "bezig"));
     r.push(`## ${wie}`, "", "**Pak als volgende op**", "", ...(klaar.length ? klaar.map(regel) : ["- Niets klaar om op te pakken."]), "");
     if (bezig.length) r.push("**Bezig**", "", ...bezig.map(regel), "");

@@ -15,17 +15,18 @@ De verdeling per soort werk staat in [wie pakt welk werk op?](handboek.md#wie-pa
 
 ## De labels
 
-Elk open issue heeft drie soorten labels:
+Elk open issue heeft labels voor wie, prioriteit en status:
 
 | Soort | Labels | Betekenis |
 | --- | --- | --- |
 | Wie | `Opus 5.5`, `ChatGPT Astra` | Wie het werk oppakt; bij een gedeelde story beide |
 | Prioriteit | `P1`, `P2`, `P3` | P1 blokkeert ander werk of de beheerder; P2 is het volgende; P3 komt later |
 | Status | `klaar`, `bezig`, `wacht-op-ander`, `wacht-op-beheerder` | Of het nu op te pakken is, en zo niet, op wie het wacht |
+| Rood | `rood` | De tests op `main` falen; dit issue gaat voor alles |
 
 ## Het issue Overdracht
 
-Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar`, wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend.
+Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar` (en altijd alle P1-taken en rode tests), wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend.
 
 Je zegt tegen een assistent: *pak de volgende taak uit Overdracht*.
 
