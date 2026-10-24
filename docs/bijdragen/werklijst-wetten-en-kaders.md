@@ -56,7 +56,7 @@ Mis je een bron? Stel hem voor in [Discussions](https://github.com/Robert-Worm/o
 | [Wet justitiële en strafvorderlijke gegevens](https://wetten.overheid.nl/BWBR0014194)<br>`WJSG` · Justitiële gegevens; voor audits bij justitie | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20Wet%20justiti%C3%ABle%20en%20strafvorderlijke%20gegevens&bron=WJSG "Claimen: Wet justitiële en strafvorderlijke gegevens") |
 | [NIST Cybersecurity Framework 2.0](https://doi.org/10.6028/NIST.CSWP.29)<br>`NISTCSF` · Veelgebruikt raamwerk voor cyberbeveiliging | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NIST%20Cybersecurity%20Framework%202.0&bron=NISTCSF "Claimen: NIST Cybersecurity Framework 2.0") |
 | [NIST AI Risk Management Framework 1.0](https://doi.org/10.6028/NIST.AI.100-1)<br>`AIRMF` · Raamwerk voor AI-risico's | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NIST%20AI%20Risk%20Management%20Framework%201.0&bron=AIRMF "Claimen: NIST AI Risk Management Framework 1.0") |
-| [NOREA-handre­ikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` · Nederlandse handreikingen voor IT-audit; opnemen volgens B-022, zonder toestemming alleen als eigen auditpunten | 🔒 Toestemming nodig | [Overleg](https://github.com/Robert-Worm/omnibus/discussions) |
+| [NOREA-handre­ikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)](https://www.norea.nl/)<br>`NOREA` · Nederlandse handreikingen voor IT-audit; met volledige tekst en bronvermelding (B-022) | ⬜ Open | [Claimen](https://github.com/Robert-Worm/omnibus/issues/new?template=bron-claimen.yml&title=Claim%3A%20NOREA-handreikingen%20%28onder%20andere%20DORA%20in%20Control%2C%20Privacy%20Control%20Framework%2C%20DigiD-assessment%29&bron=NOREA "Claimen: NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)") |
 
 ## Rechten
 
@@ -67,11 +67,11 @@ Waarom je een bron openbaar mag verwerken, per soort bron:
 - **Kaders van de Nederlandse overheid:** openbare overheidspublicaties; hergebruik is toegestaan tenzij de uitgever rechten voorbehoudt (artikel 15b Auteurswet).
 - **Internationale kaders die vrij te gebruiken zijn:** publicaties van de Amerikaanse overheid (NIST); in de Verenigde Staten niet auteursrechtelijk beschermd. Vermeld de bron.
 - **Kaders van de IIA die je als lid toepast:** auteursrecht van The IIA. Opgenomen omdat IIA-leden deze kaders bij hun audits moeten toepassen (besluit B-016).
-- **Kaders met auteursrecht van de uitgever:** beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. Uitzondering: de vier IIA Topical Requirements staan met hun volledige tekst in de database. Dat is een bewust besluit van de beheerder (20 oktober 2026). De rechten blijven bij The Institute of Internal Auditors. Vraagt de IIA erom, dan worden de teksten verwijderd.
+- **Handreikingen van NOREA:** auteursrecht van NOREA. Opgenomen met volledige tekst, bronvermelding en een link naar de uitgave, omdat Omnibus niet-commercieel is en NOREA wil dat haar openbare handreikingen worden gebruikt (besluit B-022).
 
 ## Samengevat
 
-7 wetten en kaders zitten in de database, 19 kun je claimen, en voor 1 is eerst toestemming van de uitgever nodig.
+7 wetten en kaders zitten in de database, 20 kun je claimen, en voor 0 is eerst toestemming van de uitgever nodig.
 
 ## Volgende stap
 
