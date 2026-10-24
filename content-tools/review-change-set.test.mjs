@@ -125,6 +125,18 @@ test("stable identities handle additions, renames, removed points and removed so
   assert.equal(reviewChangeSet(createReviewManifest(empty), fixture()).sources[0].opnieuw.length, 2);
 });
 
+test("report point IDs with slashes remain stable data identities", () => {
+  const basis = fixture();
+  first(basis).toetspunten[0].id = "SYNTHETIC-K01/TP01";
+  const previous = reviewed(basis);
+  assert.deepEqual(sourceResult(reviewChangeSet(previous, basis)).ongewijzigd[0].pointIds, ["SYNTHETIC-K01/TP01"]);
+  first(basis).toetspunten[0].text += " Nieuw.";
+  const changed = sourceResult(reviewChangeSet(previous, basis)).opnieuw[0];
+  assert.equal(changed.itemId, "N1");
+  assert.deepEqual(changed.pointIds, ["SYNTHETIC-K01/TP01"]);
+  assert.deepEqual(changed.removedPointIds, []);
+});
+
 test("duplicates fail instead of silently choosing a review or item", () => {
   const changes = [
     (b) => b.sources.push(structuredClone(b.sources[0])),
@@ -217,12 +229,13 @@ test("unknown versions, partial inventories, different scopes and non-JSON value
   assert.throws(() => reviewChangeSet(reviewed(basis), incomplete), /complete inventory/);
   const otherScope = fixture(); otherScope.scopeId = "different";
   assert.throws(() => reviewChangeSet(reviewed(basis), otherScope), /different review scopes/);
-  for (const value of [undefined, NaN, () => {}, new Date(), [, 1]]) {
+  const sparse = []; sparse.length = 2; sparse[1] = 1;
+  for (const value of [undefined, NaN, () => {}, new Date(), sparse]) {
     const bad = fixture(); bad.context.bad = value;
     assert.throws(() => createReviewManifest(bad), /JSON/);
   }
   const getter = fixture();
-  Object.defineProperty(getter.context, "bad", { enumerable: true, get() { assert.fail("Getter executed"); } });
+  Object.defineProperty(getter.context, "bad", { enumerable: true, get() { throw new Error("Getter executed"); } });
   assert.throws(() => createReviewManifest(getter), /JSON data properties/);
 });
 
@@ -247,5 +260,5 @@ test("CLI only reads JSON, preserves every input byte and produces no files", as
   assert.equal(call([priorPath]).status, 1);
   assert.equal(call(["--snapshot", join(directory, "absent.json")]).status, 1);
   assert.deepEqual(await Promise.all([basisPath, priorPath, codePath].map((path) => readFile(path))), before);
-  assert.deepEqual((await readdir(directory)).sort(), ["basis.json", "package.mjs", "previous.json"]);
+  assert.deepEqual((await readdir(directory)).sort((a, b) => a < b ? -1 : a > b ? 1 : 0), ["basis.json", "package.mjs", "previous.json"]);
 });

@@ -4,11 +4,11 @@ import { digest } from "./identity.mjs";
 // old judgment to a newly calculated hash: only an actual review can do that.
 export const reviewHashVersion = "omnibus-review-sha256-v1";
 const sha256 = /^[a-f0-9]{64}$/;
-const idPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
+const idPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$/;
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const text = (value) => typeof value === "string" && value.trim().length > 0;
 const key = (sourceId, itemId) => JSON.stringify([sourceId, itemId]);
-const sorted = (values) => [...values].sort();
+const sorted = (values) => [...values].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
 function requireValue(condition, message) {
   if (!condition) throw new Error(message);
 }

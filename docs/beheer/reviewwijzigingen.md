@@ -54,7 +54,7 @@ Gebruik alleen JSON-gegevens, nooit een uitvoerbare module. De helper importeert
 | Passage | `id`, `documentId`, `documentVersion`, `documentSha256`, `location`, `text`, `context` |
 | Afhankelijkheid | `sourceId` en `itemId` van een andere bouwsteen waarvan de betekenis afhangt |
 
-De volledige identiteit is bron-ID plus norm-ID. IDs zijn hoofdlettergevoelig en blijven gelijk wanneer tekst verandert. Ze bevatten maximaal 160 tekens: letters, cijfers, punt, streepje, underscore of dubbele punt. Het eerste teken is een letter of cijfer. Norm-IDs zijn uniek binnen een bron; toetspunt-IDs ook. Bron-, document- en passage-IDs zijn uniek binnen hun eigen lijst. Dubbele IDs of dubbele verwijzingen stoppen de vergelijking.
+De volledige identiteit is bron-ID plus norm-ID. IDs zijn hoofdlettergevoelig en blijven gelijk wanneer tekst verandert. Ze bevatten maximaal 160 tekens: letters, cijfers, punt, streepje, underscore, dubbele punt of slash. Een rapporttoetspunt kan bijvoorbeeld `SYNTHETIC-K01/TP01` heten; deze identiteit wordt nooit als bestandspad gebruikt. Het eerste teken is een letter of cijfer. Norm-IDs zijn uniek binnen een bron; toetspunt-IDs ook. Bron-, document- en passage-IDs zijn uniek binnen hun eigen lijst. Dubbele IDs of dubbele verwijzingen stoppen de vergelijking.
 
 `scopeId` benoemt de vaste reikwijdte van de inventarisatie, bijvoorbeeld alle toegelaten rapportnormen. Vergelijk dezelfde reikwijdte en lever de volledige lijst, ook als die leeg is. `inventoryComplete` is een expliciete verklaring van de aanleveraar. Het hulpmiddel kan niet ontdekken dat een bron uit een export is vergeten. Een andere reikwijdte of een onvolledige inventarisatie stopt de vergelijking.
 
