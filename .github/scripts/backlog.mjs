@@ -29,6 +29,14 @@ const LABELS = [
   { name: "routekaart", color: "fbca04", description: "Een stap op de routekaart: wat we gaan bouwen" },
   { name: "Opus 5.5", color: "d4a373", description: "Licht werk voor Claude Opus 5.5: pagina's, epics en stories, besluiten, skills zoeken" },
   { name: "ChatGPT Astra", color: "10a37f", description: "Tokenintensief werk voor ChatGPT Astra: bronnen verwerken, grote reviews, code in de applicatie" },
+  { name: "P1", color: "b60205", description: "Prioriteit 1: blokkeert ander werk of de beheerder" },
+  { name: "P2", color: "d93f0b", description: "Prioriteit 2: als volgende" },
+  { name: "P3", color: "fbca04", description: "Prioriteit 3: later" },
+  { name: "klaar", color: "0e8a16", description: "Klaar om op te pakken door de assistent met het werklabel" },
+  { name: "bezig", color: "1d76db", description: "Een assistent werkt eraan" },
+  { name: "wacht-op-ander", color: "c5def5", description: "Wacht op het deel van de andere assistent" },
+  { name: "wacht-op-beheerder", color: "5319e7", description: "Wacht op een besluit of handeling van de beheerder" },
+  { name: "overdracht", color: "ededed", description: "Het automatische overzicht van wat wie als volgende oppakt" },
 ];
 const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));
 for (const l of LABELS) if (!existing.has(l.name)) await gh("/labels", { method: "POST", body: JSON.stringify(l) });
