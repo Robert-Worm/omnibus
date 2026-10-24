@@ -106,6 +106,9 @@ reviewpakket volgens de panelreferentie. Gebruik `scripts/score.mjs` voor
 reproduceerbaar rekenen en de structurele plafonds; dit script leest geen
 bronnen en valideert niet de inhoudelijke juistheid van reviewerclaims.
 
+Sluit elk verslag af met **Nog te controleren**: elke HOLD, elk niet gelezen
+bewijsstuk en elke open vraag, met waar die zit. Een HOLD staat daar altijd.
+
 Een voorstel krijgt pas een nieuwe score nadat de gewijzigde tekst en alle
 geraakte relaties opnieuw zijn gelezen. Rapporteer geen voorspelde verbetering
 als al behaald resultaat. Koppel reviewbesluiten aan de exacte hashes; gewijzigde

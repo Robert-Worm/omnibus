@@ -23,6 +23,11 @@ De bron-eindreviewer doet een eigen volledige lezing. Dat zijn vier volledige
 lezingen, niet vier namen boven dezelfde samenvatting. Registreer alleen werkelijk
 gelezen pagina's en werkelijk uitgevoerde stappen; geen achteraf gegenereerd leesbewijs.
 
+Bronlezers verzamelen; ze concluderen niet. Een lezer levert per bevinding de
+vindplaats, het citaat en de kwalificatie uit de bron, zonder oordeel over de
+huidige organisatie en zonder normvoorstel. Twijfel zet hij op een lijst *nog te
+controleren*, met de pagina; de reconciliator lost die lijst op of houdt HOLD.
+
 Bevindingen mogen positief, negatief, neutraal of gekwalificeerd zijn. Behoud
 periode/populatie/noemer, actor, perceptie versus waarneming, intentie versus
 realisatie, causaliteitsgrenzen, uitzonderingen en tegenbewijs. Een historische
