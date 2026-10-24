@@ -51,6 +51,7 @@ Gebruik alleen JSON-gegevens, nooit een uitvoerbare module. De helper importeert
 | Brondocument | `id`, `version`, `sha256`: de exact bewaarde editie en de hash uit de oorspronkelijke bytes |
 | Bouwsteen | `id`, `norm`, `doel`, `risico`, `beheersdoelstelling`, `beheersmaatregel`, `toetspunten`, `passages`, `context`, `applicability`, `hold`, `dependencies`, `evidence` |
 | Toetspunt | `id`, `text`, `opzet`, `bestaan`; voeg alle aangeboden aanvullende velden toe, waaronder werking en bewijssoorten |
+| Vragen, als aangeboden | `questions` per bouwsteen: volledige lijst met `id`, `kind`, `text` en betekenisdragende context |
 | Passage | `id`, `documentId`, `documentVersion`, `documentSha256`, `location`, `text`, `context` |
 | Afhankelijkheid | `sourceId` en `itemId` van een andere bouwsteen waarvan de betekenis afhangt |
 
@@ -80,7 +81,7 @@ Norm- en ketenvelden zijn niet-lege teksten. `toetspunten` bevat alle bijbehoren
 {
   "sourceId": "vaste-bron-id",
   "itemId": "vaste-norm-id",
-  "hashVersion": "omnibus-review-sha256-v1",
+  "hashVersion": "omnibus-review-sha256-v2",
   "itemHash": "de-bij-de-beoordeling-vastgelegde-sha256",
   "reviewId": "vaste-verwijzing-naar-het-bewaarde-reviewpakket",
   "sourceVerified": true,
@@ -95,9 +96,23 @@ Dit is een vormvoorbeeld, geen beoordeling. `itemHash` moet de echte hash van di
 
 De helper vertrouwt het bewaarde manifest en de beoordelingsverklaringen. Hij controleert geen handtekening, identiteit van een reviewer of inhoud van het reviewpakket. Gebruik daarom het oorspronkelijke, betrouwbaar bewaarde manifest met zijn bijbehorende bewijs. Het opnieuw berekenen van een hash onder een oude beoordeling is geen herbeoordeling.
 
+### Afzonderlijke vraagbesluiten
+
+Neem alle aangeboden vragen op in `questions`. Gebruik als `kind` één van: `interview`, `doorvraag`, `toetsvraag` of `onderzoeksvraag`. Geef afzonderlijke varianten een eigen vaste ID. Neem ook de respondent en betekenisdragende context mee. Een bewust lege lijst is `[]`; het weglaten van het veld bewijst geen gecontroleerde verwijdering.
+
+Leg na de inhoudelijke vraagreview de besluiten vast in `reviews[].questionReviews`. Elke registratie bevat `sourceId`, `itemId`, `questionId`, `itemHash`, `decision`, `reviewId`, `reviewer`, `reviewDate` en `basis`. Gebruik de hash van de werkelijk beoordeelde volledige bouwsteen. De helper maakt zelf geen besluiten.
+
+Alleen `behouden` sluit deze vraagreview af. `schrappen`, `herschrijven`, `HOLD` en ontbrekende registraties vragen om herbeoordeling. Een bovenliggend akkoord, een score of de vormuitkomst `door` vervangt dat besluit niet.
+
+De uitvoer toont vraag-IDs, eerdere besluiten en reviewverwijzingen onder `questions.current`. Verdwenen vragen staan onder `questions.disappeared`. Vraagteksten en onderbouwingen blijven buiten deze uitvoer. Een tekst- of contextwijziging maakt de oude registratie ongeldig. Verwijderen blijft een te beoordelen wijziging, geen automatische publicatie.
+
+De bestaande inhoudelijke controle, `validateSemanticReview`, ondersteunt hiervoor een volledige `questionRows(record,item)`-lijst uit de bronadapter. Bij die aansluiting zijn ook `recordHash`, `passagesHash`, `contextHash` en `questionHash` verplicht. De [synthetische tests](../../lib/question-quality.test.mjs) tonen hun exacte berekening. Deze hashes gebruiken een andere beoordelingsbasis dan dit vergelijkingsmanifest; wissel ze niet uit en herbereken ze nooit onder een oud besluit.
+
+Zonder aangesloten bronadapter is deze ondersteuning geen bewijs dat bestaande vragen afzonderlijk zijn beoordeeld. Eigen vragen in opgeslagen onderzoeken blijven ongewijzigd. De bestaande modelcontrole vereist nog vragen per dimensie; deze helper heft die eis niet op.
+
 ## Hashberekening en controles
 
-De helper hergebruikt [identity.mjs](../../content-tools/identity.mjs) voor canonieke JSON en SHA-256. Objectvelden worden op naam gesorteerd; tekst, witruimte en lijstvolgorde blijven behouden. Alleen de volgorde van bronnen en normen in de inventarisatie maakt geen verschil. De inhoud van elke bouwsteen, broncontext, globale context en alle opgeloste afhankelijkheden gaat mee. De hashvorm draagt de versie `omnibus-review-sha256-v1`.
+De helper hergebruikt [identity.mjs](../../content-tools/identity.mjs) voor canonieke JSON en SHA-256. Objectvelden worden op naam gesorteerd; tekst, witruimte en lijstvolgorde blijven behouden. Alleen de volgorde van bronnen en normen in de inventarisatie maakt geen verschil. De inhoud van elke bouwsteen, broncontext, globale context en alle opgeloste afhankelijkheden gaat mee. De hashvorm draagt de versie `omnibus-review-sha256-v2`. Oude v1-manifesten blijven leesbaar, maar leveren herbeoordeling op. Zet hun oude besluiten niet over op nieuwe hashes.
 
 Bewaar exporttijdstippen en andere administratieve gegevens buiten de beoordelingsbasis als ze geen betekenis hebben voor de review. Alle extra velden binnen die basis tellen bewust mee. Daarmee kan een ruime context leiden tot extra herbeoordelingen, maar wordt context niet ongemerkt overgeslagen.
 
