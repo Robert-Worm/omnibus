@@ -75,7 +75,7 @@ export function rapport(resultaat, { metTekst = false, database = "" } = {}) {
     r.push(metTekst ? "| ID | Plek | Uitkomst | Reden | Vraag |" : "| ID | Plek | Uitkomst | Reden |", metTekst ? "| --- | --- | --- | --- | --- |" : "| --- | --- | --- | --- |");
     for (const v of fout) {
       const reden = v.meldingen.map((m) => m.reden).join("; ");
-      r.push(`| ${v.id} | ${v.plek} | ${v.uitkomst} | ${reden} |${metTekst ? ` ${v.tekst.replace(/\|/g, "\\|").replace(/\s+/g, " ")} |` : ""}`);
+      r.push(`| ${v.id} | ${v.plek} | ${v.uitkomst} | ${reden} |${metTekst ? ` ${v.tekst.replace(/[\\|]/g, "\\$&").replace(/\s+/g, " ")} |` : ""}`);
     }
     r.push("");
   }

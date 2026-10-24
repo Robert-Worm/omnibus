@@ -82,6 +82,13 @@ export function slug(kop) {
   return h.replace(/ /g, "-");
 }
 
+/** Herhaalt een vervanging tot de tekst niet meer verandert, zodat een verwijderd stuk geen nieuw stuk achterlaat. */
+function totStabiel(tekst, patroon, vervanging = "") {
+  let vorige;
+  do { vorige = tekst; tekst = tekst.replace(patroon, vervanging); } while (tekst !== vorige);
+  return tekst;
+}
+
 function zonderCode(tekst) {
   return tekst.replace(/^```[\s\S]*?^```/gm, "");
 }
@@ -462,7 +469,7 @@ export function tabelControle(rel, tekst) {
     if (t.kop.length > 4 && t.kop.join("|") !== "ID|Datum|Besluit|Reden|Gevolg") waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
     const status = t.kop.findIndex((c) => /^status$/i.test(c));
     t.kop.forEach((_, k) => {
-      const waarden = t.rijen.map((r) => (r.cellen[k] || "").replace(/<!--[^>]*-->/g, "").trim()).filter((c) => c && c !== "–");
+      const waarden = t.rijen.map((r) => totStabiel(r.cellen[k] || "", /<!--[^>]*-->/g).trim()).filter((c) => c && c !== "–");
       if (!/^(stap|#|nr\.?)$/i.test(t.kop[k]) && waarden.length && waarden.every((c) => /^[\d.,]+$/.test(c)) && !/-:\s*$/.test(t.uitlijning[k] || ""))
         waarschuwingen.push(`${plek}: kolom "${t.kop[k]}" bevat getallen; lijn rechts uit (---:)`);
     });

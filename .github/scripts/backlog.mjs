@@ -36,6 +36,7 @@ const LABELS = [
   { name: "bezig", color: "1d76db", description: "Een assistent werkt eraan" },
   { name: "wacht-op-ander", color: "c5def5", description: "Wacht op het deel van de andere assistent" },
   { name: "wacht-op-beheerder", color: "5319e7", description: "Wacht op een besluit of handeling van de beheerder" },
+  { name: "rood", color: "e11d21", description: "De tests op main falen; dit gaat voor alles" },
   { name: "overdracht", color: "ededed", description: "Het automatische overzicht van wat wie als volgende oppakt" },
 ];
 const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));
