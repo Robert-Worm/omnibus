@@ -44,6 +44,8 @@ Elke treffer en detailaanroep toont `selectionStatus`, `selectionReason` en `dra
 
 **Tien vaste testvragen.** In [`evaluatie/testvragen.mjs`](evaluatie/testvragen.mjs) staan tien realistische vragen met het verwachte antwoord. Een AI-agent beantwoordt ze via de koppeling; jij vergelijkt het antwoord. `npm run agent:testvragen` controleert zonder AI of de verwachte antwoorden nog kloppen met de huidige agent-build, bijvoorbeeld na een nieuwe database.
 
+Bij een andere collectierelease stopt deze controle vóór de vraagcontroles met **HOLD** en exitcode 2, ook als aantallen en feiten gelijk zijn. Beoordeel de bronwijziging afzonderlijk; de vaste antwoorden worden niet automatisch aangepast. Volledige binding aan publicatie en afzonderlijke bronnen, en een onafhankelijke AI-evaluatie, staan nog open.
+
 **Bekende gaten**, elk met een eigen user story:
 
 - Vragen die de AI voorstelt, gaan nog niet door de [vraagcontrole](../skills/omnibus-review-questions/README.md): [#147](https://github.com/Robert-Worm/omnibus/issues/147).

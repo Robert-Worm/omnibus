@@ -31,13 +31,17 @@ export function controleer(lezer, vragen = TESTVRAGEN) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = fileURLToPath(new URL("../../", import.meta.url));
   const pointer = JSON.parse(readFileSync(resolve(root, "agent-build/current.json"), "utf8"));
-  const index = new AgentIndex(resolve(pointer.directory, "catalogue.sqlite"), pointer.release);
-  try {
-    if (pointer.release !== RELEASE) console.log(`Let op: de testvragen zijn opgesteld voor release ${RELEASE.slice(0, 8)}…; deze build is ${pointer.release.slice(0, 8)}….`);
-    const uit = controleer(leesIndex(index));
-    for (const r of uit) console.log(`${r.ok ? "✓" : "✗"} ${r.id}`);
-    const fout = uit.filter((r) => !r.ok);
-    console.log(fout.length ? `\n${fout.length} testvragen kloppen niet meer met deze database. Pas ze bewust aan.` : "\nAlle testvragen kloppen met deze database.");
-    if (fout.length) process.exitCode = 1;
-  } finally { index.close(); }
+  if (pointer.release !== RELEASE) {
+    console.error(`HOLD: de testvragen zijn opgesteld voor release ${RELEASE}; deze build is ${pointer.release}. Beoordeel de bronwijziging voordat je deze vaste testset gebruikt.`);
+    process.exitCode = 2;
+  } else {
+    const index = new AgentIndex(resolve(pointer.directory, "catalogue.sqlite"), pointer.release);
+    try {
+      const uit = controleer(leesIndex(index));
+      for (const r of uit) console.log(`${r.ok ? "✓" : "✗"} ${r.id}`);
+      const fout = uit.filter((r) => !r.ok);
+      console.log(fout.length ? `\n${fout.length} testvragen kloppen niet meer met deze database. Pas ze bewust aan.` : "\nAlle testvragen kloppen met deze database.");
+      if (fout.length) process.exitCode = 1;
+    } finally { index.close(); }
+  }
 }
