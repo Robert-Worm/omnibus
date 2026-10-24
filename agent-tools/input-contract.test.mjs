@@ -61,7 +61,8 @@ await test('new AI research and interview questions reuse the shared candidate r
     ['interview', 'Hoe gebruikt u hulpmiddelen, zoals een checklist?', ['voorbeeldantwoord']],
   ];
   for (const [kind, text, rules] of cases) {
-    const field = kind === 'interview' ? 'interviewQuestions' : 'questions';
+    // Follow-up examples exercise the interview input, not a research question.
+    const field = ['interview', 'doorvraag'].includes(kind) ? 'interviewQuestions' : 'questions';
     const input = structuredClone(spec);
     if (field === 'interviewQuestions') input[field] = [{selection: 'synthetic|point', level: 'operational', text}];
     else input.questions[1].text = text; // A child must pass the same gate as a central question.
