@@ -25,6 +25,7 @@ import { exportFonts, exportFontSizes, exportPalettes, exportPhasePalette } from
 import { workbookPreviewEntries, workbookPreviewValue } from '@/lib/workbook-preview.mjs';
 import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
 import ScrollablePreview from './scrollable-preview';
+import DeferredDetails from './deferred-details';
 
 export default function ExportCreator({
   framework,
@@ -338,8 +339,7 @@ export default function ExportCreator({
                     </p>
                   )}
                 </div>
-                {selectedLines.length > 0 && <details className="creator-review">
-                  <summary>Exportselectie aanpassen ({count})</summary>
+                {selectedLines.length > 0 && <DeferredDetails className="creator-review" summary={`Exportselectie aanpassen (${count})`}>
                   {selectedLines.map((l) => (
                     <label className="creator-check" key={l.id}>
                       <Checkbox
@@ -359,7 +359,7 @@ export default function ExportCreator({
                   <p className="creator-help">
                     Uitsluiten geldt alleen voor deze export. Je referentiekader blijft behouden.
                   </p>
-                </details>}
+                </DeferredDetails>}
                 {!!planningIssues.length && (
                   <details className="creator-review">
                     <summary>Nog uit te werken ({planningIssues.length})</summary>
