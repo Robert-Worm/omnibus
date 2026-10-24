@@ -42,10 +42,13 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
           if(createHash('sha256').update(JSON.stringify(value)).digest('hex')!==ref.hash)throw Error('Delivery resource integrity mismatch.');
           return value;
         };
-        if(deferMetadata){modelDelivery=projectModelDelivery(content,readResource);reportDelivery=projectReportDelivery(content,readResource);}
+        if(deferMetadata){
+          metadata=deferredCatalogueMetadata(content);
+          modelDelivery=projectModelDelivery(content,readResource);
+          reportDelivery=projectReportDelivery(content,readResource,{metadata});
+        }
       } finally { repository.close(); }
       validateRuntimeModules(content, runtimeContract);
-      if(deferMetadata)metadata=deferredCatalogueMetadata(content);
       if(reportOverviews){
         const projections=await buildCatalogueOverviews({release,publication,databasePath},content,publishedCataloguePlugin);
         overviews=projections.reports;foundationSearch=projections.foundationSearch;foundationOverviews=projections.foundationOverviews;
@@ -134,7 +137,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       const lines = [`const data=/*#__PURE__*/JSON.parse(${code(quote(metadata?.modules[original] ?? content.modules[original]))});`];
       const registrations = reportDelivery?.registrations[original] ?? modelDelivery?.registrations[original] ?? (content.registrations[original]||[]).map(key=>({key,ref:content.refs[key]}));
       const network=registrations.filter(entry=>entry.ref),assets=registrations.filter(entry=>entry.edits||entry.bundle);
-      const metadataKeys=metadata?.registrations[original] ?? [];
+      const metadataKeys=(metadata?.registrations[original] ?? []).filter(key=>!reportDelivery?.bundledMetadata.has(key));
       if (registrations.length || metadataKeys.length) {
         lines.push(`import {registerCatalogueResource,applyCatalogueEdits} from ${quote(resolve(root,'lib/catalogue-runtime.mjs'))};`);
       }

@@ -164,6 +164,32 @@ await test('report parts use identical pinned data-only assets in browser and wo
   assert.match(agent.load(agent.resolveId('omnibus-data:'+moduleId)),/registerCatalogueResource\("report:R:points"/);
 });
 
+await test('report metadata rides with the verified shared part in both browser and worker', async t=>{
+  const options=fixture(t),repository=new CatalogueRepository(options.databasePath),moduleId='app/reviewed-reports.json';
+  const original={corpus:[{framework:{report:{id:'R',source_hash:'exact-source'},lines:[],source_review:{reason:'Exact review 🧭'}}}],scopeDecisions:{'R-1':['HOLD','Exact reason']}};
+  try{
+    const content=readRuntimePublication(repository,{...options,contract:runtimeContractHash});
+    content.modules[moduleId]=original;content.routing.reports={'R-1':'R'};
+    Object.assign(content.refs,prepareWebResources(repository,options.release,{'report:R:lines':[{path:['corpus',0,'framework','lines'],value:[{id:'R-1',text:'Exact norm'}]}]}));
+    content.registrations[moduleId]=['report:R:lines'];
+    options.publication=publishRuntime(repository,content,{...options,contract:runtimeContractHash});
+  }finally{repository.close();}
+  const main=publishedCataloguePlugin({...options,deferMetadata:true}),worker=publishedCataloguePlugin({...options,deferMetadata:true,emitManifest:false}),agent=publishedCataloguePlugin(options);
+  for(const plugin of [main,worker,agent])await plugin.buildStart();
+  const emitted=[],context={emitFile:asset=>{emitted.push(asset);return 'sharedReport';}};
+  const id=main.resolveId('omnibus-data:'+moduleId),source=main.load.call(context,id);
+  assert.equal(emitted.length,1,'One small report carries its review and admission without another request');
+  assert.match(emitted[0].fileName,/^assets\/report-content-[a-f0-9]{64}\.js$/);
+  assert(!source.includes('Exact'));assert(!source.includes('metadataLoad'));
+  assert.match(source,/registerCatalogueResource\("report:R:shared:/);
+  const bytes=emitted[0].source;
+  assert.equal(worker.load.call(context,id),source);assert.equal(emitted[1].source,bytes);
+  const bundle=(await import('data:text/javascript,'+encodeURIComponent(bytes))).default;
+  assert.deepEqual(bundle[moduleId].find(e=>e.path.at(-1)==='source_review').value,original.corpus[0].framework.source_review);
+  assert.deepEqual(bundle[moduleId].find(e=>e.path[0]==='scopeDecisions').value,['HOLD','Exact reason']);
+  assert(agent.load(id).includes('Exact review'),'Agent readers retain the original metadata and loading route');
+});
+
 await test('preview validates the publication, serves the app and cannot write or expose the database',async t=>{
   const options=fixture(t),webRoot=join(options.dir,'web');
   mkdirSync(join(webRoot,'assets'),{recursive:true});

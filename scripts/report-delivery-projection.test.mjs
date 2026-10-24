@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {register} from 'node:module';
 import {projectReportDelivery} from './report-delivery-projection.mjs';
+import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
 import {applyCatalogueEdits, registerCatalogueResource, ensureCatalogue} from '../lib/catalogue-runtime.mjs';
 
 const lines = Array.from({length: 200}, (_, n) => ({id: 'R-' + String(n).padStart(3, '0'), text: 'Exact norm 🧭 ' + n}));
@@ -75,4 +76,45 @@ await test('unrecognized layouts remain shared or fail lossless verification; le
   assert.throws(()=>projectReportDelivery(mixed,()=>assert.fail()),/mixed report delivery boundary/);
   const edits = [{path: ['items'], value: {key: 'original'}}, {path: ['items'], value: {key: 'changed'}}];
   assert.throws(() => projectReportDelivery({modules: {m: {items: {}}}, registrations: {m: ['report:R:m']}, refs: {}}, () => edits, {partBytes: 0}), /size/);
+});
+
+await test('report admission metadata shares required parts, remains atomic and retains every original decision', async () => {
+  const moduleId = 'app/reviewed-reports.json';
+  const initial = {corpus: ['R','B'].map(id => ({framework: {
+    report: {id, source_hash: 'verified-' + id}, lines: [],
+    source_review: {reviewed: true, reason: 'Exact review 🧭 ' + id},
+  }})), scopeDecisions: Object.fromEntries([...lines.map(l => [l.id, ['retain', 'Exact admission '+l.id]]), ['B-1', ['hold', 'Never admit']]])};
+  const source = {modules: {[moduleId]: initial}, routing: {reports: {...content.routing.reports, 'B-1': 'B'}},
+    registrations: {[moduleId]: ['report:R:lines', 'report:B:lines']}, refs: {'report:R:lines': {hash: 'R'}, 'report:B:lines': {hash: 'B'}}};
+  const edits = {R: [{path: ['corpus',0,'framework','lines'],value: lines}], B: [{path: ['corpus',1,'framework','lines'],value: [{id:'B-1',text:'Held norm'}]}]};
+  const before = JSON.stringify(source), metadata = deferredCatalogueMetadata(source);
+  const plan = projectReportDelivery(source, ref=>edits[ref.hash], {metadata, partBytes:4096});
+  assert.equal(JSON.stringify(source), before);
+  assert.deepEqual(plan.bundledMetadata, new Set(metadata.registrations[moduleId]));
+  const actual = structuredClone(metadata.modules[moduleId]), runtime = await import('../lib/catalogue-runtime.mjs?bundled-report-review');
+  const decision = actual.scopeDecisions['R-199'], review = actual.corpus[0].framework.source_review;
+  let fail = true;
+  for (const entry of plan.registrations[moduleId]) runtime.registerCatalogueResource(entry.key, ()=> {
+    if (fail && entry.key.includes(':shared:')) throw Error('Unavailable review bundle');
+    return entry.bundle[moduleId];
+  }, value=>applyCatalogueEdits(actual,value));
+  const late = ['report:R:shared', ...plan.routing['R-199']];
+  await assert.rejects(runtime.ensureCatalogue(late), /Unavailable review/);
+  assert.deepEqual(actual, metadata.modules[moduleId], 'No admission or norm is exposed on partial failure');
+  fail = false; await runtime.ensureCatalogue(late);
+  assert.equal(actual.scopeDecisions['R-199'], decision);
+  assert.deepEqual(decision, initial.scopeDecisions['R-199']);
+  assert.equal(actual.corpus[0].framework.source_review, review);
+  assert.deepEqual(review, initial.corpus[0].framework.source_review);
+  assert(actual.corpus[0].framework.lines.some(l=>l.id==='R-199'));
+  assert(actual.corpus[0].framework.lines.length < 200, 'Metadata must not turn partial loading into a whole-report load');
+  assert.deepEqual(actual.scopeDecisions['B-1'], [], 'Unrequested report metadata stays deferred');
+  assert.deepEqual(actual.corpus[1].framework.source_review, {});
+  await runtime.ensureCatalogue(['report:B']); await runtime.ensureCatalogue(['report:R']);
+  const expected = structuredClone(initial);
+  for (const value of Object.values(edits)) applyCatalogueEdits(expected, value);
+  assert.deepEqual(actual, expected, 'All source reviews and HOLD decisions are unchanged');
+  const corrupted = deferredCatalogueMetadata(source);
+  corrupted.resources.delete(corrupted.registrations[moduleId][0]);
+  assert.throws(()=>projectReportDelivery(source, ref=>edits[ref.hash], {metadata:corrupted}), /metadata delivery boundary/);
 });

@@ -4,7 +4,7 @@ import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
 // A browser delivery projection, never a new source publication. Unknown fields
 // stay at the full report boundary. Only explicit line/point relationships allow
 // a field to move into a smaller part; no text matching or inferred evidence.
-export function projectReportDelivery(content, readResource, {partBytes = 1024 * 1024} = {}) {
+export function projectReportDelivery(content, readResource, {partBytes = 1024 * 1024, metadata = null} = {}) {
   if (!Number.isSafeInteger(partBytes) || partBytes < 1024) throw Error('Invalid report part size.');
   const reportLines = content.routing?.reports ?? {};
   const records = [], full = {}, counts = new Map(), pointLines = new Map();
@@ -34,6 +34,19 @@ export function projectReportDelivery(content, readResource, {partBytes = 1024 *
     }
   }
   if (!records.length) return null;
+  // Admission reasons and source reviews are required with the selected report.
+  // Carry them in its shared part, not in another tiny network request. Keep
+  // the original publication as the reference for the lossless check below.
+  const bundledMetadata = new Set();
+  for (const [module, keys] of Object.entries(metadata?.registrations ?? {})) {
+    for (const key of keys) {
+      if (!key.startsWith('report:')) continue;
+      if (!Object.hasOwn(full, module) || !metadata.resources.has(key)) throw Error('Unsupported report metadata delivery boundary.');
+      const report = key.split(':')[1];
+      for (const edit of metadata.resources.get(key)) records.push({module, report, ...edit, shared: true});
+      bundledMetadata.add(key);
+    }
+  }
   const sourceOwners = new Map();
   for (const record of records) for (const point of record.positions ? record.value : []) {
     const line = pointLines.get(point?.id);
@@ -47,6 +60,7 @@ export function projectReportDelivery(content, readResource, {partBytes = 1024 *
   // Group nearby norms rather than create one request per field/norm. Routing
   // below records every dependency, including resources shared by several rows.
   function owners(record) {
+    if (record.shared) return [];
     const value = record.positions ? record.value[0] : record.value;
     const candidates = [record.objectKey, ...record.path.filter(k => typeof k === 'string')];
     if (value && typeof value === 'object') {
@@ -112,9 +126,9 @@ export function projectReportDelivery(content, readResource, {partBytes = 1024 *
   // Any unfamiliar layout that cannot be restored exactly stops the build.
   // Reverse order exercises late insertion, not just the happy initial order.
   for (const [module, expected] of Object.entries(full)) {
-    const restored = structuredClone(content.modules[module]);
+    const restored = structuredClone(metadata?.modules[module] ?? content.modules[module]);
     for (const part of [...parts].reverse()) if (part.modules[module]) applyCatalogueEdits(restored, part.modules[module]);
     if (!isDeepStrictEqual(restored, expected)) throw Error('Report delivery round-trip changed content: ' + module);
   }
-  return {registrations, routing: Object.fromEntries(Object.entries(routing).map(([id, keys]) => [id, [...keys]]))};
+  return {registrations, bundledMetadata, routing: Object.fromEntries(Object.entries(routing).map(([id, keys]) => [id, [...keys]]))};
 }
