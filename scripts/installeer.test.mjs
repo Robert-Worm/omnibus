@@ -32,3 +32,12 @@ test("elke verwijzing naar de hulppagina bestaat als kop", () => {
     assert.ok(kop, anker);
   }
 });
+
+test("rooktest: opties en herkenning van het startscherm", async () => {
+  const { leesOpties, isOmnibus } = await import("./rooktest-start.mjs");
+  assert.deepEqual(leesOpties([]), { port: 4319, seconden: 90 });
+  assert.deepEqual(leesOpties(["--port", "4400", "--seconden", "30"]), { port: 4400, seconden: 30 });
+  assert.equal(isOmnibus(200, "<html><head><title>Omnibus</title>"), true);
+  assert.equal(isOmnibus(200, "<title>Iets anders</title>"), false);
+  assert.equal(isOmnibus(503, "<title>Omnibus</title>"), false);
+});

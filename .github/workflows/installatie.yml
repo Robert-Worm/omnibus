@@ -1,0 +1,49 @@
+name: Installatie testen
+
+# Installeert Omnibus met één opdracht op een schone Windows-, macOS- en Linux-machine,
+# precies zoals in docs/gebruiken/installeren.md, en controleert dat het startscherm antwoordt.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/installeer.mjs'
+      - 'scripts/rooktest-start.mjs'
+      - 'scripts/database-release.mjs'
+      - 'scripts/fetch-release-database.mjs'
+      - 'scripts/check-runtime-database.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.nvmrc'
+      - '.github/workflows/installatie.yml'
+  schedule:
+    - cron: '17 5 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: installatie-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  installeren:
+    name: Installeren op ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+          package-manager-cache: false
+      - name: Installeren met één opdracht (zonder starten)
+        run: node scripts/installeer.mjs --niet-starten
+      - name: Starten en het startscherm controleren
+        run: node scripts/rooktest-start.mjs --seconden 120
