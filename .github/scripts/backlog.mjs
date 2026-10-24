@@ -47,7 +47,7 @@ for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f
   for (const epic of backlog.epics) {
     let epicIssue = known.get(epic.id);
     if (!epicIssue) {
-      epicIssue = await create(`Epic: ${epic.titel}`, `${mark(epic.id)}\n**Doel:** ${epic.doel}\n\n${epic.dod}\n\n*Wordt aangevuld met de user stories.*`, ["epic", ...backlog.labels]);
+      epicIssue = await create(`Epic: ${epic.titel}`, `${mark(epic.id)}\n**Doel:** ${epic.doel}\n\n${epic.dod}\n\n*Wordt aangevuld met de user stories.*`, ["epic", ...backlog.labels, ...(epic.labels ?? [])]);
       console.log(`epic #${epicIssue.number} ${epic.id}`);
     }
     const stories = [];
@@ -60,10 +60,15 @@ for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f
           "",
           `> ${s.verhaal}`,
           "",
+          // Optionele velden, zodat iemand de story zonder voorkennis kan oppakken.
+          ...(s.bron ? ["**Bron van het idee**", s.bron, ""] : []),
+          ...(s.waar ? ["**Waar in Omnibus**", ...s.waar.map((w) => `- ${w}`), ""] : []),
+          ...(s.aanpak ? ["**Aanpak**", ...s.aanpak.map((a, i) => `${i + 1}. ${a}`), ""] : []),
           "**Acceptatiecriteria**",
           ...s.criteria.map((c) => `- [ ] ${c}`),
+          ...(s.niet ? ["", "**Niet doen**", ...s.niet.map((n) => `- ${n}`)] : []),
         ].join("\n");
-        issue = await create(`[${epic.onderdeel}] ${s.titel}`, body, ["story", ...backlog.labels]);
+        issue = await create(`[${epic.onderdeel}] ${s.titel}`, body, ["story", ...backlog.labels, ...(s.labels ?? [])]);
         console.log(`  story #${issue.number} ${s.id}`);
         try { await gh(`/issues/${epicIssue.number}/sub_issues`, { method: "POST", body: JSON.stringify({ sub_issue_id: issue.id }) }); }
         catch (e) { console.log(`  (sub-issue koppelen lukte niet: ${e.message.slice(0, 120)})`); }
@@ -75,6 +80,7 @@ for (const file of readdirSync(join(root, ".github", "backlog")).filter((f) => f
       `**Doel:** ${epic.doel}`,
       "",
       epic.dod,
+      ...(epic.toelichting ? ["", epic.toelichting] : []),
       "",
       "**User stories**",
       ...stories.map((i) => `- [${i.state === "closed" ? "x" : " "}] #${i.number}`),
