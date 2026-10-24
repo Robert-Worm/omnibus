@@ -104,7 +104,9 @@ test('current pinned collection: fictitious intake through the real STDIO workfl
       const stored = index.get(chosen.key);
       assert.equal(sections.sourceText, stored.material.sourceText || '');
       assert.equal(sections.sourceContext, stored.material.sourceContext || '');
-      assert.equal(sections.trace, stored.material.cioTrace || stored.material.lawTrace || stored.material.reportTrace || '');
+      const traces = Object.fromEntries(['cioTrace', 'lawTrace', 'reportTrace', 'topicalTrace', 'readTrace']
+        .filter(field => stored.material[field]).map(field => [field, stored.material[field]]));
+      assert.equal(sections.trace, Object.keys(traces).length > 1 ? JSON.stringify(traces) : Object.values(traces)[0] || '');
       entries.push({...stored, reason: choice.reason, overview});
     }
     const keys = entries.map(e => e.key);
@@ -128,6 +130,35 @@ test('current pinned collection: fictitious intake through the real STDIO workfl
       fontFamily: 'Calibri', fontSize: 12, accent: 'teal', colorMode: 'uniform',
       meta: {author: 'Fictieve auditor', team: 'Demoteam', scope: spec.intake.scope, version: '0.1'},
       interview: {levels: ['operational', 'management'], starr: false, triangulation: true}};
+
+    await check('expanded framework and theme reads retain exact provenance without new write access', async () => {
+      for (const kind of ['report', 'law', 'framework', 'model', 'theme'])
+        assert(sources.sources.some(source => source.kind === kind), kind + ' must be represented');
+      for (const source of sources.sources.filter(source => source.kind === 'framework')) {
+        const results = await call('search_building_blocks', {sourceId: source.id, kind: 'framework', limit: 1});
+        assert.equal(results.total, source.readableItems);
+        const key = results.items[0].key, stored = index.get(key);
+        const overview = await call('get_building_block', {key});
+        assert.equal(overview.sourceId, source.id);
+        assert.equal(overview.draftSelectable, false, 'Reading a framework does not enable the draft writer');
+        for (const section of ['sourceText', 'trace']) {
+          let offset = 0, text = '';
+          do {
+            const part = await call('get_building_block', {key, section, offset, limit: 1000});
+            text += part.text; offset = part.nextOffset;
+          } while (offset !== null);
+          assert.equal(text, section === 'sourceText' ? stored.material.sourceText || '' :
+            stored.material.topicalTrace || stored.material.readTrace || '', source.id + ' ' + section);
+        }
+        await rejected('prepare_research_draft', {...fixture([key]), consent: true}, /alleen leesbaar/);
+      }
+      const theme = sources.sources.find(source => source.kind === 'theme');
+      const result = await call('search_building_blocks', {sourceId: theme.id, kind: 'theme', limit: 1});
+      assert.equal(result.total, theme.readableItems);
+      assert.equal(result.items[0].kind, 'report');
+      assert(result.items[0].themes.some(item => item.id === theme.id));
+      assert.equal((await call('get_building_block', {key: result.items[0].key})).sourceId, result.items[0].sourceId);
+    });
 
     await check('malformed IDs, bounds and missing/false consent fail without output', async () => {
       const first = await call('search_building_blocks', {limit: 1});
@@ -172,8 +203,11 @@ test('current pinned collection: fictitious intake through the real STDIO workfl
       const sourceId = entries[2].sourceId;
       for (const point of held) {
         const key = sourceId + '|' + point.id;
-        await rejected('get_building_block', {key}, /niet vrijgegeven/);
-        await rejected('prepare_research_draft', {...fixture([key]), consent: true}, /niet vrijgegeven/);
+        const overview = await call('get_building_block', {key});
+        assert.equal(overview.selectionStatus, 'HOLD');
+        assert.equal(overview.selectionReason, point.selection_reason);
+        assert.equal(overview.draftSelectable, false);
+        await rejected('prepare_research_draft', {...fixture([key]), consent: true}, /alleen leesbaar/);
       }
       const excluded = filters.point_mappings.find(p => p.known_article23_excluded_sectors.length &&
         content.points.some(point => point.id === p.point_id && point.selection_status === 'SELECTABLE'));
@@ -265,7 +299,7 @@ test('current pinned collection: fictitious intake through the real STDIO workfl
     const evidence = {createdAt: new Date().toISOString(), transport: 'stdio', server: 'omnibus-local/0.2.0', release: guide.release,
       publication: guide.publication, sourceCount: sources.sources.length,
       reportCount: sources.sources.filter(s => s.kind === 'report').length,
-      selectableItems: sources.sources.reduce((n, s) => n + s.selectableItems, 0),
+      selectableItems: sources.sources.filter(s => s.kind !== 'theme').reduce((n, s) => n + s.selectableItems, 0),
       selectedKeys: keys, questions: spec.questions.length, artifacts};
     writeFileSync(join(output, 'protocol-demo-' + randomUUID() + '.json'), JSON.stringify(evidence, null, 2), {flag: 'wx'});
   } finally {
