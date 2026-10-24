@@ -84,5 +84,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         "Usage: node scripts/install-content-skills.mjs [--install] [--target skill-directory] [--skill name]",
       );
   }
+  // De vaste controlelijst (#196): meldingen, geen blokkade.
+  const { toetsSkill } = await import("./skill-regels.mjs");
+  for (const name of names.length ? names : skillNames)
+    for (const m of toetsSkill(await readFile(join(sourceRoot, name, "SKILL.md"), "utf8")))
+      console.error(`Controlelijst ${name} [${m.regel}]: ${m.melding}`);
   console.log(JSON.stringify(await installContentSkills(target, { checkOnly, ...(names.length ? { names } : {}) }), null, 2));
 }

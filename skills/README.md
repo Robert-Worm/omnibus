@@ -50,6 +50,7 @@ npm run skills:install -- --skill omnibus-add-report
 - Laat `--skill` weg om alle zeven te installeren.
 - Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
 - Andere bestemming? Gebruik `--target <map>`.
+- `skills:check` meldt ook afwijkingen van de vaste controlelijst voor skills. Alleen die controle: `npm run skills:regels`.
 
 Gebruik je Claude Code, de Claude-app of ChatGPT? Zie [skills gebruiken met je AI-assistent](../docs/bijdragen/skills-gebruiken.md).
 
