@@ -8,6 +8,9 @@ De belangrijkste wijzigingen, nieuwste eerst.
 - **Vraagcontrole:** `npm run check:questions` controleert alle vragen in de database op vormfouten, zoals twee vragen in één of een gesloten interviewvraag. De nieuwe skill [`omnibus-review-questions`](skills/omnibus-review-questions/README.md) beoordeelt daarna de inhoud.
 - **Bronpassages nagelopen:** `npm run check:passages` controleert of elke bronpassage letterlijk op de opgeslagen plek in de bron staat. In de huidige database klopt dat voor alle 6.462 passages.
 - **Skills meten:** een vaste testset en `npm run skills:meting`, met een nulmeting van de leeskosten. Een skill zuiniger maken mag alleen als de kwaliteit nergens daalt ([B-018](docs/beheer/besluiten.md#b-018)).
+- **Skills:** een vaste controlelijst (`npm run skills:regels`), een budget per run in deelagenten, en eerst vastleggen wat nodig is voordat een skill begint. Lezers concluderen niet; reviews eindigen met *Nog te controleren*.
+- **Documentatie:** de taalregels staan als vaste set met voorbeelden in `scripts/taalregels.mjs`. `npm run check:feiten` laat zien welke feiten bij een herschrijving veranderden.
+- **AI-koppeling:** een overzicht van de zes hulpmiddelen, tests van de leestools en tien vaste testvragen (`npm run agent:testvragen`). Handleiding voor Codex, Claude Desktop en Claude Code.
 - **Installatie getest** op Windows, macOS en Linux, bij elke wijziging van de installatie en elke maand.
 
 ## 22 oktober 2026 · donkere modus en een verzorgde documentatie
