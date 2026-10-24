@@ -17,8 +17,8 @@ test("skillKosten telt SKILL.md plus de verplichte naslag", () => {
 });
 
 test("metingen: alleen echte regels onder ## Metingen, niet het voorbeeld in een codeblok", () => {
-  const md = "## Metingen\n\n```text\n| 2026-01-01 | x | y | v | m | 1 | 2 | 3 |\n```\n\n| Datum | Skill |\n| --- | --- |\n| 2026-11-02 | omnibus-add-report | LVVN26 | abc | m | 95 | 1.240.000 | 7,8 |\n\n## Verder\n| 2026-12-01 | niet | dit |";
-  assert.deepEqual(leesMetingen(md), [{ datum: "2026-11-02", skill: "omnibus-add-report", bron: "LVVN26", versie: "abc", model: "m", minuten: 95, tokens: 1240000, score: 7.8 }]);
+  const md = "## Metingen\n\n```text\n| 2026-01-01 | x | y | v | m | 1 | 2 | 3 |\n```\n\n| Datum | Skill |\n| --- | --- |\n| 2026-11-02 | omnibus-add-report | LVVN26 | abc | m | 6 | 95 | 1.240.000 | 7,8 |\n\n## Verder\n| 2026-12-01 | niet | dit |";
+  assert.deepEqual(leesMetingen(md), [{ datum: "2026-11-02", skill: "omnibus-add-report", bron: "LVVN26", versie: "abc", model: "m", agents: 6, minuten: 95, tokens: 1240000, score: 7.8 }]);
   assert.deepEqual(leesMetingen(readFileSync(new URL("../docs/beheer/skill-meting.md", import.meta.url), "utf8")), []);
 });
 

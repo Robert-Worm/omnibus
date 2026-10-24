@@ -19,6 +19,8 @@ autoriseert geen actieve appwijziging, batch, publicatie of bericht naar een and
 
 Stel daarna geen nieuwe vragen, tenzij een stap niet terug te draaien is.
 
+**Budget.** Leg vóór je begint het maximale aantal deelagenten vast, met de beheerder of de bijdrager. Reserveer eerst de rollen voor controle en eindreview; verdeel daarna de rest. Past het werk niet in het budget, dan stop je met HOLD en de reden. Kort nooit stil een lezing of review in om binnen het budget te blijven. Noteer het verbruik bij de meting.
+
 Bij een expliciet tekstgerichte, kostenbewuste review van bestaande toegelaten
 inhoud: gebruik de tekstmodus van `omnibus-review-audit-quality` en de praktische
 ketenregels uit [de rapportwerkwijze](references/report-method.md). Herhaal niet

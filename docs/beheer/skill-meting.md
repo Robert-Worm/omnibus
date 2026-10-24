@@ -31,7 +31,7 @@ De testset staat ook in `scripts/skill-meting.mjs`. Verander hem alleen met een 
 ## Stap voor stap
 
 1. **Meet de vaste kosten.** Draai `npm run skills:meting -- --database local-data/runtime/catalogue.sqlite`.
-2. **Draai de skill op elke bron uit de testset**, in een nieuwe chat, met hetzelfde model. Noteer de tijd en het aantal tokens dat je AI-assistent meldt.
+2. **Draai de skill op elke bron uit de testset**, in een nieuwe chat, met hetzelfde model. Noteer het aantal deelagenten, de tijd en het aantal tokens dat je AI-assistent meldt.
 3. **Beoordeel het resultaat** met `omnibus-review-audit-quality`. Gebruik de totaalscore.
 4. **Leg de run vast** als regel in [de metingen](#metingen).
 5. **Vergelijk** een nieuwe versie met de vorige op dezelfde bronnen. Daalt de score bij één bron, dan gaat de wijziging niet door.
@@ -73,9 +73,9 @@ Wat dit laat zien:
 Nog geen runs vastgelegd. Voeg een run toe als regel in deze tabel, nieuwste onderaan:
 
 ```text
-| Datum | Skill | Bron | Versie | Model | Minuten | Tokens | Score |
-| --- | --- | --- | --- | --- | ---: | ---: | ---: |
-| 2026-11-02 | omnibus-add-report | LVVN26 | 2b59cb3 | voorbeeldmodel | 95 | 1.240.000 | 7,8 |
+| Datum | Skill | Bron | Versie | Model | Agents | Minuten | Tokens | Score |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| 2026-11-02 | omnibus-add-report | LVVN26 | 2b59cb3 | voorbeeldmodel | 6 | 95 | 1.240.000 | 7,8 |
 ```
 
 `npm run skills:meting -- --metingen` vat de vastgelegde runs samen.

@@ -63,9 +63,9 @@ export function leesMetingen(markdown) {
   const deel = zonderCode.split(/^## Metingen\s*$/m)[1]?.split(/^## /m)[0] ?? "";
   const regels = deel.split("\n").filter((r) => /^\|\s*\d{4}-\d{2}-\d{2}/.test(r));
   return regels.map((r) => {
-    const [datum, skill, bron, versie, model, minuten, tokensRun, score] = r.split("|").slice(1, -1).map((c) => c.trim());
+    const [datum, skill, bron, versie, model, agents, minuten, tokensRun, score] = r.split("|").slice(1, -1).map((c) => c.trim());
     const getal = (v) => (v === "" || v === "–" ? null : Number(v.replace(/\./g, "").replace(",", ".")));
-    return { datum, skill, bron, versie, model, minuten: getal(minuten), tokens: getal(tokensRun), score: getal(score) };
+    return { datum, skill, bron, versie, model, agents: getal(agents), minuten: getal(minuten), tokens: getal(tokensRun), score: getal(score) };
   });
 }
 
@@ -88,7 +88,7 @@ async function main() {
   if (args.includes("--metingen")) {
     const metingen = leesMetingen(readFileSync(path.join(root, "docs/beheer/skill-meting.md"), "utf8"));
     if (!metingen.length) { console.log("Nog geen runs vastgelegd in docs/beheer/skill-meting.md."); return; }
-    for (const m of metingen) console.log(`${m.datum} · ${m.skill} · ${m.bron} · versie ${m.versie} · ${m.model}: ${m.minuten ?? "?"} min, ${m.tokens != null ? fmt(m.tokens) : "?"} tokens, score ${m.score ?? "?"}`);
+    for (const m of metingen) console.log(`${m.datum} · ${m.skill} · ${m.bron} · versie ${m.versie} · ${m.model}: ${m.agents ?? "?"} agents, ${m.minuten ?? "?"} min, ${m.tokens != null ? fmt(m.tokens) : "?"} tokens, score ${m.score ?? "?"}`);
     return;
   }
   console.log("Vaste leeskosten per skill (geschat in tokens)\n");

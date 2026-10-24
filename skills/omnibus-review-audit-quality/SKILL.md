@@ -33,6 +33,8 @@ Beoordeel niet of de onderzochte organisatie zelf aan de norm voldoet.
   model- en vraagkwaliteitmethoden geschikter. Maak geen ontbrekende normketen
   om een model in deze schaal te kunnen scoren.
 
+**Budget.** Leg vóór je begint het maximale aantal deelagenten vast, met de beheerder of de bijdrager. Reserveer eerst de reviewers voor de eindcontrole; verdeel daarna de rest. Past het werk niet in het budget, dan stop je met HOLD en de reden. Kort nooit stil een lezing of review in om binnen het budget te blijven. Noteer het verbruik bij de meting.
+
 ## Bron eerst, dan de volledige keten
 
 1. Bevries de daadwerkelijk beoordeelde inhoud: bron-ID, editie/peildatum,
