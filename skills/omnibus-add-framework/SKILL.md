@@ -10,6 +10,15 @@ toevoegen van inhoud is geen opdracht een nieuwe viewer te ontwerpen.
 
 ## Begin
 
+**Leg vóór je begint vast**, en vraag in één ronde wat ontbreekt:
+
+- de bron: welke wet of welk kader, en welke versie of consolidatiedatum;
+- de rechten: mag de tekst openbaar in de database (zie de werklijst wetten en kaders)?
+- de taak: nieuwe extractie, correctie, of alleen een tekstreview;
+- de omgeving: is de private verwerkingsomgeving met het broncontract beschikbaar?
+
+Stel daarna geen nieuwe vragen, tenzij een stap niet terug te draaien is.
+
 Bij een expliciet tekstgerichte, kostenbewuste review van bestaande toegelaten
 inhoud: gebruik de tekstmodus van `omnibus-review-audit-quality` en behoud de
 betekenisregels uit [de kadermethode](references/framework-method.md). Herhaal

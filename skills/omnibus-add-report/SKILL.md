@@ -11,6 +11,14 @@ autoriseert geen actieve appwijziging, batch, publicatie of bericht naar een and
 
 ## Begin
 
+**Leg vóór je begint vast**, en vraag in één ronde wat ontbreekt:
+
+- de bron: titel, uitgever en de exacte pdf of link, met datum;
+- de taak: nieuwe extractie, correctie van een bestaand pakket, of alleen een tekstreview;
+- de omgeving: is de private verwerkingsomgeving met de rapportkit beschikbaar?
+
+Stel daarna geen nieuwe vragen, tenzij een stap niet terug te draaien is.
+
 Bij een expliciet tekstgerichte, kostenbewuste review van bestaande toegelaten
 inhoud: gebruik de tekstmodus van `omnibus-review-audit-quality` en de praktische
 ketenregels uit [de rapportwerkwijze](references/report-method.md). Herhaal niet
