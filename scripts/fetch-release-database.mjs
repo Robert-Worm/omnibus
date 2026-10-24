@@ -16,6 +16,14 @@ const MAX_UITGEPAKT = 1024 * 1024 * 1024;
 const DOWNLOAD_MS = 5 * 60 * 1000;
 const sha256 = (b) => createHash("sha256").update(b).digest("hex");
 
+// The first published archive omitted only LEESMIJ.txt from its inner manifest.
+// Bind its missing checksum to the exact, independently pinned ZIP bytes. Do not
+// exempt filenames globally or carry this receipt forward to another release.
+const LEGACY_SUMS = new Map([
+  ['b50d77a71aba1b9eb7d78ca58384f0c1fcdcc173f4189c1f144f31bef1858349',
+    'fa282a7205b8df53843ee97d488957540e4cc52dc2fdd6b8544ff8812e3c0bf2  LEESMIJ.txt\n'],
+]);
+
 // Flat, portable filenames only; Windows aliases must not overwrite an entry.
 function bestandsnaam(naam) {
   if (!/^[\w.-]+$/.test(naam) || naam.endsWith('.') ||
@@ -53,7 +61,7 @@ export function pakUit(buf) {
 }
 
 /** Controleert de controlegetallen uit SHA256SUMS.txt in de zip zelf. */
-export function controleerSums(bestanden) {
+export function controleerSums(bestanden, aanvullendeSums = '') {
   const perNaam = new Map(), namen = new Set();
   for (const bestand of bestanden) {
     const sleutel = bestandsnaam(bestand.naam);
@@ -63,7 +71,7 @@ export function controleerSums(bestanden) {
   const sums = perNaam.get("SHA256SUMS.txt");
   if (!sums) throw new Error("SHA256SUMS.txt ontbreekt in de zip");
   const gecontroleerd = new Set();
-  for (const regel of sums.inhoud.toString("utf8").trim().split("\n")) {
+  for (const regel of `${sums.inhoud.toString("utf8").trim()}\n${aanvullendeSums}`.trim().split("\n")) {
     const match = /^([0-9a-f]{64})[ \t]+([\w.-]+)\r?$/.exec(regel);
     if (!match) throw new Error('ongeldige regel in SHA256SUMS.txt');
     const [, hash, naam] = match;
@@ -74,6 +82,18 @@ export function controleerSums(bestanden) {
     gecontroleerd.add(naam);
   }
   if (gecontroleerd.size !== bestanden.length - 1) throw new Error('controlegetal ontbreekt voor een bestand');
+}
+
+/** Verify outer bytes before consulting a release-specific compatibility receipt. */
+export function controleerArchief(buf, verwacht) {
+  if (!/^[0-9a-f]{64}$/.test(verwacht)) throw new Error('verwacht controlegetal moet 64 hextekens zijn');
+  const gekregen = sha256(buf);
+  if (gekregen !== verwacht) throw new Error(`controlegetal van de zip klopt niet (${gekregen})`);
+  const bestanden = pakUit(buf);
+  controleerSums(bestanden, LEGACY_SUMS.get(gekregen));
+  if (!bestanden.some((b) => b.naam === 'catalogue.sqlite') || !bestanden.some((b) => b.naam === 'local-build.json'))
+    throw new Error('database of instellingen ontbreken');
+  return bestanden;
 }
 
 /** Count actual bytes while streaming. Headers are only an early refusal. */
@@ -123,11 +143,7 @@ export async function haalDatabase({ url, verwacht, out, haal = fetch }) {
   if (!/^[0-9a-f]{64}$/.test(verwacht)) throw new Error("verwacht controlegetal moet 64 hextekens zijn");
   if (existsSync(out)) throw new Error(`de map bestaat al: ${out}`);
   const buf = await downloadZip(url, haal);
-  const gekregen = sha256(buf);
-  if (gekregen !== verwacht) throw new Error(`controlegetal van de zip klopt niet (${gekregen})`);
-  const bestanden = pakUit(buf);
-  controleerSums(bestanden);
-  if (!bestanden.some((b) => b.naam === "catalogue.sqlite") || !bestanden.some((b) => b.naam === "local-build.json")) throw new Error("database of instellingen ontbreken");
+  const bestanden = controleerArchief(buf, verwacht);
   mkdirSync(out, { recursive: true });
   for (const b of bestanden) writeFileSync(path.join(out, b.naam), b.inhoud);
   return bestanden.map((b) => b.naam);

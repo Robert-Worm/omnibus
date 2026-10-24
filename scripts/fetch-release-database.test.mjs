@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { haalDatabase, pakUit, controleerSums, leesDownload } from "./fetch-release-database.mjs";
+import { haalDatabase, pakUit, controleerSums, controleerArchief, leesDownload } from "./fetch-release-database.mjs";
 import { maakZip } from "./prepare-release.mjs";
 
 const sha = (b) => createHash("sha256").update(b).digest("hex");
@@ -71,6 +71,26 @@ await test('duplicate, case-colliding and nonportable filenames are refused', ()
   }
   for (const naam of ['.', '..', 'file.', 'CON', 'nul.txt', 'LPT1.json', 'directory/', 'a/b', 'a\\b'])
     assert.throws(() => pakUit(maakZip([{naam, inhoud:Buffer.from('x')}])), /onverwacht bestand/);
+});
+
+await test('a compatibility receipt verifies bytes, never exempts a filename', () => {
+  const zip = zipMet({'catalogue.sqlite':'db', 'local-build.json':'{}', 'LEESMIJ.txt':'synthetic help'},
+    s => s.split('\n').filter(l => !l.endsWith('LEESMIJ.txt')).join('\n'));
+  const bestanden = pakUit(zip), before = bestanden.map(b => Buffer.from(b.inhoud));
+  const receipt = `${sha(Buffer.from('synthetic help'))}  LEESMIJ.txt\n`;
+  controleerSums(bestanden, receipt);
+  assert.deepEqual(bestanden.map(b => b.inhoud), before, 'original manifest and file bytes remain unchanged');
+  assert.throws(() => controleerSums(bestanden, receipt + receipt), /dubbele/);
+  assert.throws(() => controleerSums(bestanden, `${'a'.repeat(64)}  LEESMIJ.txt\n`), /controlegetal klopt niet/);
+  bestanden.find(b => b.naam === 'LEESMIJ.txt').inhoud = Buffer.from('changed help');
+  assert.throws(() => controleerSums(bestanden, receipt), /controlegetal klopt niet/);
+  // Merely naming a file LEESMIJ does not grant a compatibility receipt. Neither
+  // does passing the historical hash for different bytes (outer hash runs first).
+  assert.throws(() => controleerArchief(zip, sha(zip)), /controlegetal ontbreekt/);
+  assert.throws(() => controleerArchief(zip, 'b50d77a71aba1b9eb7d78ca58384f0c1fcdcc173f4189c1f144f31bef1858349'), /controlegetal van de zip/);
+  const missingDb = zipMet({'catalogue.sqlite':'db', 'local-build.json':'{}', 'LEESMIJ.txt':'synthetic help'},
+    s => s.split('\n').filter(l => !l.endsWith('catalogue.sqlite') && !l.endsWith('LEESMIJ.txt')).join('\n'));
+  assert.throws(() => controleerSums(pakUit(missingDb), receipt), /controlegetal ontbreekt/);
 });
 
 await test('download counts chunks even with missing or misleading length headers', async () => {
