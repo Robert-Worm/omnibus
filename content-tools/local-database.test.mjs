@@ -19,7 +19,7 @@ const save = (path, value) => writeFileSync(path, JSON.stringify(value, null, 2)
 const load = path => JSON.parse(readFileSync(path, "utf8"));
 
 // All generated sources and receipts are explicitly fictitious and remain under work/.
-async function fixture(t, count = 1) {
+async function fixture(t, count = 1, editModel = () => {}) {
   const scratch = join(root, "work", "local-database-tests");
   mkdirSync(scratch, { recursive: true });
   const dir = mkdtempSync(join(scratch, "case-"));
@@ -31,10 +31,13 @@ async function fixture(t, count = 1) {
   for (let index = 0; index < count; index++) {
     const id = `SYNTHETIC_${index}`, folder = join(dir, id);
     mkdirSync(folder);
-    const model = { id, title: `Fictief model ${index}`, question: "Hoe werkt de fictieve oefening?", selection_status: "HOLD",
+    const model = { id, kind: "own", version: "synthetic-1", source: "Fictieve testbron", selected: false,
+      title: `Fictief model ${index}`, question: "Hoe werkt de fictieve oefening?", selection_status: "HOLD",
       limitations: "Uitsluitend testgegevens; geen inhoudelijke goedkeuring.",
       items: [{ id: "TEST", title: "Fictieve dimensie", definition: "Een verzonnen testbegrip.",
-        questions: [{ id: "TEST-1", title: "Fictieve vraag", question: "Hoe beschrijf je deze oefening?", origin: "synthetic-test" }] }] };
+        question: "Hoe beschrijf je deze oefening?", probes: "", included: false,
+        questions: [{ id: "TEST-1", title: "Fictieve vraag", question: "Hoe beschrijf je deze oefening?", probes: "", included: false, origin: "synthetic-test" }] }] };
+    editModel(model);
     const source = "Fictieve testbron. Geen echt model. A😀é\r\nTweede regel.\r\n";
     writeFileSync(join(folder, "source.txt"), source);
     writeFileSync(join(folder, "contract.txt"), "Synthetic test of model-review-1; no real source approval.");
@@ -102,6 +105,7 @@ await test("one command builds two pinned local packages with exact source/revie
   assert.deepEqual(load(join(f.out, "local-database-result.json")), result);
   for (const key of ["publishable", "contentValidated", "reviewValidated", "newContentApproval"]) assert.equal(result[key], false);
   assert.equal(result.reviewStructureValidated, true); assert.equal(result.runtime.status, "HOLD");
+  assert.equal(result.viewerShapeValidated, true);
   assert.equal(existsSync(join(f.out, "local-build.json")), false);
   assert.equal(existsSync(join(f.dir, "executed.txt")), false);
   const reader = new CatalogueRepository(result.database, { readOnly: true });
@@ -125,6 +129,28 @@ await test("one command builds two pinned local packages with exact source/revie
   assert.deepEqual(readFileSync(untouchedPath), untouchedBytes);
   const second = await buildLocalDatabase({ ...f.options, out: join(f.dir, "another-new-database") });
   assert.equal(second.release, result.release, "same pinned inputs preserve content identity");
+});
+
+await test("reviewable models that cannot reopen in the viewer fail before database creation", async t => {
+  for (const editModel of [
+    m => delete m.kind,
+    m => m.kind = "unknown",
+    m => delete m.version,
+    m => delete m.selected,
+    m => m.source = {},
+    m => delete m.items[0].included,
+    m => delete m.items[0].probes,
+    m => delete m.items[0].questions[0].included,
+    m => delete m.items[0].questions[0].probes,
+  ]) {
+    // These synthetic receipts cover the exact malformed input; the separate
+    // model review structure alone previously accepted it.
+    const f = await fixture(t, 1, editModel);
+    const p = f.packages[0];
+    assert.equal(p.basis.status, "STRUCTURAL_PASS_REVIEW_REQUIRED");
+    await assert.rejects(buildLocalDatabase(f.options), /PACKAGE_CHECK\[1\]: Model viewer shape:/);
+    assert.equal(existsSync(f.out), false);
+  }
 });
 
 /** @type {[string, (fixture: Awaited<ReturnType<typeof fixture>>) => void, RegExp][]} */

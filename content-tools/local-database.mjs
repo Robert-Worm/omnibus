@@ -9,6 +9,7 @@ import { prepareModelReview, checkModelReviews } from "./model-quality.mjs";
 import { CatalogueRepository } from "../local-data/repository.mjs";
 import { verifyReleaseContent } from "../local-data/release-integrity.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
+import { validateModelLibrary } from "../lib/model-library-validation.mjs";
 
 export const localDatabaseLimits = Object.freeze({ packages: 64, bytes: 64 * 1024 * 1024, jsonBytes: 8 * 1024 * 1024 });
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -96,6 +97,10 @@ function modelSnapshot(manifest, files, authorIds) {
   requireValue(canonical(prepared) === canonical(basis), "Review basis differs from the existing model check; request reviews of the exact current model");
   const checked = checkModelReviews(prepared, reviews, { authorIds });
   requireValue(checked.status === "READY_FOR_INTEGRATION_REVIEW", `Model reviews: ${checked.errors.join("; ")}`);
+  // Reuse the saved-project/viewer shape check, not a second permissive model
+  // schema. Keep the original bytes; compatibility is not publication approval.
+  try { validateModelLibrary({ version: 1, models: [model] }); }
+  catch (error) { fail(`Model viewer shape: ${error.message}`); }
   const documents = manifest.files.filter(file => file.roles.includes("source-text")).map(file => {
     requireValue(file.path.toLowerCase().endsWith(".txt"), "Local model source-text must be a UTF-8 .txt file; preserve other originals as source/supporting files");
     let text;
@@ -203,7 +208,8 @@ export async function buildLocalDatabase({ plan, out }) {
       reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
       packagesChecked: snapshots.map(item => ({ ...item.manifest.package, manifestSha256: item.checked.manifestSha256,
         reviewStatus: item.review.status })),
-      reviewStructureValidated: true, contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
+      reviewStructureValidated: true, viewerShapeValidated: true,
+      contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
       runtime: { status: "HOLD", code: "INTEGRATION_REVIEW_REQUIRED", contract: runtimeContractHash, publication: null,
         reason: "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
     writeFileSync(join(destination, "local-database-result.json"), JSON.stringify(result, null, 2) + "\n", { flag: "wx" });

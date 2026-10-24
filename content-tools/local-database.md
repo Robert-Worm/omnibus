@@ -17,6 +17,8 @@ Een modelpakket gebruikt het bestaande [intakecontract](../docs/beheer/pakket-co
 
 Maak geen reviews om de opdracht te laten slagen. De bestaande controle beoordeelt de structuur en binding van reviews. Zij kan niet bewijzen wie de reviewers zijn of dat zij de bron werkelijk hebben gelezen. Zie [de bestaande modelwerkwijze](../skills/omnibus-add-model/README.md).
 
+De model-JSON moet ook de bestaande [modelvelden van de viewer](../lib/model-library-types.ts) bevatten: onder meer `kind`, `version`, `source`, `selected` en per dimensie en vraag `question`, `probes` en `included`. De bouwer gebruikt dezelfde structuurcontrole als het heropenen van een project. Ontbrekende velden worden niet ingevuld en tekst wordt niet aangepast. Een beschermd model waarvoor cataloguscontext nodig is, blijft zonder die context in HOLD.
+
 ## 2. Kies je pakketten
 
 Maak naast de pakketmappen een bestand `packages.json`. Noem alleen de pakketten die je wilt opnemen. Zo komt een oude of afgekeurde versie niet ongemerkt mee.
@@ -57,6 +59,8 @@ Bij succes staan er twee bestanden:
 `LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED` betekent dat de controledatabase is gemaakt. Je kunt haar lokaal onderzoeken via de bestaande [databaselezer](../local-data/repository.mjs). De opdracht gebruikt dezelfde intake-, modelreview- en database-integriteitscontroles als de bestaande hulpmiddelen. Het model staat als één record in de database; daarin blijven alle dimensies, vragen en eigen statussen bewaard. Alle records blijven in HOLD. De oorspronkelijke bestanden staan verliesloos in de database als bijlagen.
 
 **Dit is nog geen viewerpublicatie.** `publishable`, `contentValidated`, `reviewValidated` en `newContentApproval` blijven `false`. Alleen de structuur van de reviews is gecontroleerd. `runtime.status` blijft `HOLD`. Er wordt geen `local-build.json` gemaakt en geen actieve database gekozen. De bestaande runtimecontrole weigert deze controledatabase totdat de vereiste integratieroute beschikbaar en afgerond is.
+
+`viewerShapeValidated: true` bevestigt alleen dat de modelvelden de gedeelde structuurcontrole halen. Het bewijst geen inhoudelijke goedkeuring, complete publicatie of uitgevoerde viewerproef.
 
 ## 4. Los een HOLD op
 
