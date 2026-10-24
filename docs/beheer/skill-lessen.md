@@ -72,7 +72,7 @@ Het aantal volledige lezingen (nu vier) is de grootste kostenpost. Minder lezing
 
 ## Volgende stap
 
-Elk idee staat als user story klaar om op te pakken: zuiniger werken in epic [#169](https://github.com/Robert-Worm/omnibus/issues/169) (#187 tot en met #194), skills versterken in epic [#195](https://github.com/Robert-Worm/omnibus/issues/195) en testvragen voor de AI-koppeling in [#186](https://github.com/Robert-Worm/omnibus/issues/186). Meet een idee met [skills meten](skill-meting.md) voordat het in een skill komt.
+Elk idee staat als user story klaar om op te pakken. Zuiniger werken staat in epic [#169](https://github.com/Robert-Worm/omnibus/issues/169) (#187 tot en met #194), skills versterken in epic [#195](https://github.com/Robert-Worm/omnibus/issues/195) en testvragen voor de AI-koppeling in [#186](https://github.com/Robert-Worm/omnibus/issues/186). Meet een idee met [skills meten](skill-meting.md) voordat het in een skill komt.
 
 ---
 

@@ -120,14 +120,14 @@ Bij de container-route zit de database in de image. Terug naar de vorige versie 
 
 1. **Zoek de foute commit.** Vergelijk `code.revision` uit `/api/v1/version` met `git log --oneline`. In de service events zie je welke uitrol het laatst lukte.
 2. **Zet hem terug** met `git revert --no-edit <commit>` en push naar `main`. Sliplane bouwt en rolt dan automatisch uit. Mislukt het bouwen, dan blijft de huidige versie draaien.
-3. **Volg de uitrol** in de service events, of bij *Deployments* op GitHub, tot die gelukt is.
+3. **Volg de uitrol** in de service events, of op GitHub onder `Deployments`, tot die gelukt is.
 4. **Controleer de versie** vanuit een schone checkout van de nieuwe revert-commit. Gebruik dezelfde Node-versie en lockfile als de container. Neem exact de database, releasehash en publicatiehash van de herstelde container over in een afzonderlijk instellingenbestand. Gebruik niet zomaar de huidige lokale database.
 
    Kies een nieuwe, nog niet bestaande uitvoermap. Vul beide plaatshouders zelf in; gebruik voor een volgende controle opnieuw een nieuwe map.
 
    ```text
-   npm run build:runtime -- --settings "<herstelinstellingen.json>" --out "<nieuwe-controlemap>"
-   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root "<nieuwe-controlemap>"
+   npm run build:runtime -- --settings <herstelinstellingen.json> --out <nieuwe-controlemap>
+   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root <nieuwe-controlemap>
    ```
 
 *Gelukt als:* je `MATCH` ziet en `code.revision` de **nieuwe revert-commit** is, niet de oude commit waarvan de inhoud terugkomt. Controleer ook `/api/v1/ready` en open een bron. Alleen een geslaagde gezondheidscontrole bewijst niet dat de juiste combinatie draait.
@@ -136,12 +136,12 @@ Bij de container-route zit de database in de image. Terug naar de vorige versie 
 
 **Geoefend op 24 oktober 2026** met een onschuldige documentatiecommit:
 
-| Stap | Gepusht | Online | Duur | Controle |
-| --- | --- | --- | --- | --- |
-| Terugzetten (`3b1916c`) | 14:40:10 | 14:40:44 | 34 seconden | `code.revision` is de teruggezette commit; gezondheidscontrole 200 |
-| Herstellen (`686651b`) | 14:42:14 | 14:42:51 | 37 seconden | `code.revision` is de herstelde commit; database ongewijzigd |
+| Stap | Gepusht | Online | Duur |
+| --- | --- | --- | --- |
+| Terugzetten (`3b1916c`) | 14:40:10 | 14:40:44 | 34 seconden |
+| Herstellen (`686651b`) | 14:42:14 | 14:42:51 | 37 seconden |
 
-Tijden in UTC. De bouw duurt kort omdat de database al in de image zit. `check-web-version` is bij deze oefening niet gedraaid: de controle is gedaan met `/api/v1/version`.
+Na elke stap was `code.revision` de verwachte commit, gaf de gezondheidscontrole 200 en was de database ongewijzigd. Tijden in UTC. De bouw duurt kort omdat de database al in de image zit. `check-web-version` is bij deze oefening niet gedraaid: de controle is gedaan met `/api/v1/version`.
 
 Gebruik `git revert`, niet `git reset`: zo blijft de foute commit in de geschiedenis staan en kun je later uitzoeken wat er misging.
 
