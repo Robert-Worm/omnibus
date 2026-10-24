@@ -57,6 +57,7 @@ Zet daarna de labels goed: het werklabel van wie verder gaat, en status `klaar`.
 - **Nooit tegen een regel in.** Botst een test met een regel uit de documentatiecheck of de stijlgids, maak de test dan passend; meld het in de overdrachtsnotitie.
 - **Eén wijziging tegelijk per bestand.** Raak je een bestand dat de ander net wijzigde, noem dat onder *Let op*.
 - **Geen werk van de ander overnemen.** Zie je een fout in het werk van de ander, zet dan een reactie in het issue. Herstel zelf alleen een rode test of een kapotte link.
+- **Elke commit noemt zijn issue.** Zet het nummer in de commitboodschap, bijvoorbeeld `(#86)`. Zo zie je in het issue welke commits erbij horen. Alleen kleine onderhoudscommits zonder issue mogen zonder.
 - **Beschrijf wat er is.** Een plan hoort in een story, niet in de documentatie.
 
 ## Volgen en verbeteren

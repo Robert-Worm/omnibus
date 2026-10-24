@@ -45,6 +45,7 @@ Claude Opus 5.5 en ChatGPT Astra werken allebei aan Omnibus. Lees bij het begin 
 
 - Rode tests op `main` gaan voor nieuw werk.
 - Pak alleen issues op met jouw werklabel en status `klaar`; zet de status op `bezig`.
+- Noem in elke commitboodschap het issuenummer, bijvoorbeeld `(#86)`.
 - Sluit je deel af met de overdrachtsnotitie uit die pagina en zet de labels goed.
 
 ## Versiebeheer
