@@ -49,7 +49,7 @@
     "check:feiten": "node scripts/check-feiten.mjs",
     "check:passages": "node scripts/check-passages.mjs",
     "check:questions": "node scripts/scan-questions.mjs",
-    "test:models": "npm run check:models && node --test lib/model-presentation.test.mjs lib/interview-wording.test.mjs lib/question-quality.test.mjs lib/question-quality-export.test.mjs scripts/scan-questions.test.mjs scripts/check-passages.test.mjs lib/model-directory-portable.test.mjs scripts/model-delivery-projection.test.mjs",
+    "test:models": "npm run check:models && node --test lib/model-library-validation.test.mjs lib/model-presentation.test.mjs lib/interview-wording.test.mjs lib/question-quality.test.mjs lib/question-quality-export.test.mjs scripts/scan-questions.test.mjs scripts/check-passages.test.mjs lib/model-directory-portable.test.mjs scripts/model-delivery-projection.test.mjs",
     "skills:regels": "node scripts/skill-regels.mjs",
     "skills:check": "node scripts/install-content-skills.mjs",
     "skills:install": "node scripts/install-content-skills.mjs --install",
