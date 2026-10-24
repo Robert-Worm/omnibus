@@ -28,7 +28,7 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
   - Zet de vorige, goede zip terug als nieuwste release.
   - Zet `verwerkt.json` terug naar de vorige stand en push.
   - Maak daarna de juiste database opnieuw volgens [database publiceren](database-publiceren.md).
-  - Online: zet de vorige commit van de Dockerfile terug en push; controleer daarna `/api/v1/health`.
+  - Online: herstel de vastgelegde combinatie van code en database volgens [online herstel](storingen-en-herstel.md#online-terug-naar-de-vorige-werkende-versie). Controleer de versie, `/api/v1/ready` en een bron. Alleen `/api/v1/health` is niet voldoende.
 - **Nazorg:** zoek uit welke stap van de releasechecklist is overgeslagen en verbeter de checklist.
 
 ## De release-zip is beschadigd

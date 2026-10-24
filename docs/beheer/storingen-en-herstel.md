@@ -121,14 +121,18 @@ Bij de container-route zit de database in de image. Terug naar de vorige versie 
 1. **Zoek de foute commit.** Vergelijk `code.revision` uit `/api/v1/version` met `git log --oneline`. In de service events zie je welke uitrol het laatst lukte.
 2. **Zet hem terug** met `git revert --no-edit <commit>` en push naar `main`. Sliplane bouwt en rolt dan automatisch uit. Mislukt het bouwen, dan blijft de huidige versie draaien.
 3. **Volg de uitrol** in de service events tot die gelukt is.
-4. **Controleer de versie** met een build van dezelfde commit:
+4. **Controleer de versie** vanuit een schone checkout van de nieuwe revert-commit. Gebruik dezelfde Node-versie en lockfile als de container. Neem exact de database, releasehash en publicatiehash van de herstelde container over in een afzonderlijk instellingenbestand. Gebruik niet zomaar de huidige lokale database.
+
+   Kies een nieuwe, nog niet bestaande uitvoermap. Vul beide plaatshouders zelf in; gebruik voor een volgende controle opnieuw een nieuwe map.
 
    ```text
-   npm run build -- --settings local-data/runtime/local-build.json --out runtime-build
-   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root runtime-build
+   npm run build:runtime -- --settings "<herstelinstellingen.json>" --out "<nieuwe-controlemap>"
+   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root "<nieuwe-controlemap>"
    ```
 
-*Gelukt als:* je `MATCH` ziet en `code.revision` de teruggezette commit is.
+*Gelukt als:* je `MATCH` ziet en `code.revision` de **nieuwe revert-commit** is, niet de oude commit waarvan de inhoud terugkomt. Controleer ook `/api/v1/ready` en open een bron. Alleen een geslaagde gezondheidscontrole bewijst niet dat de juiste combinatie draait.
+
+`build:runtime` is hetzelfde bouwdoel als in de container. De gewone opdracht `build` maakt een lokale preview; die is niet geschikt voor deze versievergelijking.
 
 Gebruik `git revert`, niet `git reset`: zo blijft de foute commit in de geschiedenis staan en kun je later uitzoeken wat er misging.
 
