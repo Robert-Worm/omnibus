@@ -26,7 +26,7 @@ Elk open issue heeft labels voor wie, prioriteit en status:
 
 ## Het issue Overdracht
 
-Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar` (en altijd alle P1-taken en rode tests), wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend. Daarbij houdt elk issue één status: de laatst gezette blijft staan.
+Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar`, en altijd alle P1-taken en rode tests. Ook zie je wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend. Daarbij houdt elk issue één status: de laatst gezette blijft staan.
 
 Je zegt tegen een assistent: *pak de volgende taak uit Overdracht*.
 
