@@ -65,6 +65,35 @@ test('missing, repeated, conflicting or reordered references cannot silently rep
  assert.equal(project.draft.investigation.materials[0].sourceContext,'Exacte bron 🧭');
 });
 
+test('acknowledged snapshots still reject changed descriptors and preserve scalar shape and order',()=>{
+ const project=fixture(),first=packProjectSave(project);
+ let reads=0;
+ for(const change of [
+  row=>Object.defineProperty(row,'sourceContext',{enumerable:true,get(){reads++;return 'Exacte bron 🧭';}}),
+  row=>Object.defineProperty(row,'sourceContext',{enumerable:false}),
+  row=>{row[Symbol('extra')]=true;},
+  row=>{const value=row.sourceContext;delete row.sourceContext;row.sourceContext=value;},
+  row=>Object.setPrototypeOf(row,null),
+  row=>{row.sourceContext={text:'Exacte bron 🧭'};},
+ ]){
+  const changed=structuredClone(project);change(changed.draft.investigation.materials[0]);
+  const packed=packProjectSave(changed,first.snapshots);
+  assert.deepEqual(packed.message.materialReferences,[1]);
+  assert.equal(packed.message.project.draft.investigation.materials[0],changed.draft.investigation.materials[0]);
+ }
+ assert.equal(reads,0,'Matching must inspect descriptors without invoking getters');
+ const row=Object.fromEntries([['id','scalar'],['__proto__','literal'],['optional',undefined],['count',-0],['number',NaN]]);
+ const scalar={draft:{investigation:{materials:[row]}}},before=packProjectSave(scalar);
+ const unchanged=packProjectSave(scalar,before.snapshots);
+ assert.deepEqual(unpackProjectSave(structuredClone(unchanged.message),[row]),scalar);
+ row.count=0;
+ const changed=packProjectSave(scalar,unchanged.snapshots);
+ assert.equal(changed.message.materialReferences,undefined,'Negative zero is a distinct scalar');
+ assert.ok(Object.is(before.snapshots[0].count,-0),'Live edits cannot mutate the acknowledged copy');
+ assert.equal(Object.getPrototypeOf(before.snapshots[0]),Object.prototype);
+ assert.equal(before.snapshots[0].__proto__,'literal');
+});
+
 test('worker replies are bound to their job; rejected encoding resends complete evidence',async()=>{
  const h=harness(),project=fixture(),first=h.encoder.encode(project),oldReply=h.worker.onmessage;
  await assert.rejects(h.encoder.encode(project),/al een project/);
