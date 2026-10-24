@@ -106,7 +106,7 @@ Uitkomst:
 | --- | --- | --- |
 | `MATCH` | Precies de verwachte toevoegingen | Ga verder met de testbuild |
 
-**Wat de check bewaakt:** een lege kopcel is een fout. Een waarschuwing krijg je bij meer dan vier kolommen, een lege cel, een cel van meer dan 25 woorden, getallen die niet rechts staan, een datum als 21-10-2026 in een tabel, en een statuscel die geen vast label is.
+**Wat de check bewaakt:** een lege kopcel is een fout. Een waarschuwing krijg je bij meer dan vier kolommen, een lege cel, een cel van meer dan 25 woorden, getallen die niet rechts staan, een datum als 21-10-2026 in een tabel, een statuscel die geen vast label is, en een vette eerste kolom.
 
 **Geen tabel als:**
 
