@@ -23,6 +23,7 @@ Elke pagina in `docs/` is van een vast type, zoals een taakpagina of een naslagp
 - **Beschrijf wat er is.** Noem geen onderdelen, functies of afspraken die er nog niet zijn. Wil je iets bouwen? Leg het vast in een epic of user story; de [routekaart](../routekaart.md) verwijst daarnaar. Een beperking mag je wel noemen, als feit: *een pdf laad je niet direct in de applicatie*. De documentatiecheck waarschuwt bij een geplande stap (⬜ Gepland) zonder link naar een issue.
 - **Leg een vakwoord uit** bij het eerste gebruik op een pagina, of link naar de [begrippenlijst](../begrippen.md).
 - **Breek regels niet af.** Schrijf een alinea als één regel; GitHub zet de tekst zelf om.
+- **Herschrijf zonder feiten te veranderen.** Maak je een tekst eenvoudiger, dan blijven getallen, datums, links, code en ID's gelijk. `npm run check:feiten` laat zien welke feiten verdwenen of erbij kwamen.
 - **Houd zinnen onder de 25 woorden.** De documentatiecheck waarschuwt bij langere zinnen in `docs/`. Splits een lange zin in twee, of maak van een opsomming een lijst.
 
 ### Vaste woorden
