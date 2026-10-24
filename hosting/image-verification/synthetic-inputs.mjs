@@ -52,7 +52,8 @@ export async function prepareSyntheticInputs(out, nodeImage) {
     } finally { other.close(); }
     mkdirSync(join(web, 'assets'), {recursive: true});
     writeFileSync(join(web, 'database.html'), '<!doctype html><title>Synthetic image verification only</title>');
-    writeFileSync(join(web, 'assets/app-12345678.js'), '// Synthetic image verification only');
+    // Exercise real bundle compression; the server intentionally leaves tiny responses uncompressed.
+    writeFileSync(join(web, 'assets/app-12345678.js'), '// Synthetic image verification only\n'.repeat(128));
     writeFileSync(join(web, 'omnibus-release.json'), JSON.stringify({schema: 1,
       runtimeTarget: 'portable-local', release: f.release, publication: f.publication,
       contract: runtimeContractHash, refs: publication.refs}));

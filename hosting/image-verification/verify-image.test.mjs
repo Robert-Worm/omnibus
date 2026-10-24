@@ -97,6 +97,9 @@ test('synthetic gate inputs and reused host package checks; no image proof', {ti
       const acceptance = await runAcceptance({...f.acceptance, target: app.url});
       assert.equal(acceptance.passed, true, JSON.stringify(acceptance));
       assert.equal(acceptance.checks.length, 16);
+      const bundle = acceptance.checks.find(check => check.check === 'bundle-sample');
+      assert(bundle.decodedBodyBytes > 1024, 'Fixture exercises the compressed-bundle path');
+      assert(bundle.bodyBytes < bundle.decodedBodyBytes, 'Compressed transport preserves the larger decoded bundle');
       assert.equal(acceptance.remotePinsAttested, false);
     } finally { await app.close(); }
     assert.equal(app.server.listening, false);
