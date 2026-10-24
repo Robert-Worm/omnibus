@@ -93,6 +93,9 @@ export default function ModelVariable({
           {item.originalTitle && " · Oorspronkelijke dimensie: " + item.originalTitle}
         </small>
       </details>
+      {!questions.length && (
+        <p className="creator-help">Voor dit onderdeel zijn geen interviewvragen beschikbaar.</p>
+      )}
       {indicators.map((indicator) => (
         <details className="model-indicator" key={indicator.id}>
           <summary>
@@ -171,6 +174,9 @@ export default function ModelVariable({
             </label>
           </details>
           <div className="model-question-options">
+            {questions.length > 0 && !questions.some((q) => q.indicatorId === indicator.id) && (
+              <p className="creator-help">Voor deze indicator zijn geen interviewvragen beschikbaar.</p>
+            )}
             {questions
               .filter((q) => q.indicatorId === indicator.id)
               .map((q) => (

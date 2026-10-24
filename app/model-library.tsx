@@ -324,13 +324,16 @@ export default function ModelLibrary({
                           />
                         </label>
                       </details>
-                      {!i.included && (
+                      {!i.questions.length && (
+                        <p className="creator-help">Voor dit onderdeel zijn geen interviewvragen beschikbaar.</p>
+                      )}
+                      {i.questions.length > 0 && !i.included && (
                         <p className="creator-help">
                           Selecteer deze dimensie om vragen te kiezen. Uw eerdere keuzes blijven
                           bewaard.
                         </p>
                       )}
-                      {i.included && !i.questions.some((q) => q.included) && (
+                      {i.questions.length > 0 && i.included && !i.questions.some((q) => q.included) && (
                         <p className="creator-help">Kies minstens één vraag voor deze dimensie.</p>
                       )}
                       {i.questions.map((q) => (
