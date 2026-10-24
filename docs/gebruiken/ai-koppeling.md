@@ -57,6 +57,50 @@ De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste 
 
 *Het venster AI koppelen toont de juiste paden voor jouw computer.*
 
+Je hebt twee paden nodig: waar Node staat, en waar `agent-tools/server.mjs` staat.
+
+| Pad | Zo vind je het op macOS of Linux | Zo vind je het op Windows |
+| --- | --- | --- |
+| Node | `which node` | `where node` |
+| De server | `<je Omnibus-map>/agent-tools/server.mjs` | `<je Omnibus-map>\agent-tools\server.mjs` |
+
+**Codex** (de app in de terminal en de uitbreiding voor je editor):
+
+```text
+codex mcp add omnibus -- <pad naar node> <pad naar server.mjs>
+codex mcp list
+```
+
+Of zet dit in `~/.codex/config.toml`; een voorbeeld staat in [`agent-tools/codex-connection.example.toml`](../../agent-tools/codex-connection.example.toml). *Gelukt als:* `omnibus` in de lijst staat.
+
+**Claude Desktop:**
+
+1. Kies in het menu van Claude **Settings → Developer → Edit Config**. Dat opent `claude_desktop_config.json`.
+2. Zet Omnibus erin, met je eigen paden. Gebruik volledige paden; Claude Desktop kent je zoekpad niet.
+
+   ```json
+   {
+     "mcpServers": {
+       "omnibus": { "command": "<pad naar node>", "args": ["<pad naar server.mjs>"] }
+     }
+   }
+   ```
+
+3. Sluit Claude Desktop helemaal af en open het opnieuw.
+
+*Gelukt als:* Omnibus met zijn zes hulpmiddelen onder **Connectors** staat. Zo niet: kijk of er een komma te veel in het bestand staat.
+
+**Claude Code:**
+
+```text
+claude mcp add --scope user omnibus -- <pad naar node> <pad naar server.mjs>
+claude mcp list
+```
+
+Met `--scope user` werkt Omnibus in elke map waarin je Claude Code start; zonder alleen in de huidige map. *Gelukt als:* `omnibus` in de lijst staat met **Connected**.
+
+**ChatGPT** kan nog niet: ChatGPT verbindt alleen met een server op een internetadres, niet met een lokaal programma. Dat staat in [#149](https://github.com/Robert-Worm/omnibus/issues/149). Zet de koppeling niet zelf open op internet.
+
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 
 ## Goed om te weten
@@ -65,7 +109,7 @@ Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een o
 > **Let op:** wat je deelt, gaat naar je AI-dienst. Werkt je assistent in de cloud, dan gelden de voorwaarden van die dienst. Deel alleen wat je mag delen.
 
 - **Nieuwe collectie geïnstalleerd?** Bereid de koppeling opnieuw voor met dezelfde database-instellingen als de website. Controleer dat je AI-assistent naar deze installatie verwijst en herstart de MCP-verbinding. Anders kan hij nog de vorige collectie gebruiken. Zie de [technische controle](../../agent-tools/README.md#browser-en-mcp-na-een-nieuwe-collectie-gelijkzetten).
-- **Alleen lokaal.** De koppeling werkt niet met AI-diensten die alleen een internetadres accepteren.
+- **Alleen lokaal.** De koppeling werkt niet met AI-diensten die alleen een internetadres accepteren, zoals ChatGPT.
 - **Controleer het voorstel.** De assistent kiest bouwstenen op basis van zoekresultaten. Beoordeel zelf of ze passen.
 
 ## Samengevat
