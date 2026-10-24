@@ -13,7 +13,9 @@
 # Een nieuwe database? Pas DATABASE_URL en DATABASE_SHA256 hieronder aan (of geef ze
 # mee als build-argument) en bouw opnieuw.
 
-FROM node:24.21.0-bookworm-slim AS bouw
+# Official multi-platform index verified 2026-10-24; keep both stages identical.
+# Verification and recovery: docs/beheer/storingen-en-herstel.md
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS bouw
 WORKDIR /bron
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
@@ -28,7 +30,7 @@ RUN node scripts/fetch-release-database.mjs --url "$DATABASE_URL" --sha256 "$DAT
  && OMNIBUS_CODE_REVISION="${OMNIBUS_CODE_REVISION:-$SLIPLANE_COMMIT_HASH}" npm run build:runtime -- --settings /database/local-build.json \
  && npm run package:runtime -- --web-root runtime-build --database /database/catalogue.sqlite --out /pakket
 
-FROM node:24.21.0-bookworm-slim
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20
 ENV NODE_ENV=production
 # Standaard voor gebruik op je eigen computer; een host zet hier het openbare https-adres.
 # Een andere poort lokaal (-p 3000:8080)? Geef dan PUBLIC_ORIGIN=http://localhost:3000 mee.

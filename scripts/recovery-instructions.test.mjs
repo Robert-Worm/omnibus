@@ -9,6 +9,37 @@ import {buildDatabase} from './build-database-web.mjs';
 
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 
+test('both container stages retain the verified official Node version and immutable image index',()=>{
+  // Verified against Docker Hub's library/node index and each Linux image config
+  // on 2026-10-24. Updating this pin requires fresh registry evidence, not a live
+  // registry dependency during tests or a floating build-argument override.
+  const expected='node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20';
+  const stages=[...read('hosting/container/Dockerfile').matchAll(/^FROM\s+(.+)$/gm)].map(m=>m[1].trim());
+  assert.deepEqual(stages,[expected+' AS bouw',expected]);
+  assert.equal(expected.split(':')[1].split('-')[0],read('.nvmrc').trim());
+  assert(read('docs/beheer/storingen-en-herstel.md').includes(expected));
+});
+
+test('archive recovery instructions reuse the saved image and web bytes without a build or implicit pull',()=>{
+  const instructions=read('docs/beheer/storingen-en-herstel.md')
+    .split('### Een gebouwde image bewaren en lokaal terugzetten')[1]
+    .split('### Een bewaarde image bij Sliplane')[0];
+  const commands=[...instructions.matchAll(/```text\n([\s\S]*?)```/g)].map(m=>m[1]).join('\n');
+  assert.match(commands,/docker image save --output <nieuw-imagearchief.tar> <image-id>/);
+  assert.match(commands,/docker image load --input <nieuw-imagearchief.tar>/);
+  const create=commands.split('\n').find(line=>line.trim().startsWith('docker create '));
+  const run=commands.split('\n').find(line=>line.trim().startsWith('docker run '));
+  for(const command of [create,run]) {
+    assert.match(command,/--pull=never\b/);
+    assert.match(command,/<image-id>\s*$/);
+    assert.doesNotMatch(command,/--mount|--volume|(?:^|\s)-v\s/);
+  }
+  assert.match(run,/-p 127\.0\.0\.1:<vrije-poort>:8080 -e PUBLIC_ORIGIN=http:\/\/127\.0\.0\.1:<vrije-poort>/);
+  assert.match(commands,/docker cp <controlecontainer>:\/app\/omnibus-runtime\/database-build <bewaarde-webbuild>/);
+  assert.match(commands,/node scripts\/check-web-version\.mjs --url http:\/\/127\.0\.0\.1:<vrije-poort> --web-root <bewaarde-webbuild>/);
+  assert.doesNotMatch(commands,/\bnpm\b|docker\s+(?:build|pull)\b/);
+});
+
 await test('host recovery documents the container build target, exact pins and a fresh output',t=>{
   const instructions=read('docs/beheer/storingen-en-herstel.md').split('## Online terug naar')[1].split('## De terugweg lokaal')[0];
   const target=/npm run (build(?::runtime)?) -- --settings "?<herstelinstellingen.json>"? --out "?<nieuwe-controlemap>"?/.exec(instructions)?.[1];

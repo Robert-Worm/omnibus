@@ -2,7 +2,7 @@
 
 <!-- paginatype: taak -->
 
-> **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Dit gaat vooral over je eigen computer. De proefversie online herstel je door de vorige werkende commit opnieuw uit te rollen.
+> **In het kort:** wat je bewaart bij een storing, hoe je een back-up maakt en hoe je herstelt naar een nieuw bestand. Online kun je opnieuw bouwen, of een eerder gebouwde image gebruiken als die vooraf is bewaard en de host die kan starten.
 
 ## Bij een storing, in het kort
 
@@ -116,7 +116,27 @@ Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https
 
 ## Online terug naar de vorige werkende versie
 
-Bij de container-route zit de database in de image. Terug naar de vorige versie is dus: de code terugzetten en opnieuw laten bouwen.
+Bij de container-route zitten code, webbuild en database samen in de image. De huidige GitHub-route bouwt opnieuw. Dat vraagt toegang tot Docker Hub, npm en de database-zip op GitHub. Een vaste digest voorkomt dat de basisimage ongemerkt verandert; hij bewaart geen kopie en maakt bouwen niet onafhankelijk van die diensten.
+
+### De basisimage staat vast
+
+Beide stappen in `hosting/container/Dockerfile` gebruiken Node **24.21.0**, Debian Bookworm slim, met deze digest van de image-index voor meerdere platforms:
+
+```text
+node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20
+```
+
+Gecontroleerd op **24 oktober 2026** via de [officiële Docker Hub-metadata](https://hub.docker.com/v2/repositories/library/node/tags/24.21.0-bookworm-slim) en de registry `registry-1.docker.io/v2/library/node`. De berekende hashes van index, platformmanifesten en configuraties kwamen overeen. De configuraties voor Linux amd64, arm64/v8 en ppc64le noemen alle `NODE_VERSION=24.21.0`. De amd64-manifestdigest is `sha256:51b1100cc2a83d370c6a60952e3f2989c8a43159d0e38586e090f3b3326efefd`; die verschilt van de gezamenlijke indexdigest.
+
+Controleer bij een bewuste update opnieuw de [registry-index](https://docs.docker.com/reference/cli/docker/buildx/imagetools/inspect/):
+
+```text
+docker buildx imagetools inspect docker.io/library/node:24.21.0-bookworm-slim
+```
+
+Vergelijk de bovenste `Digest` met de pin en controleer de Node-versie in de platformconfiguratie. Pas beide bouwstappen samen aan en voer de tests uit. Een gewijzigde tag is geen toestemming om de pin te vervangen. Volgens [Docker](https://docs.docker.com/build/building/best-practices/#pin-base-image-versions) blijft een digest vast; daardoor moet je ook beveiligingsupdates bewust beoordelen en verwerken.
+
+### Herstellen door opnieuw te bouwen
 
 1. **Zoek de foute commit.** Vergelijk `code.revision` uit `/api/v1/version` met `git log --oneline`. In de service events zie je welke uitrol het laatst lukte.
 2. **Zet hem terug** met `git revert --no-edit <commit>` en push naar `main`. Sliplane bouwt en rolt dan automatisch uit. Mislukt het bouwen, dan blijft de huidige versie draaien.
@@ -141,9 +161,70 @@ Bij de container-route zit de database in de image. Terug naar de vorige versie 
 | Terugzetten (`3b1916c`) | 14:40:10 | 14:40:44 | 34 seconden |
 | Herstellen (`686651b`) | 14:42:14 | 14:42:51 | 37 seconden |
 
-Na elke stap was `code.revision` de verwachte commit, gaf de gezondheidscontrole 200 en was de database ongewijzigd. Tijden in UTC. De bouw duurt kort omdat de database al in de image zit. `check-web-version` is bij deze oefening niet gedraaid: de controle is gedaan met `/api/v1/version`.
+Na elke stap was `code.revision` de verwachte commit, gaf de gezondheidscontrole 200 en was de database ongewijzigd. Tijden in UTC. Deze tijden bewijzen niet dat herstel bij uitval van een externe dienst lukt. `check-web-version` is bij deze oefening niet gedraaid: de controle is gedaan met `/api/v1/version`.
 
 Gebruik `git revert`, niet `git reset`: zo blijft de foute commit in de geschiedenis staan en kun je later uitzoeken wat er misging.
+
+### Als opnieuw bouwen mislukt
+
+1. **Bewaar de foutmelding en de bedoelde commit.** Kijk in de build-logs welke stap faalt: basisimage ophalen, `npm ci`, database downloaden of een controle. Deel geen geheimen of databasepaden.
+2. **Controleer wat nog draait.** Volgens [Sliplanes uitleg over een mislukte uitrol](https://docs.sliplane.io/services/deploying-a-service/#what-happens-if-a-new-deploy-fails) blijft de bestaande uitrol draaien als de build mislukt. Dat kan nog steeds de foute versie zijn. Controleer `/api/v1/version` en `/api/v1/ready`. Beperk bij onveilige inhoud de toegang; zie de storingskaart hierboven.
+3. **Gebruik alleen een al bewaarde, gecontroleerde image als terugweg.** De lokale route staat hieronder. Voor Sliplane gelden daarnaast de voorwaarden onder [een bewaarde image bij Sliplane](#een-bewaarde-image-bij-sliplane).
+4. **Is die image niet beschikbaar?** Dan is herstel zonder bouwen niet beschikbaar. Laat de huidige dienst staan voor zover dat veilig is en meld de blokkade aan de beheerder. Probeer de revert-build pas opnieuw als de externe dienst hersteld is. Omzeil geen checksum, databasecontrole of lockfile; vervangen door `latest` lost het herstelprobleem niet op.
+
+### Een gebouwde image bewaren en lokaal terugzetten
+
+Deze Docker-route vereist vooraf een geteste, volledige Omnibus-image op een computer met Docker en hetzelfde Linux-platform als het hersteldoel. Alleen een codecommit, de Node-basisimage of een databaseback-up is onvoldoende. De onderstaande opdrachten zijn een handleiding; hiermee is geen archief van de online versie gemaakt of herstel geoefend. Heeft een ingevuld pad spaties? Zet dat pad tussen dubbele aanhalingstekens.
+
+1. **Bewaar de werkende image vóór een volgende uitrol.** Leg de volledige image-ID, het platform, de oorspronkelijke commit en het antwoord van `/api/v1/version` vast. Gebruik daarna de image-ID uit de eerste opdracht, niet een veranderlijke tag. Kies een nieuw archiefpad:
+
+   ```text
+   docker image inspect --format '{{.Id}} {{.Os}}/{{.Architecture}}' <werkende-image>
+   docker image save --output <nieuw-imagearchief.tar> <image-id>
+   ```
+
+   [Docker save](https://docs.docker.com/reference/cli/docker/image/save/) bewaart de imagelagen. Bewaar het archief en zijn SHA-256 apart op een beschermde plek, zoals in stap 3 van het databaseherstel. Dit archief bevat ook de database; het blijft buiten Git en openbare uploads. Bewaar instellingen apart zonder geheimen openbaar te maken. Een image-ID, registrydigest en archiefhash zijn verschillende controlegetallen.
+
+2. **Controleer het archief vóór gebruik.** Vergelijk SHA-256 met het vooraf bewaarde getal. Stop bij verschil of ontbrekend bewijs. Laad alleen het gecontroleerde archief en controleer de oorspronkelijke image-ID en het platform:
+
+   ```text
+   docker image load --input <nieuw-imagearchief.tar>
+   docker image inspect --format '{{.Id}} {{.Os}}/{{.Architecture}}' <image-id>
+   ```
+
+   [Docker load](https://docs.docker.com/reference/cli/docker/image/load/) herstelt de image zonder nieuwe build. Voor deze lokale route zijn Docker Hub, npm en de GitHub-release niet nodig.
+
+3. **Haal de oorspronkelijke webbuild uit de image voor de controle.** Kies een unieke containernaam en een nog niet bestaande uitvoermap met een bestaande bovenliggende map. De container wordt [aangemaakt zonder te starten](https://docs.docker.com/reference/cli/docker/container/create/); [Docker cp](https://docs.docker.com/reference/cli/docker/container/cp/) leest ook uit een gestopte container:
+
+   ```text
+   docker create --pull=never --network=none --name <controlecontainer> <image-id>
+   docker cp <controlecontainer>:/app/omnibus-runtime/database-build <bewaarde-webbuild>
+   docker rm <controlecontainer>
+   ```
+
+4. **Start alleen een lokale proef.** Kies een vrije lokale poort en vul die op beide plaatsen in. [De optie `--pull=never`](https://docs.docker.com/reference/cli/docker/container/run/#pull) weigert een ontbrekende image. Koppel geen bestaande database of volume aan:
+
+   ```text
+   docker run --rm --pull=never --read-only --cap-drop=ALL --security-opt=no-new-privileges -p 127.0.0.1:<vrije-poort>:8080 -e PUBLIC_ORIGIN=http://127.0.0.1:<vrije-poort> <image-id>
+   ```
+
+   Controleer in een tweede terminal, vanuit de bijbehorende codecheckout met Node 24:
+
+   ```text
+   node scripts/check-web-version.mjs --url http://127.0.0.1:<vrije-poort> --web-root <bewaarde-webbuild>
+   ```
+
+   *Gelukt als:* `MATCH`, de **oorspronkelijke commit** uit het bewaarde versiebewijs, dezelfde release en publicatie, `/api/v1/ready` geslaagd en de gebruikersproef uit stap 5 geslaagd. Er is hier geen nieuwe revert-commit. Een ontbrekende codeversie is geen bevestiging. Stop daarna de proef met Ctrl+C. Dit schakelt de online dienst niet om.
+
+### Een bewaarde image bij Sliplane
+
+De officiële documentatie is gecontroleerd op 24 oktober 2026. [Restart](https://docs.sliplane.io/services/service-settings/#restart-or-redeploy) herstart de huidige container; dat kiest geen eerdere image. Voor de huidige GitHub-route beschrijft Sliplane geen herstel uit een lokaal tar-archief of gegarandeerd bewaarde vorige image.
+
+Sliplane ondersteunt wel [uitrollen vanuit een OCI-registry](https://docs.sliplane.io/services/deploying-a-service/#deploy-from-a-registry). Daarvoor moet de volledige vorige Omnibus-image **vooraf** beschikbaar zijn in een bereikbare, goedgekeurde registry. Gebruik een unieke releasetag die niet wordt overschreven en leg de bijbehorende digest vast. De documentatie noemt een image-adres met tag; zij bevestigt geen digestveld. Controleer daarom vooraf dat de tag nog bij de bewaarde digest hoort en vergelijk na uitrol met de webbuild uit die image.
+
+Een bestaande GitHub-dienst kan [niet rechtstreeks van bron wisselen](https://docs.sliplane.io/services/service-settings/#settings); Sliplane verwijst hiervoor naar `Deploy Copy`. Een aparte dienst, instellingen en het omschakelen van het adres vragen dus voorbereiding en een bewuste beheerderskeuze. Ook met een bewaarde image blijft de registry nodig. Dit is geen herstelroute bij uitval van diezelfde registry.
+
+**Huidige grens:** er is voor deze handleiding geen vooraf bewaarde Omnibus-image of ingerichte registry-route aangetoond. Er is niets gepubliceerd, omgeschakeld of live hersteld. Totdat de beheerder die route apart laat inrichten en oefenen, blijft online herstel afhankelijk van opnieuw bouwen. Als de beheerder dat voldoende vindt, moet het besluit in [#215](https://github.com/Robert-Worm/omnibus/issues/215) uitdrukkelijk noemen dat herstel kan wachten op Docker Hub, npm of GitHub. Deze handleiding neemt dat besluit niet namens de beheerder.
 
 ## De terugweg lokaal oefenen
 
