@@ -9,10 +9,12 @@
 //
 // Er wordt niets geüpload en niets in de repository gewijzigd.
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
+import { backupRuntime } from "../local-data/runtime-backup.mjs";
+import { checkRuntimeDatabase } from "./check-runtime-database.mjs";
 
 const MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
 export const datumTekst = (iso) => { const [j, m, d] = iso.split("-").map(Number); return `${d} ${MAANDEN[m - 1]} ${j}`; };
@@ -144,13 +146,24 @@ export function releasenotities({ datum, inhoud, zipNaam, catalogusHash, release
   ].join("\n");
 }
 
-/** Maakt alle releasebestanden. `controleer` is de runtimecontrole (vervangbaar in tests). */
-export async function bereidReleaseVoor({ settings, out, datum, controleer, huidig, koppelingen = {}, kaderCodes = [], claims = [] }) {
+/** Maakt releasebestanden uit een gecontroleerde SQLite-snapshot, inclusief WAL. */
+export async function bereidReleaseVoor({ settings, out, datum, huidig, koppelingen = {}, kaderCodes = [], claims = [] }) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) throw new Error("Gebruik --date jjjj-mm-dd.");
   if (existsSync(out)) throw new Error(`De uitvoermap bestaat al: ${out}. Kies een nieuwe map.`);
-  const resultaat = controleer(settings);
-  if (resultaat?.status !== "VERIFIED_RUNTIME_DATABASE") throw new Error("De database haalt de runtimecontrole niet. Er is niets gemaakt.");
-  const database = readFileSync(settings.database);
+  // Fail before creating output for invalid input. Never zip a live main file:
+  // committed data can still reside in its WAL, and a writer can change it later.
+  checkRuntimeDatabase(settings);
+  mkdirSync(path.dirname(out), { recursive: true });
+  const temporary = mkdtempSync(path.join(path.dirname(out), ".omnibus-release-"));
+  let database, resultaat;
+  try {
+    const snapshot = path.join(temporary, "catalogue.sqlite");
+    await backupRuntime({ from: settings.database, to: snapshot, release: settings.release, publication: settings.publication });
+    resultaat = checkRuntimeDatabase({ ...settings, database: snapshot }, { includePackageMetadata: true });
+    database = readFileSync(snapshot);
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
   const instellingen = Buffer.from(JSON.stringify({ database: "catalogue.sqlite", release: settings.release, publication: settings.publication }, null, 2) + "\n");
   const inhoud = inhoudVan(resultaat.packages || []);
   const grootteMB = Math.round(database.length / 1024 / 1024);
@@ -165,7 +178,7 @@ export async function bereidReleaseVoor({ settings, out, datum, controleer, huid
     { naam: "LEESMIJ.txt", inhoud: Buffer.from(tekst) },
     { naam: "SHA256SUMS.txt", inhoud: Buffer.from(sums) },
   ]);
-  mkdirSync(out, { recursive: true });
+  mkdirSync(out);
   writeFileSync(path.join(out, zipNaam), zip);
   writeFileSync(path.join(out, "SHA256SUMS.txt"), `${sha256(zip)}  ${zipNaam}\n${sums}`);
   writeFileSync(path.join(out, "LEESMIJ.txt"), tekst);
@@ -181,7 +194,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const waarde = (naam) => { const i = args.indexOf(naam); return i >= 0 ? args[i + 1] : undefined; };
   try {
     const { parseDatabaseBuildArgs } = await import("./database-build-options.mjs");
-    const { checkRuntimeDatabase } = await import("./check-runtime-database.mjs");
     const settingsPad = waarde("--settings"), out = waarde("--out");
     if (!settingsPad || !out) throw new Error("Gebruik: npm run release:prepare -- --settings <local-build.json> --out <nieuwe-map> [--date jjjj-mm-dd]");
     const settings = parseDatabaseBuildArgs(["--settings", settingsPad]);
@@ -192,11 +204,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     // --rapport <rijksmap-id>=<bron-id> koppelt een nieuw rapport aan de Rijksmap; mag vaker.
     const koppelingen = Object.fromEntries(args.flatMap((a, i) => (a === "--rapport" ? [args[i + 1].split("=")] : [])));
     const claims = (waarde("--claims") || "").split(",").map((c) => c.trim().replace(/^#/, "")).filter(Boolean);
-    const uit = await bereidReleaseVoor({ settings, out: path.resolve(out), datum, huidig, koppelingen, kaderCodes, claims,
-      controleer: (s) => checkRuntimeDatabase(s, { includePackageMetadata: true }) });
+    const uit = await bereidReleaseVoor({ settings, out: path.resolve(out), datum, huidig, koppelingen, kaderCodes, claims });
     console.log(JSON.stringify(uit, null, 2));
-    if (uit.ontbreekt?.length) console.warn(`\nHOLD: geen Rijksmap-ID voor ${uit.ontbreekt.join(", ")}. Geef ze mee met --rapport <rijksmap-id>=<bron-id> en draai opnieuw in een nieuwe map.`);
-    console.log(`\nKlaar. Zet ${uit.zip} bij een nieuwe release met tag database-${datum} en gebruik releasenotities.md als beschrijving. Vervang daarna .github/voortgang/verwerkt.json door het voorstel in de uitvoermap.`);
+    if (uit.ontbreekt?.length) {
+      console.error(`\nHOLD: geen Rijksmap-ID voor ${uit.ontbreekt.join(", ")}. De bestanden zijn alleen concepten; publiceer ze niet. Geef de koppelingen mee met --rapport <rijksmap-id>=<bron-id> en draai opnieuw in een nieuwe map.`);
+      process.exitCode = 1;
+    } else {
+      console.log(`\nLokaal voorbereid: ${uit.zip}, releasenotities.md en verwerkt.json. Controleer de bestanden en de releasechecklist vóór een afzonderlijk besluit tot publicatie. Er is niets geüpload of geactiveerd.`);
+    }
   } catch (fout) {
     console.error(`Release voorbereiden mislukt: ${fout.message}`);
     process.exitCode = 1;

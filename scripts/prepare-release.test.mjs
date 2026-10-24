@@ -1,15 +1,18 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { inflateRawSync } from "node:zlib";
+import { fileURLToPath } from "node:url";
 import { bereidReleaseVoor, datumTekst, inhoudVan, kaderCode, maakZip, releasenotities, sha256, verwerktVoorstel } from "./prepare-release.mjs";
-
-const pakketten = [
-  { kind: "report", title: "Rapport A" }, { kind: "report", title: "Rapport B" },
-  { kind: "law", title: "Wet X" }, { kind: "foundation", title: "Kader Y" }, { kind: "model", title: "Model Z" },
-];
+import { createReleaseFixture } from "./prepare-release-fixture.mjs";
+import { checkRuntimeDatabase } from "./check-runtime-database.mjs";
+import { readDatabaseSettings } from "./database-build-options.mjs";
+import { CatalogueRepository } from "../local-data/repository.mjs";
+import { publishRuntime } from "../local-data/runtime-publication.mjs";
+import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 
 function leesZip(buf) {
   const uit = {};
@@ -26,9 +29,15 @@ function leesZip(buf) {
 
 function werkmap() {
   const dir = mkdtempSync(path.join(tmpdir(), "release-"));
-  const db = path.join(dir, "catalogue.sqlite");
-  writeFileSync(db, "SQLite format 3\0 fictief");
-  return { dir, settings: { database: db, release: "a".repeat(64), publication: "b".repeat(64) } };
+  const { settings } = createReleaseFixture(path.join(dir, "fictief"));
+  return { dir, settings };
+}
+
+function pakUit(zip, destination) {
+  mkdirSync(destination);
+  const inhoud = leesZip(zip);
+  for (const [name, bytes] of Object.entries(inhoud)) writeFileSync(path.join(destination, name), bytes);
+  return readDatabaseSettings(path.join(destination, "local-build.json"));
 }
 
 test("datum in gewone taal", () => {
@@ -39,20 +48,32 @@ test("de zip bevat database, instellingen, LEESMIJ en controlegetallen die klopp
   const { dir, settings } = werkmap();
   try {
     const out = path.join(dir, "uit");
-    const r = await bereidReleaseVoor({ settings, out, datum: "2026-11-30", controleer: () => ({ status: "VERIFIED_RUNTIME_DATABASE", packages: pakketten }) });
+    const before = readFileSync(settings.database);
+    const r = await bereidReleaseVoor({ settings, out, datum: "2026-11-30" });
     assert.equal(r.zip, "omnibus-database-2026-11-30.zip");
-    assert.deepEqual([r.rapporten, r.kaders, r.modellen], [2, 2, 1]);
+    assert.deepEqual([r.rapporten, r.kaders, r.modellen], [1, 2, 1]);
     const zip = readFileSync(path.join(out, r.zip));
     const inhoud = leesZip(zip);
     assert.deepEqual(Object.keys(inhoud), ["catalogue.sqlite", "local-build.json", "LEESMIJ.txt", "SHA256SUMS.txt"]);
     assert.equal(JSON.parse(inhoud["local-build.json"]).database, "catalogue.sqlite");
-    assert.match(inhoud["LEESMIJ.txt"].toString(), /30 november 2026[\s\S]*2 onderzoeksrapporten[\s\S]*Wet X; Kader Y/);
+    assert.match(inhoud["LEESMIJ.txt"].toString(), /30 november 2026[\s\S]*1 onderzoeksrapporten[\s\S]*Fictief wet; Fictief kader/);
     for (const regel of inhoud["SHA256SUMS.txt"].toString().trim().split("\n")) {
       const [hash, naam] = regel.split(/\s+/);
       assert.equal(sha256(inhoud[naam]), hash, naam);
     }
     assert.match(readFileSync(path.join(out, "SHA256SUMS.txt"), "utf8"), new RegExp(`^${sha256(zip)}  ${r.zip}`));
     assert.match(readFileSync(path.join(out, "releasenotities.md"), "utf8"), /# Database 30 november 2026[\s\S]*Nieuw in deze release/);
+    const received = pakUit(zip, path.join(dir, "ontvangen"));
+    const checked = checkRuntimeDatabase(received);
+    assert.equal(checked.status, "VERIFIED_RUNTIME_DATABASE");
+    assert.deepEqual([checked.packages, checked.records, checked.documents, checked.sourcePages, checked.sourceArtifacts], [4, 5, 1, 2, 1]);
+    assert.equal(checked.newContentApproval, false);
+    const reader = new CatalogueRepository(received.database, { readOnly: true });
+    try {
+      assert.equal(reader.db.prepare("SELECT count(*) AS n FROM records WHERE status='HOLD'").get().n, 5);
+    } finally { reader.close(); }
+    assert.deepEqual(readFileSync(settings.database), before);
+    assert.equal(readdirSync(dir).some((name) => name.startsWith(".omnibus-release-")), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -62,12 +83,62 @@ test("een database die de controle niet haalt, levert niets op", async () => {
   const { dir, settings } = werkmap();
   try {
     const out = path.join(dir, "uit");
-    await assert.rejects(bereidReleaseVoor({ settings, out, datum: "2026-11-30", controleer: () => ({ status: "HOLD" }) }), /runtimecontrole niet/);
-    await assert.rejects(bereidReleaseVoor({ settings, out: dir, datum: "2026-11-30", controleer: () => ({ status: "VERIFIED_RUNTIME_DATABASE" }) }), /bestaat al/);
-    await assert.rejects(bereidReleaseVoor({ settings, out, datum: "30-11-2026", controleer: () => ({}) }), /jjjj-mm-dd/);
+    await assert.rejects(bereidReleaseVoor({ settings: { ...settings, publication: "f".repeat(64) }, out, datum: "2026-11-30" }), /changed publication/);
+    assert.equal(existsSync(out), false);
+    await assert.rejects(bereidReleaseVoor({ settings, out: dir, datum: "2026-11-30" }), /bestaat al/);
+    await assert.rejects(bereidReleaseVoor({ settings, out, datum: "30-11-2026" }), /jjjj-mm-dd/);
+    const writer = new CatalogueRepository(settings.database);
+    try { writer.db.exec("UPDATE records SET status='APPROVED'"); } finally { writer.close(); }
+    await assert.rejects(bereidReleaseVoor({ settings, out, datum: "2026-11-30" }), /Release content verification failed/);
+    assert.equal(existsSync(out), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("de zip bevat ook de gecommitte publicatie die nog in het WAL staat", async () => {
+  const { dir, settings } = werkmap();
+  const writer = new CatalogueRepository(settings.database);
+  try {
+    writer.db.exec("PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0");
+    const value = JSON.parse(writer.db.prepare("SELECT payload FROM runtime_publications").get().payload);
+    value.summary.walRehearsal = true;
+    settings.publication = publishRuntime(writer, value, { release: settings.release, contract: runtimeContractHash });
+    assert.equal(checkRuntimeDatabase(settings).status, "VERIFIED_RUNTIME_DATABASE");
+    const mainOnly = path.join(dir, "main-only.sqlite");
+    writeFileSync(mainOnly, readFileSync(settings.database));
+    assert.throws(() => checkRuntimeDatabase({ ...settings, database: mainOnly }), /changed publication/);
+    const out = path.join(dir, "uit");
+    const r = await bereidReleaseVoor({ settings, out, datum: "2026-11-30" });
+    const received = pakUit(readFileSync(path.join(out, r.zip)), path.join(dir, "ontvangen"));
+    assert.equal(checkRuntimeDatabase(received).publication, settings.publication);
+  } finally {
+    writer.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("de echte CLI houdt ontbrekende koppelingen tegen en maakt daarna een controleerbare bundel", () => {
+  const { dir, settings } = werkmap();
+  try {
+    const cli = fileURLToPath(new URL("prepare-release.mjs", import.meta.url));
+    const args = [cli, "--settings", path.join(path.dirname(settings.database), "local-build.json"), "--date", "2026-11-30"];
+    const run = (out, extra = []) => spawnSync(process.execPath, [...args, "--out", out, ...extra], { encoding: "utf8", windowsHide: true });
+    const held = run(path.join(dir, "hold"));
+    assert.equal(held.status, 1, held.stderr);
+    assert.match(held.stderr, /HOLD: geen Rijksmap-ID voor FICTIEF-RAPPORT/);
+    assert.doesNotMatch(held.stdout, /Klaar|Lokaal voorbereid/);
+    const out = path.join(dir, "gereed");
+    const ready = run(out, ["--rapport", "fictief-oefenrapport=FICTIEF-RAPPORT"]);
+    assert.equal(ready.status, 0, ready.stderr);
+    assert.match(ready.stdout, /Lokaal voorbereid/);
+    const received = pakUit(readFileSync(path.join(out, "omnibus-database-2026-11-30.zip")), path.join(dir, "ontvangen"));
+    assert.equal(checkRuntimeDatabase(received).status, "VERIFIED_RUNTIME_DATABASE");
+    assert.deepEqual(JSON.parse(readFileSync(path.join(out, "verwerkt.json"))).rapporten, { "fictief-oefenrapport": "FICTIEF-RAPPORT" });
+    const originalZip = readFileSync(path.join(out, "omnibus-database-2026-11-30.zip"));
+    assert.equal(run(out).status, 1);
+    assert.deepEqual(readFileSync(path.join(out, "omnibus-database-2026-11-30.zip")), originalZip);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("de zip-schrijver maakt een geldige zip", () => {
