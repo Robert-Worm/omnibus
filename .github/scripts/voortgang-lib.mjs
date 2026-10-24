@@ -384,7 +384,8 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       const st = statusOf("kader", b.id.toUpperCase());
       return { ...b, ...(st.status === "open" && g.id === "licentie" ? { status: "toestemming nodig" } : st) };
     }) }));
-    const allKaders = kaderRows.flatMap((k) => k.items);
+    // Bronnen met weinig belang voor overheidsaudit tellen niet mee, tenzij ze al in de database zitten.
+    const allKaders = kaderRows.flatMap((k) => k.items).filter((b) => b.relevantie !== "laag" || b.status === "in database");
 
     const statusLabel = Object.fromEntries(Object.entries({ "in database": "✅ In database", "in bewerking": "🔄 In bewerking", ingeleverd: "📦 Ingeleverd", open: "⬜ Open", "toestemming nodig": "🔒 Toestemming nodig", "niet openbaar": "🔒 Niet openbaar", "mogelijk dubbel": "🔁 Mogelijk dubbel" }).map(([k, v]) => [k, heel(v)]));
     const legenda = (extra = []) => [
@@ -416,22 +417,29 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "## Wat staat hier",
       "",
-      "Per groep zie je de bronnen, of ze al in de database zitten, en of iemand eraan werkt. Onder *Rechten* staat per groep waarom je de bron openbaar mag verwerken, of dat je toestemming van de uitgever nodig hebt.",
+      "De wetten en kaders die er voor overheidsaudit het meest toe doen, staan bovenaan. Onder elke bron staat waarom. Wat weinig belang heeft voor overheidsaudit, staat niet op de lijst.",
       "",
       "Mis je een bron? Stel hem voor in [Discussions](" + `${repoUrl}/discussions` + ").",
       "",
       legenda(),
       "",
-      ...kaderRows.flatMap(({ g, items }) => [
-        `## ${g.titel}`,
-        "",
-        `**Rechten:** ${g.rechten}`,
-        "",
-        "| Bron | Status | Actie |",
-        "| --- | --- | --- |",
-        ...items.map((b) => `| [${afbreekbaar(esc(b.titel))}](${b.link})<br>\`${b.id}\` | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
-        "",
-      ]),
+      ...[["hoog", "Eerst: veel belang voor overheidsaudit"], ["midden", "Daarna"]].flatMap(([niveau, kop]) => {
+        const items = allKaders.filter((b) => b.relevantie === niveau);
+        return items.length ? [
+          `## ${kop}`,
+          "",
+          "| Bron | Status | Actie |",
+          "| --- | --- | --- |",
+          ...items.map((b) => `| [${afbreekbaar(esc(b.titel))}](${b.link})<br>\`${b.id}\` · ${esc(b.waarom)} | ${statusLabel[b.status]} | ${actie(b, b.titel, claimLink(b.titel, b.id))} |`),
+          "",
+        ] : [];
+      }),
+      "## Rechten",
+      "",
+      "Waarom je een bron openbaar mag verwerken, per soort bron:",
+      "",
+      ...kaderRows.filter(({ items }) => items.some((b) => b.relevantie !== "laag")).map(({ g }) => `- **${g.titel}:** ${g.rechten.charAt(0).toLowerCase()}${g.rechten.slice(1)}`),
+      "",
       "## Samengevat",
       "",
       `${count(allKaders, "in database")} wetten en kaders zitten in de database, ${count(allKaders, "open")} kun je claimen, en voor ${count(allKaders, "toestemming nodig")} is eerst toestemming van de uitgever nodig.`,

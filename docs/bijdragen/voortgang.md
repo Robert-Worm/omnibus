@@ -15,8 +15,8 @@ Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in. In de tab
 | ✅ In database | 27 | 27 | 7 |
 | 🔄 In bewerking | 0 | 0 | 0 |
 | 📦 Ingeleverd | 0 | 0 | 0 |
-| ⬜ Open | 513 | 9008 | 23 |
-| 🔒 Niet beschikbaar | 2 | 81 | 9 |
+| ⬜ Open | 513 | 9008 | 19 |
+| 🔒 Niet beschikbaar | 2 | 81 | 1 |
 
 **Legenda**
 

@@ -1,5 +1,5 @@
 {
-  "toelichting": "Werklijst van wetten, regelgeving en normenkaders. 'rechten' zegt waarom een bron openbaar verwerkt mag worden, of dat er een licentie nodig is. Controleer bij twijfel altijd de bron zelf.",
+  "toelichting": "Werklijst van wetten, regelgeving en normenkaders. 'relevantie' zegt hoeveel belang een bron heeft voor overheidsaudit (hoog, midden of laag; laag staat niet op de werklijst). 'rechten' zegt waarom een bron openbaar verwerkt mag worden. Kaders met auteursrecht staan er alleen in met een besluit (B-016). Controleer bij twijfel altijd de bron zelf.",
   "groepen": [
     {
       "id": "nl-wet",
@@ -9,72 +9,100 @@
         {
           "id": "WWKE",
           "titel": "Wet weerbaarheid kritieke entiteiten (Wwke)",
-          "link": "https://zoek.officielebekendmakingen.nl/stb-2026-188.html"
+          "link": "https://zoek.officielebekendmakingen.nl/stb-2026-188.html",
+          "relevantie": "midden",
+          "waarom": "Weerbaarheid van vitale organisaties, ook bij de overheid"
         },
         {
           "id": "BVA2021",
           "titel": "Besluit BVA-stelsel Rijksdienst 2021",
-          "link": "https://wetten.overheid.nl/BWBR0044617"
+          "link": "https://wetten.overheid.nl/BWBR0044617",
+          "relevantie": "hoog",
+          "waarom": "Bedrijfsvoering van het Rijk; vaste maatstaf voor de ADR"
         },
         {
           "id": "CIO2026",
           "titel": "Besluit CIO-stelsel Rijksdienst 2026",
-          "link": "https://zoek.officielebekendmakingen.nl/stcrt-2025-40208.html"
+          "link": "https://zoek.officielebekendmakingen.nl/stcrt-2025-40208.html",
+          "relevantie": "hoog",
+          "waarom": "Sturing op informatievoorziening en IT bij het Rijk"
         },
         {
           "id": "CW2016",
           "titel": "Comptabiliteitswet 2016",
-          "link": "https://wetten.overheid.nl/BWBR0039429"
+          "link": "https://wetten.overheid.nl/BWBR0039429",
+          "relevantie": "hoog",
+          "waarom": "Grondslag voor begroting, verantwoording en audit bij het Rijk"
         },
         {
           "id": "RPE2022",
           "titel": "Regeling periodiek evaluatieonderzoek 2022",
-          "link": "https://wetten.overheid.nl/BWBR0046970"
+          "link": "https://wetten.overheid.nl/BWBR0046970",
+          "relevantie": "hoog",
+          "waarom": "Eisen aan de evaluatie van beleid"
         },
         {
           "id": "WOO",
           "titel": "Wet open overheid (Woo)",
-          "link": "https://wetten.overheid.nl/BWBR0045754"
+          "link": "https://wetten.overheid.nl/BWBR0045754",
+          "relevantie": "hoog",
+          "waarom": "Openbaarheid; geldt voor elk overheidsorgaan"
         },
         {
           "id": "WDO",
           "titel": "Wet digitale overheid (Wdo)",
-          "link": "https://wetten.overheid.nl/BWBR0048156"
+          "link": "https://wetten.overheid.nl/BWBR0048156",
+          "relevantie": "hoog",
+          "waarom": "Digitale overheid: toegang, standaarden en beveiliging"
         },
         {
           "id": "ARCHIEF2026",
           "titel": "Archiefwet 2026",
-          "link": "https://wetten.overheid.nl/BWBR0052739"
+          "link": "https://wetten.overheid.nl/BWBR0052739",
+          "relevantie": "hoog",
+          "waarom": "Informatiehuishouding van de overheid"
         },
         {
           "id": "UAVG",
           "titel": "Uitvoeringswet Algemene verordening gegevensbescherming",
-          "link": "https://wetten.overheid.nl/BWBR0040940"
+          "link": "https://wetten.overheid.nl/BWBR0040940",
+          "relevantie": "hoog",
+          "waarom": "Nederlandse uitvoering van de AVG"
         },
         {
           "id": "AW",
           "titel": "Aanbestedingswet 2012",
-          "link": "https://wetten.overheid.nl/BWBR0032203"
+          "link": "https://wetten.overheid.nl/BWBR0032203",
+          "relevantie": "hoog",
+          "waarom": "Inkoop en aanbesteding door de overheid"
         },
         {
           "id": "WBK",
           "titel": "Wet bescherming klokkenluiders",
-          "link": "https://wetten.overheid.nl/BWBR0037852"
+          "link": "https://wetten.overheid.nl/BWBR0037852",
+          "relevantie": "midden",
+          "waarom": "Integriteit en het melden van misstanden"
         },
         {
           "id": "WPG",
           "titel": "Wet politiegegevens",
-          "link": "https://wetten.overheid.nl/BWBR0022463"
+          "link": "https://wetten.overheid.nl/BWBR0022463",
+          "relevantie": "midden",
+          "waarom": "Politiegegevens; voor audits bij politie en justitie"
         },
         {
           "id": "WJSG",
           "titel": "Wet justitiële en strafvorderlijke gegevens",
-          "link": "https://wetten.overheid.nl/BWBR0014194"
+          "link": "https://wetten.overheid.nl/BWBR0014194",
+          "relevantie": "midden",
+          "waarom": "Justitiële gegevens; voor audits bij justitie"
         },
         {
           "id": "KZBO",
           "titel": "Kaderwet zelfstandige bestuursorganen",
-          "link": "https://wetten.overheid.nl/BWBR0020495"
+          "link": "https://wetten.overheid.nl/BWBR0020495",
+          "relevantie": "hoog",
+          "waarom": "Sturing op en verantwoording van zbo's"
         }
       ]
     },
@@ -86,37 +114,51 @@
         {
           "id": "AVG",
           "titel": "Algemene verordening gegevensbescherming (AVG)",
-          "link": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+          "link": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "relevantie": "hoog",
+          "waarom": "Persoonsgegevens; geldt voor elke overheidsorganisatie"
         },
         {
           "id": "AIA",
           "titel": "AI-verordening",
-          "link": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+          "link": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "relevantie": "hoog",
+          "waarom": "Gebruik van AI en algoritmen door de overheid"
         },
         {
           "id": "NIS2",
           "titel": "NIS2-richtlijn",
-          "link": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj"
+          "link": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+          "relevantie": "hoog",
+          "waarom": "Cyberbeveiliging; geldt ook voor overheidsorganisaties"
         },
         {
           "id": "DORA",
           "titel": "DORA, digitale weerbaarheid van de financiële sector",
-          "link": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+          "link": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+          "relevantie": "laag",
+          "waarom": "Geldt voor de financiële sector, niet voor de overheid"
         },
         {
           "id": "CRA",
           "titel": "Cyberweerbaarheidsverordening (Cyber Resilience Act)",
-          "link": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+          "link": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj",
+          "relevantie": "laag",
+          "waarom": "Geldt voor makers van digitale producten"
         },
         {
           "id": "CSRD",
           "titel": "CSRD, duurzaamheidsrapportering",
-          "link": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj"
+          "link": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj",
+          "relevantie": "laag",
+          "waarom": "Geldt voor bedrijven, niet voor de overheid"
         },
         {
           "id": "EED",
           "titel": "Richtlijn energie-efficiëntie (EED)",
-          "link": "https://eur-lex.europa.eu/eli/dir/2023/1791/oj"
+          "link": "https://eur-lex.europa.eu/eli/dir/2023/1791/oj",
+          "relevantie": "laag",
+          "waarom": "Energie-efficiëntie; zelden onderwerp van een overheidsaudit"
         }
       ]
     },
@@ -128,12 +170,16 @@
         {
           "id": "BIO2",
           "titel": "Baseline Informatiebeveiliging Overheid 2 (BIO2)",
-          "link": "https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/"
+          "link": "https://www.digitaleoverheid.nl/overzicht-van-alle-onderwerpen/cybersecurity/bio-en-ensia/baseline-informatiebeveiliging-overheid/",
+          "relevantie": "hoog",
+          "waarom": "Informatiebeveiliging bij de overheid"
         },
         {
           "id": "CLOUD2026",
           "titel": "Rijksbreed cloudbeleid 2026",
-          "link": "https://www.tweedekamer.nl/downloads/document?id=2026D35295"
+          "link": "https://www.tweedekamer.nl/downloads/document?id=2026D35295",
+          "relevantie": "hoog",
+          "waarom": "Cloudgebruik bij het Rijk"
         }
       ]
     },
@@ -145,17 +191,65 @@
         {
           "id": "NISTCSF",
           "titel": "NIST Cybersecurity Framework 2.0",
-          "link": "https://doi.org/10.6028/NIST.CSWP.29"
+          "link": "https://doi.org/10.6028/NIST.CSWP.29",
+          "relevantie": "midden",
+          "waarom": "Veelgebruikt raamwerk voor cyberbeveiliging"
         },
         {
           "id": "AIRMF",
           "titel": "NIST AI Risk Management Framework 1.0",
-          "link": "https://doi.org/10.6028/NIST.AI.100-1"
+          "link": "https://doi.org/10.6028/NIST.AI.100-1",
+          "relevantie": "midden",
+          "waarom": "Raamwerk voor AI-risico's"
         },
         {
           "id": "NIST80053",
           "titel": "NIST SP 800-53 rev. 5, beveiligings- en privacymaatregelen",
-          "link": "https://doi.org/10.6028/NIST.SP.800-53r5"
+          "link": "https://doi.org/10.6028/NIST.SP.800-53r5",
+          "relevantie": "laag",
+          "waarom": "Voor de Nederlandse overheid dekt de BIO2 dit"
+        }
+      ]
+    },
+    {
+      "id": "iia",
+      "titel": "Kaders van de IIA die je als lid toepast",
+      "rechten": "Auteursrecht van The IIA. Opgenomen omdat IIA-leden deze kaders bij hun audits moeten toepassen (besluit B-016).",
+      "bronnen": [
+        {
+          "id": "TR-CYBER",
+          "titel": "IIA Topical Requirement Cybersecurity",
+          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/cybersecurity",
+          "relevantie": "hoog",
+          "waarom": "Verplicht voor IIA-leden bij een audit op cyberbeveiliging"
+        },
+        {
+          "id": "TR-THIRD",
+          "titel": "IIA Topical Requirement Third-Party",
+          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/third-party",
+          "relevantie": "hoog",
+          "waarom": "Verplicht voor IIA-leden bij een audit op uitbesteding"
+        },
+        {
+          "id": "TR-BEHAV",
+          "titel": "IIA Topical Requirement Organizational Behavior",
+          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-behavior/",
+          "relevantie": "hoog",
+          "waarom": "Verplicht voor IIA-leden bij een audit op gedrag"
+        },
+        {
+          "id": "TR-RESIL",
+          "titel": "IIA Topical Requirement Organizational Resilience",
+          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-resilience/",
+          "relevantie": "hoog",
+          "waarom": "Verplicht voor IIA-leden bij een audit op weerbaarheid"
+        },
+        {
+          "id": "GIAS",
+          "titel": "IIA Global Internal Audit Standards",
+          "link": "https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/",
+          "relevantie": "hoog",
+          "waarom": "Verplicht voor IIA-leden bij elke audit"
         }
       ]
     },
@@ -165,69 +259,11 @@
       "rechten": "Beschermd. Alleen met toestemming van de uitgever, of als eigen Nederlandse auditpunten met bronverwijzing zonder de oorspronkelijke tekst. Overleg eerst in Discussions. Uitzondering: de vier IIA Topical Requirements staan met hun volledige tekst in de database. Dat is een bewust besluit van de beheerder (20 oktober 2026). De rechten blijven bij The Institute of Internal Auditors. Vraagt de IIA erom, dan worden de teksten verwijderd.",
       "bronnen": [
         {
-          "id": "TR-CYBER",
-          "titel": "IIA Topical Requirement Cybersecurity",
-          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/cybersecurity"
-        },
-        {
-          "id": "TR-THIRD",
-          "titel": "IIA Topical Requirement Third-Party",
-          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/third-party"
-        },
-        {
-          "id": "TR-BEHAV",
-          "titel": "IIA Topical Requirement Organizational Behavior",
-          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-behavior/"
-        },
-        {
-          "id": "TR-RESIL",
-          "titel": "IIA Topical Requirement Organizational Resilience",
-          "link": "https://www.theiia.org/en/standards/2024-standards/topical-requirements/organizational-resilience/"
-        },
-        {
-          "id": "GIAS",
-          "titel": "IIA Global Internal Audit Standards",
-          "link": "https://www.theiia.org/en/standards/2024-standards/global-internal-audit-standards/"
-        },
-        {
-          "id": "3LINES",
-          "titel": "IIA Three Lines Model",
-          "link": "https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/"
-        },
-        {
-          "id": "ISO27001",
-          "titel": "ISO/IEC 27001:2022",
-          "link": "https://www.iso.org/standard/27001"
-        },
-        {
-          "id": "ISO27002",
-          "titel": "ISO/IEC 27002:2022",
-          "link": "https://www.iso.org/standard/75652.html"
-        },
-        {
-          "id": "ISO31000",
-          "titel": "ISO 31000:2018",
-          "link": "https://www.iso.org/standard/65694.html"
-        },
-        {
-          "id": "COBIT",
-          "titel": "COBIT 2019 (ISACA)",
-          "link": "https://www.isaca.org/resources/cobit"
-        },
-        {
-          "id": "COSOIC",
-          "titel": "COSO Internal Control – Integrated Framework",
-          "link": "https://www.coso.org/"
-        },
-        {
           "id": "NOREA",
           "titel": "NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)",
-          "link": "https://www.norea.nl/"
-        },
-        {
-          "id": "GOVCODE",
-          "titel": "Nederlandse Corporate Governance Code",
-          "link": "https://www.mccg.nl/"
+          "link": "https://www.norea.nl/",
+          "relevantie": "midden",
+          "waarom": "Nederlandse handreikingen voor IT-audit"
         }
       ]
     }

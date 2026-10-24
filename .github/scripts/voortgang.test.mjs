@@ -470,3 +470,15 @@ test("lange woorden in titels kunnen afbreken, zonder dat de tekst verandert", (
   assert.ok(uit.split(/[\s\u00ad\u200b]/).every((w) => w.length <= 18), "geen stuk langer dan 18 tekens");
   assert.equal(afbreekbaar("Kort rapport"), "Kort rapport");
 });
+
+test("wetten en kaders: op volgorde van belang voor overheidsaudit; laag staat er niet op", async () => {
+  const g = nepGitHub();
+  const d = data();
+  d.kaders.groepen[0].bronnen.push({ id: "LAAG", titel: "Een wet met weinig belang", link: "https://example.org/laag", relevantie: "laag", waarom: "Geldt niet voor de overheid" });
+  d.kaders.groepen[0].bronnen[0].relevantie = "hoog"; d.kaders.groepen[0].bronnen[0].waarom = "Openbaarheid";
+  const v = maakVoortgang({ data: d, repo: "x/y", gh: g.gh, now: g.nu });
+  const md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/werklijst-wetten-en-kaders.md"];
+  assert.match(md, /## Eerst: veel belang voor overheidsaudit[\s\S]*`WOO` · Openbaarheid/);
+  assert.doesNotMatch(md, /LAAG|weinig belang\]/);
+  assert.match(md, /## Rechten/);
+});
