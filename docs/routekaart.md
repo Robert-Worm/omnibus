@@ -46,8 +46,8 @@ flowchart TD
 | Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar |
 | Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
 | Snelheid online aantoonbaar · [#84](https://github.com/Robert-Worm/omnibus/issues/84) | 🔄 Bezig |
-| Logboek van de online versie bekijken · [#141](https://github.com/Robert-Worm/omnibus/issues/141) | ⬜ Gepland |
-| Online terug naar de vorige werkende versie · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | ⬜ Gepland |
+| [Logboek van de online versie bekijken](beheer/storingen-en-herstel.md#het-logboek-van-de-online-versie) · [#141](https://github.com/Robert-Worm/omnibus/issues/141) | ✅ Klaar |
+| [Online terug naar de vorige werkende versie](beheer/storingen-en-herstel.md#online-terug-naar-de-vorige-werkende-versie): beschreven, nog niet echt geoefend · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | 🔄 Bezig |
 | AI-review van beveiliging en overdracht · [#143](https://github.com/Robert-Worm/omnibus/issues/143) | ⬜ Gepland |
 
 ## Pad B · AI rechtstreeks aan de database
@@ -57,7 +57,7 @@ flowchart TD
 | Stap | Status |
 | --- | --- |
 | Lokale koppeling: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
-| Vastleggen wat de koppeling kan, met tests · [#145](https://github.com/Robert-Worm/omnibus/issues/145) | ⬜ Gepland |
+| [Vastleggen wat de koppeling kan, met tests](../agent-tools/README.md#de-zes-hulpmiddelen) · [#145](https://github.com/Robert-Worm/omnibus/issues/145) | ✅ Klaar |
 | Zoeken en lezen in alle soorten bronnen · [#146](https://github.com/Robert-Worm/omnibus/issues/146) | ⬜ Gepland |
 | Onderzoeksopzet die de vraagcontrole haalt · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ⬜ Gepland |
 | Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
@@ -92,8 +92,8 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 | De [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk · <!--n:aanbevolenInDatabase-->27<!--/n--> in de database | 🔄 Bezig |
 | Volgorde van wetten en kaders voor overheidsaudit · [#176](https://github.com/Robert-Worm/omnibus/issues/176) | ⬜ Gepland |
 | Kaders die je als IIA-lid moet toepassen · [#177](https://github.com/Robert-Worm/omnibus/issues/177) | ⬜ Gepland |
-| Vaste regel voor een nieuwe database · [#179](https://github.com/Robert-Worm/omnibus/issues/179) | ⬜ Gepland |
-| Een release met minder handwerk · [#180](https://github.com/Robert-Worm/omnibus/issues/180) | ⬜ Gepland |
+| [Vaste regel voor een nieuwe database](beheer/besluiten.md#b-017) · [#179](https://github.com/Robert-Worm/omnibus/issues/179) | ✅ Klaar |
+| [Een release met minder handwerk](beheer/database-publiceren.md#met-een-ai-agent) · [#180](https://github.com/Robert-Worm/omnibus/issues/180) | ✅ Klaar |
 
 ## Pad E · Kwaliteit en efficiëntie met AI
 
