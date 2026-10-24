@@ -20,12 +20,12 @@ flowchart TD
     class N klaar;
 ```
 
-| Pad | Doel | Status | Toelichting |
-| --- | --- | --- | --- |
-| [🌐 A · Online versie](#pad-a--online-versie) | Omnibus gebruiken zonder iets te installeren | 🔄 Bezig | Proefversie online |
-| [🤖 B · AI aan de database](#pad-b--ai-rechtstreeks-aan-de-database) | Je AI-assistent laat zoeken en een onderzoeksopzet voorbereiden | ✅ Klaar | Lokaal werkend |
-| [🗂️ C · Eigen databases](#pad-c--eigen-databases-bouwen) | Eigen documenten en een eigen database gebruiken, naast de openbare | 🔄 Bezig | Deels mogelijk |
-| [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | De openbare database samen uitbreiden | ✅ Klaar | Claimsysteem werkt |
+| Pad | Status | Stand |
+| --- | --- | --- |
+| [🌐 A · Online versie](#pad-a--online-versie) | 🔄 Bezig | Proefversie online |
+| [🤖 B · AI aan de database](#pad-b--ai-rechtstreeks-aan-de-database) | ✅ Klaar | Lokaal werkend |
+| [🗂️ C · Eigen databases](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | Deels mogelijk |
+| [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | ✅ Klaar | Claimsysteem werkt |
 
 ## Het vertrekpunt: wat er nu is
 
@@ -37,18 +37,18 @@ flowchart TD
 
 **Doel:** Omnibus in de browser gebruiken, zonder installatie. Als eerste mijlpaal een online demo, met als streefdatum 1 december 2026.
 
-| Stap | Status | Toelichting |
-| --- | --- | --- |
-| Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ Klaar | – |
-| Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ Klaar | – |
-| Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar | – |
-| Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar | – |
-| Snelheid online aantoonbaar ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | 🔄 Bezig | – |
-| Online proef: logs, back-up en herstel | ⬜ Gepland | – |
-| Onafhankelijke beveiligings- en overdrachtsreview | ⬜ Gepland | – |
-| Gebruikers testen de demo | ⬜ Gepland | – |
-| Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ Gepland | – |
-| Online demo | ⬜ Gepland | – |
+| Stap | Status |
+| --- | --- |
+| Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ Klaar |
+| Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ Klaar |
+| Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar |
+| Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
+| Snelheid online aantoonbaar ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | 🔄 Bezig |
+| Online proef: logs, back-up en herstel | ⬜ Gepland |
+| Onafhankelijke beveiligings- en overdrachtsreview | ⬜ Gepland |
+| Gebruikers testen de demo | ⬜ Gepland |
+| Generale repetitie met dezelfde code en database, plus terugvalroute | ⬜ Gepland |
+| Online demo | ⬜ Gepland |
 
 Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live-demo-checklist.md). Een test met schermlezer en in desktop-Excel hoort bewust niet bij deze demo ([besluit B-005](beheer/besluiten.md#b-005)). Deze tabel en de checklist volgen dezelfde demomijlpaal; de bredere kwaliteitsbacklog is geen extra verplichte bouwronde vóór 1 december.
 
@@ -56,36 +56,36 @@ Wat er per stap nog moet gebeuren, staat in de [checklist live demo](beheer/live
 
 **Doel:** je eigen AI-assistent laten zoeken in alle bronnen en een onderzoeksopzet laten voorbereiden, die je daarna in Omnibus afmaakt.
 
-| Stap | Status | Toelichting |
-| --- | --- | --- |
-| Lokale koppeling via MCP: zoeken, bronnen lezen, opzet voorstellen, Excel maken | ✅ Klaar | [AI-koppeling](gebruiken/ai-koppeling.md) |
-| Koppeling met andere open datasets, zoals de [Rijksmap](https://www.rijksmap.nl) | ⬜ Gepland | – |
-| Koppeling met de online versie, zodat ook AI-diensten in de cloud kunnen aansluiten | ⬜ Gepland | Na pad A |
+| Stap | Status |
+| --- | --- |
+| Lokale koppeling via MCP: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
+| Koppeling met andere open datasets, zoals de [Rijksmap](https://www.rijksmap.nl) | ⬜ Gepland |
+| Koppeling met de online versie, zodat ook AI-diensten in de cloud kunnen aansluiten · Na pad A | ⬜ Gepland |
 
 ## Pad C · Eigen databases bouwen
 
 **Doel:** met je eigen documenten werken en je eigen database gebruiken, naast de openbare. Denk aan een organisatie met interne rapporten of eigen kaders die de eigen computer of het eigen netwerk niet mogen verlaten.
 
-| Stap | Status | Toelichting |
-| --- | --- | --- |
-| Een eigen document omzetten naar bouwstenen met een AI-skill | ✅ Klaar | [Eigen documenten](gebruiken/eigen-documenten.md) |
-| Dat resultaat zelf in je lokale Omnibus laden, zonder tussenkomst van de beheerder | ⬜ Gepland | – |
-| Een eigen database maken met de publicatiehulpmiddelen | 🔄 Bezig | Kan nu alleen via de [beheerroute](beheer/database-publiceren.md) |
-| Meerdere databases naast elkaar gebruiken, met een knop in de applicatie | ⬜ Gepland | – |
+| Stap | Status |
+| --- | --- |
+| Een eigen document omzetten naar bouwstenen met een AI-skill · [Eigen documenten](gebruiken/eigen-documenten.md) | ✅ Klaar |
+| Dat resultaat zelf in je lokale Omnibus laden, zonder tussenkomst van de beheerder | ⬜ Gepland |
+| Een eigen database maken met de publicatiehulpmiddelen · Kan nu alleen via de [beheerroute](beheer/database-publiceren.md) | 🔄 Bezig |
+| Meerdere databases naast elkaar gebruiken, met een knop in de applicatie | ⬜ Gepland |
 
 ## Pad D · Samen bijdragen
 
 **Doel:** de openbare database samen laten groeien, met bronnen die goed zijn verwerkt en gecontroleerd.
 
-| Stap | Status | Toelichting |
-| --- | --- | --- |
-| Claimsysteem: bronnen op je naam zetten, inleveren en volgen | ✅ Klaar | [Meedoen](bijdragen/README.md) |
-| Werklijsten: <!--n:alle-->9.116<!--/n--> rapporten, <!--n:aanbevolen-->542<!--/n--> aanbevolen, wetten en kaders met hun rechten | ✅ Klaar | [Voortgang](bijdragen/voortgang.md) |
-| Vastleggen met welk AI-model een bron is verwerkt | ✅ Klaar | – |
-| Eerst de [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk | 🔄 Bezig | <!--n:aanbevolenInDatabase-->27<!--/n--> in de database |
-| Alle wetten en kaders die openbaar mogen; afspraken met uitgevers van beschermde kaders | ⬜ Gepland | [Werklijst](bijdragen/werklijst-wetten-en-kaders.md) |
-| Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ✅ Klaar | – |
-| Vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden | ⬜ Gepland | – |
+| Stap | Status |
+| --- | --- |
+| Claimsysteem: bronnen op je naam zetten, inleveren en volgen · [Meedoen](bijdragen/README.md) | ✅ Klaar |
+| Werklijsten: <!--n:alle-->9.116<!--/n--> rapporten, <!--n:aanbevolen-->542<!--/n--> aanbevolen, wetten en kaders met hun rechten · [Voortgang](bijdragen/voortgang.md) | ✅ Klaar |
+| Vastleggen met welk AI-model een bron is verwerkt | ✅ Klaar |
+| Eerst de [<!--n:aanbevolen-->542<!--/n--> aanbevolen rapporten](bijdragen/werklijst-aanbevolen.md) van de Auditdienst Rijk · <!--n:aanbevolenInDatabase-->27<!--/n--> in de database | 🔄 Bezig |
+| Alle wetten en kaders die openbaar mogen; afspraken met uitgevers van beschermde kaders · [Werklijst](bijdragen/werklijst-wetten-en-kaders.md) | ⬜ Gepland |
+| Automatische controle van een ingeleverd pakket, zodat bijdragers sneller horen of het compleet is | ✅ Klaar |
+| Vaker kleine databasereleases, zodat bijdragen snel zichtbaar worden | ⬜ Gepland |
 
 ## Hoe de paden samenhangen
 

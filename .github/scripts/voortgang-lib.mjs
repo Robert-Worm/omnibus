@@ -496,9 +496,9 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "## Zo staat het ervoor",
       "",
-      `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in.`,
+      `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap, en *kaders* zijn de wetten en kaders.`,
       "",
-      "| Status | Aanbevolen rapporten | Alle rapporten | Wetten en kaders |",
+      "| Status | Aanbevolen | Alle | Kaders |",
       "| --- | ---: | ---: | ---: |",
       ...[["✅ In database", "in database"], ["🔄 In bewerking", "in bewerking"], ["📦 Ingeleverd", "ingeleverd"], ["⬜ Open", "open"]]
         .map(([label, st]) => `| ${label} | ${count(aanbevolen, st)} | ${count(rows, st)} | ${count(allKaders, st)} |`),

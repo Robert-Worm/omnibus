@@ -54,7 +54,7 @@ Gebruik een tabel alleen voor informatie die je naast elkaar vergelijkt. Er zijn
 | Wegwijzer | `Je wilt… \| Lees` | Doorverwijzen naar een pagina |
 | Overzicht | `<Ding> \| Wat het is` | Begrippen, mappen, pagina's of opties uitleggen |
 | Leesroute | `Stap \| Lees \| Wat je daarna kunt` | De volgorde waarin je pagina's leest |
-| Status | `Onderdeel \| Status \| Toelichting` | Laten zien hoe ver iets is |
+| Status | `Onderdeel \| Status \| Toelichting` | Laten zien hoe ver iets is. Is de toelichting meestal leeg? Laat de kolom weg en zet een korte toelichting achter het onderdeel |
 | Werklijst | `Bron \| Status \| Actie` | Bronnen die je kunt claimen of volgen. Datum of code staat onder de titel, na `<br>` |
 | Uitkomst | `Uitkomst \| Betekenis \| Wat je doet` | Meldingen of uitkomsten van een controle |
 

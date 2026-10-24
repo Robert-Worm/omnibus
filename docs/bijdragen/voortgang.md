@@ -8,9 +8,9 @@
 
 ## Zo staat het ervoor
 
-Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in.
+Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap, en *kaders* zijn de wetten en kaders.
 
-| Status | Aanbevolen rapporten | Alle rapporten | Wetten en kaders |
+| Status | Aanbevolen | Alle | Kaders |
 | --- | ---: | ---: | ---: |
 | ✅ In database | 27 | 27 | 7 |
 | 🔄 In bewerking | 0 | 0 | 0 |
