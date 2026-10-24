@@ -27,7 +27,7 @@ flowchart TD
 | [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | 🔄 Bezig | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
 | [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
 | [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
-| [🔍 E · Kwaliteit en efficiëntie](#pad-e--kwaliteit-en-efficiëntie-met-ai) | 🔄 Bezig | [#158](https://github.com/Robert-Worm/omnibus/issues/158) · [#165](https://github.com/Robert-Worm/omnibus/issues/165) · [#169](https://github.com/Robert-Worm/omnibus/issues/169) · [#181](https://github.com/Robert-Worm/omnibus/issues/181) |
+| [🔍 E · Kwaliteit en efficiëntie](#pad-e--kwaliteit-en-efficiëntie-met-ai) | 🔄 Bezig | [#158](https://github.com/Robert-Worm/omnibus/issues/158) · [#165](https://github.com/Robert-Worm/omnibus/issues/165) · [#169](https://github.com/Robert-Worm/omnibus/issues/169) · [#181](https://github.com/Robert-Worm/omnibus/issues/181) · [#195](https://github.com/Robert-Worm/omnibus/issues/195) |
 
 ## Het vertrekpunt: wat er nu is
 
@@ -62,6 +62,7 @@ flowchart TD
 | Onderzoeksopzet die de vraagcontrole haalt · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ⬜ Gepland |
 | Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
 | Koppeling via de online versie, alleen lezen · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ⬜ Gepland |
+| Tien vaste testvragen voor de koppeling · [#186](https://github.com/Robert-Worm/omnibus/issues/186) | ⬜ Gepland |
 
 Een koppeling met de Rijksmap kan pas als die als database en applicatie even sterk is als Omnibus. De eisen staan in [#151](https://github.com/Robert-Worm/omnibus/issues/151); tot die vervuld zijn, staat de koppeling niet op de routekaart ([B-020](beheer/besluiten.md#b-020)).
 
@@ -97,7 +98,7 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 
 ## Pad E · Kwaliteit en efficiëntie met AI
 
-**Doel:** skills die sneller en goedkoper werken zonder kwaliteitsverlies, en AI die de kwaliteit van vragen en inhoud bewaakt. Liever geen vraag dan een slechte vraag. Tests die op een tweede persoon wachtten, doen een AI-agent of GitHub. Epics [#158](https://github.com/Robert-Worm/omnibus/issues/158), [#165](https://github.com/Robert-Worm/omnibus/issues/165), [#169](https://github.com/Robert-Worm/omnibus/issues/169) en [#181](https://github.com/Robert-Worm/omnibus/issues/181).
+**Doel:** skills die sneller en goedkoper werken zonder kwaliteitsverlies, en AI die de kwaliteit van vragen en inhoud bewaakt. Liever geen vraag dan een slechte vraag. Tests die op een tweede persoon wachtten, doen een AI-agent of GitHub. Epics [#158](https://github.com/Robert-Worm/omnibus/issues/158), [#165](https://github.com/Robert-Worm/omnibus/issues/165), [#169](https://github.com/Robert-Worm/omnibus/issues/169), [#181](https://github.com/Robert-Worm/omnibus/issues/181) en [#195](https://github.com/Robert-Worm/omnibus/issues/195).
 
 | Stap | Status |
 | --- | --- |
@@ -113,6 +114,8 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 | [Meten wat een skill kost en oplevert](beheer/skill-meting.md): testset en nulmeting van de leeskosten klaar, eerste gemeten runs nog niet · [#170](https://github.com/Robert-Worm/omnibus/issues/170) | 🔄 Bezig |
 | [Leren van bestaande skillverzamelingen](beheer/skill-lessen.md) · [#171](https://github.com/Robert-Worm/omnibus/issues/171) | ✅ Klaar |
 | Leanere instructies, en rapporten in een reeks verwerken · [#172](https://github.com/Robert-Worm/omnibus/issues/172) · [#173](https://github.com/Robert-Worm/omnibus/issues/173) | ⬜ Gepland |
+| Zuiniger werken met ideeën uit andere skills: profielen, alleen wijzigingen, budget, tekstlaag eerst, model per rol, grote documenten, kortere context, begrippenlijst · [#187](https://github.com/Robert-Worm/omnibus/issues/187) · [#188](https://github.com/Robert-Worm/omnibus/issues/188) · [#189](https://github.com/Robert-Worm/omnibus/issues/189) · [#190](https://github.com/Robert-Worm/omnibus/issues/190) · [#191](https://github.com/Robert-Worm/omnibus/issues/191) · [#192](https://github.com/Robert-Worm/omnibus/issues/192) · [#193](https://github.com/Robert-Worm/omnibus/issues/193) · [#194](https://github.com/Robert-Worm/omnibus/issues/194) | ⬜ Gepland |
+| [Skills versterken](https://github.com/Robert-Worm/omnibus/issues/195) met ideeën uit andere skills, zoals een controlelijst, zekerheidscontrole en B1-regels · [#196](https://github.com/Robert-Worm/omnibus/issues/196) · [#197](https://github.com/Robert-Worm/omnibus/issues/197) · [#198](https://github.com/Robert-Worm/omnibus/issues/198) · [#199](https://github.com/Robert-Worm/omnibus/issues/199) · [#200](https://github.com/Robert-Worm/omnibus/issues/200) · [#201](https://github.com/Robert-Worm/omnibus/issues/201) · [#202](https://github.com/Robert-Worm/omnibus/issues/202) · [#203](https://github.com/Robert-Worm/omnibus/issues/203) · [#204](https://github.com/Robert-Worm/omnibus/issues/204) | ⬜ Gepland |
 | Geen optimalisatie die de kwaliteit verlaagt: [B-018](beheer/besluiten.md#b-018) · [#174](https://github.com/Robert-Worm/omnibus/issues/174) | ✅ Klaar |
 | Installeren op Windows, macOS en Linux getest door GitHub · [#182](https://github.com/Robert-Worm/omnibus/issues/182) | ✅ Klaar |
 | Overdracht en skills getest door AI of GitHub · [#183](https://github.com/Robert-Worm/omnibus/issues/183) · [#184](https://github.com/Robert-Worm/omnibus/issues/184) | ⬜ Gepland |
