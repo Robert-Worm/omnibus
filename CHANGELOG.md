@@ -6,6 +6,8 @@ De belangrijkste wijzigingen, nieuwste eerst.
 
 - **Geen bedachte interviewvragen meer:** heeft een toetspunt geen eigen vraag, dan maakt Omnibus er geen standaardvraag meer bij. Op die plek staat een korte uitleg. Eigen vragen in bestaande projecten blijven staan.
 - **Vraagcontrole:** `npm run check:questions` controleert alle vragen in de database op vormfouten, zoals twee vragen in één of een gesloten interviewvraag. De nieuwe skill [`omnibus-review-questions`](skills/omnibus-review-questions/README.md) beoordeelt daarna de inhoud.
+- **Bronpassages nagelopen:** `npm run check:passages` controleert of elke bronpassage letterlijk op de opgeslagen plek in de bron staat. In de huidige database klopt dat voor alle 6.462 passages.
+- **Skills meten:** een vaste testset en `npm run skills:meting`, met een nulmeting van de leeskosten. Een skill zuiniger maken mag alleen als de kwaliteit nergens daalt ([B-018](docs/beheer/besluiten.md#b-018)).
 - **Installatie getest** op Windows, macOS en Linux, bij elke wijziging van de installatie en elke maand.
 
 ## 22 oktober 2026 · donkere modus en een verzorgde documentatie

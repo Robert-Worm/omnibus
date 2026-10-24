@@ -72,7 +72,19 @@ npm run data:compare-runtime -- --before local-data/runtime/local-build.json --a
 
 `MATCH` keurt de inhoud niet goed; het bevestigt alleen dat er niets onverwachts is veranderd.
 
-**Gelukt als:** je `MATCH` ziet.
+Controleer daarna de inhoud van de nieuwe database zelf:
+
+```text
+npm run check:passages -- --database work/publication-01/catalogue.sqlite
+npm run check:questions -- --database work/publication-01/catalogue.sqlite
+```
+
+| Controle | Wat hij nagaat | Bij een melding |
+| --- | --- | --- |
+| Bronpassages | Staat elke bronpassage letterlijk in de bron, op de opgeslagen positie? | Een HOLD verklaar of herstel je vóór de release; verschuif nooit zelf een markering |
+| Vragen | Heeft een vraag een vormfout? | Zie [vraagcontrole](inhoud-toevoegen.md#1-beoordeel-de-inhoud) |
+
+**Gelukt als:** je `MATCH` ziet en de bronpassages geen HOLD hebben.
 
 ### 5. Test in een aparte build
 
