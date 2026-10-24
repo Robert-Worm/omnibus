@@ -25,6 +25,7 @@ const LABELS = [
   { name: "story", color: "0e8a16", description: "User story: een afgebakend stuk werk" },
   { name: "kwaliteit", color: "1d76db", description: "Kwaliteit van de repository en documentatie" },
   { name: "presentatie", color: "c5def5", description: "Hoe de documentatie eruitziet: hiërarchie, tabellen, beeld" },
+  { name: "routekaart", color: "fbca04", description: "Een stap op de routekaart: wat we gaan bouwen" },
 ];
 const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));
 for (const l of LABELS) if (!existing.has(l.name)) await gh("/labels", { method: "POST", body: JSON.stringify(l) });
