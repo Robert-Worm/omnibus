@@ -6,7 +6,7 @@ const key = text(300);
 const level = z.enum(['operational', 'management', 'strategic']);
 export const searchSchema = z.object({
   query: z.string().max(500).default(''), sourceId: z.string().max(200).default(''),
-  kind: z.enum(['', 'report', 'law', 'model']).default(''),
+  kind: z.enum(['', 'report', 'law', 'framework', 'model', 'theme']).default(''),
   limit: z.number().int().min(1).max(40).default(20), offset: z.number().int().min(0).max(100000).default(0),
 }).strict();
 export const itemSchema = z.object({key,

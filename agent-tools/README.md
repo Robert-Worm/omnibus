@@ -17,7 +17,7 @@ Deze koppeling laat een eigen AI-client de bestaande Omnibus-werkwijze gebruiken
 
 ## Wat werkt nu?
 
-- De actieve rapporten, wetten en modellen doorzoeken; geen ingetrokken of uitsluitend voor oude projecten bewaarde bronnen.
+- De actieve rapporten, wetten, kaders, modellen en thema’s doorzoeken; geen ingetrokken of uitsluitend voor oude projecten bewaarde bronnen. De uitbreiding volgt de bestaande broncatalogus, inclusief Topical Requirements en andere toegelaten kaders.
 - Norm, doel, risico, beheersing, toetspunt, bronpassage, beperkingen en toetsaanpak opvragen. Lange brongegevens worden zonder verlies in delen aangeboden.
 - Een apart concept samenstellen met selectieredenen, centrale vragen, deelvragen, vraagkoppelingen en eigen interviewvragen per respondentniveau. Beoordeelde modelvragen blijven intact.
 - Normtoetsing, Risico-controlmatrix en Interviewleidraad maken met de bestaande Excel-generator, kleuren, lettertype, werkfasen, auteur/team en respondentniveaus.
@@ -28,17 +28,22 @@ Deze koppeling laat een eigen AI-client de bestaande Omnibus-werkwijze gebruiken
 | Hulpmiddel | Wat het doet | Invoer → uitvoer | Grenzen |
 | --- | --- | --- | --- |
 | `get_workflow_guide` | Geeft werkwijze, bronregels, vraagkwaliteit, privacy en limieten | Niets → werkwijze, release, publicatie en sectoren | Alleen tekst; controleert niets |
-| `list_sources` | Toont de bronnen die je in deze release kunt kiezen | Niets → bron, soort en aantal bouwstenen | Alleen wat in de zoekindex staat |
-| `search_building_blocks` | Zoekt op woorden in toetspunten en modelvragen | Zoekterm, bron, soort, pagina → kandidaten met fragment | Hooguit 40 per pagina; woordovereenkomst, geen inhoudelijke relevantie |
+| `list_sources` | Toont de actieve leesbare bronnen en thema’s | Niets → bron, soort, leesbare/selecteerbare/HOLD/context-aantallen | Alleen wat in de zoekindex staat; selecteerbaar verwijst naar de applicatie |
+| `search_building_blocks` | Zoekt op woorden in toetspunten, modelvragen, broncontext en thema’s | Zoekterm, bron, soort, pagina → kandidaten met fragment en selectiegrens | Hooguit 40 per pagina; woordovereenkomst, geen inhoudelijke relevantie |
 | `get_building_block` | Leest één bouwsteen: overzicht, broncontext, brontekst en herleiding | Sleutel en sectie → tekst in delen tot `nextOffset` leeg is | Hooguit 12.000 tekens per deel; weigert een gewijzigde bouwsteen |
 | `prepare_research_draft` | Maakt een nieuw lokaal project met selecties, redenen en vragen | Concept en `consent: true` → concept-ID en bestandspaden | Hooguit 250 bouwstenen en 200 vragen; elke bouwsteen aan een vraag |
 | `export_research_draft` | Maakt een Excel van een eerder concept | Concept-ID en `consent: true` → pad, grootte en hash | Altijd een nieuw bestand; nooit overschrijven of uploaden |
 
-**Tests met fictieve gegevens.** De vier leestools staan in `read-tools.test.mjs`, de twee schrijftools in `output-safety.test.mjs` en `input-contract.test.mjs`. Ze draaien zonder private database in `npm run test:agent:input`. De integratieproef `local-protocol.test.mjs` doorloopt alle zes met de echte collectie.
+**Tests met fictieve gegevens.** De vier leestools staan in `read-tools.test.mjs`, met de bronprojecties en catalogusroute in de daarin opgenomen `catalogue-coverage.test.mjs`. De twee schrijftools staan in `output-safety.test.mjs` en `input-contract.test.mjs`. Ze draaien zonder private database in `npm run test:agent:input`. De integratieproef `local-protocol.test.mjs` doorloopt alle zes met de echte collectie.
+
+**Lezen van alle brontypen (#146).** `kind` ondersteunt `report`, `law`, `framework`, `model` en `theme`. `kind: "theme"` of een thema-ID in `sourceId` levert de bestaande rapportpunten met hun oorspronkelijke sleutel en bronvermelding; thema’s maken geen extra normen. De bronlijst telt modelvragen per respondentniveau. `readableItems` omvat ook `holdItems` en `contextItems`; `selectableItems` telt de punten die de applicatie laat selecteren. Aantallen over thema’s en rapporten mogen niet bij elkaar worden opgeteld.
+
+Elke treffer en detailaanroep toont `selectionStatus`, `selectionReason` en `draftSelectable`. HOLD en contextpunten blijven leesbaar. Voor kaders die de bestaande conceptfunctie nog niet ondersteunt is `draftSelectable` eveneens `false`; deze uitbreiding voegt geen schrijfmogelijkheden toe. Bronbeperkingen, toepasselijkheid, bronversie en herleiding staan in het overzicht en de gepagineerde bronsecties. Ook Topical-herleiding is via `trace` verliesvrij te lezen. De gedeelde passageadapter blijft bepalend voor de bronversie van andere kaders. XML-bewijs blijft als XML herkenbaar.
+
+`passageStatus: "NOT_AVAILABLE"` meldt expliciet wanneer geen letterlijke bronpassage aanwezig is. Dat kan bijvoorbeeld gelden voor modelvragen met alleen een publicatie- en paginaverwijzing. Eigen interviewvragen, normparafrases en broncontext worden niet als citaten aangevuld. Lees `sourceContext` en `trace` voor modelgrenzen en theoretische herkomst. Een synthetische test bevestigt de route, niet de inhoudelijke juistheid of volledigheid van een echte bronrelease. Bestaande agent-builds moeten opnieuw worden opgebouwd voordat deze uitgebreidere zoekindex beschikbaar is; dit verandert de bronrelease niet.
 
 **Bekende gaten**, elk met een eigen user story:
 
-- De zoekindex bevat rapporten, het CIO-stelsel, de WWKE en de onderzoeksmodellen, maar nog geen IIA Topical Requirements en andere kaders: [#146](https://github.com/Robert-Worm/omnibus/issues/146).
 - Vragen die de AI voorstelt, gaan nog niet door de [vraagcontrole](../skills/omnibus-review-questions/README.md): [#147](https://github.com/Robert-Worm/omnibus/issues/147).
 - Alleen lokaal via STDIO; een koppeling via de online versie ontbreekt: [#149](https://github.com/Robert-Worm/omnibus/issues/149).
 

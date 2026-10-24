@@ -24,15 +24,18 @@ createIndex(writer, release);
 const reader = new AgentIndex(database, release);
 const workflow = await import(pathToFileURL(join(output, 'workflow.mjs')).href);
 workflow.configureCatalogueReader(ref => reader.content(ref));
-let count = 0;
+let count = 0, selectableItems = 0;
 try {
   writer.exec('BEGIN');
-  for await (const entry of workflow.indexEntries()) { insertEntry(writer, entry); count++; }
+  for await (const entry of workflow.indexEntries()) {
+    insertEntry(writer, entry); count++;
+    if (entry.selectionStatus === 'SELECTABLE') selectableItems++;
+  }
   writer.exec('COMMIT');
 } catch (error) { writer.exec('ROLLBACK'); throw error; }
 finally { reader.close(); writer.close(); }
 // Publish the pointer only after a complete, validated build; previous builds survive failures.
-const manifest = {schema: 1, release, publication, directory: output, selectableItems: count, createdAt: new Date().toISOString()};
+const manifest = {schema: 1, release, publication, directory: output, readableItems: count, selectableItems, createdAt: new Date().toISOString()};
 JSON.parse(readFileSync(join(output, 'omnibus-release.json'), 'utf8'));
 writeFileSync(resolve(root, 'agent-build/current.next.json'), JSON.stringify(manifest, null, 2));
 renameSync(resolve(root, 'agent-build/current.next.json'), resolve(root, 'agent-build/current.json'));

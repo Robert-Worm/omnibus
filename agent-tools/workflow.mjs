@@ -2,15 +2,22 @@
 // This module never reads a user's browser storage or changes source content.
 import {configureCatalogueReader} from './catalogue-transport.mjs';
 import {ensureCatalogue} from '../lib/catalogue-runtime.mjs';
-import {baseFramework, corpus, workspaces} from '../lib/application-catalogue.mjs';
+import {baseFramework, corpus, workspaces, themes} from '../lib/application-catalogue.mjs';
 import {reportSummaries} from '../lib/catalogue-summary.mjs';
 import catalogue from '../lib/report-point-catalogue.mjs';
 import {makeReportPointMaterial, setReportPointSelection} from '../lib/report-point-adapter.mjs';
-import {cioSourceId, cioPoints, cioMetadata, makeCioMaterial, chooseCioPoints} from '../lib/cio-law-adapter.mjs';
+import {cioSourceId, cioPoints, cioMetadata, makeCioMaterial, chooseCioPoints, cioGoalFor} from '../lib/cio-law-adapter.mjs';
 import {wwkeSourceId, wwkePoints, wwkeMetadata, wwkeFilters} from '../lib/wwke-law-data.mjs';
 import {selectWwkePointsDirect} from '../lib/wwke-law-adapter.mjs';
+import {cioRecordsFor, cioIssuesFor, cioStatus, cioReviewBasis, cioCatalogue} from '../lib/cio-law-data.mjs';
+import {wwkePointContext, wwkeContext, wwkeStatus, wwkeReviewBasis, wwkeFilterMap} from '../lib/wwke-law-data.mjs';
+import {topicalPackage, makeTopicalMaterial, topicalTrace, topicalSpanLocation} from '../lib/topical-content.mjs';
+import {preparedFoundationItems} from '../lib/foundation-workspace.mjs';
+import {documentsForFoundation, foundationPassages} from '../lib/foundation-reader.mjs';
+import {isAdmittedFoundation, flatNormSelectable} from '../lib/admitted-foundation.mjs';
+import {readEntry, readRestrictedPoint, flatReadMaterial, modelReadMaterial, themesForPoint} from './read-materials.mjs';
 import {initialModelLibrary, restoreModelLibrary, scopedExportSelection, exportDraftForSelection} from '../lib/model-library.mjs';
-import {selectedModelMaterials, addMaterials, investigationFramework, validateExportSettings} from '../lib/investigation.mjs';
+import {foundations, selectedModelMaterials, addMaterials, investigationFramework, validateExportSettings} from '../lib/investigation.mjs';
 import {newProject} from '../lib/new-project.mjs';
 import {validateDraft} from '../lib/framework-model.mjs';
 import {addQuestion, setQuestionDesign, linkLine} from '../lib/research-plan.mjs';
@@ -41,11 +48,6 @@ function modelSelection(model, pointId, level, subject = '') {
   }
   return copy;
 }
-const keyFor = (sourceId, pointId, level = '') => [sourceId, pointId, level].filter(Boolean).join('|');
-const record = (kind, sourceId, sourceTitle, pointId, material, level = '') => ({
-  key: keyFor(sourceId, pointId, level), kind, sourceId, sourceTitle, pointId, level, material,
-});
-
 // Used only when preparing a release, never on search or server startup.
 export async function* indexEntries() {
   await initialize();
@@ -54,22 +56,54 @@ export async function* indexEntries() {
     await ensureCatalogue(['report:' + sourceId]);
     const admitted = new Set(reportSummaries[sourceId]?.admittedIds ?? []);
     for (const p of catalogue.points.filter(p => p.report_id === sourceId && admitted.has(p.legacy_line_id)))
-      yield record('report', sourceId, c.framework.report.title, p.id, makeReportPointMaterial(catalogue, p.id, 'generic'));
+      yield readEntry('report', c.framework.report, p.id, makeReportPointMaterial(catalogue, p.id, 'generic'),
+        {themes: themesForPoint(themes, p)});
   }
-  await ensureCatalogue(['foundation:' + cioSourceId, 'foundation:' + wwkeSourceId]);
-  for (const p of cioPoints.filter(p => p.selection_status === 'SELECTABLE'))
-    yield record('law', cioSourceId, cioMetadata.title, p.id, makeCioMaterial(p));
-  for (const p of wwkePoints.filter(p => p.selection_status === 'SELECTABLE')) {
-    const draft = selectWwkePointsDirect(newProject(baseFramework).draft, [p.id]);
-    const {id: _id, ...material} = draft.investigation.materials[0];
-    yield record('law', wwkeSourceId, wwkeMetadata.title, p.id, material);
+  // Follow the same active catalogue as the application, including future
+  // admitted flat frameworks. Archived/unadmitted sources never enter here.
+  for (const source of foundations) {
+    await ensureCatalogue(['foundation:' + source.id, 'source:' + source.id]);
+    const topical = topicalPackage(source.id);
+    if (source.id === cioSourceId) {
+      for (const p of cioPoints) yield readEntry('law', cioMetadata, p.id,
+        p.selection_status === 'SELECTABLE' ? makeCioMaterial(p) : readRestrictedPoint(cioMetadata, p,
+          {records: cioRecordsFor(p), issues: cioIssuesFor(p), criterion: cioCatalogue.criteria.find(c => c.id === p.criterion_id),
+            objectives: cioCatalogue.objectives.filter(o => p.objective_ids.includes(o.id)), goals: p.objective_ids.map(cioGoalFor).filter(Boolean)},
+          {trace: {status: cioStatus, reviewBasis: cioReviewBasis}}),
+        {selectionStatus: p.selection_status, selectionReason: p.selection_reason});
+    } else if (source.id === wwkeSourceId) {
+      for (const p of wwkePoints) {
+        let material;
+        if (p.selection_status === 'SELECTABLE') {
+          const draft = selectWwkePointsDirect(newProject(baseFramework).draft, [p.id]);
+          const {id: _id, ...selected} = draft.investigation.materials[0];
+          material = selected;
+        } else material = readRestrictedPoint(wwkeMetadata, p, wwkePointContext(p), {linkSpans: true,
+          trace: {sourceContext: wwkeContext, sourceStatus: wwkeStatus, reviewBasis: wwkeReviewBasis, filterMapping: wwkeFilterMap.get(p.id)}});
+        yield readEntry('law', wwkeMetadata, p.id, material, {selectionStatus: p.selection_status, selectionReason: p.selection_reason});
+      }
+    } else if (topical) {
+      for (const p of topical.catalogue.points) yield readEntry('framework', source, p.id,
+        p.selection_status === 'SELECTABLE' ? makeTopicalMaterial(topical, p) : readRestrictedPoint(source, p, topicalTrace(topical, p),
+          {spanLocation: span => topicalSpanLocation(topical.manifest.documents, span)}),
+        {selectionStatus: p.selection_status, selectionReason: p.selection_reason, draftSelectable: false});
+    } else {
+      for (const p of preparedFoundationItems.filter(p => p.sourceId === source.id)) {
+        const status = p.auditRole !== 'norm' && isAdmittedFoundation(source) ? 'CONTEXT_ONLY' :
+          isAdmittedFoundation(source) ? (flatNormSelectable(p) ? 'SELECTABLE' : 'HOLD') : p.selection_status || 'SELECTABLE';
+        const reference = {...p, foundationId: source.id};
+        yield readEntry(source.kind === 'law' ? 'law' : source.kind === 'model' ? 'model' : 'framework', source, p.id,
+          flatReadMaterial(source, p, documentsForFoundation(reference), foundationPassages),
+          {selectionStatus: status, selectionReason: p.selection_reason, draftSelectable: false});
+      }
+    }
   }
   for (const model of initialModelLibrary().models)
     for (const item of model.items)
       for (const q of item.questions ?? [])
         for (const level of ['operational', 'management', 'strategic']) {
           const [material] = selectedModelMaterials(modelSelection(model, q.id, level));
-          if (material) yield record('model', model.id, model.title, q.id, material, level);
+          if (material) yield readEntry('model', model, q.id, modelReadMaterial(model, item, q, material), {level});
         }
 }
 
