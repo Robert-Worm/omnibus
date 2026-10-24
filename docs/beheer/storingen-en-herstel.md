@@ -112,7 +112,7 @@ Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 reg
 
 **Wat er niet in staat:** geen adressen, zoekopdrachten, headers, cookies, databasepaden of projecttekst. De server maakt de `requestId` zelf; een ID die iemand meestuurt, komt niet in de log. Tests bewaken dit met een geheime testwaarde in de headers: `local-data/server-security.test.mjs` en `local-data/server-hosting.test.mjs`.
 
-Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https://omnibus.sliplane.app/api/v1/version`. `code.revision` is de commit die online staat. Een browser die het adres direct opent, krijgt *Cross-site request not allowed*; dat is de beveiliging, geen storing.
+Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https://omnibus.sliplane.app/api/v1/version`. `code.revision` is de commit die online staat. Zelf intypen of `curl` werkt. Klik je vanaf een andere site op een link naar `/api/…`, dan krijg je *Cross-site request not allowed*; dat is de beveiliging, geen storing.
 
 ## Online terug naar de vorige werkende versie
 
