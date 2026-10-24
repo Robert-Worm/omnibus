@@ -22,7 +22,7 @@
     "build:agent": "node scripts/build-agent-tools.mjs",
     "start:agent": "node agent-tools/server.mjs",
     "agent:testvragen": "node agent-tools/evaluatie/controleer-testvragen.mjs",
-    "test:agent:input": "node --test agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs agent-tools/read-tools.test.mjs agent-tools/evaluatie/testvragen.test.mjs",
+    "test:agent:input": "node --test agent-tools/input-contract.test.mjs agent-tools/output-safety.test.mjs agent-tools/read-tools.test.mjs agent-tools/read-only-http.test.mjs agent-tools/evaluatie/testvragen.test.mjs",
     "test:agent:protocol": "node --test agent-tools/local-protocol.test.mjs",
     "content:intake": "node scripts/check-content-intake.mjs",
     "content:prepare": "node scripts/prepare-content-intake.mjs",
