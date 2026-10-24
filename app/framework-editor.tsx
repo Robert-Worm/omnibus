@@ -90,7 +90,7 @@ import {
   selectedReportIds,
 } from "@/lib/corpus-model.mjs";
 import type { Framework, Draft, Evidence, Line } from "@/lib/framework-types";
-import { labels, basisLabels, statusLabels, baselineId, initialDraft, isEdited, updateValue, draftValue } from "@/lib/framework-model.mjs";
+import { labels, basisLabels, statusLabels, baselineId, initialDraft, prepareInitialDraft, isEdited, updateValue, draftValue } from "@/lib/framework-model.mjs";
 import { createFrameworkTools, registerFrameworkTools } from "@/lib/framework-tools.mjs";
 import FrameworkStructure from "./framework-structure";
 import FrameworkFields from "./framework-fields";
@@ -295,7 +295,7 @@ export default function FrameworkEditor() {
   const editable = page === "framework";
   // Admission checks compare complete source snapshots. Reuse them while this
   // immutable framework is unchanged; navigation must not revalidate every norm.
-  const admitted = useMemo(()=>admittedLines(framework) as Line[],[framework]);
+  const {admitted, draft:sourceDraft} = useMemo(()=>prepareInitialDraft(framework),[framework]);
   const overview = useMemo(()=>reportOverviewCatalogue(browseThemes.flatMap(theme=>theme.reportIds)),[browseThemes]);
   const browseSourceLines = overview?.lines ?? admitted;
   const allBrowseLines = useMemo(()=>browseThemeLines(framework,browseThemes,[],browseSourceLines) as Line[],[framework,browseThemes,browseSourceLines]);
@@ -305,7 +305,6 @@ export default function FrameworkEditor() {
   // Closed detail panels need no fallback report or embedded pilot norm.
   const line = visibleLines.find((l) => l.id === selected) ?? visibleLines[0] ?? framework.lines[0];
   const lineReport = line ? reportForLine(framework, line) : framework.report;
-  const sourceDraft = useMemo(()=>initialDraft(framework) as Draft,[framework]);
   const viewDraft = editable ? draft : sourceDraft;
   const evidenceView = useMemo(()=>line ? lineEvidenceView(framework,line,activeEvidence) : {direct:[],context:[],remaining:[],focused:null},[framework,line,activeEvidence]);
   const sourceEntries = evidenceView.direct;
