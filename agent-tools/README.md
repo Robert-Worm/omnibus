@@ -44,7 +44,17 @@ Elke treffer en detailaanroep toont `selectionStatus`, `selectionReason` en `dra
 
 **Tien vaste testvragen.** In [`evaluatie/testvragen.mjs`](evaluatie/testvragen.mjs) staan tien realistische vragen met het verwachte antwoord. Een AI-agent beantwoordt ze via de koppeling; jij vergelijkt het antwoord. `npm run agent:testvragen` controleert zonder AI of de verwachte antwoorden nog kloppen met de huidige agent-build, bijvoorbeeld na een nieuwe database.
 
-Bij een andere collectierelease stopt deze controle vóór de vraagcontroles met **HOLD** en exitcode 2, ook als aantallen en feiten gelijk zijn. Beoordeel de bronwijziging afzonderlijk; de vaste antwoorden worden niet automatisch aangepast. Volledige binding aan publicatie en afzonderlijke bronnen, en een onafhankelijke AI-evaluatie, staan nog open.
+De vaste referentie staat in `evaluatie/testbasis.mjs`: release, publicatie, volledige AI-index, vragen en werkwijze. Ook broncontext, passages en zoekgegevens tellen mee in de indexhash. De controle leest één databasesnapshot en behoudt de bestaande integriteitscontroles voor publicatie, bouwstenen en uitleverbestanden. Een afwijking geeft **HOLD** en exitcode 2, ook als de verwachte antwoorden nog kloppen. Dit bevestigt versie-identiteit, geen inhoudelijke juistheid of nieuwe publicatiegoedkeuring.
+
+De referentie hoort bij de openbare collectie van 19 oktober 2026, niet automatisch bij de nieuwste database. Beoordeel een gewijzigde collectie en bronverwijzingen afzonderlijk voordat je de vaste basis of antwoorden bewust bijwerkt. Het programma schrijft nooit een nieuwe basis, database of actieve buildinstelling. Regels voor verschillende regeleinden op Windows en Linux beïnvloeden de hash van het vragenbestand niet.
+
+Een andere bestaande agent-build kies je zonder de actieve koppeling te wijzigen:
+
+```text
+npm run agent:testvragen -- --pointer <bestaande-agent-build.json>
+```
+
+Voeg `--vragen` toe voor alleen vragen en hulpmiddelen, zonder verwachte antwoorden of controlefuncties. Ook dit vraagpakket komt pas vrij als de basis klopt. Geef het aan een nieuwe evaluator die de antwoorden niet heeft gelezen; laat die uitsluitend via de leestools antwoorden. Bewaar diens antwoorden en toolbewijs lokaal vóór vergelijking met de verwachtingen. Een deterministische controle of een proef door iemand die de antwoorden al kende, is geen onafhankelijke AI-evaluatie. Die onafhankelijke proef blijft open. `--basis <beoordeelde-basis.json>` is alleen voor een bewust gereviewde andere basis, geen automatische herijking.
 
 **Vraagvoorstellen controleren (#147).** Nieuwe centrale vragen, deelvragen en interviewvragen gaan vóór het opslaan door de gedeelde vraagvoorcontrole. Een afgekeurde vraag of HOLD blokkeert het hele nieuwe concept, met uitleg per vraag. Er ontstaat dan geen gedeeltelijk project. Een geslaagde voorcontrole bevestigt alleen de vorm; inhoudelijke review blijft nodig. Bestaande opgeslagen vragen en eigen tekst blijven leesbaar en exporteerbaar. Opslaan vraagt nog steeds expliciet akkoord en maakt altijd een nieuwe map.
 
