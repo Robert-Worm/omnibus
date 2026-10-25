@@ -129,6 +129,18 @@ test('sharing distinguishes signed zero and preserves exact scalar values',()=>{
  assert.throws(()=>unpackPreviewContext({context:repeatedContext(),sharedMaterials:true}),/Ongeldige onderzoekscontext/);
 });
 
+test('transport sharing retains arbitrary own field names and rechecks later edits',()=>{
+ const input=repeatedContext();
+ for(const material of [input.framework.workbenchMaterials[0],input.draft.investigation.materials[0]])
+  for(const key of ['0','__proto__','constructor','toString','laterEvidence'])
+   Object.defineProperty(material,key,{value:'Exact '+key+' 🧭',enumerable:true,writable:true});
+ assert.equal(packPreviewContext(input).sharedMaterials,true);
+ assert.deepEqual(unpackPreviewContext(structuredClone(packPreviewContext(input))),input);
+ input.draft.investigation.materials[0].laterEvidence='Revised evidence';
+ assert.equal(packPreviewContext(input).context,input);
+ assert.equal(packPreviewContext(input).sharedMaterials,undefined);
+});
+
 test('preview jobs share only equal snapshots, send changed text and keep fallback independent',async()=>{
  const h=harness(),input={...repeatedContext(),config:{fontSize:10}};h.client.request(input);h.run();
  assert.equal(h.sent[0].sharedMaterials,true);assert.deepEqual(unpackPreviewContext(h.sent[0]),{framework:input.framework,draft:input.draft,models:input.models});
