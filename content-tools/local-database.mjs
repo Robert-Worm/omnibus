@@ -13,7 +13,7 @@ import { validateModelLibrary } from "../lib/model-library-validation.mjs";
 import { structureModelData } from "../lib/model-structure.mjs";
 import { prepareLocalModelRuntime, writeLocalModelRuntime } from "./local-model-runtime.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
-import { checkLocalSourceReview, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
+import { checkLocalSourceReview, localSourceSnapshot, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
 
 export const localDatabaseLimits = Object.freeze({ packages: 64, bytes: 64 * 1024 * 1024, jsonBytes: 8 * 1024 * 1024 });
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -122,6 +122,24 @@ function modelSnapshot(manifest, files, authorIds) {
   return { model, documents, review: checked, reviews, basisHash: prepared.basisHash, targets: prepared.targets.length };
 }
 
+function sourceSnapshot(manifest, files, entry) {
+  const review = checkLocalSourceReview(manifest, files, entry.authorIds, entry.sourceEvidence);
+  if (!review.sourceMethodValidated) throw new LocalSourceIntegrationRequired(review);
+  const { read, lookup } = localSourceSnapshot(manifest, files), report = manifest.package.kind === "report";
+  const content = read(report ? "APP-FINAL.json" : "CATALOGUE.json");
+  const records = report ? content.framework.lines.map(line => ({ id: line.id, kind: "report-line", title: line.title, status: "HOLD", data: line }))
+    : ["goals", "objectives", "criteria", "points"].flatMap(kind => content[kind].map(row => ({
+      id: row.id, kind: "framework-" + kind, title: row.title, status: "HOLD", data: row })));
+  const document = report ? { id: content.source.id, title: manifest.package.title,
+    sourceFileSha256: content.framework.report.pdf_hash, pages: content.source.pages }
+    : { id: manifest.package.id, title: manifest.package.title,
+      sourceFileSha256: lookup("source/source.pdf").file.sha256, pages: read("source/pages.json") };
+  // The original content and every evidence byte are archived below. Review DB
+  // rows remain HOLD, including when the owner has recorded a separate decision.
+  return { records, documents: [document], review, basisHash: review.basisSha256, targets: review.contentObjects,
+    sourceEvidence: entry.sourceEvidence };
+}
+
 // This is the local owner's recorded decision, not a machine-generated review
 // or authority over the shared catalogue. The pinned intake binds all source,
 // review and verification evidence bytes; the owner verifies their truth.
@@ -178,7 +196,7 @@ function ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budg
 }
 
 async function readPackage(entry, planRoot, budget) {
-  exactKeys(entry, ["intake", "sha256", "authorIds", ...(Object.hasOwn(entry ?? {}, "admission") ? ["admission"] : [])], "package plan");
+  exactKeys(entry, ["intake", "sha256", "authorIds", ...["admission", "sourceEvidence"].filter(key => Object.hasOwn(entry ?? {}, key))], "package plan");
   requireValue(nonempty(entry.intake) && hash(entry.sha256), "Each package needs an intake path and independently retained SHA256");
   requireValue(Array.isArray(entry.authorIds) && entry.authorIds.length > 0 &&
     entry.authorIds.every(id => nonempty(id) && id.length <= 200) && new Set(entry.authorIds).size === entry.authorIds.length,
@@ -195,9 +213,8 @@ async function readPackage(entry, planRoot, budget) {
     requireValue(bytes.length === file.bytes, `File byte count changed: ${file.path}`);
     files.set(file.id, bytes);
   }
-  if (manifest.package.kind !== "model")
-    throw new LocalSourceIntegrationRequired(checkLocalSourceReview(manifest, files, entry.authorIds));
-  const snapshot = modelSnapshot(manifest, files, entry.authorIds);
+  requireValue(manifest.package.kind !== "model" || !Object.hasOwn(entry, "sourceEvidence"), "Model packages do not use report/framework receipt pins");
+  const snapshot = manifest.package.kind === "model" ? modelSnapshot(manifest, files, entry.authorIds) : sourceSnapshot(manifest, files, entry);
   const admission = Object.hasOwn(entry, "admission")
     ? ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budget) : null;
   return { ...snapshot, manifest, files, intakeBytes, root, checked, authorIds: entry.authorIds, admission };
@@ -254,15 +271,18 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
       reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
       packagesChecked: snapshots.map(item => ({ ...item.manifest.package, manifestSha256: item.checked.manifestSha256,
         reviewStatus: item.review.status })),
-      reviewStructureValidated: true, viewerShapeValidated: true,
+      reviewStructureValidated: true, viewerShapeValidated: snapshots.every(item => item.model || item.review.viewerShapeValidated),
+      ...(snapshots.some(item => !item.model) ? { sourceEvidence: snapshots.filter(item => !item.model).map(item => item.review) } : {}),
       contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
       ...(ownerAdmissions.length ? { ownerAdmissions } : {}),
       runtime: { status: "HOLD", code: allLocallyAdmitted ? "RUNTIME_PROJECTION_REQUIRED" : "INTEGRATION_REVIEW_REQUIRED",
         contract: runtimeContractHash, publication: null,
         reason: allLocallyAdmitted
           ? "Local owner admissions are recorded against checked evidence. Standalone runtime projection and application integration remain required. No runtime publication or local-build.json was created."
-          : "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
+          : "Checked package evidence does not grant application access. Actual reading and role independence require retained coordinator and owner observations. No runtime publication or local-build.json was created." } };
     phase = "BASE_PUBLICATION_CHECK";
+    if (base && snapshots.some(item => !item.model))
+      throw new LocalSourceIntegrationRequired(snapshots.find(item => !item.model).review);
     const runtimeBase = base ? prepareLocalModelRuntime(base, snapshots) : null;
     if (checkOnly) return { status: runtimeBase ? "LOCAL_VIEWER_INPUTS_CHECKED" : "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
       ...(runtimeBase ? { base: runtimeBase.pins, runtime: { status: "NOT_BUILT", code: "LOCAL_VIEWER_BUILD_REQUIRED", publication: null } } : {}),
@@ -275,13 +295,14 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
     for (const snapshot of snapshots) {
       const { manifest, files, model, documents, review, checked, authorIds, intakeBytes } = snapshot;
       const id = manifest.package.id;
-      bundle.packages.push({ id, kind: "model", title: model.title, intakeVersion: manifest.package.version,
+      bundle.packages.push({ id, kind: manifest.package.kind, title: manifest.package.title, intakeVersion: manifest.package.version,
         intakeSha256: checked.manifestSha256, reviewStatus: review.status,
-        records: [{ id, kind: "model", title: model.title, status: "HOLD", data: model }] });
+        records: snapshot.records ?? [{ id, kind: "model", title: model.title, status: "HOLD", data: model }] });
       bundle.documents.push(...documents);
       bundle.artifacts.push({ name: `${id}/intake`, data: { encoding: "base64", sha256: checked.manifestSha256,
         bytes: intakeBytes.length, content: intakeBytes.toString("base64") } });
-      bundle.artifacts.push({ name: `${id}/review-check`, data: { authorIds, ...review, newContentApproval: false } });
+      bundle.artifacts.push({ name: `${id}/review-check`, data: { authorIds, ...review, newContentApproval: false,
+        ...(snapshot.sourceEvidence ? { sourceEvidencePins: snapshot.sourceEvidence } : {}) } });
       if (snapshot.admission) bundle.artifacts.push({ name: `${id}/local-owner-admission`, data: {
         encoding: "base64", sha256: snapshot.admission.sha256, bytes: snapshot.admission.bytes.length,
         content: snapshot.admission.bytes.toString("base64"), scope: "local-database-only" } });
