@@ -2,6 +2,26 @@
 
 > **In het kort:** één opdracht zet gecontroleerde modelpakketten in een **nieuwe lokale controledatabase**. Je krijgt aantallen en controlegetallen. De inhoud blijft in HOLD voor gebruik in de viewer: de inhoudelijke integratie moet nog worden beoordeeld.
 
+## Welke pakketten werken?
+
+| Bronsoort | Intake en bestandscontrole | Lokale controledatabase | Zelfstandige viewerpublicatie |
+| --- | --- | --- | --- |
+| Model (`model-review-1`) | Ja | Ja, na controle van bronbinding, reviewbewijs en modelvelden; blijft HOLD | Nee |
+| Rapport (`report-kit-1.1`) | Ja | Nee, zelfstandige inhouds- en reviewvalidator ontbreekt | Nee |
+| Wet of kader (`framework-cio-0.1+addendum-01`) | Ja | Nee, zelfstandige inhouds- en reviewvalidator ontbreekt | Nee |
+
+Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bestanden, rollen en controlegetallen kloppen. Een rapport- of kaderpakket kan die controle halen en vervolgens terecht door de lokale bouwer worden geweigerd. Een selectie met zo'n pakket wordt als geheel geweigerd vóór databaseaanmaak.
+
+### Waarom levert een compleet modelreviewdossier nog geen viewerpublicatie op?
+
+De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.
+
+De lokale pakketroute heeft geen invoer waarmee die verificatie en de daaropvolgende integratietoelating kunnen worden overgedragen. Ook volledig ingevulde reviewbestanden blijven daarom `publishable:false`. Het ontbrekende toelatingsbesluit is wie deze verificatie voor een zelfstandig lokaal pakket mag bevestigen en welk bestaand bewijs de lokale bouwer daarvoor mag vertrouwen. De bouwer neemt dat gezag niet zelf over.
+
+De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout en de daarin aanwezige applicatiecontroles. Hij is geen zelfstandige pakketvalidator. De [publicatiehelper](../local-data/runtime-publication.mjs) weigert een lokale controledatabase ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. De openbare route bevat bovendien nog geen omzetting van een toegelaten eigen pakket naar de volledige runtimegegevens van de viewer.
+
+Fictieve reviewerrecords in softwaretests bewijzen alleen de werking van de controles. Een afzonderlijk gemaakte runtimefixture bewijst evenmin dat een eigen pakket deze toelatingsgrens heeft doorlopen. Zonder een toegelaten pakket zijn viewerselectie en projectherstel via deze route nog niet aangetoond.
+
 ## 1. Zet de pakketten klaar
 
 Gebruik Node 24.21.0 en de openbare Omnibus-code. Deze opdracht heeft geen extra installatie of private auteursomgeving nodig. Zet je pakketten in een eigen map onder `work/`. Bewaar de manifesthash van elk pakket apart; neem geen nieuwe hash over om een fout te omzeilen.
