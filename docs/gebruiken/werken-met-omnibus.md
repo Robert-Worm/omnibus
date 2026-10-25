@@ -114,7 +114,7 @@ Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen bli
 | --- | --- |
 | Bewaar project | Downloadt je project als bestand. Doe dit regelmatig: browseropslag is geen back-up. |
 | Open project | Opent een eerder bewaard projectbestand. |
-| Delen | Maakt een bestand dat je naar een collega kunt sturen. |
+| Delen | Legt uit hoe je een kopie aan een collega geeft: het projectbestand, zonder de app en brondocumenten. Jullie werken daarna in aparte kopieën. |
 | Nieuw project | Begint opnieuw. Bewaar eerst je huidige project. |
 
 ## Samengevat

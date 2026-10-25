@@ -29,7 +29,7 @@ flowchart TD
 
 ### 1. Zet het pakket in de inbox
 
-Pak de zip uit de claim uit in `work/content-inbox/<pakket-id>/<versie>/payload/`.
+Pak de zip uit de claim uit in `work/content-inbox/<pakket-id>/<versie>/payload/`. De bestanden komen rechtstreeks in `payload/`; staat er in de zip nog een bovenmap, haal die dan weg.
 
 - **`<pakket-id>`** is de code van de bron in de werklijst, bijvoorbeeld `2019-hoofdlijnen-auditrapporten-adr-2018`. Die staat ook in de claim.
 - **`<versie>`** kies je zelf, bijvoorbeeld `concept-1`. Een nieuwe inlevering krijgt een nieuwe versie.
@@ -66,6 +66,8 @@ Een concept van een bijdrager is niet compleet voor deze controle. Deze rollen v
 Ontbreekt een verplichte rol, dan weigert `content:prepare` het plan met `Missing file roles`. Voor een kader of model staan de verplichte rollen [hieronder](#welke-rollen-zijn-verplicht).
 
 ### 3. Maak het manifest en controleer
+
+`<map>` is de map van stap 1: `work/content-inbox/<pakket-id>/<versie>`.
 
 ```text
 npm run content:prepare -- <map>/plan.json --output <map>/intake.json

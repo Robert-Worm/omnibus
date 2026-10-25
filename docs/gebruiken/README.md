@@ -8,13 +8,13 @@
 
 | Stap | Lees | Wat je daarna kunt |
 | --- | --- | --- |
-| 1 | [Omnibus installeren](installeren.md) | Omnibus draait op je eigen computer |
+| 1 | [Proefversie online](https://omnibus.sliplane.app) of [Omnibus installeren](installeren.md) | Je werkt met Omnibus, online of op je eigen computer |
 | 2 | [Werken met Omnibus](werken-met-omnibus.md) | Je maakt een referentiekader in vier stappen en exporteert het naar Excel |
 | 3 | [Veelgestelde vragen](../veelgestelde-vragen.md) | Je weet wat je bewaart, wat de normen betekenen en waar je hulp vindt |
 
 Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](problemen-oplossen.md).
 
-Eerst proberen, zonder te installeren? Open de [proefversie online](https://omnibus.sliplane.app), of download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip).
+Wil je eerst zien wat Omnibus oplevert? Download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip).
 
 ## Verder
 
@@ -27,7 +27,7 @@ Eerst proberen, zonder te installeren? Open de [proefversie online](https://omni
 
 ## Volgende stap
 
-Begin met [Omnibus installeren](installeren.md).
+Begin met de [proefversie online](https://omnibus.sliplane.app), of [installeer Omnibus](installeren.md) op je computer.
 
 ---
 

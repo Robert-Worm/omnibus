@@ -53,7 +53,7 @@ Voor de beheerder, die ingeleverde pakketten controleert en nieuwe databases uit
 
 ## Volgende stap
 
-Nieuw hier? Begin met [Omnibus installeren](gebruiken/installeren.md). Heb je eerst een vraag? Kijk bij de [veelgestelde vragen](veelgestelde-vragen.md).
+Nieuw hier? Begin met de [proefversie online](https://omnibus.sliplane.app), of [installeer Omnibus](gebruiken/installeren.md) op je computer. Heb je eerst een vraag? Kijk bij de [veelgestelde vragen](veelgestelde-vragen.md).
 
 ---
 

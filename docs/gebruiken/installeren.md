@@ -15,7 +15,9 @@
 
 De extra tijd geldt alleen als Git, Node.js of Docker nog niet op je computer staat.
 
-**Mag je op je werklaptop niets installeren?** Gebruik dan de online versie, of vraag je IT-afdeling om Docker of Node.js 24. Let op: grote organisaties hebben voor Docker Desktop vaak een betaalde licentie nodig.
+**Mag je op je werklaptop niets installeren?** Gebruik dan de online versie, of vraag je IT-afdeling om Docker of Node.js 24.21 of hoger. Let op: grote organisaties hebben voor Docker Desktop vaak een betaalde licentie nodig.
+
+Online en met één opdracht krijg je de nieuwste code. Die wordt bij elke wijziging getest en is goed voor gewoon gebruik. Wil je precies de vrijgegeven versie 0.1.0? Kies dan Docker.
 
 Wil je Omnibus gewoon gebruiken? Kies dan Docker of één opdracht. De route *stap voor stap* is voor wie wil zien wat er gebeurt, of zelf aan de code werkt.
 
@@ -43,22 +45,22 @@ Liever geen terminal? Gebruik dan de [online versie](#online-proberen).
 
 Staat het programma al op je computer? Sla dit dan over.
 
-- **Node.js:** kies op [nodejs.org](https://nodejs.org/) versie 24 (LTS). Windows: de *Windows Installer* (`.msi`). macOS: de *macOS Installer* (`.pkg`). Houd de standaardopties aan.
+- **Node.js:** kies op [nodejs.org](https://nodejs.org/) versie 24.21 of hoger. Windows: de *Windows Installer* (`.msi`). macOS: de *macOS Installer* (`.pkg`). Houd de standaardopties aan.
 - **Git:** download het bij [git-scm.com](https://git-scm.com/) en houd de standaardopties aan.
 - **Docker Desktop:** download het bij [docker.com](https://www.docker.com/products/docker-desktop/). Op Windows vraagt Docker vaak om WSL 2 en een herstart van je computer.
 
-**Gelukt als:** je na het opnieuw openen van de terminal `node --version` typt en `v24.` ziet, en `git --version` een versie toont.
+**Gelukt als:** je na het opnieuw openen van de terminal `node --version` typt en `v24.21` of hoger ziet (bijvoorbeeld `v24.22.0`), en `git --version` een versie toont.
 
 ## Met Docker
 
-**Wat heb je nodig?** [Docker](https://www.docker.com/products/docker-desktop/). Git, Node.js en de database-zip heb je dan niet nodig. Start Docker Desktop eerst en wacht tot het klaar is.
+**Wat heb je nodig?** [Docker](https://www.docker.com/products/docker-desktop/). Git, Node.js en de database-zip heb je dan niet nodig. Start Docker Desktop eerst en wacht tot het *Engine running* toont.
 
 ```text
 docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0
 docker run --rm -p 8080:8080 omnibus
 ```
 
-Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
+Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Het bouwen duurt ongeveer vijf minuten en toont veel Engelse regels; het is klaar als je weer kunt typen. Laat na `docker run` het venster open. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
 
 **Gelukt als:** je Omnibus ziet op `http://localhost:8080`. Gebruik precies dit adres; `127.0.0.1:8080` werkt hier niet. Een andere poort? Zie [problemen oplossen](problemen-oplossen.md#de-browser-toont-host-not-allowed).
 
@@ -82,7 +84,7 @@ git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scrip
 
 Onderweg zie je vijf stappen, van `[1/5] Node.js controleren` tot `[5/5] Omnibus starten`. Stap 2 en 4 duren een paar minuten. Gaat er iets mis, dan zegt de opdracht wat je moet doen.
 
-**Gelukt als:** de laatste regel `Open http://127.0.0.1:4319/ in je browser` is, en je Omnibus op dat adres ziet. `http://localhost:4319/` werkt ook. Kies één van beide en blijf die gebruiken: elk adres heeft zijn eigen opslag in de browser.
+**Gelukt als:** je de regel `Open http://127.0.0.1:4319/ in je browser` ziet, en Omnibus op dat adres opent. `http://localhost:4319/` werkt ook. Kies één van beide en blijf die gebruiken: elk adres heeft zijn eigen opslag in de browser.
 
 **Een volgende keer starten:** open de terminal en typ deze twee regels. Wat al klaar is, slaat de opdracht over.
 
@@ -194,7 +196,7 @@ Start pas na een geslaagde bouw. Alleen de oude container herstarten neemt de ni
 
 ### Code bijwerken met Git
 
-De twee Git-routes hierboven halen `main` op: de actuele ontwikkeltak, die verder kan zijn dan release `v0.1.0`. Open een terminal in je bestaande map `omnibus`. Voer de opdrachten één voor één uit; ga alleen door als de vorige is gelukt:
+De twee Git-routes hierboven halen de nieuwste code op, die verder kan zijn dan versie 0.1.0. Open een terminal in je bestaande map `omnibus`. Voer de opdrachten één voor één uit; ga alleen door als de vorige is gelukt:
 
 ```text
 git pull --ff-only
@@ -226,7 +228,7 @@ Ga alleen door na `VERIFIED_RUNTIME_DATABASE`. Hernoem in Verkenner of Finder de
 ## Goed om te weten
 
 - **Je werk wordt in je browser bewaard.** Dat is geen back-up. Gebruik **Bewaar project** om een projectbestand te downloaden, en **Open project** om het weer te openen.
-- **Gebruik altijd hetzelfde adres.** Lokaal werken op de huidige `main` zowel `127.0.0.1` als `localhost`, uitsluitend op de poort waarop Omnibus draait. Elke naam en poort heeft eigen browseropslag. Gebruik **Bewaar project** en **Open project** om je onderzoek mee te nemen. Docker blijft precies `PUBLIC_ORIGIN` gebruiken, standaard `http://localhost:8080/`.
+- **Gebruik altijd hetzelfde adres.** Open het adres dat de terminal toont, en gebruik daarna steeds dat adres. Elk adres heeft eigen browseropslag. Neem je onderzoek mee met **Bewaar project** en **Open project**.
 - **Nieuwe code of database?** Volg jouw route in de tabel [Bijwerken](#bijwerken).
 - **Iets gaat mis?** Kijk bij [problemen bij installeren en starten](problemen-oplossen.md). Kom je er niet uit? Vraag dan om [hulp](problemen-oplossen.md#kom-je-er-niet-uit).
 

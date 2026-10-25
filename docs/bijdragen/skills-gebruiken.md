@@ -89,12 +89,20 @@ Vraag je assistent:
 
 **Gelukt als:** de assistent de bestanden kan lezen en ontbrekende onderdelen concreet noemt. Alleen zeggen dat de skill geladen is, bewijst dit niet.
 
-Werk je zonder de verwerkingsomgeving van de beheerder of zonder toegang tot bestanden op je computer? Vermeld dat in je opdracht en vraag om een overdraagbaar concept. Ontbrekende reviews blijven `PENDING_REVIEW` of `HOLD`, zoals de skill voorschrijft. Laat de assistent uitgevoerde stappen en open controles apart opsommen. Een map of zip maken is geen bewijs van een volledige inhoudelijke review.
+**Wat jij doet en wat de beheerder doet**
+
+| Jij | De beheerder |
+| --- | --- |
+| De skill laten werken en een concept maken | De technische controles en de formele toelating |
+| Zelf de bronpassages nalopen | Een tweede, onafhankelijke lezing |
+| Twijfels laten staan als HOLD | Beslissen over elk HOLD-punt |
+
+Mist je assistent iets voor een volledige review? Dan schrijft hij dat op als `HOLD` of `PENDING_REVIEW`. Dat is goed; zo ziet de beheerder wat nog moet.
 
 ## Goed om te weten
 
-- **De skill verwijst soms naar opdrachten** zoals `npm run content:intake`. Die zijn voor de beheerder. Ontbreekt de verwerkingsomgeving, noteer deze controles dan als niet uitgevoerd. Maak geen vervangend goedkeuringsbewijs.
-- **Lange rapporten** passen niet altijd in één gesprek. Werken per hoofdstuk vervangt de vereiste volledige bronlezingen en onafhankelijke reviews niet. Bewaar de paginadekking; ontbrekende delen of reviews blijven `HOLD`.
+- **De skill noemt soms opdrachten** zoals `npm run content:intake`. Die zijn voor de beheerder. Laat ze open; maak zelf geen goedkeuring.
+- **Lange rapporten** passen niet altijd in één gesprek. Werk dan per hoofdstuk, en noteer welke pagina's gelezen zijn. Wat niet gelezen is, blijft `HOLD`.
 - **Deel alleen wat je mag delen.** Controleer of je de bron met jouw AI-dienst mag delen, ook bij een openbaar rapport. Vertrouwelijke stukken vereisen toestemming.
 - **Controleer altijd zelf** of de bronpassages kloppen, zoals beschreven in [een bron verwerken](bron-verwerken.md#4-controleer-het-resultaat).
 

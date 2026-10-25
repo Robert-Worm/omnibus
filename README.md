@@ -102,7 +102,7 @@ docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Rober
 docker run --rm -p 8080:8080 omnibus
 ```
 
-**Zonder Docker** heb je Git en Node 24 nodig. Eén opdracht installeert, haalt de database op, controleert, bouwt en start:
+**Zonder Docker** heb je Git en Node.js 24.21 of hoger nodig. Eén opdracht installeert, haalt de database op, controleert, bouwt en start:
 
 ```text
 git clone https://github.com/Robert-Worm/omnibus.git

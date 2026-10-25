@@ -38,7 +38,7 @@ Ja. [GitHub test de installatie](https://github.com/Robert-Worm/omnibus/actions/
 
 ### Waar wordt mijn werk bewaard?
 
-In je browser, op je eigen computer. Er gaat niets naar een server. Browseropslag is geen back-up: download je project met **Bewaar project**. Zie [goed om te weten](gebruiken/installeren.md#goed-om-te-weten).
+In je browser, op je eigen computer. Je onderzoek gaat niet naar een server, ook niet bij de online versie. Browseropslag is geen back-up: download je project met **Bewaar project**. Zie [goed om te weten](gebruiken/installeren.md#goed-om-te-weten).
 
 ### Ik zie mijn project niet meer. Wat nu?
 
