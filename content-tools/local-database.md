@@ -1,26 +1,35 @@
 # Eigen pakketten lokaal laden
 
-> **In het kort:** laad gecontroleerde pakketten in een nieuwe lokale controledatabase. Modellen kunnen daarnaast met een eigenaarbesluit en een gecontroleerde basispublicatie in de gewone viewer worden gebruikt. Rapporten en kaders bewaren nu ook hun gecontroleerde lees- en ontvangstbewijzen, maar hun zelfstandige viewerpublicatie is nog niet aangesloten. De bestaande database verandert niet.
+> **In het kort:** laad gecontroleerde modellen, rapporten en kaders met een vastgelegd eigenaarbesluit in een nieuwe lokale viewerpublicatie. Zonder die vrijgave blijft de uitvoer een controledatabase. De bestaande database verandert niet.
 
 ## Welke pakketten werken?
 
 | Bronsoort | Intake en bestandscontrole | Lokale controledatabase | Zelfstandige viewerpublicatie |
 | --- | --- | --- | --- |
 | Model (`model-review-1`) | Ja | Ja, met behoud van bronbinding, reviewbewijs en modelvelden | Ja, met eigenaarbesluit en gepinde basispublicatie |
-| Rapport (`report-kit-1.1`) | Ja | Ja, met complete en apart vastgelegde lees-, fase- en ontvangstbewijzen | Nee |
-| Wet of kader (`framework-cio-0.1+addendum-01`) | Ja | Ja, met complete en apart vastgelegde lees-, fase- en ontvangstbewijzen | Nee |
+| Rapport (`report-kit-1.1`) | Ja | Ja, met complete en apart vastgelegde lees-, fase- en ontvangstbewijzen | Ja, met compleet reviewbewijs, eigenaarbesluit en gepinde basispublicatie |
+| Wet of kader (`framework-cio-0.1+addendum-01`) | Ja | Ja, met complete en apart vastgelegde lees-, fase- en ontvangstbewijzen | Ja, met compleet reviewbewijs, eigenaarbesluit en gepinde basispublicatie |
 
 Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bestanden, rollen en controlegetallen kloppen. De bouwer controleert daarna de bronafhankelijke review- en uitvoeringsbewijzen. Ontbreekt bewijs bij één pakket, dan wordt de hele selectie vóór databaseaanmaak geweigerd.
 
-### Wat ontbreekt nog voor rapporten en kaders?
+### Rapporten en kaders in de bestaande viewer
 
-De lokale modelroute werkt van pakket tot viewer. Voor rapporten en kaders zijn de bestandsbindingen, eindreviewverwijzingen, letterlijke bronpassages, recordrelaties, leeslogs en ontvangstbewijzen aangesloten op de controledatabase. Het samenvoegen met een nieuwe viewerpublicatie en de bijbehorende selectie-/herstelproef ontbreken nog. Daarom blijven #153 en #154 open. Dit is ontbrekende softwareaansluiting, geen constatering dat de actieve collectie beheersdoelstellingen of toetsaanpakken mist.
+Dezelfde bouwopdracht met `--base` neemt alle toegelaten pakketten op in één nieuwe lokale publicatie. De rapportadapter gebruikt de bestaande thema-/procesviewer; de kaderadapter gebruikt de gedeelde CIO-viewer. Bronpassages, actorrollen, voorwaarden en uitzonderingen blijven behouden. De databasebouw en viewer gebruiken dezelfde procescatalogus: een onbekende proceskoppeling wordt vóór het maken van de uitvoer geweigerd.
 
-Voor rapporten kan de [overdrachtsadapter](local-report-viewer.mjs) de bestaande `REUSE-CANDIDATE.json`, `REUSE-VIEWER-PROJECTION.json` en `POINT-SOURCE-LOCATORS.json` samen met `APP-FINAL.json` nu ongewijzigd aan de gedeelde rapportadapter aanbieden. De drie hergebruikbestanden moeten samen aan de exacte eindreviewbasis gebonden zijn. Doelen, maatregelen, vragen, toetsfasen, voorwaarden en bronrollen worden niet gegenereerd of herschreven. Een nog niet uitgewerkte toetsfase blijft ongewijzigd; de adapter vult geen extra fase in. Een ontbrekend hergebruikspakket wordt niet automatisch gemaakt.
+Een rapport heeft ook de exact gereviewde `REUSE-CANDIDATE.json`, `REUSE-VIEWER-PROJECTION.json` en `POINT-SOURCE-LOCATORS.json` nodig. De drie bestanden zijn samen aan de eindreviewbasis gebonden. Doelen, maatregelen, vragen en toetsfasen worden niet gegenereerd of herschreven. Een ontbrekend hergebruikspakket wordt niet automatisch gemaakt. Een hergebruikprojectie of toetspunt in HOLD wordt niet geactiveerd.
 
-`viewerShapeValidated: true` bij zo'n rapport betekent alleen dat deze overdrachtsvorm gecontroleerd is. Met complete lees-/ontvangstbewijzen kan de opdracht een controledatabase maken. Met `--base` blijft zij voor rapporten en kaders `SOURCE_INTEGRATION_REQUIRED` teruggeven, vóór het lezen of wijzigen van de basisdatabase. De opname in de bestaande publicatie-/laadroute ontbreekt nog. Groene tests op afzonderlijke onderdelen betekenen niet dat die eindroute af is.
+Een kader heeft voor de gedeelde viewer deze gegevens nodig **binnen de gereviewde `CATALOGUE.json`**:
 
-### Wanneer mag een model in de lokale viewer?
+- `context`: `title` (gelijk aan de pakkettitel), `intro`, `edition`, `applicability`, `kind` (`law`, `framework` of `audit`), `kind_label`, `coverage` en `source_explanation`.
+- De expliciete bronstatus `status` (`EFFECTIVE`, `FUTURE` of `UNKNOWN`), `effective_from` en `as_of`; `audience`, `use_cases` en `limitations` met titel en uitleg.
+- Groepen bij normen en punten. Voor elke selecteerbare norm én elk selecteerbaar punt: een complete keten met doel, risico, beheersdoelstelling en beheersmaatregel. Afgeleide maatregelen blijven herkenbaar als `ANALYST_PROPOSAL`, met onderbouwing.
+- De oorspronkelijke `SOURCE-STATUS.json`, bronpagina's en bronbank. Letterlijke passages moeten blijven aansluiten; de importer verzint geen markering, rechtsstatus of vraagplan.
+
+Ontbreken deze gegevens in een oud pakket, laat dan de ontbrekende uitwerking maken en werkelijk beoordelen. Voeg geen tekst toe onder een eerder akkoord. Een compleet bron- en reviewdossier kan zonder viewercontext nog als controledatabase worden bewaard, maar niet met `--base` worden geactiveerd. HOLD- en contextpunten van een kader blijven niet-selecteerbaar.
+
+`viewerShapeValidated: true` betekent alleen dat de gedeelde presentatievorm gecontroleerd is, niet dat software de bron inhoudelijk heeft goedgekeurd.
+
+### Wanneer mag een pakket in de lokale viewer?
 
 De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.
 
@@ -28,7 +37,7 @@ De lokale pakketroute kan nu een afzonderlijk vrijgavebesluit van de lokale eige
 
 Op 25 oktober 2026 heeft de beheerder besloten dat de eigenaar van een eigen lokale database een pakket definitief mag toelaten. De onafhankelijke reviews en broncontroles moeten daarvoor zijn uitgevoerd en vastgelegd. Dit geeft geen bevoegdheid om de openbare Omnibus-database te wijzigen. Ontbrekend bewijs en open HOLD blijven een blokkade; de eigenaar kan die niet overslaan. Geef voor de viewerroute ook een bestaande basispublicatie mee met `--base`, zoals hieronder beschreven.
 
-De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout. Voor deze lokale modelroute is die niet nodig: de gedeelde catalogusgegevens komen uit de gecontroleerde basisdatabase. De [publicatiehelper](../local-data/runtime-publication.mjs) blijft een controledatabase in HOLD weigeren, ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. Gebruik de volledige bouwopdracht; pas geen status aan om die grens te omzeilen.
+De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout. Voor deze lokale pakketroute is die niet nodig: de gedeelde catalogusgegevens komen uit de gecontroleerde basisdatabase. De [publicatiehelper](../local-data/runtime-publication.mjs) blijft een controledatabase in HOLD weigeren, ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. Gebruik de volledige bouwopdracht; pas geen status aan om die grens te omzeilen.
 
 Fictieve reviewerrecords in softwaretests bewijzen alleen de werking van de controles. Zij zijn nooit bewijs dat echte inhoud is beoordeeld. Een succesvolle bouw bevestigt evenmin dat jouw concrete vragen inhoudelijk goed zijn; daarvoor blijven de brongebonden reviews nodig.
 
@@ -161,7 +170,7 @@ npm run dev:database -- --settings work/eigen-viewer-01/local-build.json --web-r
 
 Open daarna `http://127.0.0.1:4328/`. De eerste opdracht maakt de nieuwe database. De volgende twee bouwen en openen de bestaande applicatie lokaal; daarvoor zijn de gewone applicatieafhankelijkheden nodig. Geen van deze opdrachten kiest een andere database voor een al draaiende Omnibus.
 
-Bij `LOCAL_VIEWER_DATABASE_CREATED` zijn `catalogue.sqlite`, `local-database-result.json` en `local-build.json` aanwezig. `runtime.status` is `LOCAL_READY`, met reikwijdte `local-database-only`. De basispakketten en brontekst blijven gelijk; uitsluitend de toegelaten modellen en hun bewijs komen erbij. Een bestaand model wordt nooit vervangen. De viewer, het laden per model, selecteren en projectherstel gebruiken dezelfde code als de gewone applicatie; het projectformaat verandert niet. Open een bewaard project met deze lokale publicatie om de eigen modellen weer beschikbaar te hebben.
+Bij `LOCAL_VIEWER_DATABASE_CREATED` zijn `catalogue.sqlite`, `local-database-result.json` en `local-build.json` aanwezig. `runtime.status` is `LOCAL_READY`, met reikwijdte `local-database-only`. De basispakketten en brontekst blijven gelijk; uitsluitend de toegelaten pakketten en hun bewijs komen erbij. Bestaande pakket-, rapport-, norm- en kaderidentiteiten worden niet vervangen. De viewers, het laden per onderdeel, selecteren en projectherstel gebruiken dezelfde code als de gewone applicatie; het projectformaat verandert niet. Open een bewaard project met deze lokale publicatie om de eigen bronnen weer beschikbaar te hebben.
 
 Alleen verwijzingen voor gegevensoverdracht krijgen de nieuwe releasehash. Bronpassages, paginaversies, modelteksten en bewijsbestanden worden niet herschreven. De lokale vrijgave geldt alleen voor de toegevoegde pakketten, niet als nieuwe inhoudelijke beoordeling van de basiscollectie.
 
@@ -184,9 +193,9 @@ Bij succes staan er twee bestanden:
 
 `LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED` betekent dat de controledatabase is gemaakt. Je kunt haar lokaal onderzoeken via de bestaande [databaselezer](../local-data/repository.mjs). Een model staat als één record in de database; een rapport bewaart zijn regels, een kader zijn doelen, beheersdoelstellingen, normen en toetspunten. De oorspronkelijke veldwaarden en selectiestatussen blijven binnen de records gelijk. Alle database-records blijven in HOLD. Alle oorspronkelijke pakketbestanden en bewijzen staan verliesloos in de database als bijlagen.
 
-**Zonder `--base` is dit geen viewerpublicatie.** `publishable`, `contentValidated`, `reviewValidated` en `newContentApproval` blijven `false`. `runtime.status` blijft `HOLD`. Er wordt geen `local-build.json` gemaakt en geen actieve database gekozen. Voor modellen gebruik je voor de viewer de oorspronkelijke pakketten, hun vrijgavebesluiten en de opdracht met `--base`; de controledatabase wordt niet omgelabeld. Die viewerroute is nog niet beschikbaar voor rapporten en kaders.
+**Zonder `--base` is dit geen viewerpublicatie.** `publishable`, `contentValidated`, `reviewValidated` en `newContentApproval` blijven `false`. `runtime.status` blijft `HOLD`. Er wordt geen `local-build.json` gemaakt en geen actieve database gekozen. Gebruik voor de viewer de oorspronkelijke pakketten, hun vrijgavebesluiten en de opdracht met `--base`; de controledatabase wordt niet omgelabeld.
 
-`viewerShapeValidated: true` bevestigt alleen dat de modelvelden de gedeelde structuurcontrole halen. Het bewijst geen inhoudelijke goedkeuring, complete publicatie of uitgevoerde viewerproef.
+`viewerShapeValidated: true` bevestigt alleen dat de pakketvelden de gedeelde structuurcontrole halen. Het bewijst geen inhoudelijke goedkeuring, complete publicatie of uitgevoerde viewerproef.
 
 ### Alleen de invoer controleren
 
@@ -215,24 +224,27 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | `Source passages` | Bronversie, paginagrenzen, letterlijke passages of bronverwijzingen wijken af. Vraag herstel en review van de geraakte inhoud; verander geen citaat of offset onder een bestaand akkoord. |
 | `Source structure` | Een bronrol, recordrelatie, inclusiebesluit, toetsfase of issue-afhandeling voldoet niet aan het pakketcontract. Herstel de geraakte inhoud met bijbehorende review; de importer vult niets aan. |
 | `Source method` | Lees-/fasebewijs, oorspronkelijke ontvangst, contractversie of een apart vastgelegde hash ontbreekt of wijkt af. Vraag het oorspronkelijke bewijs; maak geen vervangende ontvangst of gereconstrueerde lezing. |
-| `SOURCE_INTEGRATION_REQUIRED` | Zonder `sourceEvidence`: geef de oorspronkelijke lees-/ontvangstbewijzen mee. Met complete bewijzen en `--base`: de zelfstandige viewerpublicatie voor rapporten/kaders is nog niet aangesloten. Houd de controledatabase apart. |
+| `SOURCE_INTEGRATION_REQUIRED` | Geef de oorspronkelijke lees-/ontvangstbewijzen en afzonderlijke pins mee; een intake alleen is niet genoeg. |
+| `Local publication` of `Framework viewer` | De overdracht past niet verliesloos in de gedeelde viewer. Controleer de genoemde keten, groep, proceskoppeling of identiteit. Laat ontbrekende inhoud beoordelen; vervang geen bestaande bron. |
 | `DATABASE_WRITE` of `FINAL_VERIFICATION` | Controleer de genoemde fout en beschikbare schijfruimte. Gebruik geen gedeeltelijke uitvoer. |
 
-Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
+Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan gewone bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand.
+
+Alleen als `supporting` ingediende rapportbijlagen die exact in de oorspronkelijke `BASELINE-FREEZE.json` staan, gebruiken daarnaast maximaal 128 MiB archiefruimte voor de hele opdracht. Hun bytes, pins en oorspronkelijke ontvangsten worden volledig gecontroleerd en bewaard; zij worden niet uitgevoerd of als nieuwe viewerinhoud geladen. Bron-, review- en viewerbestanden vallen niet onder dit aparte budget. `baselineArchiveBytes` vermeldt het gebruik. Het historische rapportregister heeft een aparte lezer: maximaal 64 MiB, 8 MiB per token, 128 nestingsniveaus en twee miljoen waarden. Die controleert de volledige JSON, weigert dubbele sleutels en vergelijkt de rapport-/normaantallen zonder het hele objectmodel op te bouwen. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
 
 ## Testen met fictieve gegevens
 
 ```text
-node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs content-tools/local-source-method.test.mjs content-tools/local-source-database.test.mjs content-tools/local-source-passages.test.mjs content-tools/local-report-viewer.test.mjs content-tools/local-report-workflow.test.mjs
+node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs content-tools/local-source-method.test.mjs content-tools/local-source-database.test.mjs content-tools/local-source-passages.test.mjs content-tools/local-report-viewer.test.mjs content-tools/local-report-workflow.test.mjs content-tools/local-framework-workflow.test.mjs content-tools/local-source-runtime.test.mjs content-tools/baseline-registry-counts.test.mjs content-tools/local-evidence-budget.test.mjs
 ```
 
 Deze tests maken eigen fictieve pakketten in `work/`, controleren goede en afgekeurde invoer en ruimen hun eigen testmappen op. Ze toetsen ook dat de basis gelijk blijft, laadverwijzingen kloppen en de bestaande herstelregels onbruikbare modellen weigeren. De testreviews zijn uitsluitend softwaretestgegevens.
 
 De lokale browserproef van 25 oktober 2026 doorliep de pakketroute met een fictief model: openen in de bestaande viewer, een vraag kiezen en aanpassen, de bouwsteen terugvinden in het kader, herladen en hetzelfde projectbestand openen in een lege browsersessie. Model, vraagtekst en selectie bleven behouden. Dit is een softwareproef, geen inhoudelijke vrijgave van echte bronnen.
 
-De aparte fictieve rapportproef gebruikt de echte rapport-, selectie-, vraag- en projectherstelcode: selecteren, eigen normtekst en notitie bewaren, een vraag koppelen, comprimeren/heropenen en opnieuw selecteren. Ook gewijzigde bronpassages, vragen en bronbeperkingen blijven bij herstel geweigerd. Dit is een codeproef van de overdracht, nog geen rapportdatabase- of browserproef.
+De fictieve rapport- en kaderproeven bouwen eerst de nieuwe database en gebruiken daarna de echte viewerprojectie, selectie-, vraag- en projectherstelcode: selecteren, eigen normtekst en notitie bewaren, een vraag koppelen, comprimeren/heropenen en opnieuw selecteren. Ook gewijzigde bronpassages, vragen en bronbeperkingen blijven bij herstel geweigerd. De browserproef van 25 oktober 2026 op afzonderlijke lokale testpoorten controleert daarnaast de bestaande viewers, volledige beheersketens, letterlijke broncontext en behoud van de selectie en vraagkoppeling na herladen. Alleen fictieve pakketten zijn toegevoegd; de bestaande database is uitsluitend gelezen.
 
-De fictieve rapport- en kaderproef voor de controledatabase doorloopt de echte bouwopdracht met volledige testontvangsten. Zij vergelijkt alle ontvangen bron- en bewijsbytes na opslag, controleert de bestaande databasegrens en bewijst dat een HOLD-database niet als runtimepublicatie kan worden uitgegeven. Ook opnieuw berekende fictieve hashes mogen ontbrekende leeswaarnemingen, verkeerde fasevolgorde of zelfreview niet verbergen. Deze proef is geen echte inhoudsbeoordeling of rapport-/kaderproef in de browser.
+De fictieve rapport- en kaderproef voor de controledatabase doorloopt de echte bouwopdracht met volledige testontvangsten. Zij vergelijkt alle ontvangen bron- en bewijsbytes na opslag, controleert de bestaande databasegrens en bewijst dat een HOLD-database niet als runtimepublicatie kan worden uitgegeven. Ook opnieuw berekende fictieve hashes mogen ontbrekende leeswaarnemingen, verkeerde fasevolgorde of zelfreview niet verbergen. Deze controles zijn geen echte inhoudsbeoordeling. Een alleen-lezen compatibiliteitsproef op een oorspronkelijk rapportdossier verifieerde bovendien de vier leeslogs, acht fasen en het grote historische register; die proef verleent geen nieuwe inhoudelijke vrijgave.
 
 ---
 

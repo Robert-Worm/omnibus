@@ -12,8 +12,10 @@ import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { validateModelLibrary } from "../lib/model-library-validation.mjs";
 import { structureModelData } from "../lib/model-structure.mjs";
 import { prepareLocalModelRuntime, writeLocalModelRuntime } from "./local-model-runtime.mjs";
+import { prepareLocalSourceRuntime } from "./local-source-runtime.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
 import { checkLocalSourceReview, localSourceSnapshot, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
+import { baselineArchiveIds, reserveLocalPackageBytes } from "./local-evidence-budget.mjs";
 
 export const localDatabaseLimits = Object.freeze({ packages: 64, bytes: 64 * 1024 * 1024, jsonBytes: 8 * 1024 * 1024 });
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -203,11 +205,11 @@ async function readPackage(entry, planRoot, budget) {
   "Supply the actual distinct authorIds; do not infer them from review receipts");
   const intakePath = resolve(planRoot, entry.intake), root = realpathSync(dirname(intakePath));
   const checked = await checkIntake(intakePath, { expectedSha256: entry.sha256 });
-  requireValue(budget.bytes + checked.bytes <= localDatabaseLimits.bytes, "Selected packages exceed the local 64 MiB byte limit");
   const intakeBytes = readBytes(intakePath, intakeLimits.manifestBytes, entry.sha256);
-  budget.bytes += checked.bytes + intakeBytes.length;
-  requireValue(budget.bytes <= localDatabaseLimits.bytes, "Selected packages and manifests exceed the local 64 MiB byte limit");
   const manifest = json(intakeBytes, "intake"), files = new Map();
+  const archives = baselineArchiveIds(manifest, entry.sourceEvidence, file =>
+    json(readBytes(containedPath(root, file.path), localDatabaseLimits.jsonBytes, file.sha256), file.path));
+  reserveLocalPackageBytes(budget, manifest, archives, intakeBytes.length, localDatabaseLimits.bytes);
   for (const file of manifest.files) {
     const bytes = readBytes(containedPath(root, file.path), file.bytes, file.sha256);
     requireValue(bytes.length === file.bytes, `File byte count changed: ${file.path}`);
@@ -254,7 +256,7 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
     requireValue(Array.isArray(input.packages) && input.packages.length > 0 && input.packages.length <= localDatabaseLimits.packages,
       "Select 1 to 64 explicit packages");
     if (!checkOnly) outputPath(out, []);
-    const snapshots = [], ids = new Set(), budget = { bytes: 0 };
+    const snapshots = [], ids = new Set(), budget = { bytes: 0, archiveBytes: 0 };
     for (const [index, entry] of input.packages.entries()) {
       phase = `PACKAGE_CHECK[${index + 1}]`;
       const snapshot = await readPackage(entry, dirname(planPath), budget), id = snapshot.manifest.package.id;
@@ -267,7 +269,8 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
       scope: "local-database-only", status: "LOCAL_OWNER_ADMISSION_RECORDED" }));
     const allLocallyAdmitted = ownerAdmissions.length === snapshots.length;
     const checkedInputs = { planSha256: sha256(planBytes),
-      inputBytes: budget.bytes, inputFiles: snapshots.reduce((sum, item) => sum + item.checked.files, 0),
+      inputBytes: budget.bytes + budget.archiveBytes, baselineArchiveBytes: budget.archiveBytes,
+      inputFiles: snapshots.reduce((sum, item) => sum + item.checked.files, 0),
       reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
       packagesChecked: snapshots.map(item => ({ ...item.manifest.package, manifestSha256: item.checked.manifestSha256,
         reviewStatus: item.review.status })),
@@ -281,9 +284,7 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
           ? "Local owner admissions are recorded against checked evidence. Standalone runtime projection and application integration remain required. No runtime publication or local-build.json was created."
           : "Checked package evidence does not grant application access. Actual reading and role independence require retained coordinator and owner observations. No runtime publication or local-build.json was created." } };
     phase = "BASE_PUBLICATION_CHECK";
-    if (base && snapshots.some(item => !item.model))
-      throw new LocalSourceIntegrationRequired(snapshots.find(item => !item.model).review);
-    const runtimeBase = base ? prepareLocalModelRuntime(base, snapshots) : null;
+    const runtimeBase = base ? (snapshots.some(item => !item.model) ? prepareLocalSourceRuntime : prepareLocalModelRuntime)(base, snapshots) : null;
     if (checkOnly) return { status: runtimeBase ? "LOCAL_VIEWER_INPUTS_CHECKED" : "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
       ...(runtimeBase ? { base: runtimeBase.pins, runtime: { status: "NOT_BUILT", code: "LOCAL_VIEWER_BUILD_REQUIRED", publication: null } } : {}),
       packages: snapshots.length, sourceTexts: snapshots.reduce((sum, item) => sum + item.documents.length, 0) };

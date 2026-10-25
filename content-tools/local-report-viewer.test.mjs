@@ -30,6 +30,8 @@ for (const [name, change, message] of [
   ["changed norm", f => { f.projection.blocks[0].criterion = { text: "Different norm" }; }, /norm/],
   ["changed line", f => { f.projection.blocks[0].line = { ...f.app.framework.lines[0], title: "Different" }; }, /APP-FINAL/],
   ["missing goal", f => { f.reuse.organizational_goals = []; }, /authored goal/],
+  ["missing restore relationships", f => { delete f.app.framework.lines[0].relationships; }, /source relationships/],
+  ["unknown relationship evidence", f => { f.app.framework.lines[0].relationships = [{ evidence_ids: ["unknown"] }]; }, /source relationships/],
   ["missing control objective", f => { f.reuse.control_objectives = []; }, /authored goal/],
   ["duplicate control assignment", f => { f.reuse.control_objectives.push({ ...f.reuse.control_objectives[0], id: "another" }); }, /ambiguous/],
   ["control copied as objective", f => { f.reuse.control_objectives[0].text = f.app.framework.lines[0].control.text; }, /duplicates/],

@@ -6,8 +6,9 @@ import { reportStages } from "../local-report-method.mjs";
 import { frameworkMethodDependencies } from "../local-framework-method.mjs";
 
 const stamp = minute => new Date(Date.UTC(2026, 0, 1, 0, minute)).toISOString();
-export function sourceMethodFixture(kind) {
+export function sourceMethodFixture(kind, configure = () => {}) {
   const f = kind === "report" ? reportViewerFixture() : sourceReviewFixture(kind);
+  configure(f); // Fictitious test authoring BEFORE the simulated custody stages.
   const { set, read, paths } = f, hash = name => paths.get(name).sha256;
   const hashes = names => Object.fromEntries(names.map(name => [name, hash(name)]));
   const proof = { firstReceipt: null, finalReceipt: null, paths: [], contracts: {} };
@@ -58,7 +59,7 @@ export function sourceMethodFixture(kind) {
     set("PILOT-CONTROL.json", { report_id: f.manifest.package.id, candidate: "Fictief", packet_id: "synthetic-packet", one_report_only: true,
       acceptance_stop_required: true, second_report_authorized: false, model: "gpt-6-astra", ordinary_allowance_only: true, paid_extras_authorized: false });
     set("SELECTION.json", { synthetic: true });
-    set("prior/viewer/app/reviewed-reports.json", { corpus: [] });
+    set("prior/viewer/app/reviewed-reports.json", f.baselineRegistry ?? { corpus: [] });
     set("BASELINE-FREEZE.json", { active_reports: 0, active_items: 0, files: hashes(["prior/viewer/app/reviewed-reports.json"]) });
     const index = {}, stages = {};
     function stage(name, minute) {

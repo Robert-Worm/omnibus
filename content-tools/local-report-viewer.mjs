@@ -57,6 +57,11 @@ export function projectLocalReportViewer({ app, reuse, projection, locators }) {
     requireValue(goal?.report_id === report.id && text(goal.text), "missing authored goal: " + id);
     requireValue(text(line.risk?.text) && text(line.control?.text), "missing risk or control: " + id);
     requireValue(assignments.get(id).text !== line.control.text, "control objective duplicates the control: " + id);
+    const validRefs = value => Array.isArray(value?.evidence_ids) && value.evidence_ids.every(ref => evidence.has(ref));
+    requireValue(Array.isArray(line.relationships) && line.relationships.every(validRefs), "missing or unresolved source relationships: " + id);
+    requireValue(["objective", "risk", "control", "criterion", "auditQuestion", "procedure", "finding", "owner"]
+      .every(key => validRefs(line[key])) && line.controlStatus && Object.values(line.controlStatus).every(validRefs),
+    "incomplete or unresolved source evidence shape: " + id);
   }
 
   requireValue(Array.isArray(app.source?.pages) && app.source.pages.length, "missing source pages");

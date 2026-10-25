@@ -64,7 +64,7 @@ for (const kind of ["report", "framework"]) test(`${kind}: real CLI builds an is
   await assert.rejects(buildLocalDatabase({ plan, out }), /Output already exists/);
   await assert.rejects(buildLocalDatabase({ plan, out: join(dir, "unused"), base: existing }), error => {
     const result = localDatabaseFailure(error);
-    assert.equal(result.code, "SOURCE_INTEGRATION_REQUIRED"); assert.equal(result.reviewEvidence.sourceMethodValidated, true); return true;
+    assert.match(result.error, /Every viewer package needs/); return true;
   });
   assert.equal(existsSync(join(dir, "unused")), false);
 });

@@ -14,8 +14,7 @@ const LIBRARY = "lib/model-library.mjs";
 const requireValue = (condition, message) => { if (!condition) throw Error(message); };
 
 /** Capture one verified read-only snapshot. No later reads of an unpinned base. */
-export function prepareLocalModelRuntime(settings, snapshots) {
-  requireValue(snapshots.every(item => item.admission), "Every viewer package needs its own checked local-owner admission");
+export function readLocalRuntimeBase(settings) {
   const pins = readDatabaseSettings(settings);
   const reader = new CatalogueRepository(pins.database, { readOnly: true });
   try {
@@ -29,6 +28,19 @@ export function prepareLocalModelRuntime(settings, snapshots) {
     const bundle = reader.exportRelease(pins.release);
     const resources = Object.fromEntries(Object.entries(content.refs)
       .map(([key, ref]) => [key, webResource(reader, pins.release, ref.hash)]));
+    return { pins: { release: pins.release, publication: pins.publication }, bundle, content, resources,
+      localModelKeys: new Set() };
+  } finally { reader.close(); }
+}
+
+export function prepareLocalModelRuntime(settings, snapshots) {
+  requireValue(snapshots.every(item => item.admission), "Every viewer package needs its own checked local-owner admission");
+  return addLocalModels(readLocalRuntimeBase(settings), snapshots);
+}
+
+export function addLocalModels(prepared, snapshots) {
+    if (!snapshots.length) return prepared;
+    const { bundle, content, resources } = prepared;
     const library = structuredClone(content.modules[LIBRARY]);
     requireValue(Array.isArray(library?.models), "Base publication has no model library");
     for (const key of content.registrations[LIBRARY] ?? []) applyCatalogueEdits(library, resources[key]);
@@ -59,9 +71,8 @@ export function prepareLocalModelRuntime(settings, snapshots) {
     content.summary.models = { models: models.length,
       dimensions: models.reduce((sum, model) => sum + model.items.length, 0),
       questions: models.reduce((sum, model) => sum + model.items.reduce((n, item) => n + (item.questions?.length ?? 0), 0), 0) };
-    return { pins: { release: pins.release, publication: pins.publication }, bundle, content, resources,
+    return { ...prepared,
       localModelKeys: new Set(snapshots.map(({ model }) => `models:local:${model.id}`)) };
-  } finally { reader.close(); }
 }
 
 function appendUnique(existing, additions, key, label) {
@@ -77,11 +88,11 @@ function appendUnique(existing, additions, key, label) {
 export function writeLocalModelRuntime(repository, prepared, additions) {
   const { bundle, pins, content, resources } = prepared;
   const release = repository.importRelease({
-    manifest: { format: "omnibus-local-model-publication", schemaVersion: 1, scope: "local-database-only",
+    manifest: { format: prepared.sourcePackages ? "omnibus-local-source-publication" : "omnibus-local-model-publication", schemaVersion: 1, scope: "local-database-only",
       contentGate: "LOCAL_OWNER_ADMITTED", base: pins, planSha256: additions.manifest.planSha256,
       runtimeContract: runtimeContractHash },
     packages: appendUnique(bundle.packages, additions.packages.map(item => ({ ...item,
-      records: item.records.map(record => ({ ...record, status: "LOCAL_OWNER_ADMITTED" })) })), item => item.id, "package"),
+      records: item.records.map(record => ({ ...record, status: record.data?.selection_status === "HOLD" ? "HOLD" : "LOCAL_OWNER_ADMITTED" })) })), item => item.id, "package"),
     documents: appendUnique(bundle.documents, additions.documents, item => item.id, "document"),
     artifacts: appendUnique(bundle.artifacts, additions.artifacts, item => item.name, "evidence artifact"),
   });

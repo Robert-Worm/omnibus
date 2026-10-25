@@ -7,6 +7,8 @@ export function reportViewerFixture() {
   const f = sourceReviewFixture("report"), app = f.read("APP-FINAL.json"), line = app.framework.lines[0];
   const report = app.framework.report, evidence = app.framework.evidence[0];
   report.year = 2026;
+  line.relationships = [];
+  for (const status of Object.values(line.controlStatus)) status.evidence_ids = [];
   app.framework.limitations = ["Fictieve historische situatie; geen huidige tekortkoming vastgesteld."];
   for (const [key, value] of Object.entries({ objective: "Meldingen tijdig afhandelen.", risk: "Een melding blijft onbehandeld.",
     control: "Wijs een behandelaar aan en leg het besluit vast.", criterion: "Voor een melding is een behandelaar aangewezen.",

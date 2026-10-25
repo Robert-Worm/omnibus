@@ -1,11 +1,24 @@
-import test from "node:test";
+import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { register } from "node:module";
-import { projectLocalReportViewer } from "./local-report-viewer.mjs";
-import { reportViewerFixture } from "./test-support/local-report-viewer-fixture.mjs";
+import { sourceRuntimeFixture } from "./test-support/local-source-runtime-fixture.mjs";
+import { buildLocalDatabase } from "./local-database.mjs";
+import { CatalogueRepository } from "../local-data/repository.mjs";
+import { readRuntimePublication } from "../local-data/runtime-publication.mjs";
+import { webResource } from "../local-data/web-resources.mjs";
+import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
+import { hydratedModule } from "./local-source-runtime.mjs";
 import { serializeProject, parseProjectText } from "../lib/project-codec.mjs";
 
-const fixture = reportViewerFixture(), viewer = projectLocalReportViewer(fixture.input);
+const fixture = await sourceRuntimeFixture({ after }, "report"), built = await buildLocalDatabase(fixture.options);
+const reader = new CatalogueRepository(built.database, { readOnly: true });
+let additions;
+try {
+  const content = readRuntimePublication(reader, { ...built, contract: runtimeContractHash });
+  const resources = Object.fromEntries(Object.entries(content.refs).map(([key, ref]) => [key, webResource(reader, built.release, ref.hash)]));
+  additions = hydratedModule({ content, resources }, "app/report-additions.json");
+} finally { reader.close(); }
+const viewer = { additions, catalogue: { ...additions.catalogue, interview_questions: additions.interview_questions, visual_sources: additions.visual_sources } };
 const root = new URL("../", import.meta.url).href;
 // Run the real report, investigation, draft and project adapters. Replace only
 // absent catalogue inputs and unrelated model/law content with fictitious data.
@@ -51,14 +64,17 @@ const { emptyDraft, validateDraft, updateValue } = await import("../lib/framewor
 const { materialLine } = await import("../lib/investigation.mjs");
 const { addQuestion, linkQuestionLines } = await import("../lib/research-plan.mjs");
 const { makeProject, readProject } = await import("../lib/project-session.mjs");
+const { sourceEvidenceIds, validateSourceItems } = await import("../lib/framework-source-items.mjs");
 const framework = { version: "synthetic", content_hash: "a".repeat(64), title: "Fictief lokaal onderzoek",
   report: { id: "SYNTHETIC_BASE", source_hash: "b".repeat(64) }, lines: [], evidence: [] };
 const restore = text => readProject(parseProjectText(text), null, {
   restoreDraft: value => validateDraft(value, framework),
   restoreModels: value => { assert.deepEqual(value, { models: [] }); return value; }, themes: [] }).project;
 
-test("report projection reaches the existing selection, questions and project restoration without changing its source", () => {
+test("new local report database reaches existing selection, questions and project restoration without changing its source", () => {
   const before = structuredClone(viewer), id = viewer.catalogue.points[0].id;
+  assert.equal(validateSourceItems(additions.corpus[0].framework), true);
+  assert.deepEqual(sourceEvidenceIds(additions.corpus[0].framework.lines[0]), ["E1"]);
   let draft = setReportPointSelection(emptyDraft(framework), viewer.catalogue, [id], true, "source");
   const material = draft.investigation.materials[0];
   assert.equal(material.body, fixture.input.app.framework.lines[0].criterion.text);

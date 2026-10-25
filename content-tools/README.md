@@ -9,16 +9,16 @@
 | `intake.mjs` | Controleert of een pakket compleet en ongewijzigd is |
 | `runtime-delivery.mjs`, `runtime-author-data.mjs` | Gegevens klaarzetten voor een nieuwe publicatie |
 | `model-quality.mjs` | Controleert de structuur van modelreviews |
-| `local-database.mjs` | Maakt een nieuwe lokale modeldatabase; met eigenaarbesluit en basispublicatie bruikbaar in de bestaande viewer |
+| `local-database.mjs` | Maakt een nieuwe lokale database voor modellen, rapporten en kaders; met eigenaarbesluit en basispublicatie bruikbaar in de bestaande viewers |
 | `local-source-review.mjs` | Controleert bestandskoppelingen en objectdekking van rapport- en kaderreviews; verleent geen inhoudelijke toelating |
 | `identity.mjs` | Controlegetallen (hashes) berekenen |
 | `active-publication-guard.mjs` | Controleert of een nieuwe publicatie alleen de goedgekeurde pakketten en documenten bevat |
 
 ## Wanneer heb je dit nodig?
 
-Bij het controleren van een ingeleverde bron of het lokaal klaarzetten van eigen modelpakketten.
+Bij het controleren van een ingeleverde bron of het lokaal klaarzetten van eigen pakketten.
 
-Voor eigen modelpakketten is er een [lokale pakketroute](local-database.md). Die werkt zonder private auteursomgeving. Met een gecontroleerde basispublicatie en vastgelegde eigenaarbesluiten maakt zij een aparte viewerpublicatie; zonder die vrijgave blijft de uitvoer in HOLD.
+Voor eigen modellen, rapporten en kaders is er een [lokale pakketroute](local-database.md). Die werkt zonder private auteursomgeving. Met een gecontroleerde basispublicatie en vastgelegde eigenaarbesluiten maakt zij een aparte viewerpublicatie; zonder die vrijgave blijft de uitvoer in HOLD.
 
 ## Spelregels
 

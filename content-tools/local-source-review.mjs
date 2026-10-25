@@ -6,6 +6,7 @@ import { posix } from "node:path";
 import { canonical } from "./identity.mjs";
 import { checkLocalSourcePassages } from "./local-source-passages.mjs";
 import { projectLocalReportViewer, reportViewerFiles } from "./local-report-viewer.mjs";
+import { projectLocalFrameworkViewer } from "./local-framework-viewer.mjs";
 import { checkLocalSourceStructure } from "./local-source-structure.mjs";
 import { checkLocalSourceMethod } from "./local-source-method.mjs";
 
@@ -180,6 +181,11 @@ export function checkLocalSourceReview(manifest, files, authorIds, sourceEvidenc
     requireValue(reportViewerFiles.every(name => Object.hasOwn(dependencies, name)), "incomplete frozen report reuse packet");
     projectLocalReportViewer({ app: read("APP-FINAL.json"), reuse: read("REUSE-CANDIDATE.json"),
       projection: read("REUSE-VIEWER-PROJECTION.json"), locators: read("POINT-SOURCE-LOCATORS.json").locators });
+    viewerShapeValidated = true;
+  }
+  if (kind === "framework" && catalogue.context) {
+    projectLocalFrameworkViewer({ catalogue, bank, pages: read("source/pages.json"), status: read("SOURCE-STATUS.json"),
+      pdfHash: lookup("source/source.pdf").file.sha256, reviewBasis: basisFile.sha256, title: manifest.package.title });
     viewerShapeValidated = true;
   }
   const method = sourceEvidence ? checkLocalSourceMethod(kind,
