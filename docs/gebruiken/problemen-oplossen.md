@@ -91,8 +91,13 @@ Preview start refused. Check explicit start options, the pinned database, web bu
 {"error":"Host not allowed"}
 ```
 
-- **Oorzaak:** je opent Omnibus op een ander adres dan waarop hij draait. Op je eigen computer is dat `http://127.0.0.1:4319/`, niet `http://localhost:4319/`. Omnibus weigert andere adressen, zodat websites niet stiekem bij je gegevens kunnen.
-- **Herstellen:** open precies het adres dat in de terminal staat. Met Docker is het juist `http://localhost:8080/`, niet `127.0.0.1:8080`. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
+- **Oorzaak:** het adres is niet toegestaan. In de huidige code op de hoofdtak (`main`) werken lokaal zowel `http://127.0.0.1:4319/` als `http://localhost:4319/`. Beide namen moeten de poort gebruiken waarop Omnibus werkelijk draait. Andere hostnamen, subdomeinen en verkeerde poorten blijven geweigerd.
+- **Herstellen:** open het adres uit de terminal. Die toont `127.0.0.1` met de gebruikte poort. Lokaal kun je ook `localhost` gebruiken met precies diezelfde poort. Oudere releases kunnen `localhost` nog weigeren; gebruik dan het adres met `127.0.0.1` uit de terminal.
+- **Nazorg:** gebruik steeds hetzelfde adres. De twee lokale namen hebben elk hun eigen browseropslag, ook op dezelfde poort. Zie [Mijn project is weg](#mijn-project-is-weg) als je werk niet verschijnt.
+
+Bij Docker en publieke hosting geldt alleen het adres dat is ingesteld met `PUBLIC_ORIGIN`; de extra lokale naam geldt daar niet. Het Docker-voorbeeld gebruikt `http://localhost:8080`. Voor poort 3000 gebruik je zowel `-p 3000:8080` als `-e PUBLIC_ORIGIN=http://localhost:3000`.
+
+Omnibus controleert ook de herkomst die de browser meestuurt (`Origin`). Als die aanwezig is, moeten protocol, naam en poort exact bij het geopende adres passen. Een afwijkende herkomst geeft `Origin not allowed`, ook bij een verzoek tussen de twee lokale namen.
 
 ### Docker Desktop draait niet
 
@@ -125,8 +130,8 @@ ETIMEDOUT
 
 ### Mijn project is weg
 
-- **Oorzaak:** elk adres en elke poort heeft eigen opslag in de browser. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
-- **Herstellen:** open Omnibus op het adres dat je eerder gebruikte. Of open je projectbestand met **Open project**. Bewaar je werk regelmatig met **Bewaar project**.
+- **Oorzaak:** elk adres en elke poort heeft eigen opslag in de browser. Ook `localhost` en `127.0.0.1` hebben aparte opslag op dezelfde poort. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
+- **Herstellen:** open Omnibus op het adres dat je eerder gebruikte. Wil je van adres wisselen? Gebruik eerst **Bewaar project** op het oude adres en daarna **Open project** op het nieuwe adres. Heb je al een projectbestand, open dat dan met **Open project**. Bewaar je werk regelmatig.
 
 <a id="kom-je-er-niet-uit"></a>
 ## Meldingen van de installatieopdracht
