@@ -263,11 +263,11 @@ const rejectedPackages = [
   ["unsupported report", f => {
     const m = load(f.packages[0].intake); m.package.kind = "report"; m.contract = "report-kit-1.1";
     m.files[0].roles.push("source-bank", "catalogue", "source-links", "receipt"); save(f.packages[0].intake, m); repinFixture(f);
-  }, /No standalone.*report/],
+  }, /original REVIEW-BASIS/],
   ["unsupported framework", f => {
     const m = load(f.packages[0].intake); m.package.kind = "framework"; m.contract = "framework-cio-0.1+addendum-01";
     m.files[0].roles.push("source-bank", "catalogue", "source-links", "migration"); save(f.packages[0].intake, m); repinFixture(f);
-  }, /No standalone.*framework/],
+  }, /original REVIEW-BASIS/],
   ["missing required intake role", f => {
     const m = load(f.packages[0].intake); m.files = m.files.filter(file => !file.roles.includes("review"));
     save(f.packages[0].intake, m); repinFixture(f);

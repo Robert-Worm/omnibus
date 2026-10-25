@@ -13,6 +13,7 @@ import { validateModelLibrary } from "../lib/model-library-validation.mjs";
 import { structureModelData } from "../lib/model-structure.mjs";
 import { prepareLocalModelRuntime, writeLocalModelRuntime } from "./local-model-runtime.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
+import { checkLocalSourceReview, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
 
 export const localDatabaseLimits = Object.freeze({ packages: 64, bytes: 64 * 1024 * 1024, jsonBytes: 8 * 1024 * 1024 });
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -194,6 +195,8 @@ async function readPackage(entry, planRoot, budget) {
     requireValue(bytes.length === file.bytes, `File byte count changed: ${file.path}`);
     files.set(file.id, bytes);
   }
+  if (manifest.package.kind !== "model")
+    throw new LocalSourceIntegrationRequired(checkLocalSourceReview(manifest, files, entry.authorIds));
   const snapshot = modelSnapshot(manifest, files, entry.authorIds);
   const admission = Object.hasOwn(entry, "admission")
     ? ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budget) : null;
@@ -321,8 +324,11 @@ export async function buildLocalDatabase({ plan, out, base }) {
 }
 
 export function localDatabaseFailure(error) {
+  const pending = error instanceof LocalSourceIntegrationRequired ? error
+    : error?.cause instanceof LocalSourceIntegrationRequired ? error.cause : null;
   return { status: "HOLD", publishable: false, newContentApproval: false,
     error: error instanceof Error ? error.message : "Local database build failed",
+    ...(pending ? { reviewEvidence: pending.evidence, code: "SOURCE_INTEGRATION_REQUIRED" } : {}),
     action: "Restore the exact source/review files and trusted intake hash, or request a corrected version with matching reviews. Never change HOLD or rehash rejected evidence to pass. Keep incomplete output separate and retry with a new output folder.",
     documentation: "content-tools/local-database.md" };
 }

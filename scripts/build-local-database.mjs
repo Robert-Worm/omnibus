@@ -13,7 +13,9 @@ With --base, every package needs its own owner admission. A pinned base is read-
 the NEW database includes the existing viewer publication plus the admitted models.
 This also writes local-build.json for the existing build:runtime command. No active tool is switched.
 Does not execute package code, change an existing database or grant public content approval.
-Report/framework packages remain HOLD until a standalone integration validator is available.
+Report/framework inputs check original review bindings and declared object coverage, then remain HOLD.
+SOURCE_INTEGRATION_REQUIRED reports checked bindings, NOT source-method validation or viewer admission.
+Their complete standalone source validators and viewer projections are not yet available.
 Without --base: catalogue.sqlite and local-database-result.json with counts, hashes and the remaining runtime HOLD.
 Check only: validates selected inputs (and optional base); creates no files and checks no output folder.
 A successful check is not database verification or content approval. Building always checks the current inputs again.

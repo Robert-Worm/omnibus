@@ -41,6 +41,20 @@ Maak geen reviews om de opdracht te laten slagen. De bestaande controle beoordee
 
 De model-JSON moet ook de bestaande [modelvelden van de viewer](../lib/model-library-types.ts) bevatten: onder meer `kind`, `version`, `source`, `selected` en per dimensie en vraag `question`, `probes` en `included`. De bouwer gebruikt dezelfde structuurcontrole als het heropenen van een project. Ontbrekende velden worden niet ingevuld en tekst wordt niet aangepast. Een beschermd model waarvoor cataloguscontext nodig is, blijft zonder die context in HOLD.
 
+## Rapporten en kaders: reviewbestanden controleren
+
+De lokale opdracht controleert ook de bestandskoppelingen van bestaande rapport- en kaderreviews. Gebruik daarvoor hetzelfde pakketplan en dezelfde `--check`-opdracht als hieronder. De oorspronkelijke reviewbestanden blijven ongewijzigd; maak geen nieuw akkoord om een bestand passend te krijgen.
+
+- **Rapport:** `REVIEW-BASIS.json` gebruikt het bestaande veld `files`. De twee eindreviews gebruiken `target_hashes` voor de zes eindbestanden uit de rapportkit. De controle vergelijkt ook de vastgelegde pdf- en teksthash en de beoordelingen per item en veld.
+- **Kader:** `REVIEW-BASIS.json` gebruikt het bestaande veld `target_hashes`. Bron-, kader/juridische en praktische eindreview moeten dezelfde basis beoordelen. De controle vergelijkt de objectdekking, verplichte beoordelingsaspecten en aantallen bronrelaties per toetspunt.
+- Alle genoemde bestanden moeten in de gecontroleerde intake staan. Een pakket mag in een submap zoals `payload/` staan. Verwijzingen binnen de bevroren basis blijven relatief aan die pakketmap. De controle zoekt niet op alleen een bestandsnaam en leest geen verwijzingen buiten het pakket.
+
+Bij correcte koppelingen vermeldt de foutuitvoer `SOURCE_INTEGRATION_REQUIRED` met een samenvatting onder `reviewEvidence`. `reviewBindingsValidated` is dan `true`, maar het pakket blijft **HOLD** en de opdracht eindigt met exitcode 1. Ook met `--out`, `--base` of een eigenaarbesluit wordt geen database gemaakt. Een ontbrekend of gewijzigd bestand, andere eindbasis, auteur als reviewer, dubbel reviewobject of onopgelost reviewpunt stopt eerder met de concrete oorzaak.
+
+Deze tussencontrole bevestigt alleen de gecontroleerde bestandskoppelingen en verklaarde objectbeoordelingen. Zij controleert nog niet de volledige bronmethode, letterlijke bronpassages, lees- en bevriezingsbewijzen, inhoudelijke kwaliteit of de aansluiting op de viewer. Daarom blijven `sourceMethodValidated`, `reviewValidated`, `viewerShapeValidated`, `newContentApproval` en `publishable` hier `false`. De bestaande volledige bronafhankelijke toelating blijft verplicht. Rapporten en kaders kunnen via deze lokale opdracht nog niet in de viewer worden geladen; de modelroute hieronder werkt wel.
+
+Historische dossiers met absolute verwijzingen worden niet automatisch omgeschreven. Bewaar het originele bewijs en gebruik de bestaande bronafhankelijke integratieroute. De controle maakt geen nieuwe goedkeuringshashes of reviewredenen.
+
 ## 2. Kies je pakketten
 
 Maak naast de pakketmappen een bestand `packages.json`. Noem alleen de pakketten die je wilt opnemen. Zo komt een oude of afgekeurde versie niet ongemerkt mee.
@@ -155,7 +169,8 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | `INPUT_CHECK` | Controleer het plan, de paden en de nieuwe uitvoermap. |
 | `PACKAGE_CHECK[2]` | Het tweede pakket faalt. Vraag de exacte ontbrekende bestanden of een nieuwe beoordeelde pakketversie op. |
 | `BASE_PUBLICATION_CHECK` | Controleer de expliciete basispins en eigenaarbesluiten. Een bestaand model-ID kan niet opnieuw worden toegevoegd. |
-| `No standalone content/review validator` | Rapporten en wetten/kaders hebben nog geen zelfstandige integratiecontrole in deze route. Houd het pakket apart en volg de bestaande inhoudelijke werkwijze. |
+| `Source review` | Een bestand, reviewkoppeling of objectbeoordeling ontbreekt of wijkt af. Vraag het oorspronkelijke bewijs of een nieuwe, daadwerkelijk gereviewde versie; vervang geen vastgelegde hashes. |
+| `SOURCE_INTEGRATION_REQUIRED` / `No standalone content/review validator` | De reviewkoppelingen zijn gecontroleerd, maar de volledige bronafhankelijke toelating en vieweraansluiting ontbreken nog voor rapporten en kaders. Houd het pakket apart. |
 | `DATABASE_WRITE` of `FINAL_VERIFICATION` | Controleer de genoemde fout en beschikbare schijfruimte. Gebruik geen gedeeltelijke uitvoer. |
 
 Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
@@ -163,7 +178,7 @@ Er is geen optie om controles over te slaan. De opdracht voert nooit code uit ee
 ## Testen met fictieve gegevens
 
 ```text
-node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs
+node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs
 ```
 
 Deze tests maken eigen fictieve pakketten in `work/`, controleren goede en afgekeurde invoer en ruimen hun eigen testmappen op. Ze toetsen ook dat de basis gelijk blijft, laadverwijzingen kloppen en de bestaande herstelregels onbruikbare modellen weigeren. De testreviews zijn uitsluitend softwaretestgegevens.

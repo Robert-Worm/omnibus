@@ -10,6 +10,7 @@
 | `runtime-delivery.mjs`, `runtime-author-data.mjs` | Gegevens klaarzetten voor een nieuwe publicatie |
 | `model-quality.mjs` | Controleert de structuur van modelreviews |
 | `local-database.mjs` | Maakt een nieuwe lokale modeldatabase; met eigenaarbesluit en basispublicatie bruikbaar in de bestaande viewer |
+| `local-source-review.mjs` | Controleert bestandskoppelingen en objectdekking van rapport- en kaderreviews; verleent geen inhoudelijke toelating |
 | `identity.mjs` | Controlegetallen (hashes) berekenen |
 | `active-publication-guard.mjs` | Controleert of een nieuwe publicatie alleen de goedgekeurde pakketten en documenten bevat |
 
