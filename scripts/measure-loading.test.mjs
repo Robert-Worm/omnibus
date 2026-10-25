@@ -1,6 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {summarize, localPreview, assetTotals, sessionDeltas, measureWarmSession, measureLoading} from './measure-loading.mjs';
+import {summarize, summarizeInputPaint, localPreview, assetTotals, sessionDeltas, measureWarmSession, measureLoading} from './measure-loading.mjs';
+
+test('trusted input paint percentiles require a complete observed population', () => {
+  const samples = Array.from({length: 30}, (_, i) => ({trusted: true, inputToPaintMs: (i + 1) * 8}));
+  const before = structuredClone(samples);
+  assert.deepEqual(summarizeInputPaint(samples), {
+    n: 30, observed: 30, missing: 0, complete: true, median: 124, p95: 232, maxObserved: 240,
+  });
+  assert.equal(summarizeInputPaint(samples.slice(0, 19)).p95, null);
+  // Even 29 observed events cannot give the full distribution's p95 when one
+  // event was omitted. Do not bias results by silently dropping that event.
+  assert.deepEqual(summarizeInputPaint([...samples.slice(1), {trusted: true, inputToPaintMs: null}]), {
+    n: 30, observed: 29, missing: 1, complete: false, median: null, p95: null, maxObserved: 240,
+  });
+  assert.deepEqual(summarizeInputPaint([{trusted: true, inputToPaintMs: null}]), {
+    n: 1, observed: 0, missing: 1, complete: false, median: null, p95: null, maxObserved: null,
+  });
+  assert.deepEqual(samples, before);
+  const sparse = []; sparse.length = 2;
+  for (const invalid of [[], sparse, [{}], [{trusted: false, inputToPaintMs: 20}],
+    [{trusted: true, inputToPaintMs: undefined}], [{trusted: true, inputToPaintMs: NaN}],
+    [{trusted: true, inputToPaintMs: Infinity}], [{trusted: true, inputToPaintMs: -1}]])
+    assert.throws(() => summarizeInputPaint(invalid), /trusted input/);
+});
 
 test('local sample median and nearest-rank p95 retain outliers and do not mutate samples', () => {
   const values = [1000, 10, 30, 20];

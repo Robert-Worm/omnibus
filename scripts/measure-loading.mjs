@@ -20,6 +20,21 @@ export function summarize(values) {
     p95: n >= 20 ? sorted[Math.ceil(n * 0.95) - 1] : null, min: sorted[0], max: sorted[n - 1]};
 }
 
+// Optional trusted-input probes can attach matched PerformanceEventTiming
+// durations. Chromium omits short events at its reporting threshold; a missing
+// entry is not zero, an rAF duration, or permission to rank the observed subset.
+export function summarizeInputPaint(samples) {
+  assert(Array.isArray(samples) && samples.length && Array.from(samples).every(s => s?.trusted === true &&
+    (s.inputToPaintMs === null || Number.isFinite(s.inputToPaintMs) && s.inputToPaintMs >= 0)),
+  'Use trusted input samples with a matched paint duration or explicit null');
+  const observed = samples.filter(s => s.inputToPaintMs !== null).map(s => s.inputToPaintMs);
+  const complete = observed.length === samples.length;
+  const summary = observed.length ? summarize(observed) : null;
+  return {n: samples.length, observed: observed.length, missing: samples.length - observed.length,
+    complete, median: complete ? summary.median : null, p95: complete ? summary.p95 : null,
+    maxObserved: summary?.max ?? null};
+}
+
 export function sessionDeltas(checkpoints) {
   assert(checkpoints.length >= 2, 'At least two matching settled checkpoints are needed');
   const keys = ['documents', 'nodes', 'listeners', 'heapBytes', 'renderedNodes', 'requests'];
