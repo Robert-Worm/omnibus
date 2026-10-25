@@ -157,22 +157,22 @@ Bewaar eerst je onderzoek met **Bewaar project** en stop Omnibus met `Ctrl+C` in
 
 Nieuwe code verandert de applicatie; een nieuwe database verandert de beschikbare bronnen. Een nieuwe database kan een nieuwere applicatieversie nodig hebben. Gebruik de combinatie die de release noemt, of vraag de beheerder welke combinatie is getest. Een nieuwe database past niet vanzelf bij oudere code. Stop bij een mislukte controle; pas nooit de controlegetallen aan.
 
-| Route | Nieuwe code | Nieuwe database | Bouwen en starten |
-| --- | --- | --- | --- |
-| Docker | Kies de vrijgegeven versie bij [Docker bijwerken](#docker-bijwerken). | De bouwopdracht haalt de database op die bij die versie is vastgelegd. | Bouw opnieuw en start een nieuwe container; alleen de oude container herstarten is niet genoeg. |
-| Eén opdracht | Voer [code bijwerken met Git](#code-bijwerken-met-git) uit. | Bewaar de oude databasemap apart, zoals bij [database vervangen](#database-vervangen). | `node scripts/installeer.mjs` controleert, bouwt opnieuw en start. |
-| Stap voor stap | Voer [code bijwerken met Git](#code-bijwerken-met-git) uit. | Haal het gekozen pakket op met de opdrachten bij [database vervangen](#database-vervangen). | Voer [stap 4](#4-controleer-en-bouw) en [stap 5](#5-start-omnibus) opnieuw uit. |
+| Je wilt… | Lees |
+| --- | --- |
+| Je Docker-installatie bijwerken | [Docker bijwerken](#docker-bijwerken): opnieuw bouwen met de code en database van de gekozen versie |
+| De route met één opdracht bijwerken | [Code bijwerken met Git](#code-bijwerken-met-git), en zo nodig de uitleg **Eén opdracht** bij [database vervangen](#database-vervangen) |
+| Een handmatige installatie bijwerken | [Code bijwerken met Git](#code-bijwerken-met-git), en zo nodig de uitleg **Stap voor stap** bij [database vervangen](#database-vervangen) |
 
 ### Docker bijwerken
 
-Vervang `<versietag>` door de vrijgegeven versie uit de [releases](https://github.com/Robert-Worm/omnibus/releases), bijvoorbeeld `v0.1.0`. Opnieuw bouwen met dezelfde tag kiest geen nieuwere code of database.
+Vervang `<versietag>` door de vrijgegeven versie uit het [overzicht van releases](https://github.com/Robert-Worm/omnibus/releases), bijvoorbeeld `v0.1.0`. Opnieuw bouwen met dezelfde tag kiest geen nieuwere code of database.
 
 ```text
 docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#<versietag>
 docker run --rm -p 8080:8080 omnibus
 ```
 
-Start pas na een geslaagde bouw. Gebruik je een eigen poort of `PUBLIC_ORIGIN`? Neem die instellingen over uit je vorige startopdracht. Een andere database meegeven bij het bouwen is voor beheerders; zie [de containeruitleg](../../hosting/container/README.md#een-nieuwe-database-online-zetten).
+Start pas na een geslaagde bouw. Alleen de oude container herstarten neemt de nieuwe code en database niet over. Gebruik je een eigen poort of `PUBLIC_ORIGIN`? Neem die instellingen over uit je vorige startopdracht. Een andere database meegeven bij het bouwen is voor beheerders; zie [de containeruitleg](../../hosting/container/README.md#een-nieuwe-database-online-zetten).
 
 ### Code bijwerken met Git
 
@@ -183,7 +183,12 @@ git pull --ff-only
 npm ci --ignore-scripts --no-audit --no-fund
 ```
 
-Daarna bouw en start je via jouw rij in de tabel. De tweede opdracht vernieuwt de bibliotheken. De installer slaat aanwezige bibliotheken over, dus alleen de installer opnieuw starten is hiervoor niet genoeg. Gebruik je bewust een vaste release of eigen codewijzigingen? Laat de beheerder de passende versie kiezen als Git weigert.
+De tweede opdracht vernieuwt de bibliotheken. De installer slaat aanwezige bibliotheken over, dus alleen de installer opnieuw starten is hiervoor niet genoeg. Gebruik je bewust een vaste release of eigen codewijzigingen? Laat de beheerder de passende versie kiezen als Git weigert.
+
+Vervang zo nodig eerst de database, zoals hieronder beschreven. Daarna controleer, bouw en start je opnieuw:
+
+- **Eén opdracht:** voer `node scripts/installeer.mjs` uit.
+- **Stap voor stap:** voer [stap 4](#4-controleer-en-bouw) en [stap 5](#5-start-omnibus) opnieuw uit.
 
 ### Database vervangen
 

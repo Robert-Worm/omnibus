@@ -96,7 +96,7 @@ Het sterkste dat je hebt. Aanbevolen zijn Claude Opus, Claude Fable, Claude Myth
 
 ### Werken de skills ook met Claude of ChatGPT?
 
-Ja. Je uploadt de skillmap als zip, of voegt de bestanden toe aan je gesprek. Zie [skills gebruiken met je AI-assistent](bijdragen/skills-gebruiken.md).
+Ja, als je omgeving alle nodige skillbestanden kan lezen. Downloaden kan zonder Git of terminal. De Claude-app en ChatGPT hebben verschillende routes; bestanden toevoegen is niet hetzelfde als een skill installeren. Volg [skills gebruiken met je AI-assistent](bijdragen/skills-gebruiken.md) en doe eerst de leesproef.
 
 ### Kan mijn AI-assistent ook direct in de database zoeken?
 
