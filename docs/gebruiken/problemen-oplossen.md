@@ -133,7 +133,7 @@ ETIMEDOUT
 - **Oorzaak:** elk adres en elke poort heeft eigen opslag in de browser. Ook `localhost` en `127.0.0.1` hebben aparte opslag op dezelfde poort. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
 - **Herstellen:** open Omnibus op het adres dat je eerder gebruikte. Wil je van adres wisselen? Gebruik eerst **Bewaar project** op het oude adres en daarna **Open project** op het nieuwe adres. Heb je al een projectbestand, open dat dan met **Open project**. Bewaar je werk regelmatig.
 
-<a id="kom-je-er-niet-uit"></a>
+<a id="meldingen-van-de-installatieopdracht"></a>
 ## Meldingen van de installatieopdracht
 
 De opdracht `node scripts/installeer.mjs` toont een melding met ✗, zegt eronder *Wat je doet* en geeft een link naar hulp.
@@ -147,6 +147,7 @@ De opdracht `node scripts/installeer.mjs` toont een melding met ✗, zegt eronde
 | `Het bouwen is mislukt.` | Lees de melding erboven en start de opdracht opnieuw. Stuur die melding mee als je hulp vraagt |
 | `Omnibus kon niet starten.` | Sluit een ander venster waarin Omnibus draait. Zie [Omnibus weigert te starten](#omnibus-weigert-te-starten) |
 
+<a id="kom-je-er-niet-uit"></a>
 ## Kom je er niet uit?
 
 Stel je vraag in de categorie *Hulp* van [Discussions](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp). Zet erbij:

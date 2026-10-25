@@ -93,6 +93,8 @@ Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er pr
 <a id="aan-de-slag"></a>
 ## Aan de slag
 
+**Geen terminalervaring?** Gebruik de [proefversie online](https://omnibus.sliplane.app), of lees eerst [nog nooit een terminal gebruikt?](docs/gebruiken/installeren.md#nog-nooit-een-terminal-gebruikt).
+
 **Met Docker** zijn twee opdrachten genoeg; open daarna `http://localhost:8080`:
 
 ```text
@@ -108,7 +110,7 @@ cd omnibus
 node scripts/installeer.mjs
 ```
 
-Open daarna `http://127.0.0.1:4319/`, precies zo getypt. Een volgende keer starten: `cd omnibus` en `node scripts/installeer.mjs`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
+Zo installeer je de nieuwste code. Open daarna `http://127.0.0.1:4319/`. Een volgende keer starten: `cd omnibus` en `node scripts/installeer.mjs`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
 
 ## Wat komt er nog?
 

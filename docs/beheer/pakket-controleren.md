@@ -54,11 +54,11 @@ Vul de echte pakketgegevens in, en geef elk bestand de rol die het werkelijk ver
 | `beperkingen.md` | `limitations` |
 | `LEESMIJ.md`, `bron.json`, `source.txt`, `INCLUSION-DECISIONS.json`, `controle.md`, `CHECKSUMS.sha256` | `supporting` |
 
-Een concept van een bijdrager is niet compleet voor deze controle. Deze rollen voeg je zelf toe:
+Een concept van een bijdrager is niet compleet voor deze controle. Deze rollen voeg je zelf toe. Daarvoor heb je de [rapportkit](../begrippen.md#rapportkit) nodig, in je [verwerkingsomgeving](../begrippen.md#verwerkingsomgeving).
 
 | Rol | Waar het bestand vandaan komt |
 | --- | --- |
-| `contract` | `OUTPUT-CONTRACT.md` uit de rapportkit in de verwerkingsomgeving |
+| `contract` | `OUTPUT-CONTRACT.md` uit de rapportkit |
 | `source` | De PDF via de link in `bron.json`; controleer de hash die erin staat |
 | `review-basis`, `review` | Je eigen inhoudelijke review, zie [reviewwijzigingen](reviewwijzigingen.md) |
 | `receipt` | `receipt.json` uit de rapportkit; hoe je dat maakt, staat in de kit zelf |

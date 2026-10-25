@@ -41,6 +41,8 @@
 | <a id="release"></a>Release | Een uitgave op GitHub. De database staat als zip bij een release. |
 | <a id="hash"></a>Hash (controlegetal) | Een lange code die verandert als een bestand verandert. Omnibus gebruikt het om te controleren dat database en applicatie bij elkaar horen. |
 | <a id="pakket"></a>Pakket | Een map met een verwerkte bron en alles wat erbij hoort, zoals de bronpassages en reviews. |
+| <a id="rapportkit"></a>Rapportkit | Werkwijze en sjablonen van de beheerder om een rapport formeel te verwerken, met `OUTPUT-CONTRACT.md`. Staat niet in deze repository; vraag hem aan de beheerder. |
+| <a id="verwerkingsomgeving"></a>Verwerkingsomgeving | De afgeschermde map van de beheerder, naast de checkout, met de rapportkit, de bronbestanden en de reviews. Die blijft privé en komt niet in Git. |
 | <a id="manifest"></a>Manifest | Een lijst van de bestanden in een pakket, met hun controlegetallen (`intake.json`). |
 | <a id="mcp"></a>MCP | Model Context Protocol: een standaard waarmee AI-assistenten hulpmiddelen zoals Omnibus kunnen gebruiken. |
 | <a id="runtimepakket"></a>Runtimepakket | Omnibus zonder ontwikkelomgeving, klaar om op een andere computer of server te draaien. |

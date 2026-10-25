@@ -82,9 +82,14 @@ Wil je een tweede mening? De skill [`omnibus-review-audit-quality`](../../skills
 2. Voeg de zip toe aan je claim: sleep hem in een reactie (maximaal 25 MB). Te groot? Zet hem online en deel de link.
 3. Schrijf in dezelfde reactie, **op een eigen regel**, `/inleveren`. Zet erbij wat goed ging en waar je twijfelt.
 
-Binnen een paar minuten kijkt een automatische controle in je zip. Is hij te openen? Staan de belangrijkste onderdelen erin? Zitten er geen programma's of scripts in? Je ziet het resultaat als reactie bij je claim. Wat er daarna gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
+Binnen een paar minuten kijkt een automatische controle in je zip. Is hij te openen? Staan de belangrijkste onderdelen erin? Zitten er geen programma's of scripts in? Je ziet het resultaat als reactie bij je claim, met de kop *Automatische eerste controle van je pakket*:
 
-**Gelukt als:** de uitkomst van de automatische controle als reactie bij je claim staat.
+- **Alleen ✅ en ⚠️:** goed. Een ⚠️ betekent dat de controle een onderdeel niet herkent aan de bestandsnaam. Zit het erin, noem het dan in je toelichting.
+- **Een ❌:** de controle keurt de zip af, bijvoorbeeld omdat er een script in zit. Pas de zip aan en zet hem in een nieuwe reactie, weer met `/inleveren` op een eigen regel.
+
+Je claim krijgt het label `ingeleverd`. Wat er daarna gebeurt, staat in [meedoen](README.md#zo-werkt-een-bron-verwerken).
+
+**Gelukt als:** de controle bij je claim staat zonder ❌.
 
 ## Wat lever je in?
 
@@ -120,7 +125,7 @@ Daarna staat de bron op ✅ in de voortgang en wordt je claim gesloten. Hoe de b
 
 ### Moet ik zelf de technische controles draaien?
 
-Nee. Ben je technisch onderlegd, dan kun je met `npm run content:prepare` en `npm run content:intake` alvast een controlebestand maken; zie [pakket controleren](../beheer/pakket-controleren.md). Het hoeft niet.
+Nee. Die doet de beheerder. Op een concept geven ze altijd `Missing file roles`, omdat de beheerder nog bestanden toevoegt. Dat is normaal.
 
 ### Wat als de AI fouten maakt?
 

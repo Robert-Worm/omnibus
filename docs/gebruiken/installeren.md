@@ -9,9 +9,11 @@
 | Route | Wat je nodig hebt | Rechten | Tijd |
 | --- | --- | --- | --- |
 | [Online proberen](#online-proberen) | Alleen een browser | Geen | 1 minuut |
-| [Met Docker](#met-docker) | Docker | Installatierechten | 5 minuten |
-| [Met één opdracht](#met-één-opdracht) | Git en Node.js | Installatierechten | 10 minuten |
-| [Stap voor stap](#stap-voor-stap) | Git, Node.js en de database-zip | Installatierechten | 15 minuten |
+| [Met Docker](#met-docker) | Docker | Installatierechten | 5 minuten, plus 15 voor Docker |
+| [Met één opdracht](#met-één-opdracht) | Git en Node.js | Installatierechten | 10 minuten, plus 10 voor Git en Node.js |
+| [Stap voor stap](#stap-voor-stap) | Git, Node.js en de database-zip | Installatierechten | 15 minuten, plus 10 voor Git en Node.js |
+
+De extra tijd geldt alleen als Git, Node.js of Docker nog niet op je computer staat.
 
 **Mag je op je werklaptop niets installeren?** Gebruik dan de online versie, of vraag je IT-afdeling om Docker of Node.js 24. Let op: grote organisaties hebben voor Docker Desktop vaak een betaalde licentie nodig.
 
@@ -23,6 +25,10 @@ Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.
 
 Open de [proefversie online](https://omnibus.sliplane.app). Je hoeft niets te installeren. Je werk blijft in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen.
 
+De proefversie draait de nieuwste code met de database van 19 oktober 2026. Werk je met vertrouwelijke stukken? Lees dan eerst [wat lokaal blijft](lokale-privacy.md).
+
+**Gelukt als:** je het startscherm van Omnibus ziet. Laadt de pagina niet? Probeer het over een paar minuten opnieuw, of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
+
 ## Nog nooit een terminal gebruikt?
 
 De routes hieronder werken met opdrachten die je in een terminal typt of plakt:
@@ -32,6 +38,16 @@ De routes hieronder werken met opdrachten die je in een terminal typt of plakt:
 3. **Laat het venster open** zolang je Omnibus gebruikt. Stoppen doe je met Ctrl + C.
 
 Liever geen terminal? Gebruik dan de [online versie](#online-proberen).
+
+## Git, Node.js of Docker installeren
+
+Staat het programma al op je computer? Sla dit dan over.
+
+- **Node.js:** kies op [nodejs.org](https://nodejs.org/) versie 24 (LTS). Windows: de *Windows Installer* (`.msi`). macOS: de *macOS Installer* (`.pkg`). Houd de standaardopties aan.
+- **Git:** download het bij [git-scm.com](https://git-scm.com/) en houd de standaardopties aan.
+- **Docker Desktop:** download het bij [docker.com](https://www.docker.com/products/docker-desktop/). Op Windows vraagt Docker vaak om WSL 2 en een herstart van je computer.
+
+**Gelukt als:** je na het opnieuw openen van de terminal `node --version` typt en `v24.` ziet, en `git --version` een versie toont.
 
 ## Met Docker
 
@@ -44,11 +60,13 @@ docker run --rm -p 8080:8080 omnibus
 
 Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
 
-**Gelukt als:** je Omnibus ziet op `http://localhost:8080`. Docker gebruikt precies het adres uit `PUBLIC_ORIGIN`; standaard is dat `http://localhost:8080`. De lokale alias hieronder geldt niet voor Docker.
+**Gelukt als:** je Omnibus ziet op `http://localhost:8080`. Gebruik precies dit adres; `127.0.0.1:8080` werkt hier niet. Een andere poort? Zie [problemen oplossen](problemen-oplossen.md#de-browser-toont-host-not-allowed).
 
 ## Met één opdracht
 
 **Wat heb je nodig?** [Git](https://git-scm.com/) en [Node.js 24.21](https://nodejs.org/). Eén opdracht doet de rest: hij installeert de onderdelen, haalt de database op, controleert hem, bouwt Omnibus en start hem.
+
+Deze route installeert de nieuwste code, niet versie 0.1.0. GitHub test die bij elke wijziging op Windows, macOS en Linux.
 
 **Windows (PowerShell)**
 
@@ -62,9 +80,9 @@ git clone https://github.com/Robert-Worm/omnibus.git; cd omnibus; node scripts/i
 git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scripts/installeer.mjs
 ```
 
-Gaat er iets mis, dan zegt de opdracht wat je moet doen.
+Onderweg zie je vijf stappen, van `[1/5] Node.js controleren` tot `[5/5] Omnibus starten`. Stap 2 en 4 duren een paar minuten. Gaat er iets mis, dan zegt de opdracht wat je moet doen.
 
-**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`. Met de huidige code op `main` werkt ook `http://localhost:4319/`, op dezelfde poort. Deze wijziging zit nog niet in release `v0.1.0`. Gebruik steeds dezelfde naam: beide adressen hebben aparte browseropslag.
+**Gelukt als:** de laatste regel `Open http://127.0.0.1:4319/ in je browser` is, en je Omnibus op dat adres ziet. `http://localhost:4319/` werkt ook. Kies één van beide en blijf die gebruiken: elk adres heeft zijn eigen opslag in de browser.
 
 **Een volgende keer starten:** open de terminal en typ deze twee regels. Wat al klaar is, slaat de opdracht over.
 
