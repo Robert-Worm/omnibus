@@ -6,12 +6,14 @@
 
 ## Kies je route
 
-| Route | Wat je nodig hebt | Tijd |
-| --- | --- | --- |
-| [Online proberen](#online-proberen) | Alleen een browser | 1 minuut |
-| [Met Docker](#met-docker) | Docker | 5 minuten |
-| [Met één opdracht](#met-één-opdracht) | Git en Node.js | 10 minuten |
-| [Stap voor stap](#stap-voor-stap) | Git, Node.js en de database-zip | 15 minuten |
+| Route | Wat je nodig hebt | Rechten | Tijd |
+| --- | --- | --- | --- |
+| [Online proberen](#online-proberen) | Alleen een browser | Geen | 1 minuut |
+| [Met Docker](#met-docker) | Docker | Installatierechten | 5 minuten |
+| [Met één opdracht](#met-één-opdracht) | Git en Node.js | Installatierechten | 10 minuten |
+| [Stap voor stap](#stap-voor-stap) | Git, Node.js en de database-zip | Installatierechten | 15 minuten |
+
+**Mag je op je werklaptop niets installeren?** Gebruik dan de online versie, of vraag je IT-afdeling om Docker of Node.js 24. Let op: grote organisaties hebben voor Docker Desktop vaak een betaalde licentie nodig.
 
 Wil je Omnibus gewoon gebruiken? Kies dan Docker of één opdracht. De route *stap voor stap* is voor wie wil zien wat er gebeurt, of zelf aan de code werkt.
 
@@ -21,9 +23,19 @@ Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.
 
 Open de [proefversie online](https://omnibus.sliplane.app). Je hoeft niets te installeren. Je werk blijft in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen.
 
+## Nog nooit een terminal gebruikt?
+
+De routes hieronder werken met opdrachten die je in een terminal typt of plakt:
+
+1. **Open de terminal.** Windows: klik op Start, typ `PowerShell` en druk op Enter. macOS: open *Terminal* via Spotlight (Cmd + spatie).
+2. **Plak de opdracht** en druk op Enter. Wacht tot er niets meer gebeurt of tot je het adres ziet.
+3. **Laat het venster open** zolang je Omnibus gebruikt. Stoppen doe je met Ctrl + C.
+
+Liever geen terminal? Gebruik dan de [online versie](#online-proberen).
+
 ## Met Docker
 
-**Wat heb je nodig?** [Docker](https://www.docker.com/products/docker-desktop/). Git, Node.js en de database-zip heb je dan niet nodig.
+**Wat heb je nodig?** [Docker](https://www.docker.com/products/docker-desktop/). Git, Node.js en de database-zip heb je dan niet nodig. Start Docker Desktop eerst en wacht tot het klaar is.
 
 ```text
 docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0
@@ -50,9 +62,16 @@ git clone https://github.com/Robert-Worm/omnibus.git; cd omnibus; node scripts/i
 git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scripts/installeer.mjs
 ```
 
-Gaat er iets mis, dan zegt de opdracht wat je moet doen. Een volgende keer start dezelfde opdracht Omnibus weer; wat al klaar is, slaat hij over.
+Gaat er iets mis, dan zegt de opdracht wat je moet doen.
 
-**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`.
+**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`. Typ het adres precies zo; `localhost:4319` werkt hier niet.
+
+**Een volgende keer starten:** open de terminal en typ deze twee regels. Wat al klaar is, slaat de opdracht over.
+
+```text
+cd omnibus
+node scripts/installeer.mjs
+```
 
 ## Stap voor stap
 

@@ -13,7 +13,7 @@
   <!--badge:database-->
   <a href="https://github.com/Robert-Worm/omnibus/releases/latest"><img alt="Database: 27 rapporten" src="https://img.shields.io/badge/database-27%20rapporten-01689b?style=flat-square&labelColor=15233b"></a>
   <!--/badge-->
-  <a href="skills/README.md"><img alt="6 AI-skills" src="https://img.shields.io/badge/AI--skills-6-01689b?style=flat-square&labelColor=15233b"></a>
+  <a href="skills/README.md"><img alt="7 AI-skills" src="https://img.shields.io/badge/AI--skills-7-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="#licentie"><img alt="Code: PolyForm Noncommercial" src="https://img.shields.io/badge/code-PolyForm%20Noncommercial-01689b?style=flat-square&labelColor=15233b"></a>
 </p>
 
@@ -108,11 +108,11 @@ cd omnibus
 node scripts/installeer.mjs
 ```
 
-Open daarna `http://127.0.0.1:4319/`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
+Open daarna `http://127.0.0.1:4319/`, precies zo getypt. Een volgende keer starten: `cd omnibus` en `node scripts/installeer.mjs`. Alle stappen staan in [Omnibus installeren](docs/gebruiken/installeren.md). Vastgelopen? Kijk bij [problemen oplossen](docs/gebruiken/problemen-oplossen.md) of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
 
 ## Wat komt er nog?
 
-Vanaf de huidige versie, lokaal en online, lopen vier paden:
+Vanaf de huidige versie, lokaal en online, lopen vijf paden. Het zwaartepunt ligt bij pad E:
 
 | Pad | Doel |
 | --- | --- |
@@ -120,6 +120,7 @@ Vanaf de huidige versie, lokaal en online, lopen vier paden:
 | 🤖 [AI aan de database](docs/routekaart.md#pad-b--ai-rechtstreeks-aan-de-database) | Je AI-assistent laten zoeken en een opzet laten voorbereiden |
 | 🗂️ [Eigen databases](docs/routekaart.md#pad-c--eigen-databases-bouwen) | Eigen documenten en een eigen database naast de openbare |
 | 🤝 [Samen bijdragen](docs/routekaart.md#pad-d--samen-bijdragen) | De openbare database samen uitbreiden |
+| 🔍 [Kwaliteit en efficiëntie](docs/routekaart.md#pad-e--kwaliteit-en-efficiëntie-met-ai) | Betere en goedkopere skills, en AI die de kwaliteit bewaakt |
 
 Zie de [routekaart](docs/routekaart.md).
 
