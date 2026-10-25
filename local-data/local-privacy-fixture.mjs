@@ -19,7 +19,7 @@ export async function createPrivacyPackage(dir) {
     items:[{id:'TEST', title:'Fictief begrip', definition:syntheticSource,
       question:'Hoe beschrijf je deze oefening?', probes:'', included:false,
       questions:[{id:'TEST-1', title:'Fictieve vraag', question:'Hoe beschrijf je deze oefening?',
-        probes:'', included:false, origin:'synthetic-test'}]}]};
+        probes:'', included:false, origin:'authored'}]}]};
   writeFileSync(join(folder, 'source.txt'), syntheticSource, {flag:'wx'});
   writeFileSync(join(folder, 'contract.txt'), 'Synthetic model-review-1 test only.', {flag:'wx'});
   saveJson(join(folder, 'model.json'), model);
