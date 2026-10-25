@@ -95,7 +95,7 @@ Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er pr
 
 **Geen terminalervaring?** Gebruik de [proefversie online](https://omnibus.sliplane.app), of lees eerst [nog nooit een terminal gebruikt?](docs/gebruiken/installeren.md#nog-nooit-een-terminal-gebruikt).
 
-**Met Docker** zijn twee opdrachten genoeg; open daarna `http://localhost:8080`:
+**Met Docker** (start eerst Docker Desktop) zijn twee opdrachten genoeg; open daarna `http://localhost:8080`:
 
 ```text
 docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#v0.1.0

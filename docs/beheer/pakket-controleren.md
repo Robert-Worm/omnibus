@@ -31,7 +31,7 @@ flowchart TD
 
 Pak de zip uit de claim uit in `work/content-inbox/<pakket-id>/<versie>/payload/`. De bestanden komen rechtstreeks in `payload/`; staat er in de zip nog een bovenmap, haal die dan weg.
 
-- **`<pakket-id>`** is de code van de bron in de werklijst, bijvoorbeeld `2019-hoofdlijnen-auditrapporten-adr-2018`. Die staat ook in de claim.
+- **`<pakket-id>`** is de code van de bron. Bij een rapport staat die in de Rijksmap-link in de claim: `https://www.rijksmap.nl/rapport/<pakket-id>/`, bijvoorbeeld `2019-hoofdlijnen-auditrapporten-adr-2018`. Bij een wet of kader is het de code uit de werklijst, zoals `NIS2`.
 - **`<versie>`** kies je zelf, bijvoorbeeld `concept-1`. Een nieuwe inlevering krijgt een nieuwe versie.
 
 ### 2. Maak een plan

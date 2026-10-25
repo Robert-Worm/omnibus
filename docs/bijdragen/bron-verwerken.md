@@ -55,11 +55,17 @@ Download het document via de link in je claim: de Rijksmap-pagina verwijst naar 
 
 Geef je assistent eerst het document. In de Claude-app of ChatGPT voeg je de PDF toe aan het gesprek; in Codex of Claude Code zet je hem in je werkmap. Geef daarna een opdracht als:
 
-> Gebruik de skill omnibus-add-report voor dit rapport. Maak een conceptpakket met normen, toetspunten en bronpassages. Behoud bronverwijzingen en beperkingen. Niet integreren of publiceren.
+> Gebruik de skill omnibus-add-report voor dit rapport.
+> Bron: [titel], [uitgever], [link], [datum].
+> Taak: nieuwe extractie, als concept van een bijdrager.
+> Omgeving: ik heb geen private verwerkingsomgeving en geen rapportkit. Budget: hooguit [aantal] deelagenten, of geen als dit niet kan.
+> Maak een conceptpakket met normen, toetspunten en bronpassages. Zet ook de beperkingen en wat je hebt gecontroleerd in aparte bestanden. Niet integreren of publiceren.
+
+Vul de delen tussen haken in. Daarmee beantwoord je meteen de vragen die de skill anders zelf stelt. Vraagt de assistent toch naar een checkout of een tweede, blinde lezing? Antwoord dan: *niet beschikbaar; zet het als HOLD in het concept.*
 
 In Codex schrijf je de naam van de skill met een dollarteken ervoor: `$omnibus-add-report`. De skill leest het hele document, stelt normen en toetspunten voor en legt bij elk punt vast waar het in de bron staat. Dit kan even duren.
 
-**Gelukt als:** je een conceptpakket hebt met onder meer `APP-FINAL.json` (de normen en toetspunten), `beperkingen.md` en `controle.md`. Noemt de assistent reviews die nog ontbreken? Dat is normaal en goed: die doet de beheerder.
+**Gelukt als:** je een conceptpakket hebt met de normen en toetspunten, de bronpassages, de beperkingen en wat er is gecontroleerd. De bestandsnamen kunnen per assistent verschillen; in het [voorbeeldpakket](voorbeeldpakket.md) heten ze bijvoorbeeld `APP-FINAL.json`, `beperkingen.md` en `controle.md`. Noemt de assistent reviews die nog ontbreken? Dat is normaal en goed: die doet de beheerder.
 
 - **Codex en Claude Code** maken een map in je werkmap. De assistent noemt de naam.
 - **De Claude-app en ChatGPT:** vraag om het conceptpakket als zip om te downloaden. Dit kan alleen als jouw omgeving bestanden kan maken. Ontbreekt die functie, gebruik dan een omgeving die dat wel kan.
@@ -97,15 +103,15 @@ Je levert een **concept** in. Een paar laatste stappen doet de beheerder, zoals 
 
 Een goed conceptpakket bevat:
 
-| Onderdeel | Wat het is | Bestanden bij een rapport |
+| Onderdeel | Wat het is | Zo heten ze in het voorbeeldpakket |
 | --- | --- | --- |
 | De bron | De link en de exacte versie of datum | `bron.json`, `source-text.json` |
-| De bouwstenen | De normen en toetspunten, met bij elk punt de bronpassage | `APP-FINAL.json`, `CATALOGUE.json`, `APP-SOURCE-LINKS.json`, `RECONCILED-SOURCE.json` |
+| De bouwstenen | De normen en toetspunten, met bij elk punt de bronpassage | `APP-FINAL.json`, `CATALOGUE.json`, `APP-SOURCE-LINKS.json`, `RECONCILED-SOURCE.json`, `context.json` |
 | De beperkingen | Wat er níet uit de bron te halen is, en waar je twijfelt (HOLD) | `beperkingen.md` |
 | Je eigen controle | Wat je hebt nagelopen en aangepast | `controle.md` |
 | Het AI-model | Als dat anders is dan in je claim | In je toelichting |
 
-De automatische controle na `/inleveren` zoekt naar deze vier onderdelen. Ziet hij er een niet aan de bestandsnamen, dan krijg je een ⚠️.
+De automatische controle na `/inleveren` zoekt naar de eerste vier onderdelen: bron, bouwstenen, beperkingen en eigen controle. Ziet hij er een niet aan de bestandsnamen, dan krijg je een ⚠️.
 
 Laat de bestanden zoals de skill ze maakte; hernoem of verwijder niets. Twijfel je wat er hoort? Vraag het in je claim.
 

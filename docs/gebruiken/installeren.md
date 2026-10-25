@@ -130,7 +130,7 @@ Dit duurt een paar minuten. npm haalt de bibliotheken op die Omnibus gebruikt.
 
 ### 3. Pak de database uit
 
-Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) (10 MB; uitgepakt ongeveer 90 MB). Maak de map `local-data/runtime/` aan (die zit niet in Git) en pak de zip daarin uit:
+Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) (10 MB; uitgepakt ongeveer 90 MB). Maak de map `local-data/runtime/` aan (die zit niet in Git) en pak de zip daarin uit. Let op: Verkenner en Finder maken bij uitpakken vaak een extra map met de naam van de zip. Verplaats de bestanden dan één map omhoog.
 
 ```text
 mkdir local-data/runtime
