@@ -71,11 +71,11 @@ Dit is een geslaagde **lokale technische voorbereiding en ontvangst**, geen voll
 
 De private bronreview, echte bronpublicatie, testbuild met bruikbare inhoud, projectherstel, rechtencontrole, GitHub-upload, activering en hostingcontrole zijn niet uitgevoerd. Deze stappen zijn geen afkeurgrond voor de afgebakende lokale fixtureproef. Vooral hostacceptatie staat daar los van.
 
-De lokale opdracht van #183 is voltooid. De oorspronkelijke eis van #43 is niet bewezen. Daarvoor ontbreken één uitgewerkt voorbeeld van een echte claim tot release en de zelfstandige doorloop daarvan. Bij afsluiting van #183 moet de beheerder daarom expliciet vastleggen of de fictieve route die oude eis vervangt, of waar die eis behouden blijft. Intake, toelating en bronpublicatie horen bij [#154](https://github.com/Robert-Worm/omnibus/issues/154); deze proef heeft die onderdelen niet gewijzigd. Er zijn geen issues of labels gewijzigd.
+De lokale opdracht van #183 is voltooid. Dit is de vervangende proef met fictieve gegevens zoals beschreven in #183, niet de oorspronkelijke eis van #43. Eén uitgewerkt voorbeeld van een echte claim tot release en de zelfstandige doorloop daarvan zijn niet aangetoond. De nog ontbrekende zelfstandige pakketroute blijft open in [#153](https://github.com/Robert-Worm/omnibus/issues/153) en [#154](https://github.com/Robert-Worm/omnibus/issues/154); deze proef heeft die onderdelen niet gewijzigd. De afsluiting van de lokale proef keurt geen inhoud of hosting goed.
 
 ## Volgende stap
 
-Gebruik dit verslag om de lokale proef af te tekenen en de resterende dekking van #43 vast te leggen. Een volgende beheerder kan de [oefenroute](database-publiceren.md#oefenen-met-volledig-fictieve-data) in nieuwe mappen volgen; een herhaling is geen voorwaarde om deze geslaagde proef te accepteren.
+Gebruik dit verslag als bewijs voor de lokale overdracht. Een volgende beheerder kan de [oefenroute](database-publiceren.md#oefenen-met-volledig-fictieve-data) in nieuwe mappen volgen; een herhaling is geen voorwaarde om deze geslaagde proef te accepteren.
 
 ---
 
