@@ -56,6 +56,7 @@ omnibus-add-report.zip
     ├── agents/
     │   └── openai.yaml
     ├── references/
+    │   ├── bijdragersmodus.md
     │   └── report-method.md
     └── assets/
         └── intake-plan.json.example
