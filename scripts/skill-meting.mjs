@@ -64,20 +64,46 @@ export function leesMetingen(markdown) {
   const regels = deel.split("\n").filter((r) => /^\|\s*\d{4}-\d{2}-\d{2}/.test(r));
   return regels.map((r) => {
     const [datum, skill, bron, versie, model, agents, minuten, tokensRun, score] = r.split("|").slice(1, -1).map((c) => c.trim());
-    const getal = (v) => (v === "" || v === "–" ? null : Number(v.replace(/\./g, "").replace(",", ".")));
+    const getal = (v) => (v == null || ["", "–", "null"].includes(v) ? null : Number(v.replace(/\./g, "").replace(",", ".")));
     return { datum, skill, bron, versie, model, agents: getal(agents), minuten: getal(minuten), tokens: getal(tokensRun), score: getal(score) };
   });
 }
 
 /** Een optimalisatie gaat alleen door als de kwaliteit op geen enkele bron daalt (B-018). */
 export function vergelijk(oud, nieuw) {
-  const perBron = nieuw.map((n) => {
-    const o = oud.find((x) => x.bron === n.bron && x.skill === n.skill);
-    return { bron: n.bron, oud: o?.score ?? null, nieuw: n.score, tokensOud: o?.tokens ?? null, tokensNieuw: n.tokens };
+  const fouten = [];
+  const sleutel = (r) => `${r?.skill}\0${r?.bron}`;
+  const verwacht = new Set(TESTSET.map(sleutel));
+  const controleer = (runs, label) => {
+    const perBron = new Map();
+    if (!Array.isArray(runs)) {
+      fouten.push(`${label}: metingen moeten een lijst zijn`);
+      return perBron;
+    }
+    for (const r of runs) {
+      const key = sleutel(r);
+      if (!verwacht.has(key)) { fouten.push(`${label}: onbekende bron/skill`); continue; }
+      if (perBron.has(key)) fouten.push(`${label}: dubbele bron ${r.bron}`);
+      else perBron.set(key, r);
+      if (!Number.isFinite(r.score) || r.score < 1 || r.score > 10) fouten.push(`${label}: geen geldige volledige score bij ${r.bron}`);
+      if (r.tokens != null && (!Number.isFinite(r.tokens) || r.tokens < 0)) fouten.push(`${label}: ongeldig tokenverbruik bij ${r.bron}`);
+    }
+    if (perBron.size !== TESTSET.length) fouten.push(`${label}: niet elke bron uit de testset is gemeten`);
+    for (const veld of ["versie", "model"]) {
+      if (runs.length === 0 || runs.some((r) => typeof r?.[veld] !== "string" || !r[veld].trim()) || new Set(runs.map((r) => r?.[veld])).size !== 1) {
+        fouten.push(`${label}: één vastgelegde ${veld} voor de hele testset vereist`);
+      }
+    }
+    return perBron;
+  };
+  const oudeBronnen = controleer(oud, "oud"), nieuweBronnen = controleer(nieuw, "nieuw");
+  if (Array.isArray(oud) && Array.isArray(nieuw) && oud[0]?.model !== nieuw[0]?.model) fouten.push("oud en nieuw gebruiken niet hetzelfde model");
+  const perBron = TESTSET.map((t) => {
+    const o = oudeBronnen.get(sleutel(t)), n = nieuweBronnen.get(sleutel(t));
+    return { bron: t.bron, oud: o?.score ?? null, nieuw: n?.score ?? null, tokensOud: o?.tokens ?? null, tokensNieuw: n?.tokens ?? null };
   });
-  const onvolledig = perBron.some((r) => r.oud == null || r.nieuw == null);
-  const daling = perBron.filter((r) => r.oud != null && r.nieuw != null && r.nieuw < r.oud);
-  return { perBron, toegestaan: !onvolledig && daling.length === 0, reden: onvolledig ? "niet elke bron uit de testset is gemeten" : daling.length ? `kwaliteit daalt bij ${daling.map((r) => r.bron).join(", ")}` : "kwaliteit gelijk of beter op de hele testset" };
+  const daling = perBron.filter((r) => Number.isFinite(r.oud) && Number.isFinite(r.nieuw) && r.nieuw < r.oud);
+  return { perBron, toegestaan: fouten.length === 0 && daling.length === 0, reden: fouten.length ? fouten.join("; ") : daling.length ? `kwaliteit daalt bij ${daling.map((r) => r.bron).join(", ")}` : "kwaliteit gelijk of beter op de hele testset" };
 }
 
 const fmt = (n) => n.toLocaleString("nl-NL");
