@@ -1,9 +1,10 @@
 // Read-only portability boundary for the existing report/CIO review envelopes.
-// This checks byte bindings and declared review coverage, NOT the source method,
+// This checks byte bindings, literal passages and declared review coverage, NOT the source method,
 // actual reading, substantive quality, custody chronology or viewer admission.
 import { createHash } from "node:crypto";
 import { posix } from "node:path";
 import { canonical } from "./identity.mjs";
+import { checkLocalSourcePassages } from "./local-source-passages.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const text = value => typeof value === "string" && Boolean(value.trim());
@@ -24,7 +25,8 @@ const reportDependencies = ["SOURCE.json", "source.txt", "INPUT-FREEZE.json", "F
     .map(name => role + "/output/" + name))];
 const frameworkTargets = ["SOURCE-MANIFEST.json", "CONTRACT.txt", "CONTRACT-ADDENDUM-01.txt",
   "source/pages.json", "source/source.pdf", "RECONCILED-SOURCE.json", "RECONCILIATION.json",
-  "CATALOGUE.json", "MIGRATION.json", "ISSUES.json", "SOURCE-STATUS.json"];
+  "CATALOGUE.json", "MIGRATION.json", "ISSUES.json", "SOURCE-STATUS.json",
+  "reader-a/result.json", "reader-b/result.json"];
 const reportAspects = {
   SOURCE: ["literal_fidelity", "attribution_and_scope", "counterevidence", "link_support"],
   PRACTICAL: ["objective", "risk", "control", "criterion", "auditQuestion", "procedure", "finding", "owner"],
@@ -159,10 +161,11 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
     if (kind === "report") coverage(review.item_reviews, ids, role, "assessment", aspects);
     else coverage(review.object_reviews, role === "SOURCE" ? [...ids, ...sourceIds] : ids, role, "reason", aspects, points);
   }
+  const passages = checkLocalSourcePassages(kind, { read, lookup, packageId: manifest.package.id });
   return { status: "REVIEW_BINDINGS_CHECKED", kind, packageId: manifest.package.id,
     basisSha256: basisFile.sha256, dependencies: Object.keys(dependencies).length,
     reviewers: reviews.length, contentObjects: ids.length, sourceRecords: sourceIds.length,
-    reviewBindingsValidated: true, sourceMethodValidated: false, reviewValidated: false,
+    reviewBindingsValidated: true, sourcePassagesValidated: true, passages, sourceMethodValidated: false, reviewValidated: false,
     viewerShapeValidated: false, newContentApproval: false, publishable: false };
 }
 
@@ -170,7 +173,7 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
 // Even a valid owner receipt must not substitute for the remaining source gate.
 export class LocalSourceIntegrationRequired extends Error {
   constructor(evidence) {
-    super(`No standalone content/review validator for ${evidence.kind}. Review byte bindings checked; source-method validation and shared-viewer integration are still required. Keep this package in HOLD.`);
+    super(`No standalone content/review validator for ${evidence.kind}. Review byte bindings and literal source passages checked; source-method validation and shared-viewer integration are still required. Keep this package in HOLD.`);
     this.evidence = evidence;
   }
 }

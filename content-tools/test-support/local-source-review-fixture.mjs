@@ -1,6 +1,7 @@
 // Explicitly fictitious envelope tests. These are NOT completed extraction
 // dossiers, source readings or admission receipts, and must remain HOLD.
 import { createHash } from "node:crypto";
+import { addSyntheticPassages } from "./local-source-passages-fixture.mjs";
 export const hashBytes = bytes => createHash("sha256").update(bytes).digest("hex");
 const encoded = value => Buffer.from(typeof value === "string" ? value : JSON.stringify(value));
 
@@ -46,6 +47,7 @@ export function sourceReviewFixture(kind, prefix = "payload") {
     set("MIGRATION.json", { synthetic: true, mappings: [] }, ["migration"]);
     paths.get("CATALOGUE.json").roles.push("source-links");
   }
+  addSyntheticPassages({ set, read, paths, manifest }, kind);
   const dependencies = [...paths].filter(([name]) => !["source.pdf", "receipt.json"].includes(name));
   const basis = report ? { files: Object.fromEntries(dependencies.map(([name, file]) => [name, file.sha256])),
     source_pdf_sha256: paths.get(pdfName).sha256, source_contract: "4.22", human_validation: false }

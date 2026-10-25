@@ -19,6 +19,8 @@ for (const kind of ["report", "framework"]) {
     assert.equal(Object.hasOwn(record, kind === "report" ? "id" : "record_id"), false);
     assert.equal(result.status, "REVIEW_BINDINGS_CHECKED");
     assert.equal(result.reviewBindingsValidated, true);
+    assert.equal(result.sourcePassagesValidated, true);
+    assert.equal(result.passages.pages, 3);
     for (const key of ["sourceMethodValidated", "reviewValidated", "viewerShapeValidated", "newContentApproval", "publishable"])
       assert.equal(result[key], false, key);
     assert.equal(result.reviewers, kind === "report" ? 2 : 3);
@@ -75,6 +77,7 @@ for (const kind of ["report", "framework"]) {
       const result = localDatabaseFailure(error);
       assert.equal(result.status, "HOLD"); assert.equal(result.code, "SOURCE_INTEGRATION_REQUIRED");
       assert.equal(result.reviewEvidence.reviewBindingsValidated, true);
+      assert.equal(result.reviewEvidence.sourcePassagesValidated, true);
       assert.equal(result.reviewEvidence.sourceMethodValidated, false);
       assert.equal(result.newContentApproval, false); return true;
     };
