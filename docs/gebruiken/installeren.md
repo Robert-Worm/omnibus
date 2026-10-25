@@ -44,7 +44,7 @@ docker run --rm -p 8080:8080 omnibus
 
 Docker haalt de code van versie 0.1.0 op, downloadt de bijbehorende database, controleert hem en bouwt alles in één keer. Meer uitleg staat bij [online zetten in een container](../../hosting/container/README.md).
 
-**Gelukt als:** je Omnibus ziet op `http://localhost:8080`.
+**Gelukt als:** je Omnibus ziet op `http://localhost:8080`. Docker gebruikt precies het adres uit `PUBLIC_ORIGIN`; standaard is dat `http://localhost:8080`. De lokale alias hieronder geldt niet voor Docker.
 
 ## Met één opdracht
 
@@ -64,7 +64,7 @@ git clone https://github.com/Robert-Worm/omnibus.git && cd omnibus && node scrip
 
 Gaat er iets mis, dan zegt de opdracht wat je moet doen.
 
-**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`. Typ het adres precies zo; `localhost:4319` werkt hier niet.
+**Gelukt als:** je Omnibus ziet op `http://127.0.0.1:4319/`. Met de huidige code op `main` werkt ook `http://localhost:4319/`, op dezelfde poort. Deze wijziging zit nog niet in release `v0.1.0`. Gebruik steeds dezelfde naam: beide adressen hebben aparte browseropslag.
 
 **Een volgende keer starten:** open de terminal en typ deze twee regels. Wat al klaar is, slaat de opdracht over.
 
@@ -151,11 +151,60 @@ Open daarna <http://127.0.0.1:4319/> in je browser. Stoppen doe je met `Ctrl+C`.
 
 *Het startscherm na een geslaagde installatie.*
 
+## Bijwerken
+
+Bewaar eerst je onderzoek met **Bewaar project** en stop Omnibus met `Ctrl+C` in het venster waarin hij draait. Gebruik na het bijwerken dezelfde browser, adresnaam en poort. Met **Open project** kun je het bewaarde projectbestand openen.
+
+Nieuwe code verandert de applicatie; een nieuwe database verandert de beschikbare bronnen. Een nieuwe database kan een nieuwere applicatieversie nodig hebben. Gebruik de combinatie die de release noemt, of vraag de beheerder welke combinatie is getest. Een nieuwe database past niet vanzelf bij oudere code. Stop bij een mislukte controle; pas nooit de controlegetallen aan.
+
+| Route | Nieuwe code | Nieuwe database | Bouwen en starten |
+| --- | --- | --- | --- |
+| Docker | Kies de vrijgegeven versie bij [Docker bijwerken](#docker-bijwerken). | De bouwopdracht haalt de database op die bij die versie is vastgelegd. | Bouw opnieuw en start een nieuwe container; alleen de oude container herstarten is niet genoeg. |
+| Eén opdracht | Voer [code bijwerken met Git](#code-bijwerken-met-git) uit. | Bewaar de oude databasemap apart, zoals bij [database vervangen](#database-vervangen). | `node scripts/installeer.mjs` controleert, bouwt opnieuw en start. |
+| Stap voor stap | Voer [code bijwerken met Git](#code-bijwerken-met-git) uit. | Haal het gekozen pakket op met de opdrachten bij [database vervangen](#database-vervangen). | Voer [stap 4](#4-controleer-en-bouw) en [stap 5](#5-start-omnibus) opnieuw uit. |
+
+### Docker bijwerken
+
+Vervang `<versietag>` door de vrijgegeven versie uit de [releases](https://github.com/Robert-Worm/omnibus/releases), bijvoorbeeld `v0.1.0`. Opnieuw bouwen met dezelfde tag kiest geen nieuwere code of database.
+
+```text
+docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#<versietag>
+docker run --rm -p 8080:8080 omnibus
+```
+
+Start pas na een geslaagde bouw. Gebruik je een eigen poort of `PUBLIC_ORIGIN`? Neem die instellingen over uit je vorige startopdracht. Een andere database meegeven bij het bouwen is voor beheerders; zie [de containeruitleg](../../hosting/container/README.md#een-nieuwe-database-online-zetten).
+
+### Code bijwerken met Git
+
+De twee Git-routes hierboven halen `main` op: de actuele ontwikkeltak, die verder kan zijn dan release `v0.1.0`. Open een terminal in je bestaande map `omnibus`. Voer de opdrachten één voor één uit; ga alleen door als de vorige is gelukt:
+
+```text
+git pull --ff-only
+npm ci --ignore-scripts --no-audit --no-fund
+```
+
+Daarna bouw en start je via jouw rij in de tabel. De tweede opdracht vernieuwt de bibliotheken. De installer slaat aanwezige bibliotheken over, dus alleen de installer opnieuw starten is hiervoor niet genoeg. Gebruik je bewust een vaste release of eigen codewijzigingen? Laat de beheerder de passende versie kiezen als Git weigert.
+
+### Database vervangen
+
+**Eén opdracht:** hernoem de map `local-data/runtime` in Verkenner of Finder naar een vrije naam, bijvoorbeeld `runtime-vorig`. Laat die oude map staan. Voer daarna `node scripts/installeer.mjs` uit. Zonder bestaande databasemap haalt de installer de database op die in jouw code is vastgelegd. Dat is niet automatisch de nieuwste database. Met een bestaande map gebruikt hij die opnieuw.
+
+**Stap voor stap:** kies de database die bij jouw code past. Neem de downloadlink en het SHA-256-controlegetal van de zip over uit die release. Vervang `<zip-url>` en `<sha256>` hieronder. De map `local-data/runtime-nieuw` mag nog niet bestaan.
+
+```text
+node scripts/fetch-release-database.mjs --url <zip-url> --sha256 <sha256> --out local-data/runtime-nieuw
+npm run data:check-runtime -- --settings local-data/runtime-nieuw/local-build.json
+```
+
+Ga alleen door na `VERIFIED_RUNTIME_DATABASE`. Hernoem in Verkenner of Finder de oude map `local-data/runtime` naar een vrije naam, bijvoorbeeld `runtime-vorig`. Hernoem daarna `runtime-nieuw` naar `runtime`. Houd `catalogue.sqlite` en `local-build.json` uit hetzelfde pakket bij elkaar. Voer nu [stap 4](#4-controleer-en-bouw) en [stap 5](#5-start-omnibus) opnieuw uit.
+
+**Gelukt als:** de controle en bouw slagen, Omnibus opnieuw start en je bewaarde onderzoek opent. Bewaar de oude databasemap totdat dit gelukt is.
+
 ## Goed om te weten
 
 - **Je werk wordt in je browser bewaard.** Dat is geen back-up. Gebruik **Bewaar project** om een projectbestand te downloaden, en **Open project** om het weer te openen.
-- **Gebruik altijd hetzelfde adres.** Op je eigen computer is dat `http://127.0.0.1:4319/`; `localhost` weigert Omnibus. Een andere poort heeft een eigen opslag. Met Docker is het juist `http://localhost:8080/`.
-- **Nieuwe database?** Pak de nieuwe zip uit, en voer stap 4 en 5 opnieuw uit.
+- **Gebruik altijd hetzelfde adres.** Lokaal werken op de huidige `main` zowel `127.0.0.1` als `localhost`, uitsluitend op de poort waarop Omnibus draait. Elke naam en poort heeft eigen browseropslag. Gebruik **Bewaar project** en **Open project** om je onderzoek mee te nemen. Docker blijft precies `PUBLIC_ORIGIN` gebruiken, standaard `http://localhost:8080/`.
+- **Nieuwe code of database?** Volg jouw route in de tabel [Bijwerken](#bijwerken).
 - **Iets gaat mis?** Kijk bij [problemen bij installeren en starten](problemen-oplossen.md). Kom je er niet uit? Vraag dan om [hulp](problemen-oplossen.md#kom-je-er-niet-uit).
 
 ## Samengevat

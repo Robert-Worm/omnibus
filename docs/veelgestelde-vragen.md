@@ -42,11 +42,15 @@ In je browser, op je eigen computer. Er gaat niets naar een server. Browseropsla
 
 ### Ik zie mijn project niet meer. Wat nu?
 
-Controleer of je hetzelfde adres en dezelfde poort gebruikt; elke poort en elke browser heeft eigen opslag. Heb je een projectbestand bewaard? Open het met **Open project**.
+Controleer of je dezelfde browser, adresnaam en poort gebruikt. Ook `localhost` en `127.0.0.1` hebben aparte opslag. Heb je een projectbestand bewaard? Open het met **Open project**.
 
 ### Komt er een nieuwe database, en hoe krijg ik die?
 
-Ja, als er nieuwe bronnen zijn verwerkt. Download de nieuwe zip bij de releases, pak hem uit in `local-data/runtime/` en voer de stappen *controleren en bouwen* en *starten* opnieuw uit. Bewaar je lopende projecten vooraf met **Bewaar project**, voor de zekerheid.
+Ja, als er nieuwe bronnen zijn verwerkt. Bewaar je onderzoek vooraf met **Bewaar project**. Volg de tabel [Bijwerken per installatieroute](gebruiken/installeren.md#bijwerken): Docker bouw je opnieuw; bij de twee Git-routes vervang je de databasemap. De installer gebruikt een aanwezige database opnieuw en zoekt niet automatisch naar de nieuwste. Een nieuwe database kan nieuwere code nodig hebben: gebruik de combinatie die de release noemt en laat de controles slagen.
+
+### Hoe krijg ik nieuwe code?
+
+Met Docker kies je een vrijgegeven versie, bouw je opnieuw en start je een nieuwe container. Bij de Git-routes haal je de code op en vernieuw je de bibliotheken; daarna bouw en start je opnieuw. De opdrachten staan bij [Bijwerken per installatieroute](gebruiken/installeren.md#bijwerken). Je onderzoek blijft in je browser; bewaar vooraf ook een projectbestand.
 
 ## Meedoen
 
