@@ -53,3 +53,12 @@ test("rooktest: opties en herkenning van het startscherm", async () => {
   assert.equal(isOmnibus(200, "<title>Iets anders</title>"), false);
   assert.equal(isOmnibus(503, "<title>Omnibus</title>"), false);
 });
+
+test("elke melding van de installatieopdracht staat letterlijk bij problemen oplossen", () => {
+  const bron = readFileSync(new URL("./installeer.mjs", import.meta.url), "utf8");
+  const pagina = readFileSync(new URL("../docs/gebruiken/problemen-oplossen.md", import.meta.url), "utf8");
+  // Het vaste deel van elke melding, tot een ingevulde waarde zoals een versie.
+  const meldingen = [...bron.matchAll(/new Stop\((["`])(.*?)\1/g)].map((m) => m[2].split("${")[0].trim());
+  assert.ok(meldingen.length >= 5, "meldingen gevonden");
+  for (const melding of meldingen) assert.ok(pagina.includes(melding), `ontbreekt op de pagina: ${melding}`);
+});

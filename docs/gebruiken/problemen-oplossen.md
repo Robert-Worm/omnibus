@@ -6,7 +6,7 @@
 
 ## Zo gebruik je deze pagina
 
-Zoek met `Ctrl+F` naar een stukje van de melding die je ziet. De meldingen zijn in het Engels; de uitleg is in het Nederlands. Staat jouw melding er niet bij? Vraag dan om [hulp](#kom-je-er-niet-uit).
+Zoek met `Ctrl+F` naar een stukje van de melding die je ziet. De meldingen van Git, npm, Node.js en Docker zijn in het Engels; die van de installatieopdracht in het Nederlands. Staat jouw melding er niet bij? Vraag dan om [hulp](#kom-je-er-niet-uit).
 
 ## De meldingen
 
@@ -94,12 +94,54 @@ Preview start refused. Check explicit start options, the pinned database, web bu
 - **Oorzaak:** je opent Omnibus op een ander adres dan waarop hij draait. Op je eigen computer is dat `http://127.0.0.1:4319/`, niet `http://localhost:4319/`. Omnibus weigert andere adressen, zodat websites niet stiekem bij je gegevens kunnen.
 - **Herstellen:** open precies het adres dat in de terminal staat. Met Docker is het juist `http://localhost:8080/`, niet `127.0.0.1:8080`. Gebruik je Docker met een andere poort, bijvoorbeeld 3000? Start dan met `-e PUBLIC_ORIGIN=http://localhost:3000`.
 
+### Docker Desktop draait niet
+
+```text
+Cannot connect to the Docker daemon
+error during connect: ... The system cannot find the file specified.
+```
+
+- **Oorzaak:** Docker Desktop is niet gestart, of nog bezig met opstarten.
+- **Herstellen:** start Docker Desktop en wacht tot er *Engine running* staat. Probeer de opdracht daarna opnieuw.
+
+### De poort is al in gebruik bij Docker
+
+```text
+Bind for 0.0.0.0:8080 failed: port is already allocated
+```
+
+- **Oorzaak:** er draait al iets op poort 8080, bijvoorbeeld een eerdere Omnibus.
+- **Herstellen:** stop de andere container met `docker ps` en `docker stop <naam>`. Of kies een andere poort: `docker run --rm -p 3000:8080 -e PUBLIC_ORIGIN=http://localhost:3000 omnibus`.
+
+### Het bouwen met Docker komt niet verder
+
+```text
+npm error network request to https://registry.npmjs.org/... failed
+ETIMEDOUT
+```
+
+- **Oorzaak:** Docker kan het internet niet bereiken, vaak door een proxy of firewall van je werkplek.
+- **Herstellen:** probeer het op een ander netwerk. Lukt dat niet, vraag je IT-afdeling om de proxy in Docker Desktop in te stellen, of gebruik de [online versie](https://omnibus.sliplane.app).
+
 ### Mijn project is weg
 
 - **Oorzaak:** elk adres en elke poort heeft eigen opslag in de browser. Open je Omnibus op een ander adres, een andere poort of in een andere browser, dan zie je je project niet.
 - **Herstellen:** open Omnibus op het adres dat je eerder gebruikte. Of open je projectbestand met **Open project**. Bewaar je werk regelmatig met **Bewaar project**.
 
 <a id="kom-je-er-niet-uit"></a>
+## Meldingen van de installatieopdracht
+
+De opdracht `node scripts/installeer.mjs` toont een melding met ✗, zegt eronder *Wat je doet* en geeft een link naar hulp.
+
+| Melding | Wat je doet |
+| --- | --- |
+| `Je gebruikt Node.js … ; Omnibus heeft versie … of hoger nodig.` | Installeer [Node.js 24.21](https://nodejs.org/), sluit de terminal en open hem opnieuw. Zie [een verkeerde versie van Node.js](#een-verkeerde-versie-van-nodejs) |
+| `De onderdelen konden niet worden geïnstalleerd.` | Controleer je internetverbinding. Werkt het nog niet, verwijder dan de map `node_modules` en start opnieuw |
+| `De database kon niet worden opgehaald: …` | Start de opdracht opnieuw. Komt de fout terug, meld het dan. Pak een afgewezen zip niet zelf uit |
+| `De database haalt de controle niet.` | Verwijder de map `local-data/runtime` en start opnieuw; de database wordt dan opnieuw opgehaald |
+| `Het bouwen is mislukt.` | Lees de melding erboven en start de opdracht opnieuw. Stuur die melding mee als je hulp vraagt |
+| `Omnibus kon niet starten.` | Sluit een ander venster waarin Omnibus draait. Zie [Omnibus weigert te starten](#omnibus-weigert-te-starten) |
+
 ## Kom je er niet uit?
 
 Stel je vraag in de categorie *Hulp* van [Discussions](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp). Zet erbij:
