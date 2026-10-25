@@ -449,14 +449,9 @@ export default function FrameworkEditor() {
           const restored=readProject(original,projectRef.current,restoreOptions);
           await new Promise(resolve=>setTimeout(resolve,0));
           if(cancelled)return;
+          const accepted=store.acceptProject(restored,store.raw()!);
           onProjectRestored(restored.project);
-          // readProject has validated the decoded object before these comparisons.
-          const originalFields=original as {draft?:unknown;modelLibrary?:unknown};
-          if(!projectContentEqual(originalFields.draft,restored.project.draft) ||
-            !projectContentEqual(originalFields.modelLibrary,restored.project.modelLibrary)) {
-            store.checkpoint(true);
-            setScopeNotice('Het opgeslagen project is aangepast aan de huidige indeling. Het oorspronkelijke project is als herstelkopie bewaard.');
-          }
+          if(accepted.notice)setScopeNotice(accepted.notice);
           setLoaded(true);
           return;
         }
@@ -783,24 +778,24 @@ export default function FrameworkEditor() {
     const request=++importRequest.current,previousDraft=draftRef.current;
     try {
       if (file.size > MAX_PROJECT_BYTES) throw new Error("Projectbestand is te groot.");
-      const original=expandProject(JSON.parse(await file.text()));
+      const originalText=await file.text();
+      const original=expandProject(JSON.parse(originalText));
       await ensureCatalogue(projectCatalogueKeys(original));
       if(request!==importRequest.current)return;
       if(draftRef.current!==previousDraft)throw Error('Je onderzoek is tijdens het laden gewijzigd. Open het projectbestand opnieuw als je die wijzigingen wilt vervangen.');
       const opened=readProject(original,projectRef.current,restoreOptions);
       setImportFeedback("");
-      // A valid import replaces the whole project. Preserve the previous stored bytes first.
-      // If storage/backup fails, the opened project remains usable in memory and downloadable.
-      try {
-        if(!storeRef.current)storeRef.current=guardedProjectStore(localStorage);
-        storeRef.current.checkpoint(Boolean(recoveryOriginal));
-        storageBlocked.current=false;
-      }catch {storageBlocked.current=true;}
+      // Validate, retain originals and save before adopting any part of the file.
+      // Storage/backup failure leaves the current in-memory project intact too.
+      const store=storeRef.current ?? guardedProjectStore(localStorage);
+      const accepted=store.acceptProject(opened,originalText,{replace:true,preservePrevious:Boolean(recoveryOriginal)});
+      backgroundSave.current?.cancel();
+      storeRef.current=store;storageBlocked.current=false;
       rememberProject(opened.legacy ? 'Oud concept openen' : 'Project openen');
       applyProject(opened.project);
-      const saved=saveProject(opened.project);
+      projectStatus.update({savedLocally:true,problem:false,message:'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'});
+      setScopeNotice(accepted.notice);
       setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; uw huidige modellen blijven behouden.' : 'Project geopend, inclusief modellen en werkplek.');
-      if(!saved){setProblem(true);setMessage('Project geopend. Automatisch bewaren is niet gelukt; gebruik Bewaar project. De eerdere opslag is niet overschreven.');}
     } catch (e) {
       if(request!==importRequest.current)return;
       setImportFeedback(e instanceof SyntaxError ? "Dit bestand is geen leesbaar projectbestand. Kies een JSON-bestand dat met Bewaar project is gemaakt. Je huidige onderzoek is behouden."

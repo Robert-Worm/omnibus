@@ -50,6 +50,7 @@ Claude Opus 5.5 en ChatGPT Astra werken allebei aan Omnibus. Lees bij het begin 
 
 ## Versiebeheer
 
+- Wie het projectformaat wijzigt, verhoogt de projectversie en levert in dezelfde wijziging een sequentiële vormmigratie in `lib/project-session-migrations.mjs` en een synthetisch testproject; behoud het origineel vóór adoptie en toets openen via bestand én browser, inclusief compressie en de bestaande bron-/herstelvalidatie.
 - Maak kleine commits voor samenhangende, afgeronde verbeteringen, met controles die passen bij de wijziging. Bekijk eerst de werkmap en de gestagede diff; neem geen ongerelateerde wijzigingen mee.
 - Houd inloggegevens, private onderzoeksprojecten, live databases, archieven met originele documenten, runtimepublicaties en gegenereerde build- en testuitvoer buiten Git. Gereviewde inhoud en herkomst horen bij de apart beheerde datarelease; herschrijf nooit bewijs alleen om de opmaak gelijk te trekken.
 - Geen push, upload of publicatie zonder uitdrukkelijke toestemming van de beheerder. Een lokale commit is geen back-up van genegeerde data en geen goedkeuring voor productie of beveiliging.
