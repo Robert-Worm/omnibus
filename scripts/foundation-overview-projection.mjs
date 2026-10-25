@@ -8,7 +8,7 @@ export function projectFoundationOverview(sourceId,{rows,points,records,groups},
   const pointIds=new Set(points.map(p=>p.id)),recordIds=new Set(records.map(r=>r.id));
   if(!sourceId||pointIds.size!==points.length||new Set(rows.map(r=>r.id)).size!==rows.length||
       recordIds.size!==records.length||rows.some(r=>r.pointIds.some(id=>!pointIds.has(id)))||
-      points.some(p=>!originKey(p.id)||!['SELECTABLE','HOLD'].includes(p.selection_status)||p.source_links.some(link=>!recordIds.has(link.record_id))))throw Error('Invalid foundation overview identity.');
+      points.some(p=>!originKey(p.id)||!['SELECTABLE','HOLD','CONTEXT_ONLY'].includes(p.selection_status)||p.source_links.some(link=>!recordIds.has(link.record_id))))throw Error('Invalid foundation overview identity.');
   const empty={text:'',basis:'NOT_ESTABLISHED',reason:'',evidence_ids:[]};
   return {sourceId,groups,
     rows:rows.map(row=>({...pick(row,['id','criterionId','groupId','pointIds','title','entity','navigationSubjects','articleReferences','controlStatus']),

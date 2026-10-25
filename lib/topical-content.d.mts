@@ -12,6 +12,7 @@ export type TopicalPackage = {
   context: {
     title: string; intro: string; edition: string; effective_from: string; as_of: string;
     applicability: string; status: string;
+    kind?: 'law'|'framework'|'audit'; kind_label?: string; source_explanation?: string; coverage?: string;
     audience: string[]; use_cases: string[];
     documents: {id: string; role: string}[];
     limitations: {title: string; text: string}[];
