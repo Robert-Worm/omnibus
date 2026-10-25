@@ -111,11 +111,66 @@ function modelSnapshot(manifest, files, authorIds) {
     return { id: `${manifest.package.id}/${file.id}`, title: file.path, sourceFileSha256: file.sha256,
       pageNumbering: "text-file", pages: [{ page: 1, text }] };
   });
-  return { model, documents, review: checked, targets: prepared.targets.length };
+  return { model, documents, review: checked, reviews, basisHash: prepared.basisHash, targets: prepared.targets.length };
+}
+
+// This is the local owner's recorded decision, not a machine-generated review
+// or authority over the shared catalogue. The pinned intake binds all source,
+// review and verification evidence bytes; the owner verifies their truth.
+function ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budget) {
+  exactKeys(entry.admission, ["file", "sha256"], "local owner admission reference");
+  requireValue(nonempty(entry.admission.file) && hash(entry.admission.sha256),
+    "Local owner admission needs a file and independently retained SHA256");
+  const path = resolve(planRoot, entry.admission.file);
+  requireValue(realpathSync(path) === path, "Local owner admission path must not contain links");
+  const bytes = readBytes(path, intakeLimits.manifestBytes, entry.admission.sha256);
+  budget.bytes += bytes.length;
+  requireValue(budget.bytes <= localDatabaseLimits.bytes, "Selected packages and admissions exceed the local 64 MiB byte limit");
+  const receipt = json(bytes, "local owner admission");
+  exactKeys(receipt, ["format", "schemaVersion", "scope", "ownerId", "decidedAt", "decision", "package",
+    "intakeSha256", "basisHash", "authorIds", "verificationEvidenceIds", "confirmations", "unresolvedIssues"], "local owner admission");
+  requireValue(receipt.format === "omnibus-local-owner-admission" && receipt.schemaVersion === 1 &&
+    receipt.scope === "local-database-only" && receipt.decision === "ADMIT", "Only an explicit local-owner admission is supported");
+  requireValue(nonempty(receipt.ownerId) && receipt.ownerId.length <= 200 &&
+    typeof receipt.decidedAt === "string" && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(receipt.decidedAt) &&
+    Number.isFinite(Date.parse(receipt.decidedAt)) && new Date(receipt.decidedAt).toISOString() === receipt.decidedAt,
+  "Local owner identity and exact UTC decision time required");
+  requireValue(canonical(receipt.package) === canonical(manifest.package) && receipt.intakeSha256 === entry.sha256 &&
+    receipt.basisHash === snapshot.basisHash && canonical(receipt.authorIds) === canonical(entry.authorIds),
+  "Local owner admission does not match the exact package, source/review basis and authors");
+  exactKeys(receipt.confirmations, ["reviewerIndependence", "actualSourceReading", "sourceFidelity"], "owner verification");
+  requireValue(Object.values(receipt.confirmations).every(value => value === true),
+    "The owner must verify reviewer independence, actual source reading and source fidelity");
+  requireValue(Array.isArray(receipt.unresolvedIssues) && !receipt.unresolvedIssues.length,
+    "Unresolved owner-review issues keep the package in HOLD");
+  const evidenceIds = receipt.verificationEvidenceIds;
+  requireValue(Array.isArray(evidenceIds) && evidenceIds.length > 0 && new Set(evidenceIds).size === evidenceIds.length,
+    "Retain distinct verification evidence files in the pinned intake");
+  for (const id of evidenceIds) {
+    const file = manifest.files.find(file => file.id === id);
+    requireValue(file?.roles.includes("supporting") && files.has(id),
+      "Owner verification evidence must reference supporting files in the exact checked intake");
+    let text;
+    try { text = new TextDecoder("utf-8", { fatal: true }).decode(files.get(id)); }
+    catch { fail("Owner verification evidence must be readable UTF-8 text"); }
+    requireValue(text.trim(), "Owner verification evidence must not be empty");
+  }
+  const assertNoOpenDecision = value => {
+    if (!value || typeof value !== "object") return;
+    requireValue(value.hold?.active !== true &&
+      ![value.status, value.selection_status, value.reviewStatus, value.decision]
+        .some(status => ["HOLD", "REJECT", "REJECTED"].includes(status)) &&
+      (!Object.hasOwn(value, "unresolvedIssues") || (Array.isArray(value.unresolvedIssues) && !value.unresolvedIssues.length)),
+    "Local owner admission cannot override HOLD, rejection or unresolved issues in model content");
+    for (const child of Object.values(value)) assertNoOpenDecision(child);
+  };
+  assertNoOpenDecision(snapshot.model);
+  assertNoOpenDecision(snapshot.reviews);
+  return { receipt, bytes, sha256: entry.admission.sha256 };
 }
 
 async function readPackage(entry, planRoot, budget) {
-  exactKeys(entry, ["intake", "sha256", "authorIds"], "package plan");
+  exactKeys(entry, ["intake", "sha256", "authorIds", ...(Object.hasOwn(entry ?? {}, "admission") ? ["admission"] : [])], "package plan");
   requireValue(nonempty(entry.intake) && hash(entry.sha256), "Each package needs an intake path and independently retained SHA256");
   requireValue(Array.isArray(entry.authorIds) && entry.authorIds.length > 0 &&
     entry.authorIds.every(id => nonempty(id) && id.length <= 200) && new Set(entry.authorIds).size === entry.authorIds.length,
@@ -133,7 +188,9 @@ async function readPackage(entry, planRoot, budget) {
     files.set(file.id, bytes);
   }
   const snapshot = modelSnapshot(manifest, files, entry.authorIds);
-  return { ...snapshot, manifest, files, intakeBytes, root, checked, authorIds: entry.authorIds };
+  const admission = Object.hasOwn(entry, "admission")
+    ? ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budget) : null;
+  return { ...snapshot, manifest, files, intakeBytes, root, checked, authorIds: entry.authorIds, admission };
 }
 
 function outputPath(out, roots) {
@@ -177,6 +234,11 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
       requireValue(!ids.has(id.toLowerCase()), `Duplicate package identity: ${id}`);
       ids.add(id.toLowerCase()); snapshots.push(snapshot);
     }
+    const ownerAdmissions = snapshots.filter(item => item.admission).map(item => ({
+      packageId: item.manifest.package.id, intakeSha256: item.checked.manifestSha256,
+      sha256: item.admission.sha256, ownerId: item.admission.receipt.ownerId,
+      scope: "local-database-only", status: "LOCAL_OWNER_ADMISSION_RECORDED" }));
+    const allLocallyAdmitted = ownerAdmissions.length === snapshots.length;
     const checkedInputs = { planSha256: sha256(planBytes),
       inputBytes: budget.bytes, inputFiles: snapshots.reduce((sum, item) => sum + item.checked.files, 0),
       reviewTargets: snapshots.reduce((sum, item) => sum + item.targets, 0),
@@ -184,8 +246,12 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
         reviewStatus: item.review.status })),
       reviewStructureValidated: true, viewerShapeValidated: true,
       contentValidated: false, reviewValidated: false, newContentApproval: false, publishable: false,
-      runtime: { status: "HOLD", code: "INTEGRATION_REVIEW_REQUIRED", contract: runtimeContractHash, publication: null,
-        reason: "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
+      ...(ownerAdmissions.length ? { ownerAdmissions } : {}),
+      runtime: { status: "HOLD", code: allLocallyAdmitted ? "RUNTIME_PROJECTION_REQUIRED" : "INTEGRATION_REVIEW_REQUIRED",
+        contract: runtimeContractHash, publication: null,
+        reason: allLocallyAdmitted
+          ? "Local owner admissions are recorded against checked evidence. Standalone runtime projection and application integration remain required. No runtime publication or local-build.json was created."
+          : "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
     if (checkOnly) return { status: "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
       packages: snapshots.length, sourceTexts: snapshots.reduce((sum, item) => sum + item.documents.length, 0) };
     phase = "DATABASE_WRITE";
@@ -203,6 +269,9 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
       bundle.artifacts.push({ name: `${id}/intake`, data: { encoding: "base64", sha256: checked.manifestSha256,
         bytes: intakeBytes.length, content: intakeBytes.toString("base64") } });
       bundle.artifacts.push({ name: `${id}/review-check`, data: { authorIds, ...review, newContentApproval: false } });
+      if (snapshot.admission) bundle.artifacts.push({ name: `${id}/local-owner-admission`, data: {
+        encoding: "base64", sha256: snapshot.admission.sha256, bytes: snapshot.admission.bytes.length,
+        content: snapshot.admission.bytes.toString("base64"), scope: "local-database-only" } });
       for (const file of manifest.files) bundle.artifacts.push({ name: `${id}/files/${file.id}`,
         data: { ...file, encoding: "base64", content: files.get(file.id).toString("base64") } });
     }

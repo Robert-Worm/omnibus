@@ -87,7 +87,8 @@ export function publishRuntime(repository, value, expected) {
   if (manifest.format === 'omnibus-local-review-database' || manifest.contentGate === 'INTEGRATION_REVIEW_REQUIRED')
     fail('INTEGRATION_REVIEW_REQUIRED: a local review database cannot become a runtime publication. ' +
       'Intake, model shape and review structure are not content approval. ' +
-      'No standalone integration admission exists for this format; keep HOLD and use the existing content review route.');
+      'A recorded local-owner admission is not runtime projection or application integration. ' +
+      'Keep the runtime HOLD until the complete publication route is available and checked.');
   const payload = JSON.stringify(value);
   if (Buffer.byteLength(payload) > MAX_BYTES) fail('size limit');
   verifyResources(repository, value);

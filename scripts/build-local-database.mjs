@@ -7,6 +7,7 @@ export const localDatabaseHelp = `Usage: node scripts/build-local-database.mjs -
 
 Creates a separate local review database from explicit, pinned model intakes.
 Uses the existing intake, model review and release integrity checks. No dependencies beyond Node 24.21.0.
+An optional pinned local-owner admission is checked and retained with its evidence; it cannot override HOLD.
 Does not execute package code, change an existing database, approve content or activate a viewer.
 Report/framework packages remain HOLD until a standalone integration validator is available.
 Success: catalogue.sqlite and local-database-result.json with counts, hashes and the remaining runtime HOLD.

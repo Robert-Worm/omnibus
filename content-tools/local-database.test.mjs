@@ -87,6 +87,126 @@ function repinFixture(f, index = 0) {
   f.plan.packages[index].sha256 = hash(readFileSync(p.intake)); f.savePlan();
 }
 
+async function admittedFixture(t, { editModel = () => {}, count = 1 } = {}) {
+  const f = await fixture(t, count, model => { model.selection_status = "APPROVED"; editModel(model); });
+  const p = f.packages[0], manifest = load(p.intake);
+  const note = "Fictief verificatieverslag: geen echte bronlezing, onafhankelijkheid of inhoudelijke goedkeuring. Alleen softwaretest.";
+  writeFileSync(join(p.folder, "owner-verification.txt"), note);
+  manifest.files.push({ id: "owner-verification", path: "owner-verification.txt", roles: ["supporting"],
+    bytes: Buffer.byteLength(note), sha256: hash(Buffer.from(note)) });
+  save(p.intake, manifest); repinFixture(f);
+  const admission = { format: "omnibus-local-owner-admission", schemaVersion: 1, scope: "local-database-only",
+    ownerId: "synthetic-local-owner", decidedAt: "2026-10-25T12:00:00.000Z", decision: "ADMIT",
+    package: manifest.package, intakeSha256: f.plan.packages[0].sha256, basisHash: p.basis.basisHash,
+    authorIds: f.plan.packages[0].authorIds, verificationEvidenceIds: ["owner-verification"],
+    confirmations: { reviewerIndependence: true, actualSourceReading: true, sourceFidelity: true }, unresolvedIssues: [] };
+  const admissionPath = join(f.dir, "owner-admission.json");
+  const saveAdmission = () => {
+    save(admissionPath, admission);
+    f.plan.packages[0].admission = { file: "owner-admission.json", sha256: hash(readFileSync(admissionPath)) };
+    f.savePlan();
+  };
+  saveAdmission();
+  return { ...f, admission, admissionPath, saveAdmission };
+}
+
+await test("pinned local-owner admission survives check and build exactly; it does not publish or change existing data", async t => {
+  const f = await admittedFixture(t), before = readdirSync(f.dir, { recursive: true }).sort();
+  const sourceBefore = readFileSync(join(f.packages[0].folder, "source.txt"));
+  const admissionBefore = readFileSync(f.admissionPath);
+  const cli = spawnSync(process.execPath, [join(root, "scripts/build-local-database.mjs"), "--plan", f.planPath, "--check"],
+    { encoding: "utf8", timeout: 30000 });
+  assert.ifError(cli.error); assert.equal(cli.status, 0, cli.stderr);
+  const checked = JSON.parse(cli.stdout);
+  assert.deepEqual(readdirSync(f.dir, { recursive: true }).sort(), before);
+  assert.equal(checked.ownerAdmissions[0].status, "LOCAL_OWNER_ADMISSION_RECORDED");
+  assert.equal(checked.ownerAdmissions[0].scope, "local-database-only");
+  assert.equal(checked.runtime.code, "RUNTIME_PROJECTION_REQUIRED");
+  assert.equal(checked.publishable, false);
+  assert.equal(checked.runtime.status, "HOLD");
+  const built = await buildLocalDatabase(f.options);
+  assert.deepEqual(built.ownerAdmissions, checked.ownerAdmissions);
+  assert.equal(built.inputBytes, readFileSync(f.packages[0].intake).length + admissionBefore.length +
+    load(f.packages[0].intake).files.reduce((sum, file) => sum + file.bytes, 0));
+  const reader = new CatalogueRepository(built.database, { readOnly: true });
+  try {
+    const bundle = reader.exportRelease(built.release);
+    const artifact = bundle.artifacts.find(item => item.name === `${f.packages[0].id}/local-owner-admission`).data;
+    assert.deepEqual(Buffer.from(artifact.content, "base64"), admissionBefore);
+    assert.equal(artifact.sha256, hash(admissionBefore));
+    assert.equal(bundle.packages[0].records[0].status, "HOLD");
+    assert.equal(verifyReleaseContent(reader, built.release).packages, 1);
+  } finally { reader.close(); }
+  assert.equal(existsSync(join(f.out, "local-build.json")), false);
+  assert.deepEqual(readFileSync(f.admissionPath), admissionBefore);
+  assert.deepEqual(readFileSync(join(f.packages[0].folder, "source.txt")), sourceBefore);
+  const writer = new CatalogueRepository(built.database);
+  try {
+    assert.throws(() => publishRuntime(writer, { format: "omnibus-runtime-publication", schemaVersion: 1,
+      release: built.release, contract: built.runtime.contract, contentGate: "VERIFIED_APPLICATION_RELEASE",
+      modules: {}, refs: {}, registrations: {}, routing: {}, summary: {} },
+    { release: built.release, contract: built.runtime.contract }), /INTEGRATION_REVIEW_REQUIRED/);
+  } finally { writer.close(); }
+  const builtBytes = readFileSync(built.database);
+  await assert.rejects(buildLocalDatabase(f.options), /Output already exists/);
+  assert.deepEqual(readFileSync(built.database), builtBytes);
+});
+
+await test("an owner admission cannot approve a different package in the same plan", async t => {
+  const f = await admittedFixture(t, { count: 2 });
+  const checked = await checkLocalDatabase({ plan: f.planPath });
+  assert.equal(checked.ownerAdmissions.length, 1);
+  assert.equal(checked.runtime.code, "INTEGRATION_REVIEW_REQUIRED");
+  f.plan.packages[1].admission = f.plan.packages[0].admission; f.savePlan();
+  await assert.rejects(buildLocalDatabase(f.options), /PACKAGE_CHECK\[2\].*exact package/);
+  assert.equal(existsSync(f.out), false);
+});
+
+await test("invalid or stale local decisions fail before writes without replacing source/review checks", async t => {
+  const cases = [
+    ["receipt bytes changed", f => writeFileSync(f.admissionPath, "{}"), /checksum mismatch/],
+    ["wrong scope", f => { f.admission.scope = "public-catalogue"; f.saveAdmission(); }, /explicit local-owner/],
+    ["unresolved issue", f => { f.admission.unresolvedIssues = ["Unverified source"]; f.saveAdmission(); }, /Unresolved/],
+    ["false verification", f => { f.admission.confirmations.reviewerIndependence = false; f.saveAdmission(); }, /must verify/],
+    ["missing evidence", f => { f.admission.verificationEvidenceIds = []; f.saveAdmission(); }, /verification evidence/],
+    ["evidence outside intake", f => { f.admission.verificationEvidenceIds = ["elsewhere"]; f.saveAdmission(); }, /supporting files/],
+    ["source is not verification evidence", f => { f.admission.verificationEvidenceIds = ["source"]; f.saveAdmission(); }, /supporting files/],
+    ["stale intake", f => { f.admission.intakeSha256 = "0".repeat(64); f.saveAdmission(); }, /exact package/],
+    ["stale basis", f => { f.admission.basisHash = "0".repeat(64); f.saveAdmission(); }, /exact package/],
+    ["author substitution", f => { f.plan.packages[0].authorIds = ["another-author"]; f.savePlan(); }, /exact package/],
+    ["owner cannot become reviewer", f => { f.plan.packages[0].authorIds = ["synthetic-test-reviewer-theory"]; f.savePlan(); }, /distinct from authors/],
+    ["invalid decision time", f => { f.admission.decidedAt = "2026-02-30T12:00:00.000Z"; f.saveAdmission(); }, /decision time/],
+    ["source changed after owner decision", f => writeFileSync(join(f.packages[0].folder, "source.txt"), "Changed source."), /checksum\/size/],
+    ["verification evidence changed", f => writeFileSync(join(f.packages[0].folder, "owner-verification.txt"), "Changed evidence."), /checksum\/size/],
+    ["stale review still fails first", f => { const p = f.packages[0]; p.reviews[0].basisHash = "0".repeat(64); save(join(p.folder, "reviews.json"), p.reviews); repinFixture(f); }, /explicit AI review/],
+  ];
+  for (const [name, mutate, expected] of cases) await t.test(name, async st => {
+    const f = await admittedFixture(st); mutate(f);
+    await assert.rejects(checkLocalDatabase({ plan: f.planPath }), expected);
+    await assert.rejects(buildLocalDatabase(f.options), expected);
+    assert.equal(existsSync(f.out), false);
+  });
+});
+
+await test("extra HOLD metadata in an otherwise complete review is not cleared by the local owner", async t => {
+  const f = await admittedFixture(t), p = f.packages[0];
+  p.reviews[0].hold = { active: true };
+  save(join(p.folder, "reviews.json"), p.reviews); repinFixture(f);
+  f.admission.intakeSha256 = f.plan.packages[0].sha256; f.saveAdmission();
+  await assert.rejects(buildLocalDatabase(f.options), /cannot override HOLD/);
+  assert.equal(existsSync(f.out), false);
+});
+
+await test("owner admission cannot clear HOLD from a model, dimension or question", async t => {
+  for (const editModel of [m => { m.selection_status = "HOLD"; },
+    m => { m.items[0].hold = { active: true }; },
+    m => { m.items[0].questions[0].reviewStatus = "HOLD"; }]) {
+    const f = await admittedFixture(t, { editModel });
+    await assert.rejects(buildLocalDatabase(f.options), /cannot override HOLD/);
+    assert.equal(existsSync(f.out), false);
+  }
+});
+
 await test("check-only CLI validates the complete plan without changing any files or granting approval", async t => {
   const f = await fixture(t, 2);
   const existing = join(f.dir, "existing.sqlite");

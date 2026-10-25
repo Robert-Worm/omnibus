@@ -16,9 +16,9 @@ Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bes
 
 De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.
 
-De lokale pakketroute heeft geen invoer waarmee die verificatie en de daaropvolgende integratietoelating kunnen worden overgedragen. Ook volledig ingevulde reviewbestanden blijven daarom `publishable:false`.
+De lokale pakketroute kan nu een afzonderlijk vrijgavebesluit van de lokale eigenaar controleren en bewaren. Dat besluit is gebonden aan de exacte intake, reviewbasis, auteurs en het vastgelegde verificatiebewijs. De opdracht neemt het besluit niet zelf en bewijst niet dat de eigenaar de bron werkelijk heeft gelezen.
 
-Op 25 oktober 2026 heeft de beheerder besloten dat de eigenaar van een eigen lokale database een pakket definitief mag toelaten. De onafhankelijke reviews en broncontroles moeten daarvoor zijn uitgevoerd en vastgelegd. Dit geeft geen bevoegdheid om de openbare Omnibus-database te wijzigen. Ontbrekend bewijs en open HOLD blijven een blokkade; de eigenaar kan die niet overslaan. De koppeling tussen dit besluit, het exacte reviewbewijs en de lokale bouwer is nog niet geïmplementeerd. De bouwer neemt het besluit niet zelf en blijft tot die tijd HOLD opleveren.
+Op 25 oktober 2026 heeft de beheerder besloten dat de eigenaar van een eigen lokale database een pakket definitief mag toelaten. De onafhankelijke reviews en broncontroles moeten daarvoor zijn uitgevoerd en vastgelegd. Dit geeft geen bevoegdheid om de openbare Omnibus-database te wijzigen. Ontbrekend bewijs en open HOLD blijven een blokkade; de eigenaar kan die niet overslaan. De omzetting naar een bruikbare viewerpublicatie is nog niet beschikbaar. Ook met een vastgelegd besluit blijft de uitvoer daarom een controledatabase.
 
 De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout en de daarin aanwezige applicatiecontroles. Hij is geen zelfstandige pakketvalidator. De [publicatiehelper](../local-data/runtime-publication.mjs) weigert een lokale controledatabase ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. De openbare route bevat bovendien nog geen omzetting van een toegelaten eigen pakket naar de volledige runtimegegevens van de viewer.
 
@@ -60,6 +60,36 @@ Maak naast de pakketmappen een bestand `packages.json`. Noem alleen de pakketten
 ```
 
 Vervang de voorbeeldwaarden. Gebruik bij `authorIds` de werkelijke auteuridentiteiten uit het reviewdossier. De reviewers moeten van de auteurs en van elkaar verschillen. Paden naar intakes zijn relatief aan `packages.json`. Voor een tweede pakket voeg je een tweede item toe. Kies per model één versie.
+
+### Een besluit van de lokale eigenaar meegeven
+
+Dit is alleen nodig als de eigenaar de onafhankelijke reviews en broncontroles daadwerkelijk heeft geverifieerd. Zonder besluit blijft de bestaande controle-/reviewroute ongewijzigd werken.
+
+Bewaar eerst het verificatieverslag in het pakket, met de intake-rol `supporting`. Het verslag beschrijft de gecontroleerde onafhankelijkheid, werkelijke bronlezing en brongetrouwheid, met verwijzingen naar het bewijs. Een willekeurig tekstbestand of ingevuld voorbeeld is geen inhoudelijke verificatie. Maak daarna de definitieve intake en bewaar haar hash apart. Het eigenaarbesluit staat **buiten** de intake, zodat geen wederzijdse hashverwijzing ontstaat.
+
+Het besluit is een JSON-bestand met deze velden:
+
+| Veld | Vereiste inhoud |
+| --- | --- |
+| `format`, `schemaVersion`, `scope`, `decision` | `omnibus-local-owner-admission`, `1`, `local-database-only`, `ADMIT` |
+| `ownerId`, `decidedAt` | Werkelijke lokale eigenaar en het besluittijdstip in UTC, bijvoorbeeld `2026-10-25T12:00:00.000Z` |
+| `package`, `intakeSha256`, `basisHash`, `authorIds` | Exacte pakketmetadata uit de intake, apart bewaarde intakehash, hash van de beoordeelde basis en dezelfde auteurs als in het pakketplan |
+| `verificationEvidenceIds` | Niet-lege lijst van bestands-ID's uit die intake met rol `supporting`; leesbare UTF-8-verslagen, geen paden naar losse bestanden |
+| `confirmations` | `reviewerIndependence`, `actualSourceReading` en `sourceFidelity`, elk `true` na de daadwerkelijke verificatie |
+| `unresolvedIssues` | Lege lijst; met een open punt is geen lokale toelating mogelijk |
+
+Voeg aan het betreffende pakket in `packages.json` één veld toe:
+
+```json
+"admission": {
+  "file": "besluiten/mijn-model.json",
+  "sha256": "VUL_HIER_DE_APART_BEWAARDE_HASH_VAN_HET_BESLUIT_IN"
+}
+```
+
+Het pad is relatief aan het pakketplan. Zowel `--check` als de bouwopdracht controleert opnieuw de huidige pakket- en besluitbytes. Een gewijzigd pakket, andere auteurs, ontbrekend bewijs of een hergebruikt besluit voor een ander pakket wordt geweigerd. HOLD of afwijzing in het model of de reviews blijft blokkeren. De opdracht wist of herschrijft die statussen nooit.
+
+De uitkomst noemt het vastgelegde besluit onder `ownerAdmissions`. De database bewaart de oorspronkelijke besluitbytes als bijlage. Als elk pakket een geldig vastgelegd besluit heeft, wordt de resterende runtimeblokkade `RUNTIME_PROJECTION_REQUIRED`. Anders blijft dat `INTEGRATION_REVIEW_REQUIRED`. Beide zijn HOLD voor viewerpublicatie; `publishable` blijft `false`. Deze vastlegging vervangt dus geen nog ontbrekende runtime-omzetting of applicatiecontrole.
 
 ## 3. Maak de nieuwe database
 
@@ -107,7 +137,7 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | `No standalone content/review validator` | Rapporten en wetten/kaders hebben nog geen zelfstandige integratiecontrole in deze route. Houd het pakket apart en volg de bestaande inhoudelijke werkwijze. |
 | `DATABASE_WRITE` of `FINAL_VERIFICATION` | Controleer de genoemde fout en beschikbare schijfruimte. Gebruik geen gedeeltelijke uitvoer. |
 
-Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden en manifesten, en 8 MiB per gelezen JSON-bestand. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
+Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
 
 ## Testen met fictieve gegevens
 
