@@ -3,12 +3,13 @@ import type {LibraryModel} from './model-library';
 import type {workbookPreviewSnapshot} from '@/lib/workbook-preview-snapshot.mjs';
 import type {ContentTransfer} from '@/lib/database-source-client.mjs';
 import {packPreviewContext} from '../lib/preview-context.mjs';
+import {unpackPreviewReply,type PreviewReply,type PreviewReceipt} from './preview-result.mjs';
 
 export type PreviewContext={framework:Framework;draft:Draft;models:LibraryModel[]};
 export type PreviewRequest=PreviewContext & {config:Record<string,unknown>};
 export type PreviewResult={preview:ReturnType<typeof workbookPreviewSnapshot>;validation:string};
 export type PreviewMessage={id:number;context?:PreviewContext;sharedMaterials?:true;config:Record<string,unknown>;sources?:ContentTransfer[]};
-type Reply={id:number;result?:PreviewResult;error?:string};
+type Reply=PreviewReply;
 export type PreviewState={request:PreviewRequest|null;result:PreviewResult|null;busy:boolean;failed:boolean};
 export const initialPreviewState:PreviewState={request:null,result:null,busy:false,failed:false};
 
@@ -29,6 +30,7 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
   type Job={id:number;request:PreviewRequest};
   let worker:Worker|null=null,sent:PreviewContext|null=null,unavailable=false,disposed=false;
   let active:Job|null=null,queued:Job|null=null,serial=0,state=initialPreviewState;
+  let received:PreviewReceipt|null=null;
   const transferred=new Set<string>();
   const update=(next:PreviewState)=>{state=next;onChange(state);};
   function finish(job:Job,reply:Reply) {
@@ -43,7 +45,7 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
     pump();
   }
   function local(job:Job) {
-    worker?.terminate();worker=null;sent=null;unavailable=true;
+    worker?.terminate();worker=null;sent=null;received=null;unavailable=true;
     Promise.resolve().then(()=>fallback(job.request)).then(result=>finish(job,{id:job.id,result}),
       error=>finish(job,{id:job.id,error:error instanceof Error?error.message:'Het exportvoorbeeld kon niet worden gemaakt.'}));
   }
@@ -56,7 +58,13 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
       try {
         worker??=createWorker();const target=worker;
         worker.onmessage=(event:MessageEvent<Reply>)=>{
-          if(worker===target&&event.data.id===job.id)finish(job,event.data);
+          if(worker!==target||active!==job||event.data.id!==job.id)return;
+          let reply:Reply;
+          try {
+            reply=unpackPreviewReply(event.data,received);
+          }catch{local(job);return;}
+          if(reply.result)received={id:reply.id,result:reply.result};
+          finish(job,reply);
         };
         const failed=()=>{if(worker===target&&active===job)local(job);};
         worker.onerror=failed;worker.onmessageerror=failed;
@@ -76,6 +84,6 @@ export function createPreviewCalculator({createWorker,fallback,onChange,prepareS
       queued={id:++serial,request};update({...state,request,busy:true,failed:false});pump();
     },
     pause(){queued=null;if(state.busy)update({...state,request:null,busy:false});},
-    dispose(){disposed=true;queued=null;active=null;sent=null;worker?.terminate();worker=null;},
+    dispose(){disposed=true;queued=null;active=null;sent=null;received=null;worker?.terminate();worker=null;},
   };
 }

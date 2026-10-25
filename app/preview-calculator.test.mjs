@@ -3,6 +3,43 @@ import assert from 'node:assert/strict';
 import {createPreviewCalculator,samePreviewContext} from './preview-calculator.ts';
 import {packPreviewContext,unpackPreviewContext} from '../lib/preview-context.mjs';
 import {serialize} from 'node:v8';
+import {packPreviewReply,unpackPreviewReply} from './preview-result.mjs';
+
+const workbook=()=>({validation:'',preview:{title:'Synthetic workbook',meta:{author:'A'},
+  evidence:[{id:'last',source:'Exacte bron 🧭'.repeat(10000),hold:true,own:'',links:['Q2','Q1']}],
+  sheets:[{name:'Version',rows:[[new Date('2026-01-01'), 'A']]},{name:'Norms',rows:[['Norm','Exacte bron 🧭'.repeat(10000)]]}]}});
+test('unchanged preview parts cross once; metadata edits retain the complete exact workbook',()=>{
+ const first=workbook(),next=structuredClone(first);next.preview.meta.author='B';next.preview.sheets[0].rows[0][1]='B';
+ const before=structuredClone(next),receipt={id:1,result:first},packed=packPreviewReply(2,next,receipt);
+ assert.deepEqual(packed.reuse,{baseId:1,fields:['title','evidence'],sheets:[1]});
+ assert(serialize(packed).length<serialize({id:2,result:next}).length/100);
+ const restored=unpackPreviewReply(structuredClone(packed),receipt);
+ assert.deepEqual(restored.result,before);assert.deepEqual(next,before);
+ assert.equal(restored.result.preview.evidence,first.preview.evidence);
+});
+test('source, order, dates, blank fields, new sheets and validation changes never reuse stale values',()=>{
+ const first=workbook();
+ for(const mutate of [x=>x.preview.evidence[0].source+='changed',x=>x.preview.evidence[0].hold=false,
+   x=>x.preview.evidence[0].links.reverse(),x=>x.preview.evidence[0].own='changed',
+   x=>delete x.preview.evidence[0].own,x=>x.preview.evidence.push({id:'new source',source:'New'}),
+   x=>x.preview.sheets[0].rows[0][0]=new Date('2026-02-01'),x=>x.preview.sheets.reverse(),
+   x=>x.preview.sheets.pop(),x=>x.preview.sheets.push({name:'New framework',rows:[['New norm']]}),
+   x=>x.validation='Source rejected',x=>x.preview=null]) {
+  const next=structuredClone(first);mutate(next);
+  const restored=unpackPreviewReply(structuredClone(packPreviewReply(3,next,{id:2,result:first})),{id:2,result:first});
+  assert.deepEqual(restored.result,next);
+ }
+});
+test('missing transport bases and invalid reuse cannot produce a downloadable workbook',()=>{
+ const first=workbook(),base={id:1,result:first},packed=packPreviewReply(2,structuredClone(first),base);
+ assert.throws(()=>unpackPreviewReply(packed,null),/vorige overdracht/);
+ assert.throws(()=>unpackPreviewReply(packed,{...base,id:0}),/vorige overdracht/);
+ for(const mutate of [x=>x.reuse.fields.push('missing'),x=>x.reuse.fields.push('sheets'),
+   x=>x.reuse.fields.push(x.reuse.fields[0]),x=>x.reuse.sheets.push(99),
+   x=>x.reuse.sheets.push(-1),x=>x.result.preview.sheets[0]={name:'wrong'}]){
+  const bad=structuredClone(packed);mutate(bad);assert.throws(()=>unpackPreviewReply(bad,base));
+ }
+});
 
 const context={framework:{lines:[{id:'n1'}]},draft:{title:'Test',included:['n1'],notes:{n1:'Eigen tekst'},
  investigation:{materials:[{sourceContext:'Exacte bron 🧭'}]}},models:[]};
@@ -30,6 +67,32 @@ test('controls yield before calculation and rapid edits queue only the latest se
  h.worker.onmessage({data:{id:h.sent[1].id,result:result('current')}});
  assert.equal(h.changes.at(-1).request,last);assert.equal(h.changes.at(-1).result.preview.title,'current');
  assert.equal(h.changes.at(-1).busy,false);assert.equal(h.worker.onmessage,null);
+});
+
+test('a queued reply may reuse a superseded transport result but never display that older edit',()=>{
+ const h=harness(),first=request({fontSize:10}),last=request({fontSize:12}),one=workbook(),two=structuredClone(one);
+ two.preview.meta.author='Latest';two.preview.sheets[0].rows[0][1]='Latest';
+ h.client.request(first);h.run();h.client.request(last);
+ h.worker.onmessage({data:structuredClone(packPreviewReply(1,one,null))});
+ assert.equal(h.changes.at(-1).result,null);h.run();
+ h.worker.onmessage({data:structuredClone(packPreviewReply(2,two,{id:1,result:one}))});
+ assert.equal(h.changes.at(-1).request,last);assert.deepEqual(h.changes.at(-1).result,two);
+});
+
+test('lost preview transport state uses full validated fallback instead of stale evidence',async()=>{
+ const expected=workbook(),h=harness({fallback:()=>expected});h.client.request(request({}));h.run();
+ h.worker.onmessage({data:packPreviewReply(1,expected,{id:99,result:structuredClone(expected)})});
+ await tick();assert.equal(h.counts().calls,1);assert.equal(h.counts().terminated,1);
+ assert.deepEqual(h.changes.at(-1).result,expected);assert.equal(h.changes.at(-1).busy,false);
+});
+
+test('late callbacks cannot replace the most recent transport receipt',()=>{
+ const h=harness(),one=workbook(),two=structuredClone(one);two.preview.meta.author='Current';
+ h.client.request(request({}));h.run();const old=h.worker.onmessage;old({data:{id:1,result:one}});
+ h.client.request(request({fontSize:12}));h.run();h.worker.onmessage({data:packPreviewReply(2,two,{id:1,result:one})});
+ old({data:{id:1,result:workbook()}});
+ h.client.request(request({fontSize:13}));h.run();h.worker.onmessage({data:packPreviewReply(3,two,{id:2,result:two})});
+ assert.deepEqual(h.changes.at(-1).result,two);assert.equal(h.counts().calls,0);
 });
 
 test('settings do not resend source snapshots; every other changed draft field invalidates context',()=>{
