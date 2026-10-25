@@ -134,7 +134,7 @@ Bewaar in een nieuw `correction.json` vijf velden: `previousBasis`, `previousMan
 npm run check:review-changes -- --correction work/correctie-01/correction.json
 ```
 
-De opdracht leest alleen JSON en schrijft de uitkomst naar standaarduitvoer. Exitcode 1 stopt deze overdracht: onder meer bij een verkeerd gebonden oude basis, oude of onvolledige reviews, gewijzigd bronbewijs, een ongecontroleerde relatiemutatie, HOLD of ontbrekende notities. Beide manifesten moeten exact bij hun basis passen. Alle bouwstenen binnen de opgegeven scope moeten volledige passende reviews hebben. Gewijzigde bouwstenen moeten een nieuwe `reviewId` hebben; een oude beoordeling een nieuwe hash geven is geen review.
+De opdracht leest alleen JSON en schrijft de uitkomst naar standaarduitvoer. Exitcode 1 stopt deze overdracht, bijvoorbeeld bij een verkeerd gebonden oude basis, oude of onvolledige reviews, of gewijzigd bronbewijs. Ook een ongecontroleerde relatiemutatie, HOLD of ontbrekende notities stopt de overdracht. Beide manifesten moeten exact bij hun basis passen. Alle bouwstenen binnen de opgegeven scope moeten volledige passende reviews hebben. Gewijzigde bouwstenen moeten een nieuwe `reviewId` hebben; een oude beoordeling een nieuwe hash geven is geen review.
 
 Deze beperkte correctieroute vereist dezelfde bron- en normidentiteiten. Toevoegingen, verwijderingen en hernoemingen gaan via de gewone inventarisreview. Een nieuwe broneditie kan alleen mee met de juiste documentversie, documenthash, passagebinding en nieuwe reviews. Actieve HOLD op een bron, bouwsteen of toetspunt blijft blokkerend. De oorspronkelijke planner blijft bruikbaar voor inventarisaties waarin HOLD voorkomt.
 

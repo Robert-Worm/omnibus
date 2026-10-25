@@ -51,7 +51,7 @@
     "check:questions": "node scripts/scan-questions.mjs",
     "check:review-changes": "node scripts/check-review-changes.mjs",
     "check:certainty": "node scripts/check-certainty.mjs",
-    "test:review-tools": "node --test content-tools/review-change-set.test.mjs lib/claim-certainty.test.mjs scripts/check-certainty.test.mjs",
+    "test:review-tools": "node --test content-tools/review-change-set.test.mjs content-tools/review-change-set-correction.test.mjs lib/claim-certainty.test.mjs scripts/check-certainty.test.mjs",
     "test:models": "npm run check:models && node --test lib/model-library-validation.test.mjs lib/model-presentation.test.mjs lib/interview-wording.test.mjs lib/question-quality.test.mjs lib/question-quality-export.test.mjs scripts/scan-questions.test.mjs scripts/check-passages.test.mjs lib/model-directory-portable.test.mjs scripts/model-delivery-projection.test.mjs",
     "skills:regels": "node scripts/skill-regels.mjs",
     "skills:check": "node scripts/install-content-skills.mjs",

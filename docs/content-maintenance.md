@@ -36,7 +36,7 @@ node --test content-tools/review-change-set.test.mjs content-tools/review-change
 
 De proef maakt alleen nieuwe uitvoer in een unieke `work/reviewed-correction-*`-map en bewaart die voor controle. Zij gebruikt de bestaande intake, `validateSemanticReview`, database-import, `publishRuntime`, runtimecontrole, publicatievergelijking en releasevoorbereiding. De gewone notities worden daarna aangevuld zoals in stap 7. De oude oefendatabase en pakketbestanden blijven ongewijzigd. Alle database-records blijven herkenbaar fictief met status HOLD.
 
-De proef controleert de verkeerde oude basis, een score zonder reviews, een hergebruikte reviewverwijzing, een niet opnieuw beoordeelde afhankelijkheid, HOLD, gewijzigd bronbewijs, gewijzigde relaties en ontbrekend bewijs. Die gevallen leveren geen correctieoverdracht op. De helper schrijft nooit een database of publicatie.
+De proef controleert de verkeerde oude basis, een score zonder reviews, een hergebruikte reviewverwijzing en een niet opnieuw beoordeelde afhankelijkheid. Ook HOLD, gewijzigd bronbewijs, gewijzigde relaties en ontbrekend bewijs worden gecontroleerd. Die gevallen leveren geen correctieoverdracht op. De helper schrijft nooit een database of publicatie.
 
 **Synthetische publicatie is geen echte contentvrijgave.** De testreviews en minimale runtimegegevens zijn fictieve softwaretestgegevens. De proef voert de private auteursopdracht niet uit en bewijst geen menselijke goedkeuring, echte brontoelating of werkende viewer. Zij bewijst de technische verbinding tussen de genoemde bestaande functies. De private bronafhankelijke toelating, volledige publicatieopdracht, testbuild en het publicatiebesluit blijven vereist bij echte inhoud. Gebruik de testcode nooit als importer voor een bronpakket.
 
