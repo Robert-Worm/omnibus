@@ -102,7 +102,7 @@ Deze regels gelden altijd. Ze staan alleen hier; andere beheerpagina's verwijzen
 
 ## Volgende stap
 
-Is er een claim met het label **ingeleverd**? Begin bij [pakket controleren](pakket-controleren.md).
+Nieuw als beheerder? Begin bij het [beheerhandboek](handboek.md), zoals in *Begin hier*. Is er een claim met het label **ingeleverd**? Ga dan naar [pakket controleren](pakket-controleren.md).
 
 ---
 

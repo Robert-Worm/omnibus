@@ -29,7 +29,10 @@ flowchart TD
 
 ### 1. Zet het pakket in de inbox
 
-Pak de zip uit de claim uit in `work/content-inbox/<pakket-id>/<versie>/`.
+Pak de zip uit de claim uit in `work/content-inbox/<pakket-id>/<versie>/payload/`.
+
+- **`<pakket-id>`** is de code van de bron in de werklijst, bijvoorbeeld `2019-hoofdlijnen-auditrapporten-adr-2018`. Die staat ook in de claim.
+- **`<versie>`** kies je zelf, bijvoorbeeld `concept-1`. Een nieuwe inlevering krijgt een nieuwe versie.
 
 ### 2. Maak een plan
 
@@ -38,23 +41,29 @@ Begin met het voorbeeld dat bij de bron hoort:
 - [rapportplan](../../skills/omnibus-add-report/assets/intake-plan.json.example)
 - [kaderplan](../../skills/omnibus-add-framework/assets/intake-plan.json.example)
 
-Vul de echte pakketgegevens in, en geef elk bestand de rol die het werkelijk vervult. Een kort voorbeeld voor een model:
+Vul de echte pakketgegevens in, en geef elk bestand de rol die het werkelijk vervult. Een concept van een bijdrager voor een rapport bevat meestal deze bestanden:
 
-```json
-{
-  "format": "omnibus-intake-plan",
-  "schemaVersion": 1,
-  "package": {"id": "voorbeeldmodel", "kind": "model", "version": "1", "title": "Voorbeeldmodel"},
-  "contract": "model-review-1",
-  "files": [
-    {"id": "contract", "path": "payload/contract.md", "roles": ["contract"]},
-    {"id": "bron", "path": "payload/bron.txt", "roles": ["source", "source-text"]},
-    {"id": "model", "path": "payload/model.json", "roles": ["viewer-content", "context", "limitations"]},
-    {"id": "reviewbasis", "path": "payload/reviewbasis.json", "roles": ["review-basis"]},
-    {"id": "review", "path": "payload/review.json", "roles": ["review"]}
-  ]
-}
-```
+| Bestand in het concept | Rol in `plan.json` |
+| --- | --- |
+| `source-text.json` | `source-text` |
+| `RECONCILED-SOURCE.json` | `source-bank` |
+| `APP-FINAL.json` | `viewer-content` |
+| `CATALOGUE.json` | `catalogue` |
+| `APP-SOURCE-LINKS.json` | `source-links` |
+| `context.json` | `context` |
+| `beperkingen.md` | `limitations` |
+| `LEESMIJ.md`, `bron.json`, `source.txt`, `INCLUSION-DECISIONS.json`, `controle.md`, `CHECKSUMS.sha256` | `supporting` |
+
+Een concept van een bijdrager is niet compleet voor deze controle. Deze rollen voeg je zelf toe:
+
+| Rol | Waar het bestand vandaan komt |
+| --- | --- |
+| `contract` | `OUTPUT-CONTRACT.md` uit de rapportkit in de verwerkingsomgeving |
+| `source` | De PDF via de link in `bron.json`; controleer de hash die erin staat |
+| `review-basis`, `review` | Je eigen inhoudelijke review, zie [reviewwijzigingen](reviewwijzigingen.md) |
+| `receipt` | `receipt.json` uit de rapportkit; hoe je dat maakt, staat in de kit zelf |
+
+Ontbreekt een verplichte rol, dan weigert `content:prepare` het plan met `Missing file roles`. Voor een kader of model staan de verplichte rollen [hieronder](#welke-rollen-zijn-verplicht).
 
 ### 3. Maak het manifest en controleer
 
