@@ -7,14 +7,60 @@ import {fileURLToPath} from 'node:url';
 import {serveCatalogue} from './server.mjs';
 import {startupCheck,startupFailureReason} from './startup-diagnostics.mjs';
 
-function request(url,{path='/api/v1/health',method='GET',headers={}}={}) {
+function request(url,{path='/api/v1/health',method='GET',headers={},...transport}={}) {
  return new Promise((resolve,reject)=>{
-  const req=http.request(new URL(url),{path,method,headers,agent:false},res=>{
+  const req=http.request(new URL(url),{path,method,headers,agent:false,...transport},res=>{
    let body='';res.setEncoding('utf8');res.on('data',part=>body+=part);
    res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body}));
   });req.on('error',reject);req.end();
  });
 }
+
+test('local HTTP accepts exact localhost on the listener port without widening Host or Origin',async t=>{
+ const app=await serveCatalogue({});t.after(()=>app.close());
+ const port=app.server.address().port,otherPort=port===65535?port-1:port+1;
+ const localhost=`http://localhost:${port}`;
+ assert.equal(app.server.address().address,'127.0.0.1');
+ // Real hostname connections: no overridden Host, DNS lookup or address family.
+ for(const url of [app.url,localhost]){
+  for(const headers of [{},{Origin:url}]){
+   const ok=await request(url,{headers});assert.equal(ok.status,200,url);
+   assert.deepEqual(JSON.parse(ok.body),{status:'ok',mode:'local-read-only',schema:1});
+   assert.equal(ok.headers['access-control-allow-origin'],undefined);
+  }
+  for(const origin of ['', 'null','https://example.invalid',`http://localhost:${otherPort}`,
+   `http://127.0.0.1:${otherPort}`,'http://localhost','https://localhost:'+port,
+   `http://localhost.hostile.invalid:${port}`,`http://sub.localhost:${port}`,
+   url+'/',url+', '+url,url===app.url?localhost:app.url]){
+   const refused=await request(url,{headers:{Origin:origin}});
+   assert.equal(refused.status,403,JSON.stringify({url,origin}));
+   assert.equal(JSON.parse(refused.body).error,'Origin not allowed');
+  }
+  assert.equal((await request(url,{headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);
+  for(const method of ['POST','PUT','DELETE','OPTIONS'])
+   assert.equal((await request(url,{method})).status,405);
+ }
+ for(const host of ['localhost','127.0.0.1',`localhost:${otherPort}`,`127.0.0.1:${otherPort}`,
+  `localhost:0${port}`,`LOCALHOST:${port}`,`localhost.:${port}`,`sub.localhost:${port}`,
+  `localhost.hostile.invalid:${port}`,`127.0.0.1.hostile.invalid:${port}`,
+  `127.1:${port}`,`[::1]:${port}`,`localhost:${port}@hostile.invalid`,
+  `hostile.invalid:${port}`,`localhost:${port}, 127.0.0.1:${port}`]){
+  const refused=await request(app.url,{headers:{Host:host,Origin:localhost,
+   'X-Forwarded-Host':`localhost:${port}`,Forwarded:`host=localhost:${port};proto=http`}});
+  assert.equal(refused.status,403,host);assert.equal(JSON.parse(refused.body).error,'Host not allowed');
+ }
+ for(const headers of [[],['Host',`localhost:${port}`,'hOsT',`localhost:${port}`],
+  ['Host',`localhost:${port}`,'Host',`127.0.0.1:${port}`],
+  ['Host',`127.0.0.1:${port}`,'Host',`localhost:${port}`],
+  ['Host',`localhost:${port}`,'Origin',localhost,'oRiGiN',localhost],
+  ['Host',`localhost:${port}`,'Origin','','Origin',localhost]])
+  assert.equal((await request(app.url,{headers,setHost:false})).status,400,JSON.stringify(headers));
+ // A hostile name resolving to loopback still retains its forbidden authority.
+ const rebound=await request(`http://rebound.invalid:${port}`,{
+  family:4,lookup:(_hostname,_options,callback)=>callback(null,'127.0.0.1',4),
+ });
+ assert.equal(rebound.status,403);assert.equal(JSON.parse(rebound.body).error,'Host not allowed');
+});
 
 test('read-only HTTP rejects cross-site, forged host, write and oversized requests',async t=>{
  const app=await serveCatalogue({});t.after(()=>app.close());

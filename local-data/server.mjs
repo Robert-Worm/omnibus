@@ -82,7 +82,10 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    console.error(JSON.stringify({event:'catalogue_request_failed',requestId,status:500,time:new Date().toISOString()}));
   };
   res.setHeader('X-Request-ID',requestId);
-  const expected=hosting.publicMode?hosting.authority:'127.0.0.1:'+server.address().port;
+  let expected=hosting.publicMode?hosting.authority:'127.0.0.1:'+server.address().port;
+  // Accept only this exact local alias on the actual listener port. The Origin
+  // must match the requested authority; neither DNS nor proxy headers choose it.
+  if(!hosting.publicMode&&req.headers.host==='localhost:'+server.address().port)expected=req.headers.host;
   const expectedOrigin=hosting.publicMode?hosting.publicOrigin:`http://${expected}`;
   res.setHeader('Content-Type','application/json; charset=utf-8');
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control','no-store');
@@ -105,17 +108,15 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   };
   const reply=(status,value)=>replyJson(status,JSON.stringify(value));
   if(req.rawHeaders.length/2>32)return reply(431,{error:'Too many headers'});
-  if(hosting.publicMode){
-   let hosts=0,origins=0;
-   for(let i=0;i<req.rawHeaders.length;i+=2){
-    const name=req.rawHeaders[i].toLowerCase();
-    if(name==='host')hosts++;
-    if(name==='origin')origins++;
-   }
-   if(hosts!==1||origins>1){res.setHeader('Connection','close');return reply(400,{error:'Invalid request headers'});}
+  let hosts=0,origins=0;
+  for(let i=0;i<req.rawHeaders.length;i+=2){
+   const name=req.rawHeaders[i].toLowerCase();
+   if(name==='host')hosts++;
+   if(name==='origin')origins++;
   }
+  if(hosts!==1||origins>1){res.setHeader('Connection','close');return reply(400,{error:'Invalid request headers'});}
   if(req.headers.host!==expected)return reply(403,{error:'Host not allowed'});
-  if((hosting.publicMode?req.headers.origin!==undefined:req.headers.origin)&&req.headers.origin!==expectedOrigin)
+  if(req.headers.origin!==undefined&&req.headers.origin!==expectedOrigin)
    return reply(403,{error:'Origin not allowed'});
   const fetchSite=req.headers['sec-fetch-site'];
   // Public mode: a visitor following a link from another site (mail, search) opens the

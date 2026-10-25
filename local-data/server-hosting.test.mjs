@@ -172,7 +172,8 @@ test('public HTTP uses only its fixed origin while preserving read and response 
    const result=await request(app,{headers:{Host:host}});assert.equal(result.status,403,host);cors(result);
   }
   for(const origin of ['', 'null','http://'+authority,publicOrigin+'/',publicOrigin+'.hostile.invalid',
-   'https://omnibus.example.invalid','https://OMNIBUS.example.invalid:8443',app.url,publicOrigin+', '+publicOrigin]){
+   'https://omnibus.example.invalid','https://OMNIBUS.example.invalid:8443',app.url,
+   'http://localhost:'+app.server.address().port,publicOrigin+', '+publicOrigin]){
    const result=await request(app,{headers:{Host:authority,Origin:origin}});assert.equal(result.status,403,origin);cors(result);
   }
   for(const headers of [[],['Origin',publicOrigin],['Host',authority,'hOsT',authority],
@@ -326,6 +327,32 @@ test('public HTTP uses only its fixed origin while preserving read and response 
   assert.deepEqual(JSON.parse(ready.body),{status:'not-ready',mode:'public-read-only',schema:1});
   const health=await request(app);assert.equal(health.status,200);cors(health);
  });
+});
+
+test('local aliases retain publication, source and static boundaries without CORS',async t=>{
+ const f=fixture(t),before=digest(readFileSync(f.databasePath));
+ const app=await f.start({publicOrigin:undefined});
+ for(const url of [app.url,'http://localhost:'+app.server.address().port]){
+  const headers={Host:new URL(url).host,Origin:url};
+  for(const path of ['/',f.contentPath,f.pagePath,
+   `/api/v1/documents/${f.source.version}/index?release=${f.release}`]){
+   const result=await request({url},{path,headers});assert.equal(result.status,200,path);
+   assert.equal(result.headers['access-control-allow-origin'],undefined);
+   assert.equal(result.headers['strict-transport-security'],undefined);
+   if(path===f.contentPath)assert.equal(JSON.parse(result.body).selection_status,'HOLD');
+   if(path===f.pagePath)assert.deepEqual(JSON.parse(result.body),f.repository.page(f.source.version,1));
+  }
+  const asset=await request({url},{path:'/assets/synthetic.js',headers});
+  assert.equal(asset.status,200);assert.equal(asset.body.toString(),'/* synthetic asset */');
+  const cached=await request({url},{path:'/assets/synthetic.js',headers:{...headers,'If-None-Match':asset.headers.etag}});
+  assert.equal(cached.status,304);
+  for(const path of ['/api/v1/releases',`/api/v1/catalogue?release=${f.release}`,
+   `/api/v1/content/${f.refs.excluded.hash}?release=${f.release}`,
+   `/api/v1/content/${f.refs.selected.hash}?release=${f.foreignRelease}`,
+   `/api/v1/documents/${f.unselectedVersion}/pages/1`,'/omnibus-release.json','/synthetic.sqlite'])
+   assert.equal((await request({url},{path,headers})).status,404,path);
+ }
+ assert.equal(digest(readFileSync(f.databasePath)),before,'both aliases preserve read-only database bytes');
 });
 
 test('local defaults and standalone routes retain local Host, Origin, mode and absence of CORS',async t=>{
