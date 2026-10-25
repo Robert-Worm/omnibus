@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {register} from 'node:module';
-import {projectReportDelivery} from './report-delivery-projection.mjs';
+import {projectReportDelivery, reportDeliveryModule} from './report-delivery-projection.mjs';
 import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
 import {applyCatalogueEdits, registerCatalogueResource, ensureCatalogue} from '../lib/catalogue-runtime.mjs';
 
@@ -117,4 +117,60 @@ await test('report admission metadata shares required parts, remains atomic and 
   const corrupted = deferredCatalogueMetadata(source);
   corrupted.resources.delete(corrupted.registrations[moduleId][0]);
   assert.throws(()=>projectReportDelivery(source, ref=>edits[ref.hash], {metadata:corrupted}), /metadata delivery boundary/);
+});
+
+await test('shared evidence co-locates only with a part already required by every norm of a new report', async () => {
+  const ids = Array.from({length: 220}, (_, n) => 'NEW-' + String(n).padStart(3, '0'));
+  const initial = {lines: [], sources: [], unknown: []};
+  const originals = [{path: ['lines'], value: ids.map(id => ({id, text: id + ' exact 🧭 '.repeat(30)}))},
+    {path: ['sources'], value: [{id: 'common', linked_line_ids: ids, unknown: {exact: '<／\u2028>'}}]},
+    {path: ['unknown'], value: [JSON.parse('{"future":{"__proto__":{"keep":"exact 🧭"}}}')]}];
+  const source = {modules: {m: initial}, registrations: {m: ['report:NEW:m']}, refs: {'report:NEW:m': {}},
+    routing: {reports: Object.fromEntries(ids.map(id => [id, 'NEW']))}};
+  const before = JSON.stringify({source, originals});
+  const plan = projectReportDelivery(source, () => structuredClone(originals), {partBytes: 4096});
+  const shared = plan.registrations.m.filter(entry => entry.key.includes(':shared:'));
+  assert.equal(shared.length, 1);
+  assert(shared[0].bundle.m.some(edit => edit.path[0] === 'sources'), 'Universal dependency shares the evidence request');
+  assert(shared[0].bundle.m.some(edit => edit.path[0] === 'unknown'));
+  const sharedKey = shared[0].key.slice(0, -2);
+  assert(ids.every(id => plan.routing[id].includes(sharedKey)));
+  const actual = structuredClone(initial), runtime = await import('../lib/catalogue-runtime.mjs?co-located-report');
+  let fail = true;
+  for (const entry of plan.registrations.m) runtime.registerCatalogueResource(entry.key, () => {
+    if (fail && entry === shared[0]) throw Error('Shared asset unavailable');
+    return entry.bundle.m;
+  }, edits => applyCatalogueEdits(actual, edits));
+  const keys = ['report:NEW:shared', ...plan.routing[ids.at(-1)]];
+  await assert.rejects(runtime.ensureCatalogue(keys), /Shared asset unavailable/);
+  assert.deepEqual(actual, initial);
+  fail = false; await runtime.ensureCatalogue(keys);
+  assert(actual.lines.some(line => line.id === ids.at(-1)));
+  assert(actual.lines.length < ids.length / 2, 'One late norm does not load the whole report');
+  assert.deepEqual(actual.sources, originals[1].value);
+  assert.deepEqual(actual.unknown, originals[2].value);
+  await runtime.ensureCatalogue(['report:NEW']);
+  assert.deepEqual(actual, Object.fromEntries(originals.map(edit => [edit.path[0], edit.value])));
+  assert.equal(JSON.stringify({source, originals}), before);
+});
+
+await test('co-location respects the emitted 4-MiB limit including escaped Unicode and leaves non-universal parts separate', () => {
+  const initial = {lines: [], sources: [], unknown: []};
+  const source = {modules: {m: initial}, registrations: {m: ['report:LIMIT:m']}, refs: {'report:LIMIT:m': {}},
+    routing: {reports: {'LIMIT-A': 'LIMIT', 'LIMIT-Z': 'LIMIT'}}};
+  const values = [{path: ['lines'], value: [{id: 'LIMIT-A', text: 'a'.repeat(4000)}, {id: 'LIMIT-Z', text: 'z'.repeat(4000)}]},
+    {path: ['sources'], value: [{id: 'common', linked_line_ids: ['LIMIT-A', 'LIMIT-Z'], text: '<'.repeat(400000)}]},
+    {path: ['unknown'], value: [{unknown: '\u2028'.repeat(300000)}]}];
+  const plan = projectReportDelivery(source, () => structuredClone(values), {partBytes: 4096});
+  const entries = plan.registrations.m;
+  assert(entries.filter(entry => entry.key.includes(':shared:')).every(entry => entry.bundle.m.every(edit => edit.path[0] === 'unknown')));
+  assert(entries.every(entry => Buffer.byteLength(reportDeliveryModule(entry.bundle)) <= 4 * 1024 * 1024));
+  const combined = {m: entries.flatMap(entry => entry.bundle.m)};
+  assert(Buffer.byteLength(reportDeliveryModule(combined)) > 4 * 1024 * 1024);
+  const nonUniversal = projectReportDelivery(source, () => structuredClone([values[0], values[2]]), {partBytes: 4096});
+  assert(nonUniversal.registrations.m.filter(entry => entry.key.includes(':shared:')).every(entry => entry.bundle.m.every(edit => edit.path[0] === 'unknown')));
+  const bundle = JSON.parse('{"m":[{"path":["items"],"value":{"__proto__":{"exact":"<>&/🧭"}}}]}');
+  const module = reportDeliveryModule(bundle);
+  assert.deepEqual(JSON.parse(JSON.parse(module.slice('export default JSON.parse('.length, -2))), bundle);
+  assert(!module.includes('</'));
 });

@@ -9,7 +9,7 @@ import {buildCatalogueOverviews} from './build-catalogue-overviews.mjs';
 import {validCodeRevision} from './build-code-revision.mjs';
 import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
 import {projectModelDelivery} from './model-delivery-projection.mjs';
-import {projectReportDelivery} from './report-delivery-projection.mjs';
+import {projectReportDelivery, reportDeliveryModule} from './report-delivery-projection.mjs';
 import {webResource} from '../local-data/web-resources.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
@@ -148,7 +148,7 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
       if(metadataKeys.length||assets.length)lines.push(`import {featureLoader} from ${quote(resolve(root,'lib/feature-loader.mjs'))};`);
       if(assets.some(entry=>entry.bundle))lines.push(`import {reportAssetLoader} from ${quote(resolve(root,'lib/report-asset-loader.mjs'))};`);
       assets.forEach(({key,edits,bundle,module},index)=>{
-        const source=`export default JSON.parse(${code(quote(bundle??edits))});`,hash=createHash('sha256').update(source).digest('hex');
+        const source=bundle?reportDeliveryModule(bundle):`export default JSON.parse(${code(quote(edits))});`,hash=createHash('sha256').update(source).digest('hex');
         if(bundle&&Buffer.byteLength(source)>4*1024*1024)throw Error('Report delivery asset exceeds its verified read budget.');
         const chunk=this.emitFile({type:'asset',fileName:'assets/'+(bundle?'report':'model')+'-content-'+hash+'.js',source});
         lines.push(`const modelUrl${index}=import.meta.ROLLUP_FILE_URL_${chunk};`,

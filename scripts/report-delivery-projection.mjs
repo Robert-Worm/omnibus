@@ -1,6 +1,12 @@
 import {isDeepStrictEqual} from 'node:util';
 import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
 
+// Use the exact emitted representation when checking the verified read budget.
+export function reportDeliveryModule(bundle) {
+  const literal = JSON.stringify(JSON.stringify(bundle)).replace(/[<>/\u2028\u2029]/g, c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
+  return `export default JSON.parse(${literal});`;
+}
+
 // A browser delivery projection, never a new source publication. Unknown fields
 // stay at the full report boundary. Only explicit line/point relationships allow
 // a field to move into a smaller part; no text matching or inferred evidence.
@@ -119,6 +125,25 @@ export function projectReportDelivery(content, readResource, {partBytes = 1024 *
       chunk.push(item); bytes += size;
     }
     finish(report, chunk, kind === 'shared');
+  }
+  // A part required by every norm already travels with the shared evidence.
+  // Co-locate those dependencies without making any norm fetch extra records.
+  // partBytes still targets the norm partitions; the emitted module keeps the
+  // existing hard read limit, including JavaScript string escaping.
+  for (const report of new Set(Object.values(reportLines))) {
+    const ids = Object.keys(reportLines).filter(id => reportLines[id] === report);
+    const shared = parts.filter(part => part.key.startsWith('report:' + report + ':shared:'));
+    if (!shared.length) continue;
+    const required = parts.find(part => part.key.startsWith('report:' + report + ':part:') && ids.every(id => routing[id]?.has(part.key)));
+    if (!required) continue;
+    const combined = {};
+    for (const part of [required, ...shared]) for (const [module, edits] of Object.entries(part.modules)) (combined[module] ??= []).push(...edits);
+    if (Buffer.byteLength(reportDeliveryModule(combined)) > 4 * 1024 * 1024) continue;
+    required.modules = combined;
+    const oldKey = required.key;
+    required.key = shared[0].key;
+    for (const id of ids) { routing[id].delete(oldKey); routing[id].add(required.key); }
+    for (const part of shared) parts.splice(parts.indexOf(part), 1);
   }
   const registrations = {};
   for (const moduleId of Object.keys(full)) registrations[moduleId] = [];
