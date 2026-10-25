@@ -1,28 +1,28 @@
 # Eigen modelpakketten lokaal laden
 
-> **In het kort:** één opdracht zet gecontroleerde modelpakketten in een **nieuwe lokale controledatabase**. Je krijgt aantallen en controlegetallen. De inhoud blijft in HOLD voor gebruik in de viewer: de inhoudelijke integratie moet nog worden beoordeeld.
+> **In het kort:** laad gecontroleerde modelpakketten in een nieuwe lokale database. Met een vastgelegd eigenaarbesluit en een bestaande, gecontroleerde basispublicatie kun je de modellen in de gewone Omnibus-viewer gebruiken. Zonder die vrijgave krijg je alleen een controledatabase in HOLD. De bestaande database verandert niet.
 
 ## Welke pakketten werken?
 
 | Bronsoort | Intake en bestandscontrole | Lokale controledatabase | Zelfstandige viewerpublicatie |
 | --- | --- | --- | --- |
-| Model (`model-review-1`) | Ja | Ja, na controle van bronbinding, reviewbewijs en modelvelden; blijft HOLD | Nee |
+| Model (`model-review-1`) | Ja | Ja, met behoud van bronbinding, reviewbewijs en modelvelden | Ja, met eigenaarbesluit en gepinde basispublicatie |
 | Rapport (`report-kit-1.1`) | Ja | Nee, zelfstandige inhouds- en reviewvalidator ontbreekt | Nee |
 | Wet of kader (`framework-cio-0.1+addendum-01`) | Ja | Nee, zelfstandige inhouds- en reviewvalidator ontbreekt | Nee |
 
 Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bestanden, rollen en controlegetallen kloppen. Een rapport- of kaderpakket kan die controle halen en vervolgens terecht door de lokale bouwer worden geweigerd. Een selectie met zo'n pakket wordt als geheel geweigerd vóór databaseaanmaak.
 
-### Waarom levert een compleet modelreviewdossier nog geen viewerpublicatie op?
+### Wanneer mag een model in de lokale viewer?
 
 De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.
 
 De lokale pakketroute kan nu een afzonderlijk vrijgavebesluit van de lokale eigenaar controleren en bewaren. Dat besluit is gebonden aan de exacte intake, reviewbasis, auteurs en het vastgelegde verificatiebewijs. De opdracht neemt het besluit niet zelf en bewijst niet dat de eigenaar de bron werkelijk heeft gelezen.
 
-Op 25 oktober 2026 heeft de beheerder besloten dat de eigenaar van een eigen lokale database een pakket definitief mag toelaten. De onafhankelijke reviews en broncontroles moeten daarvoor zijn uitgevoerd en vastgelegd. Dit geeft geen bevoegdheid om de openbare Omnibus-database te wijzigen. Ontbrekend bewijs en open HOLD blijven een blokkade; de eigenaar kan die niet overslaan. De omzetting naar een bruikbare viewerpublicatie is nog niet beschikbaar. Ook met een vastgelegd besluit blijft de uitvoer daarom een controledatabase.
+Op 25 oktober 2026 heeft de beheerder besloten dat de eigenaar van een eigen lokale database een pakket definitief mag toelaten. De onafhankelijke reviews en broncontroles moeten daarvoor zijn uitgevoerd en vastgelegd. Dit geeft geen bevoegdheid om de openbare Omnibus-database te wijzigen. Ontbrekend bewijs en open HOLD blijven een blokkade; de eigenaar kan die niet overslaan. Geef voor de viewerroute ook een bestaande basispublicatie mee met `--base`, zoals hieronder beschreven.
 
-De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout en de daarin aanwezige applicatiecontroles. Hij is geen zelfstandige pakketvalidator. De [publicatiehelper](../local-data/runtime-publication.mjs) weigert een lokale controledatabase ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. De openbare route bevat bovendien nog geen omzetting van een toegelaten eigen pakket naar de volledige runtimegegevens van de viewer.
+De bestaande [runtimepublisher](../scripts/prepare-runtime-publication.mjs) gebruikt een expliciet gepinde private auteurscheckout. Voor deze lokale modelroute is die niet nodig: de gedeelde catalogusgegevens komen uit de gecontroleerde basisdatabase. De [publicatiehelper](../local-data/runtime-publication.mjs) blijft een controledatabase in HOLD weigeren, ook wanneer de aanroeper zelf `VERIFIED_APPLICATION_RELEASE` invult. Gebruik de volledige bouwopdracht; pas geen status aan om die grens te omzeilen.
 
-Fictieve reviewerrecords in softwaretests bewijzen alleen de werking van de controles. Een afzonderlijk gemaakte runtimefixture bewijst evenmin dat een eigen pakket deze toelatingsgrens heeft doorlopen. Zonder een toegelaten pakket zijn viewerselectie en projectherstel via deze route nog niet aangetoond.
+Fictieve reviewerrecords in softwaretests bewijzen alleen de werking van de controles. Zij zijn nooit bewijs dat echte inhoud is beoordeeld. Een succesvolle bouw bevestigt evenmin dat jouw concrete vragen inhoudelijk goed zijn; daarvoor blijven de brongebonden reviews nodig.
 
 ## 1. Zet de pakketten klaar
 
@@ -89,9 +89,27 @@ Voeg aan het betreffende pakket in `packages.json` één veld toe:
 
 Het pad is relatief aan het pakketplan. Zowel `--check` als de bouwopdracht controleert opnieuw de huidige pakket- en besluitbytes. Een gewijzigd pakket, andere auteurs, ontbrekend bewijs of een hergebruikt besluit voor een ander pakket wordt geweigerd. HOLD of afwijzing in het model of de reviews blijft blokkeren. De opdracht wist of herschrijft die statussen nooit.
 
-De uitkomst noemt het vastgelegde besluit onder `ownerAdmissions`. De database bewaart de oorspronkelijke besluitbytes als bijlage. Als elk pakket een geldig vastgelegd besluit heeft, wordt de resterende runtimeblokkade `RUNTIME_PROJECTION_REQUIRED`. Anders blijft dat `INTEGRATION_REVIEW_REQUIRED`. Beide zijn HOLD voor viewerpublicatie; `publishable` blijft `false`. Deze vastlegging vervangt dus geen nog ontbrekende runtime-omzetting of applicatiecontrole.
+De uitkomst noemt het vastgelegde besluit onder `ownerAdmissions`. De database bewaart de oorspronkelijke besluitbytes als bijlage. Zonder `--base` blijft de uitvoer een controledatabase: `RUNTIME_PROJECTION_REQUIRED` bij complete eigenaarbesluiten, anders `INTEGRATION_REVIEW_REQUIRED`. Met `--base` moeten alle pakketten een geldig besluit hebben. De lokale route verleent nooit toestemming voor openbare publicatie; `publishable` blijft `false`.
 
-## 3. Maak de nieuwe database
+## 3. Kies een controledatabase of viewerpublicatie
+
+### Gebruiken in de bestaande viewer
+
+Gebruik het `local-build.json` van de basisdatabase. Dat bestand legt de database, release en publicatiehash vast. De opdracht leest deze basis alleen en weigert ontbrekende of gewijzigde bron- en publicatiegegevens.
+
+```text
+node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json --base work/basis/local-build.json --out work/eigen-viewer-01
+npm run build:runtime -- --settings work/eigen-viewer-01/local-build.json --out work/eigen-viewer-web-01
+npm run dev:database -- --settings work/eigen-viewer-01/local-build.json --web-root work/eigen-viewer-web-01 --port 4328
+```
+
+Open daarna `http://127.0.0.1:4328/`. De eerste opdracht maakt de nieuwe database. De volgende twee bouwen en openen de bestaande applicatie lokaal; daarvoor zijn de gewone applicatieafhankelijkheden nodig. Geen van deze opdrachten kiest een andere database voor een al draaiende Omnibus.
+
+Bij `LOCAL_VIEWER_DATABASE_CREATED` zijn `catalogue.sqlite`, `local-database-result.json` en `local-build.json` aanwezig. `runtime.status` is `LOCAL_READY`, met reikwijdte `local-database-only`. De basispakketten en brontekst blijven gelijk; uitsluitend de toegelaten modellen en hun bewijs komen erbij. Een bestaand model wordt nooit vervangen. De viewer, het laden per model, selecteren en projectherstel gebruiken dezelfde code als de gewone applicatie; het projectformaat verandert niet. Open een bewaard project met deze lokale publicatie om de eigen modellen weer beschikbaar te hebben.
+
+Alleen verwijzingen voor gegevensoverdracht krijgen de nieuwe releasehash. Bronpassages, paginaversies, modelteksten en bewijsbestanden worden niet herschreven. De lokale vrijgave geldt alleen voor de toegevoegde pakketten, niet als nieuwe inhoudelijke beoordeling van de basiscollectie.
+
+### Alleen een controledatabase
 
 Voer vanuit de map met de Omnibus-code één opdracht uit:
 
@@ -110,7 +128,7 @@ Bij succes staan er twee bestanden:
 
 `LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED` betekent dat de controledatabase is gemaakt. Je kunt haar lokaal onderzoeken via de bestaande [databaselezer](../local-data/repository.mjs). De opdracht gebruikt dezelfde intake-, modelreview- en database-integriteitscontroles als de bestaande hulpmiddelen. Het model staat als één record in de database; daarin blijven alle dimensies, vragen en eigen statussen bewaard. Alle records blijven in HOLD. De oorspronkelijke bestanden staan verliesloos in de database als bijlagen.
 
-**Dit is nog geen viewerpublicatie.** `publishable`, `contentValidated`, `reviewValidated` en `newContentApproval` blijven `false`. Alleen de structuur van de reviews is gecontroleerd. `runtime.status` blijft `HOLD`. Er wordt geen `local-build.json` gemaakt en geen actieve database gekozen. De bestaande runtimecontrole weigert deze controledatabase totdat de vereiste integratieroute beschikbaar en afgerond is.
+**Zonder `--base` is dit geen viewerpublicatie.** `publishable`, `contentValidated`, `reviewValidated` en `newContentApproval` blijven `false`. Alleen de structuur van de reviews is gecontroleerd. `runtime.status` blijft `HOLD`. Er wordt geen `local-build.json` gemaakt en geen actieve database gekozen. Voor de viewer gebruik je de oorspronkelijke pakketten, hun vrijgavebesluiten en de bouwopdracht met `--base`; de controledatabase wordt niet omgelabeld.
 
 `viewerShapeValidated: true` bevestigt alleen dat de modelvelden de gedeelde structuurcontrole halen. Het bewijst geen inhoudelijke goedkeuring, complete publicatie of uitgevoerde viewerproef.
 
@@ -124,7 +142,9 @@ node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json 
 
 Deze controle is optioneel: de bouwopdracht controleert de invoer zelf. `--check` leest alle gekozen pakketten en voert dezelfde intake-, bron-, review- en modelstructuurcontroles uit. Bij succes verschijnt `LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED`, met de planhash, pakketversies, intakehashes en aantallen pakketten, bestanden, bronteksten en reviewonderdelen. Er wordt geen database of resultaatbestand gemaakt. Combineer `--check` niet met `--out`.
 
-Een geslaagde controle bevestigt alleen de gecontroleerde invoer. Zij test geen uitvoermap, databaseaanmaak of inhoudelijke toelating. HOLD blijft gelden. De bouwopdracht leest en controleert alle actuele bestanden opnieuw; een eerder controleresultaat kan nooit als pakketplan of goedkeuring dienen.
+Met `--base work/basis/local-build.json` controleert `--check` ook de eigenaarbesluiten en basispublicatie, zonder te schrijven. Het resultaat is dan `LOCAL_VIEWER_INPUTS_CHECKED` en `runtime.status: NOT_BUILT`.
+
+Een geslaagde controle bevestigt alleen de gecontroleerde invoer. Zij test geen uitvoermap, databaseaanmaak of inhoudelijke toelating. De bouwopdracht leest en controleert alle actuele bestanden opnieuw; een eerder controleresultaat kan nooit als pakketplan of goedkeuring dienen.
 
 ## 4. Los een HOLD op
 
@@ -134,18 +154,21 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | --- | --- |
 | `INPUT_CHECK` | Controleer het plan, de paden en de nieuwe uitvoermap. |
 | `PACKAGE_CHECK[2]` | Het tweede pakket faalt. Vraag de exacte ontbrekende bestanden of een nieuwe beoordeelde pakketversie op. |
+| `BASE_PUBLICATION_CHECK` | Controleer de expliciete basispins en eigenaarbesluiten. Een bestaand model-ID kan niet opnieuw worden toegevoegd. |
 | `No standalone content/review validator` | Rapporten en wetten/kaders hebben nog geen zelfstandige integratiecontrole in deze route. Houd het pakket apart en volg de bestaande inhoudelijke werkwijze. |
 | `DATABASE_WRITE` of `FINAL_VERIFICATION` | Controleer de genoemde fout en beschikbare schijfruimte. Gebruik geen gedeeltelijke uitvoer. |
 
-Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
+Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
 
 ## Testen met fictieve gegevens
 
 ```text
-node --test content-tools/local-database.test.mjs
+node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs
 ```
 
-Deze tests maken eigen fictieve pakketten in `work/`, controleren goede en afgekeurde invoer en ruimen hun eigen testmappen op. De testreviews zijn uitsluitend softwaretestgegevens.
+Deze tests maken eigen fictieve pakketten in `work/`, controleren goede en afgekeurde invoer en ruimen hun eigen testmappen op. Ze toetsen ook dat de basis gelijk blijft, laadverwijzingen kloppen en de bestaande herstelregels onbruikbare modellen weigeren. De testreviews zijn uitsluitend softwaretestgegevens.
+
+De lokale browserproef van 25 oktober 2026 doorliep de pakketroute met een fictief model: openen in de bestaande viewer, een vraag kiezen en aanpassen, de bouwsteen terugvinden in het kader, herladen en hetzelfde projectbestand openen in een lege browsersessie. Model, vraagtekst en selectie bleven behouden. Dit is een softwareproef, geen inhoudelijke vrijgave van echte bronnen.
 
 ---
 

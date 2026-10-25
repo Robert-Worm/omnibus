@@ -10,6 +10,9 @@ import { CatalogueRepository } from "../local-data/repository.mjs";
 import { verifyReleaseContent } from "../local-data/release-integrity.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { validateModelLibrary } from "../lib/model-library-validation.mjs";
+import { structureModelData } from "../lib/model-structure.mjs";
+import { prepareLocalModelRuntime, writeLocalModelRuntime } from "./local-model-runtime.mjs";
+import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
 
 export const localDatabaseLimits = Object.freeze({ packages: 64, bytes: 64 * 1024 * 1024, jsonBytes: 8 * 1024 * 1024 });
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -99,7 +102,11 @@ function modelSnapshot(manifest, files, authorIds) {
   requireValue(checked.status === "READY_FOR_INTEGRATION_REVIEW", `Model reviews: ${checked.errors.join("; ")}`);
   // Reuse the saved-project/viewer shape check, not a second permissive model
   // schema. Keep the original bytes; compatibility is not publication approval.
-  try { validateModelLibrary({ version: 1, models: [model] }); }
+  try {
+    validateModelLibrary({ version: 1, models: [model] });
+    // Validate full restoration too, without storing migrated defaults.
+    structureModelData(model);
+  }
   catch (error) { fail(`Model viewer shape: ${error.message}`); }
   const documents = manifest.files.filter(file => file.roles.includes("source-text")).map(file => {
     requireValue(file.path.toLowerCase().endsWith(".txt"), "Local model source-text must be a UTF-8 .txt file; preserve other originals as source/supporting files");
@@ -217,7 +224,7 @@ function verifyDatabase(database, release) {
 
 // Both modes read and validate the current input bytes. A check result is never
 // accepted as input, a cached snapshot or permission to skip a later check.
-async function runLocalDatabase({ plan, out }, checkOnly) {
+async function runLocalDatabase({ plan, out, base }, checkOnly) {
   let phase = "INPUT_CHECK";
   try {
     const planPath = resolve(plan), planBytes = readBytes(planPath, intakeLimits.manifestBytes);
@@ -252,7 +259,10 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
         reason: allLocallyAdmitted
           ? "Local owner admissions are recorded against checked evidence. Standalone runtime projection and application integration remain required. No runtime publication or local-build.json was created."
           : "Standalone model checks validate review structure, not source reading, reviewer identities or application integration. No runtime publication or local-build.json was created." } };
-    if (checkOnly) return { status: "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
+    phase = "BASE_PUBLICATION_CHECK";
+    const runtimeBase = base ? prepareLocalModelRuntime(base, snapshots) : null;
+    if (checkOnly) return { status: runtimeBase ? "LOCAL_VIEWER_INPUTS_CHECKED" : "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
+      ...(runtimeBase ? { base: runtimeBase.pins, runtime: { status: "NOT_BUILT", code: "LOCAL_VIEWER_BUILD_REQUIRED", publication: null } } : {}),
       packages: snapshots.length, sourceTexts: snapshots.reduce((sum, item) => sum + item.documents.length, 0) };
     phase = "DATABASE_WRITE";
     const destination = outputPath(out, snapshots.map(snapshot => snapshot.root));
@@ -279,12 +289,20 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
     const database = join(destination, "catalogue.sqlite");
     writeFileSync(database, Buffer.alloc(0), { flag: "wx" });
     const repository = new CatalogueRepository(database);
-    let release;
-    try { release = repository.importRelease(bundle); } finally { repository.close(); }
+    let release, publication;
+    try {
+      if (runtimeBase) ({ release, publication } = writeLocalModelRuntime(repository, runtimeBase, bundle));
+      else release = repository.importRelease(bundle);
+    } finally { repository.close(); }
     phase = "FINAL_VERIFICATION";
-    const totals = verifyDatabase(database, release);
-    const result = { status: "LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED", database, release,
-      databaseSha256: sha256(readFileSync(database)), ...totals, ...checkedInputs };
+    const totals = publication ? checkRuntimeDatabase({ database, release, publication }) : verifyDatabase(database, release);
+    const result = { ...totals, ...checkedInputs,
+      status: publication ? "LOCAL_VIEWER_DATABASE_CREATED" : "LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED", database, release,
+      databaseSha256: sha256(readFileSync(database)),
+      ...(publication ? { publication, base: runtimeBase.pins,
+        runtime: { status: "LOCAL_READY", scope: "local-database-only", contract: runtimeContractHash, publication } } : {}) };
+    if (publication) writeFileSync(join(destination, "local-build.json"),
+      JSON.stringify({ database: "catalogue.sqlite", release, publication }, null, 2) + "\n", { flag: "wx" });
     writeFileSync(join(destination, "local-database-result.json"), JSON.stringify(result, null, 2) + "\n", { flag: "wx" });
     return result;
   } catch (error) {
@@ -292,14 +310,14 @@ async function runLocalDatabase({ plan, out }, checkOnly) {
   }
 }
 
-/** Check the selected inputs without creating any files or opening a database. */
-export async function checkLocalDatabase({ plan }) {
-  return runLocalDatabase({ plan }, true);
+/** Check inputs without writes; an optional pinned base is read-only. */
+export async function checkLocalDatabase({ plan, base }) {
+  return runLocalDatabase({ plan, base }, true);
 }
 
-/** Build a NEW review database. No package code, private authoring imports or activation. */
-export async function buildLocalDatabase({ plan, out }) {
-  return runLocalDatabase({ plan, out }, false);
+/** Build a NEW local database. No package code, private authoring imports or activation. */
+export async function buildLocalDatabase({ plan, out, base }) {
+  return runLocalDatabase({ plan, out, base }, false);
 }
 
 export function localDatabaseFailure(error) {
