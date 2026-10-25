@@ -23,7 +23,7 @@ export function sourceReviewFixture(kind, prefix = "payload") {
   set(pdfName, "%PDF Fictieve bytes, geen werkelijk document.", ["source"]);
   const sourceText = "Fictieve bron 😀é\r\nTweede regel.\r\n";
   set(report ? "source.txt" : "source/pages.json", report ? sourceText : [{ page: 1, text: sourceText }], ["source-text"]);
-  set("RECONCILED-SOURCE.json", { author_agent: "synthetic-reconciler", records: [{ id: "R1", text: "Fictief bronrecord." }] }, ["source-bank"]);
+  set("RECONCILED-SOURCE.json", { author_agent: "synthetic-reconciler", records: [{ [report ? "record_id" : "id"]: "R1", text: "Fictief bronrecord." }] }, ["source-bank"]);
   const item = { id: "K1", title: "Fictieve norm", source_links: [{ record_id: "R1" }] };
   set("CATALOGUE.json", report ? { author_agent: "synthetic-author", process_mappings: [] }
     : { author_agent: "synthetic-author", source_identity: { source_id: "FICTIEF" },

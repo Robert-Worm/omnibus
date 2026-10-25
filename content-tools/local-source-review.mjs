@@ -35,9 +35,9 @@ const frameworkAspects = {
   PRACTICAL: ["independent_judgment", "phase_usability", "grouping", "reuse_semantics"],
 };
 
-function uniqueIds(rows, label) {
+function uniqueIds(rows, label, key = "id") {
   requireValue(Array.isArray(rows), label + " must be an array");
-  const ids = rows.map(row => row?.id);
+  const ids = rows.map(row => row?.[key]);
   requireValue(ids.every(text) && new Set(ids).size === ids.length, label + " has missing or duplicate identities");
   return ids;
 }
@@ -144,7 +144,7 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
     ids = all; points = new Map(catalogue.points.map(point => [point.id, point]));
   }
   requireValue(ids.length > 0, "empty final content");
-  const sourceIds = uniqueIds(bank.records, "source bank");
+  const sourceIds = uniqueIds(bank.records, "source bank", kind === "report" ? "record_id" : "id");
   requireValue(sourceIds.length > 0, "empty source bank");
   if (kind === "framework") requireValue(!sourceIds.some(id => ids.includes(id)), "source/content review identities overlap");
   for (const [role, aspects] of Object.entries(roles)) {

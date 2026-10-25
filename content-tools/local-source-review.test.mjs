@@ -14,6 +14,9 @@ for (const kind of ["report", "framework"]) {
   for (const prefix of ["", "payload", "transfer/reviewed"]) test(`${kind}: exact original review bindings work under prefix '${prefix}' without approval`, () => {
     const f = sourceReviewFixture(kind, prefix), before = [...f.files].map(([id, bytes]) => [id, Buffer.from(bytes)]);
     const result = checkLocalSourceReview(f.manifest, f.files, f.authorIds);
+    const record = f.read("RECONCILED-SOURCE.json").records[0];
+    assert.equal(record[kind === "report" ? "record_id" : "id"], "R1");
+    assert.equal(Object.hasOwn(record, kind === "report" ? "id" : "record_id"), false);
     assert.equal(result.status, "REVIEW_BINDINGS_CHECKED");
     assert.equal(result.reviewBindingsValidated, true);
     for (const key of ["sourceMethodValidated", "reviewValidated", "viewerShapeValidated", "newContentApproval", "publishable"])
