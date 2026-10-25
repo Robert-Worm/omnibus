@@ -50,7 +50,7 @@ import {
   unlinkLine,
   unlinkQuestionLines,
   linkQuestionLines,
-  questionLineIds,
+  questionLinkSummary,
   questionNumbers,
   questionLabel,
   fieldIncluded,
@@ -113,6 +113,7 @@ export default function ResearchBuilder({
   const checkboxId=useId();
   const r = researchOf(draft) as NonNullable<Draft["research"]>;
   const numbers = questionNumbers(draft);
+  const questionLinks = questionLinkSummary(draft);
   const roots = r.questions.filter((q) => q.parent_id === null);
   const [direction, setDirection] = useState(draft.investigation?.goal?.direction || "");
   const [chosenTopic, setChosenTopic] = useState("");
@@ -643,9 +644,8 @@ export default function ResearchBuilder({
     );
   }
   function question(q: ResearchQuestion) {
-    const children = r.questions.filter((s) => s.parent_id === q.id),
-      direct = questionLineIds(draft, q.id) as string[],
-      total = questionLineIds(draft, q.id, true).length;
+    const children = r.questions.filter((s) => s.parent_id === q.id);
+    const {direct, total} = questionLinks.get(q.id) ?? {direct: [], total: 0};
     const siblings = r.questions.filter((s) => s.parent_id === q.parent_id),
       position = siblings.findIndex((s) => s.id === q.id);
     const proposed = suggestionsByQuestion.get(q.id) || [];
@@ -1109,7 +1109,7 @@ export default function ResearchBuilder({
               {!selected.length ? <div className="bank-empty-state"><Layers size={24} aria-hidden="true"/><h4>Nog geen bouwstenen</h4><p>Werk eerst je vragen uit. Voeg <TermHelp id="block">bouwstenen</TermHelp> toe vóór je exporteert.</p><div>{onExplore&&<Button variant="outline" onClick={onExplore}>Verken bouwstenen <ArrowRight size={16}/></Button>}{onAddMaterial&&<Button variant="ghost" disabled={disabled} onClick={onAddMaterial}><Plus size={16}/>Maak een eigen bouwsteen</Button>}</div></div> : <>
               {onAddMaterial && <Button className="bank-add-material" variant="ghost" disabled={disabled} onClick={onAddMaterial}><Plus size={16}/>Eigen bouwsteen toevoegen</Button>}
               <div className="bank-scroll">
-                {selected.length>0 && <QuestionBuildingBlocks lines={selected} attached={bulkDestination?questionLineIds(draft,bulkDestination):[]}
+                {selected.length>0 && <QuestionBuildingBlocks lines={selected} attached={questionLinks.get(bulkDestination)?.direct ?? []}
                   linkedElsewhere={r.links.filter(l=>l.question_id!==bulkDestination).map(l=>l.line_id)} disabled={disabled}
                   questions={r.questions.map(q=>({id:q.id,label:questionLabel(draft,q)}))} targetId={bulkDestination} onTargetChange={setBulkTarget}
                   onLink={ids=>Boolean(bulkDestination)&&commit(()=>linkQuestionLines(draft,bulkDestination,ids) as Draft,'Bouwstenen gekoppeld aan '+questionLabel(draft,r.questions.find(q=>q.id===bulkDestination)!))}/>
