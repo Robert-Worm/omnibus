@@ -12,6 +12,7 @@ import { parseLocalDatabaseArgs } from "../scripts/build-local-database.mjs";
 import { CatalogueRepository } from "../local-data/repository.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
 import { verifyReleaseContent } from "../local-data/release-integrity.mjs";
+import { publishRuntime } from "../local-data/runtime-publication.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -197,6 +198,29 @@ await test("reviewable models that cannot reopen in the viewer fail before datab
     await assert.rejects(checkLocalDatabase({ plan: f.planPath }), /PACKAGE_CHECK\[1\]: Model viewer shape:/);
     assert.equal(existsSync(f.out), false);
   }
+});
+
+await test("a structurally checked local model remains HOLD at the runtime publication boundary", async t => {
+  const f = await fixture(t), result = await buildLocalDatabase(f.options);
+  const before = readFileSync(result.database);
+  const receipt = readFileSync(join(f.out, "local-database-result.json"));
+  const repository = new CatalogueRepository(result.database, { readOnly: true });
+  try {
+    // A deliberate false approval claim, using only the fictitious test package.
+    // No runtime modules, evidence or approval receipts are generated for production.
+    const candidate = { format: "omnibus-runtime-publication", schemaVersion: 1,
+      contentGate: "VERIFIED_APPLICATION_RELEASE", release: result.release, contract: result.runtime.contract,
+      modules: { "lib/model-library.mjs": { models: [f.packages[0].model] } },
+      refs: {}, registrations: {}, routing: {}, summary: {} };
+    assert.throws(() => publishRuntime(repository, candidate,
+      { release: result.release, contract: result.runtime.contract }),
+    /INTEGRATION_REVIEW_REQUIRED.*local review database/);
+    assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(), undefined);
+    assert.equal(repository.exportRelease(result.release).packages[0].records[0].status, "HOLD");
+  } finally { repository.close(); }
+  assert.deepEqual(readFileSync(result.database), before);
+  assert.deepEqual(readFileSync(join(f.out, "local-database-result.json")), receipt);
+  assert.equal(existsSync(join(f.out, "local-build.json")), false);
 });
 
 /** @type {[string, (fixture: Awaited<ReturnType<typeof fixture>>) => void, RegExp][]} */

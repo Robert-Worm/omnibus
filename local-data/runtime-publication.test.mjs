@@ -51,6 +51,35 @@ test('unsafe module identities and unknown resource registrations are rejected',
   assert.throws(() => publishRuntime(repository,{...value,contentGate:'UNREVIEWED'},{release,contract}),/gate mismatch/);
 });
 
+test('new runtime publications cannot promote a local review release by claiming approval', t => {
+  const {repository,contract,value} = fixture(t);
+  for (const manifest of [
+    {format:'omnibus-local-review-database',contentGate:'INTEGRATION_REVIEW_REQUIRED'},
+    {format:'omnibus-local-review-database',contentGate:'VERIFIED_APPLICATION_RELEASE'},
+    {contentGate:'INTEGRATION_REVIEW_REQUIRED'},
+  ]) {
+    const release = repository.importRelease({manifest,packages:[],documents:[]});
+    const before = repository.exportRelease(release);
+    const candidate = {...value,release,refs:{},registrations:{}};
+    assert.throws(() => publishRuntime(repository,candidate,{release,contract}),
+      /INTEGRATION_REVIEW_REQUIRED.*local review database/);
+    assert.deepEqual(repository.exportRelease(release),before);
+    assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(),undefined);
+  }
+});
+
+test('changing the stored review gate without its pinned release hash cannot authorize publication', t => {
+  const {repository,contract,value} = fixture(t);
+  const release = repository.importRelease({manifest:{format:'omnibus-local-review-database',
+    contentGate:'INTEGRATION_REVIEW_REQUIRED'},packages:[],documents:[]});
+  // Deliberate corruption in a fictitious database only; never a repair procedure.
+  repository.db.prepare('UPDATE releases SET manifest=? WHERE id=?')
+    .run(JSON.stringify({contentGate:'VERIFIED_APPLICATION_RELEASE',inventory:{}}),release);
+  assert.throws(() => publishRuntime(repository,{...value,release,refs:{},registrations:{}},{release,contract}),
+    /changed source release manifest/);
+  assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(),undefined);
+});
+
 test('publisher and build share exact named exports and mutable-module boundaries',()=>{
   const contract={'lib/a.mjs':{kind:'exports',names:['first','second']},'lib/b.json':{kind:'json',property:'values'}};
   const value={modules:{'lib/a.mjs':{first:1,second:2},'lib/b.json':{values:[]}},registrations:{},undefinedPaths:[]};

@@ -78,7 +78,16 @@ function verifyFoundationChains(repository, value) {
 /** Admin/import operation, never called by the web build or HTTP request handler. */
 export function publishRuntime(repository, value, expected) {
   validateRuntimePublication(value, expected);
-  if (!repository.hasRelease(value.release)) fail('unknown release');
+  const row = repository.db.prepare('SELECT manifest FROM releases WHERE id=?').get(value.release);
+  if (!row) fail('unknown release');
+  const manifest = JSON.parse(row.manifest);
+  if (digest(manifest) !== value.release) fail('changed source release manifest');
+  // The caller's publication claim cannot override the source release's HOLD.
+  // This applies to new writes only; existing immutable publications stay readable.
+  if (manifest.format === 'omnibus-local-review-database' || manifest.contentGate === 'INTEGRATION_REVIEW_REQUIRED')
+    fail('INTEGRATION_REVIEW_REQUIRED: a local review database cannot become a runtime publication. ' +
+      'Intake, model shape and review structure are not content approval. ' +
+      'No standalone integration admission exists for this format; keep HOLD and use the existing content review route.');
   const payload = JSON.stringify(value);
   if (Buffer.byteLength(payload) > MAX_BYTES) fail('size limit');
   verifyResources(repository, value);
