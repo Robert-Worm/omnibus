@@ -72,15 +72,14 @@ export default function CevWorkbench({
         i.indicators?.some((d) => d.id === q.indicatorId && d.included) &&
         chosenQuestionLevels(model, q).some((l: string) => !q.variants?.[l]?.trim()),
     );
+  const matchesSelection = (q: LibraryQuestion) => !onlySelected ||
+    (model.selected && item.included && chosenQuestionLevels(model, q).includes(level) &&
+      item.indicators?.some((i) => i.id === q.indicatorId && i.included));
   const questions = (item?.questions ?? []).filter(
     (q) =>
       modelQuestionApplicable(model, q) &&
       (!indicatorId || q.indicatorId === indicatorId) &&
-      (!onlySelected ||
-        (model.selected &&
-          item.included &&
-          chosenQuestionLevels(model, q).includes(level) &&
-          item.indicators?.some((i) => i.id === q.indicatorId && i.included))),
+      matchesSelection(q),
   );
   function editQuestion(id: string, patch: Partial<LibraryQuestion>) {
     onChange({
@@ -97,6 +96,28 @@ export default function CevWorkbench({
     });
   }
   if (!item) return null;
+  let emptyMessage = '';
+  if (!questions.length) {
+    const indicatorQuestions = (item.questions ?? []).filter(q => !indicatorId || q.indicatorId === indicatorId);
+    const applicableQuestions = (item.questions ?? []).filter(q => modelQuestionApplicable(model, q));
+    if (!item.questions?.length) {
+      emptyMessage = 'Voor dit onderdeel zijn geen interviewvragen beschikbaar.';
+    } else if (!indicatorQuestions.length) {
+      emptyMessage = 'Voor deze indicator zijn geen interviewvragen beschikbaar.';
+    } else if (indicatorQuestions.some(q => modelQuestionApplicable(model, q))) {
+      emptyMessage = 'Geen gekozen vragen voor dit gespreksniveau in deze weergave. Zet ‘Alleen gekozen’ uit om de beschikbare vragen te bekijken.';
+    } else {
+      emptyMessage = 'De vragen in deze weergave zijn verborgen door de huidige toepasselijkheid.';
+    }
+    // Recommend a filter change only when it reveals an existing question.
+    if (indicatorId && !indicatorQuestions.some(q => modelQuestionApplicable(model, q)) && applicableQuestions.length) {
+      emptyMessage += onlySelected && !applicableQuestions.some(matchesSelection)
+        ? ' Kies ‘Alle vragen’ en zet ‘Alleen gekozen’ uit om andere vragen te bekijken.'
+        : ' Kies ‘Alle vragen’ om andere vragen te bekijken.';
+    } else if (indicatorQuestions.length && !applicableQuestions.length && model.id === 'COM-B' && item.id === 'COMB-C' && !disabled) {
+      emptyMessage += ' Beoordeel of dit gedrag om een lichamelijke vaardigheid vraagt.';
+    }
+  }
   return (
     <section className="cev-workbench model-question-browser" aria-label={isCev ? 'CEV vragenwerkplaats' : modelDisplayName(model) + ' vragenwerkplaats'}>
       <header className="cev-heading law-browse-intro">
@@ -281,7 +302,8 @@ export default function CevWorkbench({
                   <span>
                     <span className="cev-question-kind">{q.title}</span>
                     <span className="cev-wording" aria-live="polite">
-                      {wording || "Voor dit niveau ontbreekt de vraag. Kies Aanpassen."}
+                      {wording.trim() ? wording : 'Voor dit gespreksniveau is geen vraagtekst beschikbaar.' +
+                        (disabled ? '' : ' Kies ‘Vraag aanpassen’ om dit niveau aan te vullen.')}
                     </span>
                   </span>
                 </label>
@@ -391,9 +413,7 @@ export default function CevWorkbench({
             );
           })}
           {!questions.length && (
-            <p>
-              {onlySelected ? 'Geen gekozen vragen in deze weergave. Zet ‘Alleen gekozen’ uit om vragen te bekijken.' : 'Geen vragen in deze weergave. Kies ‘Alle vragen’ of pas de toepasselijkheid aan.'}
-            </p>
+            <p>{emptyMessage}</p>
           )}
           <Button
             ref={addQuestionButton}
