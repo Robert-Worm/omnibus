@@ -2,6 +2,7 @@
 // Never executes the scripts carried by a packet or generates an approval.
 import { posix } from "node:path";
 import { need, text, same, exactKeys, cover, time, object } from "./source-evidence-reader.mjs";
+import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
 
 const targets = ["APP-FINAL.json", "CATALOGUE.json", "RECONCILED-SOURCE.json", "INCLUSION-DECISIONS.json", "APP-SOURCE-LINKS.json", "REVIEW-BASIS.json"];
 export const reportStages = Object.freeze({
@@ -162,8 +163,7 @@ export function checkReportMethod(e) {
   need([baseline.active_reports, baseline.active_items].every(value => Number.isInteger(value) && value >= 0), "baseline counts invalid");
   const registries = Object.keys(baseline.files).filter(name => name.replaceAll("\\", "/").endsWith("/viewer/app/reviewed-reports.json"));
   need(registries.length === 1, "original active registry not frozen");
-  const registry = e.parse(digest(registries[0], baseline.files[registries[0]]));
-  need(Array.isArray(registry.corpus) && registry.corpus.length === baseline.active_reports &&
-    registry.corpus.reduce((n, app) => n + app.framework.lines.length, 0) === baseline.active_items, "baseline registry counts differ");
+  const registry = baselineRegistryCounts(digest(registries[0], baseline.files[registries[0]]).bytes);
+  need(registry.reports === baseline.active_reports && registry.lines === baseline.active_items, "baseline registry counts differ");
   return { contract: "report-kit-1.1", stages: 8, completeReadings: 4, pages: pages.length };
 }
