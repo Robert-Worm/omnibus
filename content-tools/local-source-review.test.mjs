@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { checkLocalSourceReview } from "./local-source-review.mjs";
 import { sourceReviewFixture, hashBytes } from "./test-support/local-source-review-fixture.mjs";
+import { reportViewerFixture } from "./test-support/local-report-viewer-fixture.mjs";
 import { prepareIntake } from "./intake.mjs";
 import { buildLocalDatabase, checkLocalDatabase, localDatabaseFailure } from "./local-database.mjs";
 
@@ -58,11 +59,12 @@ for (const kind of ["report", "framework"]) {
     assert.deepEqual([...f.files], before);
   });
 
-  test(`${kind}: real local CLI exposes checked bindings but never writes a database or bypasses source admission`, async t => {
+  for (const viewerReady of kind === "report" ? [false, true] : [false])
+  test(`${kind}: real local CLI preserves source HOLD (viewer shape checked=${viewerReady})`, async t => {
     const scratch = join(root, "work", "local-source-review-tests"); mkdirSync(scratch, { recursive: true });
     const dir = mkdtempSync(join(scratch, "case-"));
     t.after(() => { assert.equal(dirname(dir), scratch); rmSync(dir, { recursive: true, force: true }); });
-    const f = sourceReviewFixture(kind);
+    const f = viewerReady ? reportViewerFixture() : sourceReviewFixture(kind);
     for (const file of f.manifest.files) { const path = join(dir, file.path); mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, f.files.get(file.id)); }
     const intakePlan = join(dir, "plan.json"), intake = join(dir, "intake.json");
     writeFileSync(intakePlan, JSON.stringify({ format: "omnibus-intake-plan", schemaVersion: 1,
@@ -79,6 +81,7 @@ for (const kind of ["report", "framework"]) {
       assert.equal(result.reviewEvidence.reviewBindingsValidated, true);
       assert.equal(result.reviewEvidence.sourcePassagesValidated, true);
       assert.equal(result.reviewEvidence.sourceMethodValidated, false);
+      assert.equal(result.reviewEvidence.viewerShapeValidated, viewerReady);
       assert.equal(result.newContentApproval, false); return true;
     };
     await assert.rejects(checkLocalDatabase({ plan }), held);

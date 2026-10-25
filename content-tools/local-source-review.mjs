@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { posix } from "node:path";
 import { canonical } from "./identity.mjs";
 import { checkLocalSourcePassages } from "./local-source-passages.mjs";
+import { projectLocalReportViewer, reportViewerFiles } from "./local-report-viewer.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const text = value => typeof value === "string" && Boolean(value.trim());
@@ -162,11 +163,18 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
     else coverage(review.object_reviews, role === "SOURCE" ? [...ids, ...sourceIds] : ids, role, "reason", aspects, points);
   }
   const passages = checkLocalSourcePassages(kind, { read, lookup, packageId: manifest.package.id });
+  let viewerShapeValidated = false;
+  if (kind === "report" && reportViewerFiles.some(name => Object.hasOwn(dependencies, name))) {
+    requireValue(reportViewerFiles.every(name => Object.hasOwn(dependencies, name)), "incomplete frozen report reuse packet");
+    projectLocalReportViewer({ app: read("APP-FINAL.json"), reuse: read("REUSE-CANDIDATE.json"),
+      projection: read("REUSE-VIEWER-PROJECTION.json"), locators: read("POINT-SOURCE-LOCATORS.json").locators });
+    viewerShapeValidated = true;
+  }
   return { status: "REVIEW_BINDINGS_CHECKED", kind, packageId: manifest.package.id,
     basisSha256: basisFile.sha256, dependencies: Object.keys(dependencies).length,
     reviewers: reviews.length, contentObjects: ids.length, sourceRecords: sourceIds.length,
     reviewBindingsValidated: true, sourcePassagesValidated: true, passages, sourceMethodValidated: false, reviewValidated: false,
-    viewerShapeValidated: false, newContentApproval: false, publishable: false };
+    viewerShapeValidated, newContentApproval: false, publishable: false };
 }
 
 // Carry only a fixed, code-created summary through the CLI's ordinary HOLD path.

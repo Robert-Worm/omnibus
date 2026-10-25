@@ -12,6 +12,32 @@
 
 Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bestanden, rollen en controlegetallen kloppen. Een rapport- of kaderpakket kan die controle halen en vervolgens terecht door de lokale bouwer worden geweigerd. Een selectie met zo'n pakket wordt als geheel geweigerd vóór databaseaanmaak.
 
+### Wat ontbreekt nog voor rapporten en kaders?
+
+De lokale modelroute werkt van pakket tot viewer. Voor rapporten en kaders zijn
+de bestandsbindingen, eindreviewverwijzingen en letterlijke bronpassages al
+aangesloten, maar nog niet de volledige bestaande toelatingscontrole en het
+samenvoegen met een nieuwe viewerpublicatie. Daarom blijven #153 en #154 open.
+Dit is ontbrekende softwareaansluiting, geen constatering dat de actieve
+collectie beheersdoelstellingen of toetsaanpakken mist.
+
+Voor rapporten kan de [overdrachtsadapter](local-report-viewer.mjs) de bestaande
+`REUSE-CANDIDATE.json`, `REUSE-VIEWER-PROJECTION.json` en
+`POINT-SOURCE-LOCATORS.json` samen met `APP-FINAL.json` nu ongewijzigd aan de
+gedeelde rapportadapter aanbieden. De drie hergebruikbestanden moeten samen
+aan de exacte eindreviewbasis gebonden zijn. Doelen, maatregelen, vragen,
+toetsfasen, voorwaarden en bronrollen worden niet gegenereerd of herschreven.
+Een nog niet uitgewerkte toetsfase blijft ongewijzigd; de adapter vult geen
+extra fase in. Een ontbrekend hergebruikspakket wordt niet automatisch gemaakt.
+
+`viewerShapeValidated: true` bij zo'n rapport betekent alleen dat deze
+overdrachtsvorm gecontroleerd is. De lokale bouwopdracht blijft voor rapporten
+`SOURCE_INTEGRATION_REQUIRED` teruggeven en schrijft geen database. De echte
+bronlezingen, fasebewijzen en inhoudelijke toelating moeten nog volledig worden
+gecontroleerd voordat de lokale eigenaar kan vrijgeven. Daarna moeten de
+rapport- en kadergegevens op de bestaande publicatie-/laadroute aansluiten.
+Groene tests op afzonderlijke onderdelen betekenen niet dat die eindroute af is.
+
 ### Wanneer mag een model in de lokale viewer?
 
 De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.
@@ -185,12 +211,18 @@ Er is geen optie om controles over te slaan. De opdracht voert nooit code uit ee
 ## Testen met fictieve gegevens
 
 ```text
-node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs content-tools/local-source-passages.test.mjs
+node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs content-tools/local-source-passages.test.mjs content-tools/local-report-viewer.test.mjs content-tools/local-report-workflow.test.mjs
 ```
 
 Deze tests maken eigen fictieve pakketten in `work/`, controleren goede en afgekeurde invoer en ruimen hun eigen testmappen op. Ze toetsen ook dat de basis gelijk blijft, laadverwijzingen kloppen en de bestaande herstelregels onbruikbare modellen weigeren. De testreviews zijn uitsluitend softwaretestgegevens.
 
 De lokale browserproef van 25 oktober 2026 doorliep de pakketroute met een fictief model: openen in de bestaande viewer, een vraag kiezen en aanpassen, de bouwsteen terugvinden in het kader, herladen en hetzelfde projectbestand openen in een lege browsersessie. Model, vraagtekst en selectie bleven behouden. Dit is een softwareproef, geen inhoudelijke vrijgave van echte bronnen.
+
+De aparte fictieve rapportproef gebruikt de echte rapport-, selectie-, vraag- en
+projectherstelcode: selecteren, eigen normtekst en notitie bewaren, een vraag
+koppelen, comprimeren/heropenen en opnieuw selecteren. Ook gewijzigde
+bronpassages, vragen en bronbeperkingen blijven bij herstel geweigerd. Dit is
+een codeproef van de overdracht, nog geen rapportdatabase- of browserproef.
 
 ---
 
