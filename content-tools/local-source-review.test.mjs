@@ -25,7 +25,8 @@ for (const kind of ["report", "framework"]) {
     for (const key of ["sourceMethodValidated", "reviewValidated", "viewerShapeValidated", "newContentApproval", "publishable"])
       assert.equal(result[key], false, key);
     assert.equal(result.reviewers, kind === "report" ? 2 : 3);
-    assert.equal(result.contentObjects, 1); assert.equal(result.sourceRecords, 1);
+    assert.equal(result.sourceStructureValidated, true);
+    assert.equal(result.contentObjects, kind === "report" ? 1 : 2); assert.equal(result.sourceRecords, 1);
     assert.deepEqual([...f.files], before);
   });
 

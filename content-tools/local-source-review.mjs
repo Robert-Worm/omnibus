@@ -1,11 +1,12 @@
 // Read-only portability boundary for the existing report/CIO review envelopes.
-// This checks byte bindings, literal passages and declared review coverage, NOT the source method,
-// actual reading, substantive quality, custody chronology or viewer admission.
+// This checks byte bindings, passages, record relationships and review coverage,
+// NOT actual reading, substantive quality, custody chronology or viewer admission.
 import { createHash } from "node:crypto";
 import { posix } from "node:path";
 import { canonical } from "./identity.mjs";
 import { checkLocalSourcePassages } from "./local-source-passages.mjs";
 import { projectLocalReportViewer, reportViewerFiles } from "./local-report-viewer.mjs";
+import { checkLocalSourceStructure } from "./local-source-structure.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const text = value => typeof value === "string" && Boolean(value.trim());
@@ -155,6 +156,9 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
     requireValue(matches.length === 1, "missing or duplicate final review: " + role);
     const review = matches[0], actor = review.reviewer_agent;
     requireValue(text(actor) && !actors.has(actor) && !authors.has(actor), "reviewer is also an author or another reviewer");
+    if (kind === "framework" && role === "SOURCE") requireValue(
+      !["reader-a/result.json", "reader-b/result.json"].some(name => read(name).author_agent === actor),
+      "source reviewer is also an original source reader");
     actors.add(actor);
     requireValue(review.decision === "APPROVE" && review.human_validation === false &&
       Array.isArray(review.unresolved_issues) && review.unresolved_issues.length === 0, "unclosed final review: " + role);
@@ -163,6 +167,7 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
     else coverage(review.object_reviews, role === "SOURCE" ? [...ids, ...sourceIds] : ids, role, "reason", aspects, points);
   }
   const passages = checkLocalSourcePassages(kind, { read, lookup, packageId: manifest.package.id });
+  const structure = checkLocalSourceStructure(kind, { read });
   let viewerShapeValidated = false;
   if (kind === "report" && reportViewerFiles.some(name => Object.hasOwn(dependencies, name))) {
     requireValue(reportViewerFiles.every(name => Object.hasOwn(dependencies, name)), "incomplete frozen report reuse packet");
@@ -173,7 +178,8 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
   return { status: "REVIEW_BINDINGS_CHECKED", kind, packageId: manifest.package.id,
     basisSha256: basisFile.sha256, dependencies: Object.keys(dependencies).length,
     reviewers: reviews.length, contentObjects: ids.length, sourceRecords: sourceIds.length,
-    reviewBindingsValidated: true, sourcePassagesValidated: true, passages, sourceMethodValidated: false, reviewValidated: false,
+    reviewBindingsValidated: true, sourcePassagesValidated: true, passages, sourceStructureValidated: true, structure,
+    sourceMethodValidated: false, reviewValidated: false,
     viewerShapeValidated, newContentApproval: false, publishable: false };
 }
 
@@ -181,7 +187,7 @@ export function checkLocalSourceReview(manifest, files, authorIds) {
 // Even a valid owner receipt must not substitute for the remaining source gate.
 export class LocalSourceIntegrationRequired extends Error {
   constructor(evidence) {
-    super(`No standalone content/review validator for ${evidence.kind}. Review byte bindings and literal source passages checked; source-method validation and shared-viewer integration are still required. Keep this package in HOLD.`);
+    super(`No complete standalone admission validator for ${evidence.kind}. Review byte bindings, literal passages and record relationships checked; reading/custody verification and database publication are still required. Keep this package in HOLD.`);
     this.evidence = evidence;
   }
 }

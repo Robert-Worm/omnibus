@@ -2,6 +2,7 @@
 // dossiers, source readings or admission receipts, and must remain HOLD.
 import { createHash } from "node:crypto";
 import { addSyntheticPassages } from "./local-source-passages-fixture.mjs";
+import { addSyntheticStructure } from "./local-source-structure-fixture.mjs";
 export const hashBytes = bytes => createHash("sha256").update(bytes).digest("hex");
 const encoded = value => Buffer.from(typeof value === "string" ? value : JSON.stringify(value));
 
@@ -48,6 +49,7 @@ export function sourceReviewFixture(kind, prefix = "payload") {
     paths.get("CATALOGUE.json").roles.push("source-links");
   }
   addSyntheticPassages({ set, read, paths, manifest }, kind);
+  addSyntheticStructure({ set, read, paths, manifest }, kind);
   const dependencies = [...paths].filter(([name]) => !["source.pdf", "receipt.json"].includes(name));
   const basis = report ? { files: Object.fromEntries(dependencies.map(([name, file]) => [name, file.sha256])),
     source_pdf_sha256: paths.get(pdfName).sha256, source_contract: "4.22", human_validation: false }
@@ -74,5 +76,10 @@ export function sourceReviewFixture(kind, prefix = "payload") {
       [report ? "field_assessments" : "aspects"]: Object.fromEntries(keys.map(key => [key, "Fictief, niet inhoudelijk gereviewd."])) },
     ...(!report && role === "SOURCE" ? [{ id: "R1", decision: "APPROVE", reason: "Fictieve bronbeoordeling." }] : [])],
   }, ["review"]);
+  if (!report) for (const role of Object.keys(aspects)) {
+    const review = read(`reviews/${role}.json`);
+    review.object_reviews.push({ id: "C1", decision: "APPROVE", reason: "Fictieve normbeoordeling." });
+    set(`reviews/${role}.json`, review);
+  }
   return { manifest, files, paths, set, read, authorIds: ["synthetic-author"] };
 }

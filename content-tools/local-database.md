@@ -15,7 +15,7 @@ Een geldige intake bewijst voor alle drie de soorten alleen dat de opgegeven bes
 ### Wat ontbreekt nog voor rapporten en kaders?
 
 De lokale modelroute werkt van pakket tot viewer. Voor rapporten en kaders zijn
-de bestandsbindingen, eindreviewverwijzingen en letterlijke bronpassages al
+de bestandsbindingen, eindreviewverwijzingen, letterlijke bronpassages en recordrelaties al
 aangesloten, maar nog niet de volledige bestaande toelatingscontrole en het
 samenvoegen met een nieuwe viewerpublicatie. Daarom blijven #153 en #154 open.
 Dit is ontbrekende softwareaansluiting, geen constatering dat de actieve
@@ -81,9 +81,15 @@ De [passagecontrole](local-source-passages.mjs) vergelijkt beide eerste broninze
 - Kaders gebruiken paginalokale Unicode-codepointposities. De controle gebruikt dezelfde omzetting als de gedeelde CIO-viewer. Pdf-hash, teksteditie, bronidentiteit en bronbank moeten overeenkomen. Doelen, beheersdoelstellingen, normen en toetspunten mogen alleen verwijzen naar aanwezige bronrecords; een `DIRECT_SOURCE`-tekst blijft een letterlijk gekoppeld citaat.
 - Lege pagina's, samengestelde accenten, emoji's en oorspronkelijke regelafbrekingen blijven intact. De controle normaliseert geen tekst, verschuift geen offsets en zoekt geen vervangend citaat op een andere pagina.
 
-Bij correcte koppelingen en passages vermeldt de foutuitvoer `SOURCE_INTEGRATION_REQUIRED` met een samenvatting onder `reviewEvidence`. `reviewBindingsValidated` en `sourcePassagesValidated` zijn dan `true`; `passages` geeft de aantallen en het coördinatenstelsel. Het pakket blijft **HOLD** en de opdracht eindigt met exitcode 1. Ook met `--out`, `--base` of een eigenaarbesluit wordt geen database gemaakt. Een ontbrekend bestand, onjuiste passage, andere eindbasis, auteur als reviewer, dubbel reviewobject of onopgelost reviewpunt stopt eerder met de concrete oorzaak.
+De [record- en relatiecontrole](local-source-structure.mjs) controleert daarnaast:
 
-Deze tussencontrole bevestigt bestandskoppelingen, verklaarde objectbeoordelingen en letterlijke passages. Zij bewijst niet dat de tekst correct uit de pdf is gelezen en controleert nog niet de volledige bronmethode, lees- en bevriezingsbewijzen, inhoudelijke kwaliteit of de aansluiting op de viewer. Daarom blijven `sourceMethodValidated`, `reviewValidated`, `viewerShapeValidated`, `newContentApproval` en `publishable` hier `false`. De bestaande volledige bronafhankelijke toelating blijft verplicht. Rapporten en kaders kunnen via deze lokale opdracht nog niet in de viewer worden geladen; de modelroute hieronder werkt wel.
+- Bij rapporten: de oorspronkelijke v4.22-bronrollen en interpretatiegrenzen, verantwoording van beide eerste inzendingen en aanvullende bronnen, volledige paginadekking, de acht praktische velden, historische beheersstatus, proceskoppelingen en tweezijdige inclusie-/bronrelaties. Een voorstel wordt geen bronfeit; een bronbevinding bewijst geen huidige werking.
+- Bij kaders: actorrollen en bronstatus, beide eerste inzendingen, paginadekking, doelen en oudernormen, voorwaarden, uitzonderingen, bronbijdragen, selectiestatus en uitvoerbare toetsfasen. Een uitgesloten bronrecord mag niet toch een punt onderbouwen. Een open interpretatie wordt niet vanzelf selecteerbaar.
+- Open eindissues blokkeren de route. Een eerder, bevroren issue mag nog de toenmalige open status tonen, mits het eindreviewregister de afhandeling vastlegt met behoud van identiteit, ernst en geraakte bronnen. Een materiële fout mag niet als geaccepteerde bronbeperking worden omgelabeld. De controles vullen geen tekst of toetsfase aan en herstellen geen ontvangen bewijs.
+
+Bij correcte koppelingen, passages en relaties vermeldt de foutuitvoer `SOURCE_INTEGRATION_REQUIRED` met een samenvatting onder `reviewEvidence`. `reviewBindingsValidated`, `sourcePassagesValidated` en `sourceStructureValidated` zijn dan `true`; `passages` en `structure` geven de controlegetallen. Het pakket blijft **HOLD** en de opdracht eindigt met exitcode 1. Ook met `--out`, `--base` of een eigenaarbesluit wordt geen database gemaakt. Een ontbrekend bestand, onjuiste passage, andere eindbasis, auteur als reviewer, dubbel reviewobject of onopgelost reviewpunt stopt eerder met de concrete oorzaak.
+
+Deze tussencontrole bevestigt bestandskoppelingen, verklaarde objectbeoordelingen, letterlijke passages en recordrelaties. Zij bewijst niet dat de tekst correct uit de pdf is gelezen en controleert nog niet de volledige bronmethode, lees- en bevriezingsbewijzen of inhoudelijke kwaliteit. Daarom blijven `sourceMethodValidated`, `reviewValidated`, `newContentApproval` en `publishable` hier `false`. Alleen een compleet, vastgelegd rapporthergebruikpakket kan daarnaast `viewerShapeValidated: true` krijgen; dat is geen toelating. De bestaande volledige bronafhankelijke toelating blijft verplicht. Rapporten en kaders kunnen via deze lokale opdracht nog niet in de viewer worden geladen; de modelroute hieronder werkt wel.
 
 Historische dossiers met absolute verwijzingen worden niet automatisch omgeschreven. Bewaar het originele bewijs en gebruik de bestaande bronafhankelijke integratieroute. De controle maakt geen nieuwe goedkeuringshashes of reviewredenen.
 
@@ -203,7 +209,8 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | `BASE_PUBLICATION_CHECK` | Controleer de expliciete basispins en eigenaarbesluiten. Een bestaand model-ID kan niet opnieuw worden toegevoegd. |
 | `Source review` | Een bestand, reviewkoppeling of objectbeoordeling ontbreekt of wijkt af. Vraag het oorspronkelijke bewijs of een nieuwe, daadwerkelijk gereviewde versie; vervang geen vastgelegde hashes. |
 | `Source passages` | Bronversie, paginagrenzen, letterlijke passages of bronverwijzingen wijken af. Vraag herstel en review van de geraakte inhoud; verander geen citaat of offset onder een bestaand akkoord. |
-| `SOURCE_INTEGRATION_REQUIRED` / `No standalone content/review validator` | Reviewkoppelingen en letterlijke passages zijn gecontroleerd, maar de volledige bronafhankelijke toelating en vieweraansluiting ontbreken nog voor rapporten en kaders. Houd het pakket apart. |
+| `Source structure` | Een bronrol, recordrelatie, inclusiebesluit, toetsfase of issue-afhandeling voldoet niet aan het pakketcontract. Herstel de geraakte inhoud met bijbehorende review; de importer vult niets aan. |
+| `SOURCE_INTEGRATION_REQUIRED` / `No complete standalone admission validator` | Reviewkoppelingen, letterlijke passages en recordrelaties zijn gecontroleerd, maar lees-/ontvangstbewijzen en databasepublicatie ontbreken nog in de zelfstandige route. Houd het pakket apart. |
 | `DATABASE_WRITE` of `FINAL_VERIFICATION` | Controleer de genoemde fout en beschikbare schijfruimte. Gebruik geen gedeeltelijke uitvoer. |
 
 Er is geen optie om controles over te slaan. De opdracht voert nooit code uit een pakket uit. Grenzen: maximaal 64 pakketten, samen 64 MiB aan bestanden, manifesten en eigenaarbesluiten, en 8 MiB per gelezen JSON-bestand. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.

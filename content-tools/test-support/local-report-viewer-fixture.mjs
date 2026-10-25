@@ -10,10 +10,11 @@ export function reportViewerFixture() {
   app.framework.limitations = ["Fictieve historische situatie; geen huidige tekortkoming vastgesteld."];
   for (const [key, value] of Object.entries({ objective: "Meldingen tijdig afhandelen.", risk: "Een melding blijft onbehandeld.",
     control: "Wijs een behandelaar aan en leg het besluit vast.", criterion: "Voor een melding is een behandelaar aangewezen.",
-    auditQuestion: "Hoe wordt een melding afgehandeld?", procedure: "Volg een gekozen melding tot het besluit." })) line[key].text = value;
+    auditQuestion: "Hoe wordt een melding afgehandeld?", procedure: "Volg een gekozen melding tot het besluit. Doorvraag: wie besloot?" })) line[key].text = value;
   for (const key of ["objective", "risk", "control", "criterion", "auditQuestion", "procedure", "finding", "owner"])
     Object.assign(line[key], { reason: "Fictief analysevoorstel met beperkte reikwijdte.",
       basis: key === "finding" ? "EXPLICIT" : key === "risk" ? "INFERRED" : key === "owner" ? "NOT_ESTABLISHED" : "PROPOSED" });
+  line.finding.reason += " " + line.exportContext;
   const source = { ...evidence, id: "FICTIEF-M1", source_hash: report.source_hash,
     evidence_ids: [evidence.id], locator_status: "EXACT" };
   const link = { material_id: source.id, evidence_id: evidence.id, role: "MOTIVATES_PROPOSAL" };

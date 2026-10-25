@@ -20,7 +20,7 @@ for (const kind of ["report", "framework"]) test(`${kind}: exact mixed-Unicode/C
   assert.deepEqual(result.passages, kind === "report"
     ? { pages: 3, sourceBanks: 3, recordPassages: 6, qualifications: 3, supplementaryPassages: 3,
       viewerPassages: 1, coordinates: "document-global-codepoints" }
-    : { pages: 3, sourceBanks: 3, recordPassages: 6, sourceLinks: 1, coordinates: "page-local-codepoints" });
+    : { pages: 3, sourceBanks: 3, recordPassages: 6, sourceLinks: 2, coordinates: "page-local-codepoints" });
   for (const flag of ["sourceMethodValidated", "reviewValidated", "viewerShapeValidated", "newContentApproval", "publishable"])
     assert.equal(result[flag], false);
   assert.deepEqual([...f.files], before);
@@ -107,7 +107,7 @@ test("framework: all goal/objective/criterion references use the bound bank and 
     const check = () => checkLocalSourcePassages("framework", { read: f.read, packageId: "FICTIEF",
       lookup: name => ({ file: f.paths.get(name), bytes: f.files.get(f.paths.get(name).id) }) });
     edit(f, "CATALOGUE.json", c => { c[key] = [{ id: "G1", basis: "DIRECT_SOURCE", source_record_ids: ["R1"], text: quote }]; });
-    assert.equal(check().sourceLinks, 2);
+    assert.equal(check().sourceLinks, key === "criteria" ? 2 : 3);
     edit(f, "CATALOGUE.json", c => { c[key][0].text += " "; });
     assert.throws(check, /not a linked literal/);
     edit(f, "CATALOGUE.json", c => { c[key][0].source_record_ids = ["UNKNOWN"]; });
