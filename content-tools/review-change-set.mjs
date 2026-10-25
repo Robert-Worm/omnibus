@@ -265,3 +265,69 @@ export function reviewChangeSet(previous, currentBasis) {
     sources,
   };
 }
+
+/** Bind a correction handoff to retained reviews; never approve or import it.
+ * The normal source-specific admission and publication gates remain mandatory.
+ * notes are authored descriptions, not quality scores or inferred approvals. */
+export function prepareCorrectionHandoff({ previousBasis, previousManifest, currentBasis, currentManifest, notes }) {
+  for (const [basis, manifest] of [[previousBasis, previousManifest], [currentBasis, currentManifest]]) {
+    const snapshot = createReviewManifest(basis);
+    indexManifest(manifest);
+    requireValue(digest({ ...manifest, reviews: [] }) === digest(snapshot), "Correction manifest does not match its exact basis");
+    const checked = reviewChangeSet(manifest, basis);
+    requireValue(checked.sources.every(source => source.opnieuw.length === 0), "Correction requires complete, matching reviews of both versions");
+  }
+  const changes = reviewChangeSet(previousManifest, currentBasis);
+  requireValue(digest(sorted(previousBasis.sources.map(source => source.id))) === digest(sorted(currentBasis.sources.map(source => source.id))),
+    "Correction handoff requires existing source identities");
+  requireValue(changes.sources.every(source => source.verdwenen.length === 0 && source.opnieuw.every(item => item.previousHash)),
+    "Correction handoff requires existing item identities; additions and removals need the normal inventory review");
+  for (const source of currentBasis.sources) {
+    for (const value of [source, ...source.items, ...source.items.flatMap(item => item.toetspunten)]) {
+      requireValue(value.hold?.active !== true && value.selection_status !== "HOLD" && value.reviewStatus !== "HOLD",
+        "Correction contains HOLD; keep it outside publication");
+    }
+  }
+  for (const review of currentManifest.reviews) {
+    requireValue(review.hold?.active !== true && review.status !== "HOLD" &&
+      (review.decision === undefined || ["PASS", "APPROVE"].includes(review.decision)),
+    "Correction contains an unclosed review decision");
+  }
+  requireJson(notes);
+  requireValue(Array.isArray(notes), "Correction notes must be an array");
+  const descriptions = new Map();
+  for (const note of notes) {
+    requireValue(object(note) && typeof note.sourceId === "string" && typeof note.itemId === "string" &&
+      text(note.summary) && note.summary.length <= 1000 && Array.from(note.summary).every(char => char.codePointAt(0) >= 32),
+    "Invalid correction note");
+    const identity = key(note.sourceId, note.itemId);
+    requireValue(!descriptions.has(identity), "Duplicate correction note");
+    descriptions.set(identity, note.summary);
+  }
+  const old = indexManifest(previousManifest), current = indexManifest(currentManifest);
+  const entries = changes.sources.flatMap(source => source.opnieuw.map(item => {
+    const identity = key(source.sourceId, item.itemId);
+    requireValue(descriptions.has(identity), "Every changed or dependent item needs a concrete release note");
+    requireValue(old.reviews.get(identity).reviewId !== current.reviews.get(identity).reviewId,
+      "A changed item needs a new review reference; never rebind the old receipt");
+    const beforeSource = previousBasis.sources.find(entry => entry.id === source.sourceId);
+    const afterSource = currentBasis.sources.find(entry => entry.id === source.sourceId);
+    const before = beforeSource.items.find(entry => entry.id === item.itemId);
+    const after = afterSource.items.find(entry => entry.id === item.itemId);
+    const changedFields = sorted(new Set([...Object.keys(before), ...Object.keys(after)]))
+      .filter(field => digest({ present: Object.hasOwn(before, field), value: before[field] ?? null }) !==
+        digest({ present: Object.hasOwn(after, field), value: after[field] ?? null }));
+    const binding = value => ({ version: value.version, documents: value.documents.map(({ id, version, sha256 }) => ({ id, version, sha256 })) });
+    return { sourceId: source.sourceId, itemId: item.itemId, previousHash: item.previousHash, itemHash: item.itemHash,
+      previousReviewId: old.reviews.get(identity).reviewId, reviewId: current.reviews.get(identity).reviewId,
+      beforeSource: binding(beforeSource), afterSource: binding(afterSource), changedFields,
+      summary: descriptions.get(identity) };
+  }));
+  requireValue(entries.length > 0 && entries.length === descriptions.size, "Correction notes must cover exactly the changed and dependent items");
+  // No source passages in the note fragment; escape supplied descriptions as text.
+  const markdown = value => value.replace(/[\\`*_{}[\]<>|]/g, "\\$&");
+  return { format: "omnibus-correction-handoff", schemaVersion: 1, scopeId: currentBasis.scopeId,
+    planningOnly: true, automaticApproval: false, runtimeSourceChecksRequired: true, publishable: false,
+    entries, releaseNotes: ["### Verbeteringen in bestaande inhoud", "",
+      ...entries.map(entry => `- **${markdown(entry.sourceId)} / ${markdown(entry.itemId)}**: ${markdown(entry.summary)}`), ""].join("\n") };
+}

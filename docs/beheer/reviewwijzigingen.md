@@ -124,9 +124,27 @@ node --test content-tools/review-change-set.test.mjs
 
 De tests gebruiken uitsluitend fictieve gegevens. Ze controleren veranderde bronpassages, ketens, context, methoden, dubbele IDs, verwijderingen, ontbrekend bewijs en behoud van invoerbestanden. Ze voeren geen echte bronreview of databasebewerking uit.
 
+## Een beoordeelde correctie overdragen
+
+Een kwaliteitsscore is geen goedkeuring. Gebruik voor een verbetering van bestaande bouwstenen `prepareCorrectionHandoff` uit dezelfde helper. Deze controle verbindt de oude en nieuwe beoordelingsbasis aan hun eigen bewaarde manifesten. Ook afhankelijke bouwstenen krijgen een nieuwe reviewverwijzing. De gewone pakketcontrole, bronreview, toelating en publicatie blijven verplicht.
+
+Bewaar in een nieuw `correction.json` vijf velden: `previousBasis`, `previousManifest`, `currentBasis`, `currentManifest` en `notes`. De eerste vier bevatten de volledige JSON-objecten volgens deze pagina, geen bestandsnamen. Onder `notes` staat voor elke gewijzigde of indirect geraakte bouwsteen één object met `sourceId`, `itemId` en een concrete `summary`. Beschrijf bij een afhankelijke norm ook waarom zij opnieuw is beoordeeld. Neem geen private broncitaten over in een openbare toelichting.
+
+```text
+npm run check:review-changes -- --correction work/correctie-01/correction.json
+```
+
+De opdracht leest alleen JSON en schrijft de uitkomst naar standaarduitvoer. Exitcode 1 stopt deze overdracht: onder meer bij een verkeerd gebonden oude basis, oude of onvolledige reviews, gewijzigd bronbewijs, een ongecontroleerde relatiemutatie, HOLD of ontbrekende notities. Beide manifesten moeten exact bij hun basis passen. Alle bouwstenen binnen de opgegeven scope moeten volledige passende reviews hebben. Gewijzigde bouwstenen moeten een nieuwe `reviewId` hebben; een oude beoordeling een nieuwe hash geven is geen review.
+
+Deze beperkte correctieroute vereist dezelfde bron- en normidentiteiten. Toevoegingen, verwijderingen en hernoemingen gaan via de gewone inventarisreview. Een nieuwe broneditie kan alleen mee met de juiste documentversie, documenthash, passagebinding en nieuwe reviews. Actieve HOLD op een bron, bouwsteen of toetspunt blijft blokkerend. De oorspronkelijke planner blijft bruikbaar voor inventarisaties waarin HOLD voorkomt.
+
+De uitvoer bevat per geraakte bouwsteen de oude en nieuwe inhoudshash, documentbinding, reviewverwijzing, rechtstreeks gewijzigde velden en toelichting. Een lege `changedFields` bij een veranderde inhoudshash kan een gewijzigde afhankelijkheid of broncontext betekenen. Het veld `releaseNotes` bevat een tekstfragment voor de gewone releasenotities. Dit fragment wordt pas na de geslaagde normale toelating en publicatievergelijking in het releaseconcept opgenomen.
+
+Ook bij succes blijven `planningOnly: true`, `automaticApproval: false`, `runtimeSourceChecksRequired: true` en `publishable: false`. De helper leest geen oorspronkelijke bronbestanden en verifieert geen revieweridentiteit of inhoud van een reviewdossier. Het controleert de binding van aangeleverde verklaringen; het maakt geen besluiten. De volledige werkwijze en de grens van de fictieve proef staan bij [bestaande inhoud verbeteren](../content-maintenance.md).
+
 ## Volgende stap
 
-Beoordeel de lijst `opnieuw` met de [skill voor auditkwaliteit](../../skills/omnibus-review-audit-quality/SKILL.md). Volg daarna de bestaande route voor [inhoud toevoegen](inhoud-toevoegen.md).
+Beoordeel de lijst `opnieuw` met de [skill voor auditkwaliteit](../../skills/omnibus-review-audit-quality/SKILL.md). Volg daarna de bestaande route voor [inhoud toevoegen](inhoud-toevoegen.md), of draag een bestaande verbetering over via [bestaande inhoud verbeteren](../content-maintenance.md).
 
 ---
 

@@ -2,7 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { createReviewManifest, reviewChangeSet } from "../content-tools/review-change-set.mjs";
+import { createReviewManifest, reviewChangeSet, prepareCorrectionHandoff } from "../content-tools/review-change-set.mjs";
 
 async function readJson(path) {
   // JSON.parse only: input paths are never imported, evaluated or traversed.
@@ -14,6 +14,9 @@ async function readJson(path) {
 }
 
 export async function runReviewChangesCommand(args) {
+  if (args.length === 2 && args[0] === "--correction" && !args[1].startsWith("--")) {
+    return prepareCorrectionHandoff(await readJson(args[1]));
+  }
   if (args.length === 2 && args[0] === "--snapshot" && !args[1].startsWith("--")) {
     return createReviewManifest(await readJson(args[1]));
   }
@@ -21,7 +24,7 @@ export async function runReviewChangesCommand(args) {
     const [previous, current] = await Promise.all(args.map(readJson));
     return reviewChangeSet(previous, current);
   }
-  throw new Error("Usage: node scripts/check-review-changes.mjs --snapshot <basis.json> | <previous-manifest.json> <current-basis.json>");
+  throw new Error("Usage: node scripts/check-review-changes.mjs --snapshot <basis.json> | <previous-manifest.json> <current-basis.json> | --correction <correction.json>");
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
