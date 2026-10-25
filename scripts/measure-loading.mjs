@@ -1,17 +1,35 @@
 // Optional, local-only performance sample. No private database access or runtime
 // changes; start the existing pinned preview separately. Evidence stays in work/.
+// REVIEW_URL / REVIEW_OUT are required. REVIEW_SAMPLES=3..20 samples cold contexts;
+// REVIEW_WARM_ROUNDS=30..60 adds one settled start/catalogue session. Optional:
+// REVIEW_VIEWPORT=desktop|narrow, REVIEW_CPU_RATE=1|4. Each profile has a fresh
+// output directory. Requires an already available Playwright and Chrome binary.
 import assert from 'node:assert/strict';
 import {mkdirSync, writeFileSync, realpathSync} from 'node:fs';
 import {resolve, relative, dirname, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {cpus, totalmem, release} from 'node:os';
+import {parseProjectText} from '../lib/project-codec.mjs';
+import {compareWebVersion} from './check-web-version.mjs';
 
 export function summarize(values) {
   assert(values.length && values.every(v => Number.isFinite(v) && v >= 0));
   const sorted = [...values].sort((a, b) => a - b), n = sorted.length;
   return {n, median: n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2,
-    p95: sorted[Math.ceil(n * 0.95) - 1], min: sorted[0], max: sorted[n - 1]};
+    p95: n >= 20 ? sorted[Math.ceil(n * 0.95) - 1] : null, min: sorted[0], max: sorted[n - 1]};
+}
+
+export function sessionDeltas(checkpoints) {
+  assert(checkpoints.length >= 2, 'At least two matching settled checkpoints are needed');
+  const keys = ['documents', 'nodes', 'listeners', 'heapBytes', 'renderedNodes', 'requests'];
+  for (const point of checkpoints) for (const key of keys)
+    assert(Number.isFinite(point[key]) && point[key] >= 0, 'Missing or invalid checkpoint metric');
+  return Object.fromEntries(keys.map(key => [key, {
+    first: checkpoints[0][key], last: checkpoints.at(-1)[key],
+    delta: checkpoints.at(-1)[key] - checkpoints[0][key],
+    min: Math.min(...checkpoints.map(p => p[key])), max: Math.max(...checkpoints.map(p => p[key])),
+  }])); // Observations, not an automatic leak verdict or a relaxed acceptance budget.
 }
 
 export function localPreview(value) {
@@ -30,27 +48,84 @@ export function assetTotals(entries) {
     fonts: total(entries.filter(e => e.path.endsWith('.woff2')))};
 }
 
-async function measureNavigation(page, hash, selector) {
-  return page.evaluate(({hash, selector}) => new Promise((resolve, reject) => {
+async function measureNavigation(page, hash, selector, timings = false) {
+  return page.evaluate(({hash, selector, timings}) => new Promise((resolve, reject) => {
+    if (timings) window.__loadingSample.longTasks.length = 0;
     const started = performance.now();
+    const paint = new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => done(performance.now() - started))));
     const timeout = setTimeout(() => { observer.disconnect(); reject(Error('Route readiness timeout')); }, 15000);
     const check = () => {
       const element = document.querySelector(selector);
       if (location.hash !== hash || !element?.getClientRects().length) return;
       observer.disconnect(); clearTimeout(timeout);
       // Two frames include a paint opportunity after the route DOM is ready.
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now() - started)));
+      requestAnimationFrame(() => requestAnimationFrame(async () => {
+        const readyMs = performance.now() - started;
+        resolve(timings ? {readyMs, paintOpportunityMs: await paint,
+          longTasks: window.__loadingSample.longTasks.filter(t => t.start >= started && t.start < started + readyMs)} : readyMs);
+      }));
     };
     const observer = new MutationObserver(check);
     observer.observe(document.documentElement, {childList: true, subtree: true, attributes: true});
     location.hash = hash;
     check();
-  }), {hash, selector});
+  }), {hash, selector, timings});
 }
 
-export async function measureLoading({url, out, samples = 9, playwrightModule, executablePath}) {
+// Same mounted catalogue at every checkpoint. GC runs outside all timed actions.
+// Fresh browser contexts only; never touches the user's open browser/project.
+export async function measureWarmSession(page, cdp, {rounds, requestCount}) {
+  assert(Number.isInteger(rounds) && rounds >= 30 && rounds <= 60, 'Use 30–60 warm rounds');
+  const routes = [['#begin', '.entry-options button:not(:disabled)'],
+    ['#rapporten', '.report-catalogue .report-list-item button:not(:disabled)']];
+  const cycle = async () => {
+    const values = {};
+    for (const [hash, selector] of routes) values[hash] = await measureNavigation(page, hash, selector, true);
+    return values;
+  };
+  const project = async () => {
+    await page.locator('.project-save-indicator[data-state="saved"]').waitFor();
+    const value = parseProjectText(await page.evaluate(() => localStorage.getItem('rijksmap-project-v1')));
+    return {draft: value.draft, modelLibrary: value.modelLibrary};
+  };
+  for (let i = 0; i < 3; i++) await cycle();
+  const before = await project(), catalogue = await page.locator('.report-catalogue').textContent();
+  const samples = [], checkpoints = [];
+  const checkpoint = async round => {
+    await page.locator('.project-save-indicator[data-state="saved"]').waitFor();
+    await page.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done))));
+    await page.evaluate(() => {window.__loadingSample.longTasks.length = 0;});
+    await cdp.send('HeapProfiler.collectGarbage');
+    const dom = await cdp.send('Memory.getDOMCounters'), heap = await cdp.send('Runtime.getHeapUsage');
+    checkpoints.push({round, documents: dom.documents, nodes: dom.nodes, listeners: dom.jsEventListeners,
+      heapBytes: heap.usedSize, renderedNodes: await page.locator('*').count(), requests: requestCount()});
+    assert.equal(await page.locator('.report-catalogue').textContent(), catalogue, 'Full catalogue content stays identical');
+  };
+  await checkpoint(0);
+  for (let round = 1; round <= rounds; round++) {
+    samples.push(await cycle());
+    if (round % 10 === 0 || round === rounds) await checkpoint(round);
+  }
+  assert.deepEqual(await project(), before, 'Navigation preserves the entire draft and model library');
+  await page.reload();
+  await page.locator(routes[1][1]).first().waitFor();
+  assert.deepEqual(await project(), before, 'Reload preserves the entire draft and model library');
+  assert.equal(await page.locator('.report-catalogue').textContent(), catalogue);
+  return {scope: 'warm empty-project start/report-catalogue navigation; not all viewers or workflows',
+    acceptance: 'functional checks only; inspect metrics and trends, no automatic memory-leak or speed approval',
+    rounds, warmups: 3, gc: 'before each settled catalogue checkpoint, outside timing',
+    samples, checkpoints, deltas: sessionDeltas(checkpoints), projectAndReloadPreserved: true,
+    summaryMs: Object.fromEntries(routes.map(([hash]) => [hash, {
+      paintOpportunity: summarize(samples.map(s => s[hash].paintOpportunityMs)),
+      correctContent: summarize(samples.map(s => s[hash].readyMs)),
+    }]))};
+}
+
+export async function measureLoading({url, out, samples = 9, warmRounds = 0, viewport = 'desktop', cpuRate = 1, playwrightModule, executablePath}) {
   url = localPreview(url);
   assert(Number.isInteger(samples) && samples >= 3 && samples <= 20, 'Use 3–20 samples');
+  assert(warmRounds === 0 || Number.isInteger(warmRounds) && warmRounds >= 30 && warmRounds <= 60, 'Use zero or 30–60 warm rounds');
+  assert(['desktop', 'narrow'].includes(viewport) && [1, 4].includes(cpuRate), 'Use desktop/narrow and CPU rate 1/4');
   assert(executablePath, 'Set BROWSER_EXECUTABLE');
   const root = fileURLToPath(new URL('../', import.meta.url));
   const work = realpathSync(resolve(root, 'work'));
@@ -61,18 +136,29 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
   assert(!parent.startsWith('..') && !isAbsolute(parent), 'Output parent must remain under work/');
   mkdirSync(out); // Explicit new evidence directory; never overwrite a previous run.
   const {chromium} = createRequire(import.meta.url)(playwrightModule || 'playwright');
-  const browser = await chromium.launch({headless: true, executablePath});
-  const result = {schema: 1, scope: 'local sample, not an SLA or a cold-server measurement',
+  const browser = await chromium.launch({headless: true, chromiumSandbox: true, executablePath});
+  const result = {schema: 2, scope: 'local sample, not an SLA or a cold-server measurement',
+    startedAt: new Date().toISOString(),
     environment: {node: process.version, os: process.platform + ' ' + release(),
       cpu: cpus()[0]?.model, memoryBytes: totalmem(), browser: browser.version(),
-      viewport: {width: 1920, height: 1080}, downloadBitsPerSecond: 10000000,
-      uploadBitsPerSecond: 10000000, latencyMs: 100, cpuThrottling: false,
+      viewport: viewport === 'desktop' ? {width: 1920, height: 1080} : {width: 390, height: 844}, downloadBitsPerSecond: 10000000,
+      uploadBitsPerSecond: 10000000, latencyMs: 100, cpuThrottlingRate: cpuRate,
       browserCache: 'fresh context for each initial load; real reload with cache enabled',
-      serverAndOsCache: 'not cleared', percentile: 'nearest rank; p95 is maximum for n < 20',
+      serverAndOsCache: 'not cleared', percentile: 'nearest rank; p95 withheld for n < 20',
+      warmTiming: 'hash navigation to two animation frames / correct DOM in layout; not pointer INP or proof of content above the fold',
       readiness: 'empty start saved indicator and enabled route choice, then two animation frames',
       transferSize: 'ResourceTiming estimate including headers; encodedBodySize is compressed body only'},
     initial: [], reload: [], navigation: [], errors: [], deferred: {}};
   try {
+    const version = async () => {
+      const response = await fetch(new URL('/api/v1/version', url), {redirect: 'error', signal: AbortSignal.timeout(10000)});
+      assert.equal(response.status, 200, 'Preview must expose its build and data identity');
+      const value = await response.json();
+      compareWebVersion(value, value); // Shared shape validation; not a claim about local HEAD.
+      return {code: {revision: value.code.revision, webSha256: value.code.webSha256},
+        data: {release: value.data.release, publication: value.data.publication}};
+    };
+    result.identity = await version();
     for (let index = 0; index < samples; index++) {
       const context = await browser.newContext({viewport: result.environment.viewport});
       try {
@@ -80,9 +166,10 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
         page.setDefaultTimeout(15000);
         page.on('pageerror', () => result.errors.push({sample: index + 1, kind: 'pageerror'}));
         page.on('response', r => {if(r.status() >= 400) result.errors.push({sample: index + 1, kind: 'http', status: r.status()});});
-        let apiCalls = 0;
+        let apiCalls = 0, requests = 0;
         const sourceRequests = [];
         page.on('request', r => {
+          requests++;
           const path = new URL(r.url()).pathname;
           if (path.startsWith('/api/')) apiCalls++;
           if (path.startsWith('/api/v1/documents/')) sourceRequests.push({method: r.method(),
@@ -90,6 +177,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
         });
         const cdp = await context.newCDPSession(page);
         await cdp.send('Network.enable');
+        await cdp.send('Emulation.setCPUThrottlingRate', {rate: cpuRate});
         await cdp.send('Network.emulateNetworkConditions', {offline: false, latency: 100,
           downloadThroughput: 10000000 / 8, uploadThroughput: 10000000 / 8});
         await page.addInitScript(() => {
@@ -134,6 +222,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
         const repeatReportCatalogueMs = await measureNavigation(page, '#rapporten', '.report-catalogue .report-list-item button:not(:disabled)');
         result.navigation.push({firstReportCatalogueMs, backToStartMs, repeatReportCatalogueMs});
         if (index === samples - 1) {
+          if (warmRounds) result.warmSession = await measureWarmSession(page, cdp, {rounds: warmRounds, requestCount: () => requests});
           const scripts = () => page.evaluate(() => performance.getEntriesByType('resource')
             .filter(e => new URL(e.name).pathname.endsWith('.js')).map(e => new URL(e.name).pathname));
           result.deferred.beforeSource = await scripts();
@@ -148,6 +237,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
           await page.locator('.point-choice-button').first().click();
           const detail = page.locator('.law-detail');
           await detail.locator('.law-choice-card').first().getByRole('button', {name: /^Bronpassage/}).click();
+          if (viewport === 'narrow') await detail.locator('.criterion-source-tabs').getByRole('tab', {name: 'Bronpassage', exact: true}).click();
           await detail.locator('.report-library mark').first().waitFor();
           // CIO uses the shared report page renderer already in catalogue-content.
           // The generic foundation reader has its own, different deferred entry.
@@ -163,6 +253,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
           const report = page.locator('.bd-pilot-detail'), point = report.locator('.bd-point').first();
           await point.getByRole('checkbox').click();
           await point.getByRole('button', {name: 'Bronpassage', exact: true}).click();
+          if (viewport === 'narrow') await report.locator('.criterion-source-tabs').getByRole('tab', {name: 'Bronpassage', exact: true}).click();
           await report.locator('.report-library mark').first().waitFor();
           result.deferred.reportSourceRequests = sourceRequests;
           assert(sourceRequests.some(r => r.kind === 'index') && sourceRequests.some(r => r.kind === 'page'),
@@ -183,6 +274,7 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
       ...Object.fromEntries(Object.keys(result.navigation[0]).map(key => [key, summarize(result.navigation.map(v => v[key]))])),
     };
     assert.deepEqual(result.errors, []);
+    assert.deepEqual(await version(), result.identity, 'Preview build and publication must not change during the run');
     result.status = 'passed';
     return result;
   } finally {
@@ -194,6 +286,8 @@ export async function measureLoading({url, out, samples = 9, playwrightModule, e
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const result = await measureLoading({url: process.env.REVIEW_URL, out: process.env.REVIEW_OUT,
     samples: Number(process.env.REVIEW_SAMPLES || 9), playwrightModule: process.env.PLAYWRIGHT_MODULE,
+    warmRounds: Number(process.env.REVIEW_WARM_ROUNDS || 0), viewport: process.env.REVIEW_VIEWPORT || 'desktop',
+    cpuRate: Number(process.env.REVIEW_CPU_RATE || 1),
     executablePath: process.env.BROWSER_EXECUTABLE});
   console.log(JSON.stringify(result.summaryMs, null, 2));
 }
