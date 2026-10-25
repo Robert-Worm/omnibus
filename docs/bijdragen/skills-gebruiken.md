@@ -2,16 +2,16 @@
 
 <!-- paginatype: taak -->
 
-> **In het kort:** hier staat hoe je een Omnibus-skill laadt in Codex, Claude Code, de Claude-app of ChatGPT. Controleer daarna of jouw assistent alle meegeleverde bestanden kan lezen.
+> **In het kort:** download een Omnibus-skill via je browser en maak een zip met Verkenner of Finder. Voor de Claude-app en ChatGPT heb je geen Git of terminal nodig. Controleer daarna of jouw assistent alle meegeleverde bestanden kan lezen.
 
 ## Welke assistent past bij jou?
 
-| Assistent | Hoe je de skill laadt | Geschikt voor |
-| --- | --- | --- |
-| Codex | Installatieopdracht vanuit de repository | Concept; technische controles als de benodigde omgeving aanwezig is |
-| Claude Code | Skillmap kopiëren naar je eigen skills-map | Concept; technische controles als de benodigde omgeving aanwezig is |
-| Claude-app (web of desktop) | Skill als zip uploaden | Een bron verwerken tot concept |
-| ChatGPT | Skill uploaden of de map als bestanden toevoegen | Een bron verwerken tot concept |
+| Je wilt… | Lees |
+| --- | --- |
+| Een skill ophalen zonder terminal | [Downloaden en zippen](#1-download-de-skill-zonder-terminal) |
+| De skill gebruiken in de Claude-app | [De Claude-app](#de-claude-app-web-of-desktop) |
+| De skillbestanden gebruiken in ChatGPT | [ChatGPT](#chatgpt) |
+| Werken met Codex of Claude Code | [Ontwikkelaarsroutes](#technische-details) |
 
 Voor bijdragers is een **concept** genoeg: de beheerder doet de laatste controles. Ontbrekende bronlezingen, onafhankelijke reviews of hulpmiddelen blijven zichtbaar als beperking. Een geïnstalleerde skill bewijst niet dat die stappen zijn uitgevoerd. Gebruik het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
 
@@ -19,58 +19,69 @@ Alle voorbeelden gebruiken `omnibus-add-report`. Voor een wet of kader gebruik j
 
 ## Wat heb je nodig?
 
-Haal eerst de [code op](../gebruiken/installeren.md#1-haal-de-code-op). Voor het kopiëren of uploaden van een skill heb je de database en applicatieonderdelen niet nodig. Bewaar de hele gekozen skillmap, inclusief eventuele mappen `references/`, `assets/` en `scripts/`.
+Je hebt een browser, Verkenner op Windows of Finder op macOS en je AI-app nodig. Je hoeft Omnibus niet te installeren of een database op te halen.
 
-Voor Claude Code moet dat programma al beschikbaar zijn. Voor uploaden in de Claude-app of ChatGPT heb je toegang tot de betreffende functie nodig. Controleer dit in je eigen account; een abonnement of werkruimte kan beperkingen hebben.
+De app moet alle nodige skillbestanden kunnen lezen en bestanden kunnen maken. Controleer welke functies jouw account en werkruimte toestaan met de proef hieronder.
 
-## Codex
+## Stap voor stap
 
-1. Haal de repository op en installeer de onderdelen, zie [installeren](../gebruiken/installeren.md), stap 1 en 2.
-2. Installeer de skill:
+### 1. Download de skill zonder terminal
 
-   ```text
-   npm run skills:install -- --skill omnibus-add-report
-   ```
+1. Open [Omnibus op GitHub](https://github.com/Robert-Worm/omnibus). Boven de bestanden staat de groene knop **Code**. Kies daarin **Download ZIP**.
+2. Pak het gedownloade bestand `omnibus-main.zip` uit. Op Windows: rechtsklik in Verkenner en kies **Alles uitpakken**. Op macOS: dubbelklik in Finder op de zip.
+3. Open de uitgepakte map `omnibus-main` en daarna `skills`. Zie je eerst nog een map `omnibus-main`, open die ook.
+4. Kies de hele map van jouw skill, bijvoorbeeld `omnibus-add-report`. Bewaar alle bestanden daarin, ook `SKILL.md`, `references/`, `assets/`, `agents/` en eventuele `scripts/`.
 
-3. Start Codex en vraag: *Gebruik $omnibus-add-report voor dit rapport.*
+Deze download bevat de code en skills van de huidige `main`, geen database. De [downloaduitleg van GitHub](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-files-from-github) beschrijft dezelfde route.
 
-## Claude Code
+**Gelukt als:** je in `skills/omnibus-add-report/` het bestand `SKILL.md` en de meegeleverde submappen ziet.
 
-1. Kopieer de hele map `skills/omnibus-add-report/` uit de repository naar je eigen skills-map. Het bestand staat daarna op `~/.claude/skills/omnibus-add-report/SKILL.md`. Op Windows is `~` je gebruikersmap, bijvoorbeeld `C:\Users\jouwnaam`. Bewaar eigen aanpassingen als daar al een skill staat.
-2. Start Claude Code in een map met je bron.
-3. Vraag: *Gebruik de skill omnibus-add-report voor dit rapport*, of typ `/omnibus-add-report`.
+### 2. Maak een zip van de skillmap
 
-Zie ook de [uitleg voor Claude Code](https://code.claude.com/docs/en/skills). Controleer vóór bronverwerking de bestanden met de proef hieronder.
+Blijf in de uitgepakte map `skills`. Selecteer één hele skillmap, bijvoorbeeld `omnibus-add-report`.
 
-## De Claude-app (web of desktop)
+- **Windows:** rechtsklik op die map. Kies zo nodig **Meer opties weergeven**, daarna **Verzenden naar** → **Gecomprimeerde (gezipte) map**.
+- **macOS:** klik met de Control-toets ingedrukt op die map in Finder en kies **Comprimeer**.
 
-1. **Maak een zip van de skillmap.** De zip moet de map zelf bevatten, niet alleen de bestanden erin.
+Zie de uitleg voor [zippen in Windows](https://support.microsoft.com/nl-nl/windows/experience/storage-filemanagement/zip-and-unzip-files) of [zippen op de Mac](https://support.apple.com/nl-nl/guide/mac-help/mchlp2528/mac).
 
-   Windows (PowerShell), vanuit de map `skills`:
+Controleer de nieuwe `omnibus-add-report.zip`. Open hem in Verkenner, of pak een controlekopie uit in Finder. De zip bevat de skillmap zelf. Voor dit voorbeeld is de volledige inhoud:
 
-   ```powershell
-   Compress-Archive -Path omnibus-add-report -DestinationPath omnibus-add-report.zip
-   ```
+```text
+omnibus-add-report.zip
+└── omnibus-add-report/
+    ├── SKILL.md
+    ├── README.md
+    ├── LICENSE
+    ├── agents/
+    │   └── openai.yaml
+    ├── references/
+    │   └── report-method.md
+    └── assets/
+        └── intake-plan.json.example
+```
 
-   macOS en Linux, vanuit de map `skills`:
+Andere skills kunnen ook een map `scripts/` hebben. Laat die bestanden staan. Upload niet de hele `omnibus-main.zip` als skill, en zip niet alleen `SKILL.md`.
 
-   ```bash
-   zip -r omnibus-add-report.zip omnibus-add-report/
-   ```
+**Gelukt als:** de zip direct de gekozen skillmap bevat, met alle bestanden en zonder extra buitenmap `skills` of `omnibus-main`.
 
-   Open de zip ter controle. Daarin staan onder meer `omnibus-add-report/SKILL.md`, `omnibus-add-report/references/report-method.md` en `omnibus-add-report/assets/intake-plan.json.example`.
+### 3. Laad de skill in je assistent
 
-2. **Upload de zip** in de Claude-app bij *Customize* → *Skills*, en zet de skill aan. Het precieze menu kan per abonnement verschillen; zie de [uitleg van Anthropic](https://claude.com/docs/skills/how-to).
-3. **Start een gesprek** en doe eerst de proef hieronder. Voeg daarna het rapport toe en vraag om een conceptpakket.
+#### De Claude-app (web of desktop)
 
-## ChatGPT
+1. Open **Customize** → **Skills**. Volgens de [uitleg van Anthropic](https://support.claude.com/en/articles/12512180-use-skills-in-claude) moeten code-uitvoering en het maken van bestanden aanstaan. Je organisatie kan deze functies beperken.
+2. Kies **+** → **Create skill** → **Upload a skill** en selecteer je `omnibus-add-report.zip`. Zet de skill aan. Anthropic beschrijft ook de [vereiste zipindeling](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills).
+3. Start een gesprek en doe eerst de proef hieronder. Ontbreekt de uploadfunctie? Controleer de actuele uitleg van Anthropic en de instellingen van je werkruimte.
 
-1. **Maak een zip van de skillmap**, zoals hierboven bij de Claude-app.
-2. **Voeg de skill toe** als jouw ChatGPT-omgeving installatie aanbiedt. De mogelijkheden hangen af van je omgeving en de rechten in je werkruimte. Zie de [uitleg van OpenAI](https://learn.chatgpt.com/docs/skills-and-plugins).
-3. **Kan dat niet?** Voeg alle bestanden uit de skillmap als bijlagen toe, of zet ze in een [ChatGPT-project](https://learn.chatgpt.com/docs/projects). Neem ook `assets/` en eventuele `scripts/` mee, niet alleen `SKILL.md` en `references/`. Vermeld per bijlage het oorspronkelijke pad binnen de skillmap als de app geen mappen bewaart.
-4. Doe eerst de proef hieronder. Kan de assistent een nodig bestand niet lezen, kies dan een omgeving die dat wel kan. Voeg pas daarna het rapport toe en vraag om een conceptpakket.
+#### ChatGPT
 
-## Controleer vóór je begint
+OpenAI maakt onderscheid tussen lokale skills in de desktopapp en skills via plugins. De [officiële uitleg over skills](https://learn.chatgpt.com/docs/build-skills) beschrijft geen algemene zip-installatieknop voor elke ChatGPT-omgeving.
+
+1. Voeg de bestanden uit je uitgepakte skillmap toe aan een gesprek of aan de bronnen van een [ChatGPT-project](https://learn.chatgpt.com/docs/projects). Neem ook de bestanden uit de submappen mee. Biedt jouw omgeving het lezen van zipbestanden aan, dan kun je de hele skillzip als bijlage proberen.
+2. Vermeld de oorspronkelijke paden, zoals `references/report-method.md`, als bijlagen zonder mapindeling verschijnen. Vraag om de bestanden als werkinstructie te gebruiken. Bijlagen toevoegen installeert geen herbruikbare skill.
+3. Doe eerst de proef hieronder. Wordt een bestandstype geweigerd of kan de assistent een nodig bestand niet lezen? Gebruik dan een omgeving die de volledige map kan lezen. Verwijder geen bestanden om de upload passend te maken.
+
+### 4. Controleer vóór je begint
 
 Vraag je assistent:
 
@@ -87,9 +98,32 @@ Werk je zonder de verwerkingsomgeving van de beheerder of zonder toegang tot bes
 - **Deel alleen wat je mag delen.** Controleer of je de bron met jouw AI-dienst mag delen, ook bij een openbaar rapport. Vertrouwelijke stukken vereisen toestemming.
 - **Controleer altijd zelf** of de bronpassages kloppen, zoals beschreven in [een bron verwerken](bron-verwerken.md#4-controleer-het-resultaat).
 
+## Technische details
+
+Werk je met Codex of Claude Code? Gebruik dan deze ontwikkelaarsroutes. Deze programma's moeten al beschikbaar zijn.
+
+### Codex
+
+1. Haal de repository op en installeer de onderdelen, zie [installeren](../gebruiken/installeren.md), stap 1 en 2.
+2. Installeer de skill:
+
+   ```text
+   npm run skills:install -- --skill omnibus-add-report
+   ```
+
+3. Start Codex en vraag: *Gebruik $omnibus-add-report voor dit rapport.* Doe eerst de [leesproef](#4-controleer-vóór-je-begint).
+
+### Claude Code
+
+1. Kopieer de hele map `skills/omnibus-add-report/` uit de download naar je eigen skills-map. Het bestand staat daarna op `~/.claude/skills/omnibus-add-report/SKILL.md`. Op Windows is `~` je gebruikersmap, bijvoorbeeld `C:\Users\jouwnaam`. Bewaar eigen aanpassingen als daar al een skill staat.
+2. Start Claude Code in een map met je bron.
+3. Vraag: *Gebruik de skill omnibus-add-report voor dit rapport*, of typ `/omnibus-add-report`. Doe eerst de [leesproef](#4-controleer-vóór-je-begint).
+
+Zie ook de [uitleg voor Claude Code](https://code.claude.com/docs/en/skills).
+
 ## Samengevat
 
-Codex en Claude Code laden de skill vanuit de repository. In de Claude-app en ChatGPT gebruik je de beschikbare installatie- of bijlagenroute. Controleer dat alle benodigde bestanden leesbaar zijn. Lever een concept met de werkelijke lees- en reviewstatus.
+Download de codezip via GitHub, pak hem uit en zip één hele skillmap met Verkenner of Finder. Volg daarna de route voor jouw app en controleer of alle nodige bestanden leesbaar zijn. Lever een concept met de werkelijke lees- en reviewstatus.
 
 ## Volgende stap
 

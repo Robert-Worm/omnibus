@@ -8,7 +8,7 @@
 
 - Een **claim** op de bron. Nog niet geclaimd? Doe dat eerst in de [voortgang](voortgang.md).
 - Een **AI-assistent die de skillbestanden en je bron kan lezen en een concept kan opleveren**. Zie [skills gebruiken](skills-gebruiken.md) voor Codex, Claude Code, de Claude-app en ChatGPT.
-- Een **kopie van deze repository**, voor de skills. Begin bij [de code ophalen](../gebruiken/installeren.md#1-haal-de-code-op). Volg daarna de stappen voor jouw assistent; voor alleen kopiëren of uploaden is geen database nodig.
+- De **hele map van de gekozen skill**. Begin bij [een skill downloaden zonder terminal](skills-gebruiken.md#1-download-de-skill-zonder-terminal). Je hebt hiervoor geen Git, terminal of database nodig.
 
 ## Welk AI-model gebruik je?
 
@@ -27,11 +27,11 @@ Wissel je tijdens het werk van model? Pas dan het veld in je claim aan, of noem 
 
 ```mermaid
 flowchart TD
-    A["1 · Skill<br/>installeren"] --> B["2 · Bron<br/>ophalen"] --> C["3 · Skill<br/>uitvoeren"] --> D["4 · Resultaat<br/>controleren"] --> E["5 · Inleveren"]
+    A["1 · Skill<br/>klaarzetten"] --> B["2 · Bron<br/>ophalen"] --> C["3 · Skill<br/>uitvoeren"] --> D["4 · Resultaat<br/>controleren"] --> E["5 · Inleveren"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
-### 1. Installeer de skill
+### 1. Zet de skill klaar
 
 Kies de skill die bij je bron past:
 
@@ -41,13 +41,11 @@ Kies de skill die bij je bron past:
 | Wet of kader | `omnibus-add-framework` |
 | Onderzoeksmodel | `omnibus-add-model` |
 
-Voor Codex installeer je hem vanuit de repository:
+Volg [skills gebruiken met je AI-assistent](skills-gebruiken.md). Voor de Claude-app en ChatGPT download je de bestanden via **Code** → **Download ZIP** op GitHub. Daarna pak je de download uit en maak je een zip van de gekozen skillmap met Verkenner of Finder.
 
-```text
-npm run skills:install -- --skill omnibus-add-report
-```
+Dezelfde handleiding bevat aparte routes voor Codex en Claude Code. Controleer bij elke route of je assistent alle nodige bestanden kan lezen.
 
-Gebruik je Claude Code, de Claude-app of ChatGPT? Volg dan [skills gebruiken met je AI-assistent](skills-gebruiken.md).
+**Gelukt als:** je assistent de skillbestanden heeft gelezen en ontbrekende hulpmiddelen of reviews noemt.
 
 ### 2. Haal de bron op
 
@@ -64,7 +62,9 @@ In Codex schrijf je de naam van de skill met een dollarteken ervoor: `$omnibus-a
 **Gelukt als:** je een conceptpakket hebt met onder meer `APP-FINAL.json` (de normen en toetspunten), `beperkingen.md` en `controle.md`.
 
 - **Codex en Claude Code** maken een map in je werkmap. De assistent noemt de naam.
-- **De Claude-app en ChatGPT** bieden het pakket aan als download, meestal als zip. Vraag erom als je het niet ziet: *Geef het conceptpakket als zip om te downloaden.*
+- **De Claude-app en ChatGPT:** vraag om het conceptpakket als zip om te downloaden. Dit kan alleen als jouw omgeving bestanden kan maken. Ontbreekt die functie, gebruik dan een omgeving die dat wel kan.
+
+Ontbrekende bronlezingen en onafhankelijke reviews blijven `PENDING_REVIEW` of `HOLD`, zoals de skill voorschrijft. Een downloadbaar pakket is nog geen goedgekeurde bron.
 
 ### 4. Controleer het resultaat
 
@@ -136,7 +136,7 @@ Een punt dat nog niet goed genoeg onderbouwd is: er ontbreekt bewijs of een cont
 
 ## Samengevat
 
-Skill installeren, bron ophalen, skill uitvoeren, zelf controleren, het concept als zip bij je claim zetten en `/inleveren` schrijven. De beheerder maakt het af.
+Skill downloaden en klaarzetten, bron ophalen, skill uitvoeren, zelf controleren, het concept als zip bij je claim zetten en `/inleveren` schrijven. De beheerder maakt het af.
 
 ## Volgende stap
 
