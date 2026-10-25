@@ -36,7 +36,7 @@ flowchart LR
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
-1. **Claimen (check-out).** Kies een open bron in de [voortgang](voortgang.md) of een van de werklijsten, en klik op *Claimen*. Er opent een kort formulier, waarin je ook invult met welk AI-model je werkt. Na verzenden staat de bron op jouw naam, zichtbaar voor iedereen.
+1. **Claimen (check-out).** Je hebt een gratis [GitHub-account](https://github.com/signup) nodig. Kies een open bron in de [voortgang](voortgang.md) of een van de werklijsten, en klik op *Claimen*. Er opent een kort formulier, waarin je ook invult met welk AI-model je werkt. Na verzenden staat de bron op jouw naam, zichtbaar voor iedereen.
 2. **Verwerken.** Volg [een bron verwerken](bron-verwerken.md). Je AI-assistent doet het meeste werk; jij controleert.
 3. **Inleveren (check-in).** Voeg je concept toe aan je claim en schrijf `/inleveren` in een reactie.
 4. **Controle.** De beheerder controleert het pakket. In de volgende databaserelease staat de bron op ✅ en wordt je claim gesloten.
@@ -60,6 +60,15 @@ Binnen een paar minuten reageert de bot in je claim:
 </picture>
 
 *De bot bevestigt je claim en zegt wat je daarna doet.*
+
+**Gelukt als:** de bot binnen een paar minuten antwoordt met *Deze bron staat nu op jouw naam*.
+
+**Weigert de bot je claim?** Hij zegt altijd waarom:
+
+- **Al geclaimd of al in de database:** kies een andere bron.
+- **Al vijf bronnen op je naam:** lever er eerst een in, of geef er een vrij met `/vrijgeven`.
+- **Bron niet gevonden:** zet de link naar het rapport op de Rijksmap, of de code uit de werklijst, in je eerste bericht.
+- **Model niet op de lijst:** je claim gaat door, maar krijgt het label `model-controleren`. Gebruik als het kan een aanbevolen model.
 
 ## Welke bron kies je?
 

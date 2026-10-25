@@ -78,7 +78,7 @@ Vraag je assistent:
 
 **Gelukt als:** de assistent de bestanden kan lezen en ontbrekende onderdelen concreet noemt. Alleen zeggen dat de skill geladen is, bewijst dit niet.
 
-Werk je zonder de private rapportkit of zonder lokale bestandstoegang? Vermeld dat in je opdracht en vraag om een overdraagbaar concept. Ontbrekende reviews blijven `PENDING_REVIEW` of `HOLD`, zoals de skill voorschrijft. Laat de assistent uitgevoerde stappen en open controles apart opsommen. Een map of zip maken is geen bewijs van een volledige inhoudelijke review.
+Werk je zonder de verwerkingsomgeving van de beheerder of zonder toegang tot bestanden op je computer? Vermeld dat in je opdracht en vraag om een overdraagbaar concept. Ontbrekende reviews blijven `PENDING_REVIEW` of `HOLD`, zoals de skill voorschrijft. Laat de assistent uitgevoerde stappen en open controles apart opsommen. Een map of zip maken is geen bewijs van een volledige inhoudelijke review.
 
 ## Goed om te weten
 

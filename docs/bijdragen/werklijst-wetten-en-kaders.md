@@ -67,7 +67,7 @@ Waarom je een bron openbaar mag verwerken, per soort bron:
 - **Kaders van de Nederlandse overheid:** openbare overheidspublicaties; hergebruik is toegestaan tenzij de uitgever rechten voorbehoudt (artikel 15b Auteurswet).
 - **Internationale kaders die vrij te gebruiken zijn:** publicaties van de Amerikaanse overheid (NIST); in de Verenigde Staten niet auteursrechtelijk beschermd. Vermeld de bron.
 - **Kaders van de IIA die je als lid toepast:** auteursrecht van The IIA. Opgenomen omdat IIA-leden deze kaders bij hun audits moeten toepassen (besluit B-016).
-- **Handreikingen van NOREA:** auteursrecht van NOREA. Opgenomen met volledige tekst, bronvermelding en een link naar de uitgave, omdat Omnibus niet-commercieel is en NOREA wil dat haar openbare handreikingen worden gebruikt (besluit B-022).
+- **Handreikingen van NOREA:** auteursrecht van NOREA. Opgenomen met volledige tekst, bronvermelding en een link naar de uitgave. Omnibus is niet-commercieel en informeert auditors over de normen van hun beroepsgroep (besluit B-022).
 
 ## Samengevat
 
