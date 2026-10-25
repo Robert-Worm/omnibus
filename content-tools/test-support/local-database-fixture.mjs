@@ -28,7 +28,7 @@ export async function fixture(t, count = 1, editModel = () => {}) {
       limitations: "Uitsluitend testgegevens; geen inhoudelijke goedkeuring.",
       items: [{ id: "TEST", title: "Fictieve dimensie", definition: "Een verzonnen testbegrip.",
         question: "Hoe beschrijf je deze oefening?", probes: "", included: false,
-        questions: [{ id: "TEST-1", title: "Fictieve vraag", question: "Hoe beschrijf je deze oefening?", probes: "", included: false, origin: "synthetic-test" }] }] };
+        questions: [{ id: "TEST-1", title: "Fictieve vraag", question: "Hoe beschrijf je deze oefening?", probes: "", included: false, origin: "authored" }] }] };
     editModel(model);
     const source = "Fictieve testbron. Geen echt model. A😀é\r\nTweede regel.\r\n";
     writeFileSync(join(folder, "source.txt"), source);
