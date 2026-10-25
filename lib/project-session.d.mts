@@ -5,13 +5,15 @@ export type ProjectView = {page:string;lastCollectionPage:string;researchRoute:s
 export type AboutViews = {laws:boolean;models:boolean;reports:boolean};
 export type Project = {format:'rijksmap-project';version:1;draft:Draft;modelLibrary:ModelLibraryState;workspace:{openIds:string[];activeId:string|null};view:ProjectView & {aboutViews:AboutViews}};
 export type ProjectReadResult = {project:Project;legacy:boolean;migration:{fromVersion:number;toVersion:number}|null;preserveOriginal:boolean};
+export type ProjectOpenReceipt = {originalKey:string|null;notice:string};
 export const PROJECT_KEY:string;
 export const MAX_PROJECT_BYTES:number;
 export function projectContentEqual(a:unknown,b:unknown):boolean;
 export function projectView(value?:Partial<ProjectView & {aboutViews:AboutViews}>):ProjectView & {aboutViews:AboutViews};
 export function makeProject(draft:Draft,models:ModelLibraryState,workspace:Project['workspace'],view?:Partial<ProjectView & {aboutViews:AboutViews}>):Project;
 export function readProject(value:unknown,current:Project,options:{restoreDraft:(value:unknown)=>Draft;restoreModels:(value:unknown)=>ModelLibraryState;themes:unknown[]}):ProjectReadResult;
+export function acceptProjectFile(opened:ProjectReadResult,persist:()=>ProjectOpenReceipt):ProjectOpenReceipt & {savedLocally:boolean};
 export function guardedProjectStore(storage:Pick<Storage,'getItem'|'setItem'>,key?:string):{
   raw:()=>string|null;save:(project:Project)=>void;saveSerialized:(text:string)=>void;checkpoint:(preserve?:boolean)=>void;
-  acceptProject:(opened:ProjectReadResult,originalText:string,options?:{replace?:boolean;preservePrevious?:boolean})=>{originalKey:string|null;notice:string};
+  acceptProject:(opened:ProjectReadResult,originalText:string,options?:{replace?:boolean;preservePrevious?:boolean})=>ProjectOpenReceipt;
 };

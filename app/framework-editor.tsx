@@ -53,7 +53,7 @@ import CompactMatrix from "./compact-matrix";
 import ReportNormBrowser from './report-norm-browser';
 import ReportFrameworkAbout from './report-framework-about';
 import { cleanScopeDraft, admittedLines } from "@/lib/product-scope.mjs";
-import {makeProject,readProject,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
+import {makeProject,readProject,acceptProjectFile,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
 import {expandProject} from '@/lib/project-codec.mjs';
 import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
@@ -785,15 +785,21 @@ export default function FrameworkEditor() {
       if(draftRef.current!==previousDraft)throw Error('Je onderzoek is tijdens het laden gewijzigd. Open het projectbestand opnieuw als je die wijzigingen wilt vervangen.');
       const opened=readProject(original,projectRef.current,restoreOptions);
       setImportFeedback("");
-      // Validate, retain originals and save before adopting any part of the file.
-      // Storage/backup failure leaves the current in-memory project intact too.
-      const store=storeRef.current ?? guardedProjectStore(localStorage);
-      const accepted=store.acceptProject(opened,originalText,{replace:true,preservePrevious:Boolean(recoveryOriginal)});
+      // Changed projects require durable originals before adoption. An unchanged
+      // valid file may still open in memory on a quota/access error, with saving off.
+      const accepted=acceptProjectFile(opened,()=>{
+        const store=storeRef.current ?? guardedProjectStore(localStorage);
+        const stored=store.acceptProject(opened,originalText,{replace:true,preservePrevious:Boolean(recoveryOriginal)});
+        storeRef.current=store;
+        return stored;
+      });
       backgroundSave.current?.cancel();
-      storeRef.current=store;storageBlocked.current=false;
+      storageBlocked.current=!accepted.savedLocally;
       rememberProject(opened.legacy ? 'Oud concept openen' : 'Project openen');
       applyProject(opened.project);
-      projectStatus.update({savedLocally:true,problem:false,message:'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'});
+      projectStatus.update({savedLocally:accepted.savedLocally,problem:!accepted.savedLocally,message:accepted.savedLocally
+        ? 'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'
+        : 'Project geopend. Automatisch bewaren is niet gelukt; gebruik Bewaar project. De eerdere opslag is niet overschreven.'});
       setScopeNotice(accepted.notice);
       setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; uw huidige modellen blijven behouden.' : 'Project geopend, inclusief modellen en werkplek.');
     } catch (e) {
