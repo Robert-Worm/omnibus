@@ -11,8 +11,8 @@ body:
     id: bron
     attributes:
       label: Welke bron wil je verwerken?
-      description: Bij een rapport de link naar de Rijksmap, bijvoorbeeld https://www.rijksmap.nl/rapport/... Bij een wet of kader de code uit de werklijst, bijvoorbeeld CW2016.
-      placeholder: https://www.rijksmap.nl/rapport/...
+      description: Geef de Rijksmaplink van het rapport, de code van een wet of kader (bijvoorbeeld CW2016), of het ID van een goedgekeurd rapportvoorstel (bijvoorbeeld voorstel-123). Neem het ID over uit de werklijst.
+      placeholder: https://www.rijksmap.nl/rapport/... of CW2016 of voorstel-123
     validations:
       required: true
   - type: dropdown

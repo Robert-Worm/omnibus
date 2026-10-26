@@ -19,10 +19,18 @@ Hoe die drie stappen samenhangen, lees je hieronder bij [zo werkt een bron verwe
 | Wat | Voor wie | Hoe begin je |
 | --- | --- | --- |
 | Een bron verwerken | Auditors en onderzoekers met een AI-assistent | Kies een bron in de [voortgang](voortgang.md) |
-| Een bron voorstellen | Iedereen | Noem hem in [Discussions](https://github.com/Robert-Worm/omnibus/discussions) |
+| Een rapport voorstellen | Iedereen | Vul [Rapport voorstellen](https://github.com/Robert-Worm/omnibus/issues/new?template=rapport-voorstellen.yml) in |
 | Een fout melden | Iedereen | Open een [issue](https://github.com/Robert-Worm/omnibus/issues/new/choose) |
 | De uitleg verbeteren | Iedereen | Stel een wijziging voor via een pull request |
 | De code verbeteren | Ontwikkelaars | Lees [ontwikkelen](ontwikkelen.md) |
+
+## Een rapport voorstellen
+
+Staat een openbaar rapport nog niet in de werklijst? Vul [Rapport voorstellen](https://github.com/Robert-Worm/omnibus/issues/new?template=rapport-voorstellen.yml) in. Geef de link, titel, auteur of organisatie, publicatiedatum (`YYYY-MM-DD`) en een korte reden. Bevestig dat iedereen het rapport zonder account kan lezen.
+
+De beheerder controleert of het rapport openbaar en geschikt is. Bij akkoord zet de beheerder het label `voorstel-goedgekeurd`. Daarna kun je het rapport vanuit de werklijst claimen. Het krijgt een ID zoals `voorstel-123`, met het nummer van het voorstel. Bij afwijzing krijg je uitleg bij het label `voorstel-afgewezen`.
+
+Goedkeuring van een voorstel betekent alleen dat het rapport op de werklijst mag. Er is nog geen inhoud uit de bron gehaald of toegelaten tot de database. Na het claimen volg je [een bron verwerken](bron-verwerken.md).
 
 ## Zo werkt een bron verwerken
 
@@ -67,7 +75,7 @@ Binnen een paar minuten reageert de bot in je claim:
 
 - **Al geclaimd of al in de database:** kies een andere bron.
 - **Al vijf bronnen op je naam:** lever er eerst een in, of geef er een vrij met `/vrijgeven`.
-- **Bron niet gevonden:** zet de link naar het rapport op de Rijksmap, of de code uit de werklijst, in je eerste bericht.
+- **Bron niet gevonden:** zet de Rijksmaplink, kadercode of het ID van een goedgekeurd rapportvoorstel uit de werklijst in je eerste bericht.
 - **Model niet op de lijst:** je claim gaat door, maar krijgt het label `model-controleren`. Gebruik als het kan een aanbevolen model.
 
 ## Welke bron kies je?

@@ -1,0 +1,57 @@
+name: Rapport voorstellen
+description: Stel een openbaar rapport voor dat nog niet in de werklijst staat.
+title: "Rapportvoorstel: "
+labels: ["rapportvoorstel"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Vul de gegevens van één openbaar rapport in. Deel geen vertrouwelijke informatie.
+
+        De beheerder controleert of het rapport openbaar en geschikt is. Bij akkoord zet de beheerder het label `voorstel-goedgekeurd`. Daarna kun je het rapport vanuit de werklijst claimen. Bij afwijzing krijg je uitleg bij het label `voorstel-afgewezen`.
+
+        Een goedgekeurd voorstel is alleen klaar om te claimen. Er is nog geen inhoud uit de bron gehaald of toegelaten tot de database. Volg na het claimen [een bron verwerken](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md).
+  - type: input
+    id: url
+    attributes:
+      label: Link naar de openbare publicatie
+      description: Geef de volledige link naar het rapport. Iedereen moet het zonder account kunnen lezen.
+      placeholder: https://example.org/rapport.pdf
+    validations:
+      required: true
+  - type: input
+    id: titel
+    attributes:
+      label: Titel
+      description: Neem de titel over van de publicatie.
+    validations:
+      required: true
+  - type: input
+    id: auteur
+    attributes:
+      label: Auteur of organisatie
+      description: Wie heeft het rapport geschreven of uitgebracht?
+    validations:
+      required: true
+  - type: input
+    id: datum
+    attributes:
+      label: Publicatiedatum
+      description: Gebruik YYYY-MM-DD (jaar-maand-dag), bijvoorbeeld 2026-01-15. Neem de datum over van de publicatie.
+      placeholder: "2026-01-15"
+    validations:
+      required: true
+  - type: textarea
+    id: reden
+    attributes:
+      label: Waarom past dit rapport bij Omnibus?
+      description: Leg kort uit wat het rapport kan bijdragen aan normen en toetspunten voor audits.
+    validations:
+      required: true
+  - type: checkboxes
+    id: openbaar
+    attributes:
+      label: Openbaarheid
+      options:
+        - label: Het rapport is openbaar en zonder account te lezen.
+          required: true
