@@ -2,6 +2,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { crc32 } from "node:zlib";
+import { mkdtempSync, mkdirSync, copyFileSync, readdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { VOORSTEL_VELDEN, VOORSTEL_LABELS, OPENBAAR_VERKLARING } from "./rapportvoorstel-lib.mjs";
 import { blokWaarschuwingen, KORTE_PAGINA as KORT_CHECK, paginatypeMeldingen, tabelControle, tekstWaarschuwingen, vormWaarschuwingen, zinWaarschuwingen } from "../../scripts/check-docs.mjs";
 import { KORTE_PAGINA, afbreekbaar, beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
 
@@ -37,12 +42,29 @@ function nepGitHub() {
   const issues = new Map();
   let volgendNummer = 1, volgendeReactie = 1000;
   const labels = new Set(["claim"]);
+  const permissions = new Map([["beheerder", "write"]]);
+  const requests = [];
   const wijzer = (n) => { const i = issues.get(Number(n)); if (!i) throw new Error(`issue ${n} bestaat niet`); return i; };
   const gh = async (pad, { method = "GET", body } = {}) => {
+    requests.push({ pad, method });
     const b = body ? JSON.parse(body) : {};
     let m;
     if (method === "GET" && pad.startsWith("/issues?")) {
-      return pad.includes("page=1") ? [...issues.values()].filter((i) => i.labels.some((l) => l.name === "claim")).map((i) => structuredClone(i)) : [];
+      const query = new URLSearchParams(pad.split("?")[1]);
+      return query.get("page") === "1" ? [...issues.values()].filter((i) => i.labels.some((l) => l.name === query.get("labels"))).map((i) => structuredClone(i)) : [];
+    }
+    if ((m = /^\/collaborators\/([^/]+)\/permission$/.exec(pad))) {
+      const permission = permissions.get(m[1]);
+      if (permission instanceof Error) throw permission;
+      return permission === undefined ? {} : { permission };
+    }
+    if ((m = /^\/issues\/comments\/(\d+)$/.exec(pad)) && method === "PATCH") {
+      const c = [...issues.values()].flatMap((i) => i.comments).find((c) => c.id === Number(m[1]));
+      assert.ok(c); c.body = b.body; return {};
+    }
+    if ((m = /^\/issues\/(\d+)\/events/.exec(pad))) return structuredClone(wijzer(m[1]).events || []);
+    if ((m = /^\/issues\/(\d+)$/.exec(pad)) && method === "GET") {
+      return structuredClone(wijzer(m[1]));
     }
     if ((m = /^\/issues\/(\d+)\/comments/.exec(pad))) {
       if (method === "GET") return structuredClone(wijzer(m[1]).comments);
@@ -65,7 +87,8 @@ function nepGitHub() {
     throw new Error(`onverwacht verzoek: ${method} ${pad}`);
   };
   return {
-    gh, issues, labels,
+    gh, issues, labels, permissions, requests,
+    proposalRevision: async (n) => wijzer(n).lastEditedAt ?? null,
     nu: () => klok,
     wacht: (dagen) => { klok += dagen * DAG; },
     claim(user, { bron, model = "Claude Opus 4", titel } = {}) {
@@ -530,4 +553,197 @@ test("alle rapporten staan in bladerbare werklijsten, met auteur en dezelfde cla
   // Auteur ook in de aanbevolen lijst en het CSV-bestand.
   assert.match(bestanden["docs/bijdragen/werklijst-aanbevolen.md"], /· Auditdienst Rijk \|/);
   assert.match(bestanden["docs/bijdragen/werklijst-rapporten.csv"].split("\n")[0], /auteur/);
+});
+
+// Alleen synthetische voorstellen; gh accepteert uitsluitend repository-API-paden.
+const voorstelBody = (extra = {}) => Object.entries({
+  url: 'https://example.org/openbaar.pdf', titel: 'Onderzoek naar veilig gegevensbeheer',
+  auteur: 'Fictief onderzoeksbureau', datum: '2026-09-15', reden: 'Bruikbaar voor onderzoek naar beheersing.',
+  openbaar: `- [x] ${OPENBAAR_VERKLARING}`, ...extra,
+}).map(([key, value]) => `### ${VOORSTEL_VELDEN[key]}\n\n${value}`).join('\n\n');
+function voorstelFixture(g, extra = {}) {
+  const n = g.claim('indiener', { bron: 'voorstel' });
+  const issue = g.issues.get(n);
+  Object.assign(issue, { title: 'Rapport voorstellen', body: voorstelBody(extra), updated_at: new Date(g.nu()).toISOString(),
+    labels: [{ name: VOORSTEL_LABELS.proposal }], events: [] });
+  return n;
+}
+function akkoordEvent(g, n, { actor = 'beheerder', label = VOORSTEL_LABELS.approve, action = 'labeled' } = {}) {
+  const issue = g.issues.get(n);
+  g.wacht(0.001);
+  issue.updated_at = new Date(g.nu()).toISOString();
+  issue.labels = issue.labels.filter((l) => l.name !== label);
+  if (action === 'labeled') issue.labels.push({ name: label });
+  issue.events.push({ id: 200 + issue.events.length, event: action, label: { name: label }, actor: { login: actor }, created_at: issue.updated_at });
+  return { eventName: 'issues', event: { action, label: { name: label }, repository: { full_name: 'x/y' },
+    sender: { login: actor }, issue: structuredClone(issue) } };
+}
+function voorstelBot(g, voorstellen = [], options = {}) {
+  return maakVoortgang({ data: { ...data(), voorstellen }, repo: 'x/y', gh: g.gh, proposalRevision: g.proposalRevision, now: g.nu, ...options });
+}
+
+test('voorstel: goedkeuring → werklijst → claim, met directe bronlink en eigen metadata', async () => {
+  const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+  const v = voorstelBot(g);
+  const records = await v.reviewProposals(event);
+  assert.equal(records.length, 1);
+  assert.equal(records[0].id, `voorstel-${n}`);
+  assert.equal(records[0].status, 'approved');
+  assert.equal(records[0].approval.actor, 'beheerder');
+  assert.equal(records[0].approval.fingerprint.length, 64);
+  assert.deepEqual(Object.keys(records[0]).sort(), ['id', 'issue', 'titel', 'auteur', 'datum', 'url', 'reden', 'openbaar', 'status', 'approval'].sort());
+  const build = v.build([]).bestanden;
+  const page = build['docs/bijdragen/werklijst/voorgesteld.md'];
+  assert.match(page, /\]\(https:\/\/example.org\/openbaar.pdf\)/);
+  assert.match(page, /\[Claimen\]\(https:\/\/github.com\/x\/y\/issues\/new\?[^\n]*bron=voorstel-1/);
+  assert.doesNotMatch(page, /rijksmap.nl\/rapport\/voorstel/);
+  assert.equal(build['docs/bijdragen/werklijst-rapporten.csv'], voorstelBot(nepGitHub()).build([]).bestanden['docs/bijdragen/werklijst-rapporten.csv']);
+  for (const bron of [`voorstel-${n}`, `https://github.com/x/y/issues/${n}`])
+    assert.deepEqual(v.identify({ title: 'Claim', body: bron }), { soort: 'rapport', id: `voorstel-${n}` });
+  assert.equal(v.identify({ title: 'Claim', body: `https://github.com/ander/repo/issues/${n}` }), null);
+  const claim = g.claim('anna', { bron: `voorstel-${n}` });
+  await v.reconcile(await v.loadClaims());
+  assert.match(g.botTekst(claim), /Dank je, @anna/);
+  const na = v.build(await v.loadClaims()).bestanden;
+  assert.match(na['docs/bijdragen/werklijst/voorgesteld.md'], /Claim van @anna/);
+  assert.match(na['docs/bijdragen/voortgang.md'], /\]\(https:\/\/example.org\/openbaar.pdf\)/);
+  assert.ok(g.requests.every((r) => r.pad.startsWith('/')), 'geen fetch naar publicatie');
+});
+
+test('voorstel: tekst/association/los label geeft nooit akkoord; alleen write/maintain/admin', async () => {
+  for (const permission of ['read', 'triage', 'write', 'maintain', 'admin']) {
+    const g = nepGitHub(), n = voorstelFixture(g);
+    g.permissions.set('beheerder', permission);
+    const event = akkoordEvent(g, n);
+    g.issues.get(n).author_association = 'OWNER';
+    const v = voorstelBot(g);
+    assert.deepEqual(await v.reviewProposals(), [], 'aanwezig label zonder webhook is geen akkoord');
+    assert.deepEqual(await v.reviewProposals({ ...event, eventName: 'issue_comment' }), []);
+    const records = await v.reviewProposals(event);
+    assert.equal(records.length, ['write', 'maintain', 'admin'].includes(permission) ? 1 : 0, permission);
+    assert.equal(g.issues.get(n).comments.length, 1, 'vaste reactie wordt bijgewerkt');
+  }
+});
+
+test('voorstel: niet-openbaar en afgewezen blijven buiten de werklijst', async () => {
+  const g = nepGitHub(), n = voorstelFixture(g, { openbaar: `- [ ] ${OPENBAAR_VERKLARING}` });
+  const v = voorstelBot(g);
+  assert.deepEqual(await v.reviewProposals(akkoordEvent(g, n)), []);
+  assert.match(g.botTekst(n), /openbaarheid/);
+  assert.ok(!v.build([]).bestanden['docs/bijdragen/werklijst/voorgesteld.md']);
+  await v.reviewProposals(akkoordEvent(g, n, { label: VOORSTEL_LABELS.reject }));
+  assert.match(g.botTekst(n), /afgewezen/);
+  assert.equal(g.issues.get(n).comments.length, 1);
+});
+
+test('voorstel: ontbrekende/falende permissie of revisie stopt zonder writes', async () => {
+  for (const permission of [undefined, new Error('API niet beschikbaar')]) {
+    const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+    g.permissions.set('beheerder', permission);
+    await assert.rejects(voorstelBot(g).reviewProposals(event));
+    assert.equal(g.requests.filter((r) => r.method !== 'GET').length, 0);
+  }
+  const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+  await assert.rejects(voorstelBot(g, [], { proposalRevision: async () => undefined }).reviewProposals(event), /revisie/);
+  assert.equal(g.requests.filter((r) => r.method !== 'GET').length, 0);
+});
+
+test('voorstel: dezelfde gebeurtenis en herstart zijn idempotent', async () => {
+  const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n), v = voorstelBot(g);
+  const first = await v.reviewProposals(event);
+  // De eigen reactie wijzigt updated_at; bestaand akkoord blijft aan inhoud gebonden.
+  g.issues.get(n).updated_at = new Date(g.nu() + 1000).toISOString();
+  assert.deepEqual(await v.reviewProposals(event), first);
+  assert.deepEqual(await voorstelBot(g, first).reviewProposals(event), first);
+  assert.equal(g.issues.get(n).comments.length, 1);
+  assert.equal(g.requests.filter((r) => r.method !== 'GET').length, 1);
+});
+
+test('voorstel: edit, edit-terug en labelintrekking verbreken akkoord; claims blijven behouden', async () => {
+  for (const wijziging of ['body', 'terug', 'rename', 'unlabel', 'reject']) {
+    const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+    let v = voorstelBot(g), records = await v.reviewProposals(event);
+    const c = g.claim('anna', { bron: `voorstel-${n}` });
+    await v.reconcile(await v.loadClaims());
+    const i = g.issues.get(n);
+    g.wacht(0.01); i.updated_at = new Date(g.nu()).toISOString();
+    if (wijziging === 'body') i.body = voorstelBody({ titel: 'Gewijzigd onderzoek' });
+    if (wijziging === 'terug') i.lastEditedAt = i.updated_at;
+    if (wijziging === 'rename') i.events.push({ event: 'renamed', id: 900 });
+    if (wijziging === 'unlabel') akkoordEvent(g, n, { action: 'unlabeled' });
+    if (wijziging === 'reject') akkoordEvent(g, n, { label: VOORSTEL_LABELS.reject });
+    v = voorstelBot(g, records);
+    records = await v.reviewProposals(event); // oude webhook mag niets herstellen
+    assert.notEqual(records[0].status, 'approved', wijziging);
+    await v.reconcile(await v.loadClaims());
+    assert.equal(g.issues.get(c).state, 'open');
+    assert.match(g.botTekst(c), /wacht op een nieuw akkoord/);
+    assert.doesNotMatch(v.build(await v.loadClaims()).bestanden['docs/bijdragen/werklijst/voorgesteld.md'], /\[Claimen\]/);
+    // Na expliciet nieuw labelmoment is de huidige inhoud wel claimbaar.
+    i.labels = i.labels.filter((l) => l.name !== VOORSTEL_LABELS.reject);
+    records = await v.reviewProposals(akkoordEvent(g, n));
+    assert.equal(records[0].status, 'approved', wijziging);
+  }
+});
+
+test('voorstel: stale snapshot, valse actor, labelgeschiedenis en fout repo zijn geen akkoord', async () => {
+  for (const wijziging of ['body', 'actor', 'history', 'repo', 'updated']) {
+    const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+    if (wijziging === 'body') g.issues.get(n).body = voorstelBody({ titel: 'Nieuw onderzoek' });
+    if (wijziging === 'actor') event.event.sender.login = 'indiener';
+    if (wijziging === 'history') g.issues.get(n).events = [];
+    if (wijziging === 'repo') event.event.repository.full_name = 'ander/repo';
+    if (wijziging === 'updated') g.issues.get(n).updated_at = new Date(g.nu() + 1000).toISOString();
+    assert.deepEqual(await voorstelBot(g).reviewProposals(event), [], wijziging);
+  }
+});
+
+test('voortgang CLI: tokenloos en offline-met-token doen geen netwerk- of bestandswrites', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'omnibus-voortgang-'));
+  try {
+    const scripts = join(dir, '.github', 'scripts');
+    mkdirSync(scripts, { recursive: true });
+    for (const name of ['voortgang.mjs', 'voortgang-lib.mjs', 'rapportvoorstel-lib.mjs'])
+      copyFileSync(new URL(name, import.meta.url), join(scripts, name));
+    for (const [token, args] of [['', []], ['synthetisch-geen-token', ['--offline']]]) {
+      const result = spawnSync(process.execPath, [join(scripts, 'voortgang.mjs'), ...args],
+        { env: { ...process.env, GITHUB_TOKEN: token }, encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stdout, /geen GitHub- of bestandswijzigingen/);
+      assert.deepEqual(readdirSync(dir), ['.github']);
+      assert.deepEqual(readdirSync(join(dir, '.github')), ['scripts']);
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('voorstel: ontbrekende API-evidence wordt geen lege set; geen gedeeltelijke schrijftaken', async () => {
+  const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+  voorstelFixture(g);
+  for (const failure of ['/issues/2/events', '/issues/1/events', '/issues?labels=rapportvoorstel']) {
+    const gh = async (path, options) => {
+      if (path.startsWith(failure)) return { message: 'evidence ontbreekt' };
+      return g.gh(path, options);
+    };
+    await assert.rejects(voorstelBot(g, [], { gh }).reviewProposals(event), /bewijs/);
+    assert.equal(g.requests.filter((r) => r.method !== 'GET').length, 0);
+  }
+});
+
+test('voorstel: wijziging bij laatste herlezing verhindert opname', async () => {
+  const g = nepGitHub(), n = voorstelFixture(g), event = akkoordEvent(g, n);
+  let reads = 0;
+  const gh = async (path, options) => {
+    if (path === `/issues/${n}` && ++reads === 2) g.issues.get(n).body = voorstelBody({ titel: 'Tussentijds veranderd' });
+    return g.gh(path, options);
+  };
+  const v = voorstelBot(g, [], { gh });
+  await assert.rejects(v.reviewProposals(event), /veranderde tijdens/);
+  assert.equal(g.requests.filter((r) => r.method !== 'GET').length, 0);
+  assert.ok(!v.build([]).bestanden['docs/bijdragen/werklijst/voorgesteld.md']);
+});
+
+test('voorstel: corrupte metadata wordt nooit als lege lijst gebruikt', () => {
+  const g = nepGitHub();
+  for (const voorstellen of [null, {}, [null], [{ id: 'voorstel-1', issue: 1 }]])
+    assert.throws(() => voorstelBot(g, voorstellen), /metadata/);
 });

@@ -1,6 +1,12 @@
 // De logica achter de voortgang: claims herkennen en bijhouden, dubbele rapporten
 // opsporen en de voortgangspagina's maken. Zonder bestands- of netwerktoegang, zodat
 // alles te testen is (zie voortgang.test.mjs). voortgang.mjs koppelt dit aan GitHub.
+import { createHash } from "node:crypto";
+import { VOORSTEL_LABELS, parseRapportVoorstel, voorstelFingerprint } from "./rapportvoorstel-lib.mjs";
+
+const inhoudHash = (issue) => createHash("sha256").update(JSON.stringify([issue.title, issue.body])).digest("hex");
+const labelNamen = (issue) => issue.labels.map((l) => typeof l === "string" ? l : l.name);
+const mdUrl = (url) => url.replace(/[()<>"\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 
 export const VOET = "[↑ Meedoen](README.md) · [Wegwijzer](../README.md) · [Begrippen](../begrippen.md) · [Routekaart](../routekaart.md)";
 const DAG = 24 * 60 * 60 * 1000;
@@ -100,8 +106,11 @@ export function werkTellingenBij(tekst, t, repoUrl) {
 }
 
 // ---------- de voortgang ----------
-export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = () => Date.now(), download = null }) {
-  const { rapporten, verwerkt, kaders, modellen, dubbelingen = { beoordeeld: [] } } = data;
+export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, proposalRevision, now = () => Date.now(), download = null }) {
+  const { verwerkt, kaders, modellen, dubbelingen = { beoordeeld: [] } } = data;
+  let voorstellen = structuredClone(data.voorstellen === undefined ? [] : data.voorstellen);
+  if (!Array.isArray(voorstellen)) throw new Error("Voorstelmetadata ontbreekt of is ongeldig.");
+  const rapporten = [...data.rapporten];
   const repoUrl = `https://github.com/${repo}`;
   const docs = (pad) => `${repoUrl}/blob/main/docs/bijdragen/${pad}`;
   const isAanbevolen = (model) => modellen.aanbevolen.some((m) => m.herken.some((h) => model.toLowerCase().includes(h)));
@@ -110,6 +119,24 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   const inDatabaseKaders = new Set(verwerkt.wettenEnKaders);
   const dubbelVan = zoekDubbelingen(rapporten, { beoordeeld: dubbelingen.beoordeeld, inDatabase: (id) => Boolean(verwerkt.rapporten[id]) });
   const rijksmapUrl = (id) => `https://www.rijksmap.nl/rapport/${id}/`;
+  const bronUrl = (id) => rapportById.get(id)?.voorstel ? mdUrl(rapportById.get(id).url) : rijksmapUrl(id);
+  function verversVoorstellen() {
+    for (const [id, r] of rapportById) if (r.voorstel) rapportById.delete(id);
+    rapporten.splice(data.rapporten.length);
+    const gezien = new Set();
+    for (const v of voorstellen) {
+      if (!v || v.id !== `voorstel-${v.issue}` || !Number.isSafeInteger(v.issue) || v.issue < 1 || !v.approval || gezien.has(v.issue) ||
+          Object.keys(v).some((k) => !["id", "issue", "titel", "auteur", "datum", "url", "reden", "openbaar", "status", "approval"].includes(k)) ||
+          Object.keys(v.approval).some((k) => !["eventId", "actor", "at", "fingerprint", "contentHash", "editedAt", "renameId"].includes(k)) ||
+          !Number.isSafeInteger(v.approval.eventId) || v.approval.eventId < 1 || !/^[a-f\d]{64}$/.test(v.approval.contentHash) ||
+          !["approved", "pending", "rejected"].includes(v.status) || voorstelFingerprint(v) !== v.approval.fingerprint)
+        throw new Error("Ongeldige opgeslagen voorstelmetadata.");
+      gezien.add(v.issue);
+      const r = { ...v, voorstel: true, aanbevolen: "nee", ministerie: "Voorgestelde rapporten", onderdeel: "", bron: "Voorgestelde rapporten" };
+      rapporten.push(r); rapportById.set(r.id, r);
+    }
+  }
+  verversVoorstellen();
 
   // Wanneer een claim is ingeleverd (datum van de eerste /inleveren), per issuenummer.
   const ingeleverdOp = new Map();
@@ -128,10 +155,105 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
     { name: "model-controleren", color: "d4a72c", description: "Het gekozen AI-model staat niet op de lijst met aanbevolen modellen" },
     { name: "toestemming-nodig", color: "cf222e", description: "Voor deze bron is toestemming van de uitgever nodig" },
     { name: "release", color: "0e8a16", description: "Checklist voor een nieuwe databaserelease" },
+    { name: VOORSTEL_LABELS.proposal, color: "bfdadc", description: "Een rapport voor de werklijst voorstellen" },
+    { name: VOORSTEL_LABELS.approve, color: "1a7f37", description: "Beheerder vindt dit rapport geschikt voor de werklijst" },
+    { name: VOORSTEL_LABELS.reject, color: "cf222e", description: "Voorstel niet aangenomen voor de werklijst" },
   ];
   async function ensureLabels() {
     const existing = new Set((await gh("/labels?per_page=100")).map((l) => l.name));
     for (const l of LABELS) if (!existing.has(l.name)) await gh("/labels", { method: "POST", body: JSON.stringify(l) });
+  }
+
+  // Alle evidence eerst lezen; een ontbrekende pagina, permissie of revisie is een fout.
+  // Alleen een nieuw, werkelijk geregistreerd labeled-event kan toestemming toevoegen.
+  async function reviewProposals({ event = {}, eventName = "" } = {}) {
+    const pages = async (path) => {
+      const all = [];
+      for (let page = 1; ; page++) {
+        const batch = await gh(`${path}${path.includes("?") ? "&" : "?"}per_page=100&page=${page}`);
+        if (!Array.isArray(batch)) throw new Error("Voorstelbewijs kon niet worden gelezen.");
+        all.push(...batch);
+        if (batch.length < 100) return all;
+      }
+    };
+    const issues = new Map((await pages(`/issues?labels=${VOORSTEL_LABELS.proposal}&state=all`))
+      .filter((i) => !i.pull_request).map((i) => [i.number, i]));
+    // Ook labelverwijdering en oude claims blijven zichtbaar.
+    for (const v of voorstellen) issues.set(v.issue, null);
+    if (eventName === "issues" && Number.isSafeInteger(event.issue?.number) && event.issue.number > 0 && !event.issue.pull_request &&
+        (labelNamen(event.issue).includes(VOORSTEL_LABELS.proposal) || voorstellen.some((v) => v.issue === event.issue.number)))
+      issues.set(event.issue.number, null);
+    const next = new Map(voorstellen.map((v) => [v.issue, v]));
+    const messages = [];
+    for (const number of [...issues.keys()].sort((a, b) => a - b)) {
+      if (!Number.isSafeInteger(number) || number < 1) throw new Error("Ongeldig voorstelnummer.");
+      const issue = await gh(`/issues/${number}`);
+      if (issue.number !== number || issue.pull_request || !Array.isArray(issue.labels)) throw new Error("Ongeldig voorstelbewijs.");
+      const labels = labelNamen(issue);
+      const parsed = parseRapportVoorstel(issue);
+      const events = await pages(`/issues/${number}/events`);
+      const relevant = events.filter((e) => ["labeled", "unlabeled"].includes(e.event) && Object.values(VOORSTEL_LABELS).includes(e.label?.name));
+      const last = relevant.at(-1);
+      const rename = events.filter((e) => e.event === "renamed").at(-1)?.id ?? null;
+      // lastEditedAt is noodzakelijk: ook wijzigen en terugzetten verbreekt akkoord.
+      if (!proposalRevision) throw new Error("Voorstelrevisie is niet beschikbaar.");
+      const editedAt = await proposalRevision(number);
+      if (editedAt !== null && (typeof editedAt !== "string" || !Number.isFinite(Date.parse(editedAt)))) throw new Error("Ongeldige voorstelrevisie.");
+      const hash = inhoudHash(issue);
+      const previous = next.get(number);
+      const eligible = parsed.ok && labels.includes(VOORSTEL_LABELS.proposal) && labels.includes(VOORSTEL_LABELS.approve) && !labels.includes(VOORSTEL_LABELS.reject);
+      const realApproval = last?.event === "labeled" && last.label.name === VOORSTEL_LABELS.approve && Number.isSafeInteger(last.id) && last.id > 0;
+      let permission = null;
+      if (eligible && realApproval) {
+        if (!/^[a-z\d](?:[a-z\d-]*[a-z\d])?$/i.test(last.actor?.login || "")) throw new Error("Labelactor ontbreekt.");
+        const result = await gh(`/collaborators/${encodeURIComponent(last.actor.login)}/permission`);
+        if (typeof result?.permission !== "string") throw new Error("Beheerrechten konden niet worden vastgesteld.");
+        permission = result.permission;
+      }
+      const authorized = ["write", "maintain", "admin"].includes(permission);
+      let status = labels.includes(VOORSTEL_LABELS.reject) ? "rejected" : "pending";
+      const stamp = previous?.approval;
+      const unchanged = eligible && realApproval && authorized && stamp?.eventId === last.id && stamp.contentHash === hash &&
+        stamp.editedAt === editedAt && stamp.renameId === rename && stamp.fingerprint === voorstelFingerprint(parsed.voorstel);
+      if (unchanged && previous.status === "approved") status = "approved";
+      const matchingEvent = eventName === "issues" && event.action === "labeled" && event.repository?.full_name === repo &&
+        event.issue?.number === number && !event.issue.pull_request && event.label?.name === VOORSTEL_LABELS.approve &&
+        event.sender?.login === last?.actor?.login && event.issue.updated_at === last?.created_at &&
+        event.issue.updated_at === issue.updated_at && inhoudHash(event.issue) === hash &&
+        (editedAt === null || Date.parse(editedAt) <= Date.parse(last.created_at));
+      if (eligible && realApproval && authorized && matchingEvent && last.id !== stamp?.eventId) {
+        // Herlees direct vóór adoptie: geen akkoord op een intussen gewijzigde tekst.
+        const fresh = await gh(`/issues/${number}`);
+        if (fresh.updated_at !== issue.updated_at || inhoudHash(fresh) !== hash ||
+            JSON.stringify(labelNamen(fresh).sort()) !== JSON.stringify([...labels].sort()) || await proposalRevision(number) !== editedAt)
+          throw new Error("Voorstel veranderde tijdens de beoordeling; probeer opnieuw.");
+        const p = parsed.voorstel;
+        next.set(number, {
+          id: p.id, issue: p.issue, titel: p.titel, auteur: p.auteur, datum: p.datum, url: p.url, reden: p.reden, openbaar: p.openbaar,
+          status: "approved", approval: { eventId: last.id, actor: last.actor.login, at: last.created_at,
+            fingerprint: voorstelFingerprint(p), contentHash: hash, editedAt, renameId: rename },
+        });
+        status = "approved";
+      } else if (previous) next.set(number, { ...previous, status });
+      const body = status === "approved"
+        ? `Dit rapport is aangenomen voor de werklijst. ${claimActie(parsed.voorstel.titel, claimLink(parsed.voorstel.titel, parsed.voorstel.id))}\n\nDit akkoord geldt alleen voor de werklijst. Bronrechten, extractie en opname in de database worden apart gecontroleerd.`
+        : status === "rejected" ? "Dit voorstel is afgewezen en kan niet worden geclaimd. De beheerder licht de reden hier toe."
+        : !parsed.ok ? `Dit voorstel kan nog niet in de werklijst. ${parsed.fouten.join(" ")} Pas het formulier aan; daarna is een nieuw akkoord nodig.`
+        : "Dit voorstel wacht op een nieuw akkoord van een beheerder met schrijfrechten. Na een wijziging moet de beheerder het goedkeuringslabel verwijderen en opnieuw zetten.";
+      // Eén vaste botreactie per voorstel; statusverandering werkt die reactie bij.
+      const marker = mark("rapportvoorstel");
+      const comments = await pages(`/issues/${number}/comments`);
+      const own = comments.find((c) => c.user?.login === "github-actions[bot]" && c.user.type === "Bot" && c.body?.startsWith(marker));
+      const text = `${marker}\n${body}`;
+      if (own?.body !== text) messages.push({ number, id: own?.id, text });
+    }
+    voorstellen = [...next.values()].sort((a, b) => a.issue - b.issue);
+    verversVoorstellen();
+    for (const m of messages) {
+      if (m.id) await gh(`/issues/comments/${m.id}`, { method: "PATCH", body: JSON.stringify({ body: m.text }) });
+      else await comment(m.number, m.text);
+    }
+    return structuredClone(voorstellen);
   }
 
   // Lees een veld uit het claimformulier ("### Label" gevolgd door de waarde).
@@ -143,6 +265,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   // Haal uit de tekst van een claim welke bron het is.
   function identify(issue) {
     const text = `${issue.title}\n${issue.body || ""}`;
+    const id = text.match(/\bvoorstel-([1-9]\d*)(?![A-Za-z0-9-])/i)?.[1];
+    const link = text.match(new RegExp(`https://github\\.com/${repo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/issues/([1-9]\\d*)(?![\\d\\w/-])`))?.[1];
+    const voorstelId = `voorstel-${id || link}`;
+    if ((id || link) && rapportById.get(voorstelId)?.voorstel) return { soort: "rapport", id: voorstelId };
     const m = text.match(/rijksmap\.nl\/rapport\/([a-z0-9-]+)/i);
     if (m) return rapportById.has(m[1].toLowerCase()) ? { soort: "rapport", id: m[1].toLowerCase() } : { onbekendRapport: m[1] };
     const field = formField(issue.body, "Welke bron");
@@ -214,8 +340,8 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       // 1. Welke bron?
       if (!claim.bron) {
         await once("onbekend", claim.onbekendRapport
-          ? `Het rapport \`${claim.onbekendRapport}\` staat (nog) niet in de werklijst. Kies een rapport uit de [werklijst](${docs("voortgang.md")}), of stel het voor in [Discussions](${repoUrl}/discussions).`
-          : `Ik kon niet vinden welke bron je bedoelt. Zet de link naar het rapport op de Rijksmap (\`https://www.rijksmap.nl/rapport/...\`) of de code uit de [werklijst wetten en kaders](${docs("werklijst-wetten-en-kaders.md")}) in je claim. Pas daarvoor je eerste bericht aan; de rest gaat dan vanzelf.`);
+          ? `Het rapport \`${claim.onbekendRapport}\` staat (nog) niet in de werklijst. Kies een rapport uit de [werklijst](${docs("voortgang.md")}), of [stel een rapport voor](${repoUrl}/issues/new?template=rapport-voorstellen.yml).`
+          : `Ik kon niet vinden welke bron je bedoelt. Zet de Rijksmaplink, het aangenomen voorstel-ID (\`voorstel-123\`) of de code uit de [werklijst wetten en kaders](${docs("werklijst-wetten-en-kaders.md")}) in je claim. Pas daarvoor je eerste bericht aan; de rest gaat dan vanzelf.`);
         continue;
       }
 
@@ -224,6 +350,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
       const klaar = claim.bron.soort === "rapport" ? verwerkt.rapporten[claim.bron.id] : inDatabaseKaders.has(claim.bron.id);
       const rapport = claim.bron.soort === "rapport" ? rapportById.get(claim.bron.id) : null;
       const kader = claim.bron.soort === "kader" ? kaderById.get(claim.bron.id) : null;
+      if (rapport?.voorstel && rapport.status !== "approved") {
+        await once("voorstel-wacht", "Dit rapportvoorstel wacht op een nieuw akkoord. Je claim blijft bewaard; wacht met verwerken tot de beheerder het voorstel opnieuw heeft goedgekeurd.");
+        continue;
+      }
       const origineel = rapport && dubbelVan.get(rapport.id);
       const origineelBezet = origineel && (verwerkt.rapporten[origineel] || actiefOp("rapport", origineel));
       if (eerder || klaar || origineelBezet || rapport?.openbaar === "nee") {
@@ -365,7 +495,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     }
     // Status zonder claims: verandert alleen bij een nieuwe database of werklijst.
     const vasteStatus = (r) =>
-      verwerkt.rapporten[r.id] ? "in database" : r.openbaar === "nee" ? "niet openbaar" : dubbelVan.has(r.id) ? "mogelijk dubbel" : "open";
+      r.voorstel && r.status !== "approved" ? "wacht op akkoord" : verwerkt.rapporten[r.id] ? "in database" : r.openbaar === "nee" ? "niet openbaar" : dubbelVan.has(r.id) ? "mogelijk dubbel" : "open";
     const statusOf = (soort, id) => {
       if (soort === "rapport" ? verwerkt.rapporten[id] : inDatabaseKaders.has(id)) return { status: "in database" };
       const c = active.get(`${soort}:${id}`);
@@ -378,19 +508,19 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       const s = vast === "open" ? statusOf("rapport", r.id) : { status: vast };
       const origineel = dubbelVan.get(r.id);
       return {
-        ...r, ...s, vast, omnibus: verwerkt.rapporten[r.id] || "", rijksmap: rijksmapUrl(r.id),
+        ...r, ...s, vast, omnibus: verwerkt.rapporten[r.id] || "", rijksmap: bronUrl(r.id),
         dubbel_van: origineel ? rijksmapUrl(origineel) : "", origineel,
-        claimen: vast === "open" ? claimLink(r.titel, rijksmapUrl(r.id)) : "",
+        claimen: vast === "open" ? claimLink(r.titel, r.voorstel ? r.id : rijksmapUrl(r.id)) : "",
       };
     });
     const bestanden = {};
     // De CSV hangt niet af van claims, zodat hij niet bij elke claim opnieuw in Git komt.
-    const csvRows = rows.map((r) => ({ ...r, status: r.vast }));
+    const csvRows = rows.filter((r) => !r.voorstel).map((r) => ({ ...r, status: r.vast }));
     bestanden["docs/bijdragen/werklijst-rapporten.csv"] = csvText(csvRows,
       ["status", "titel", "datum", "auteur", "ministerie", "onderdeel", "bron", "aanbevolen", "rijksmap", "claimen", "dubbel_van", "omnibus", "id"]);
 
     const count = (list, st) => list.filter((r) => r.status === st).length;
-    const nietBeschikbaar = (list) => count(list, "niet openbaar") + count(list, "mogelijk dubbel") + count(list, "toestemming nodig");
+    const nietBeschikbaar = (list) => count(list, "niet openbaar") + count(list, "mogelijk dubbel") + count(list, "toestemming nodig") + count(list, "wacht op akkoord");
     const aanbevolen = rows.filter((r) => r.aanbevolen === "ja");
 
     // Wetten en kaders
@@ -402,6 +532,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     const allKaders = kaderRows.flatMap((k) => k.items).filter((b) => b.relevantie !== "laag" || b.status === "in database");
 
     const statusLabel = Object.fromEntries(Object.entries({ "in database": "✅ In database", "in bewerking": "🔄 In bewerking", ingeleverd: "📦 Ingeleverd", open: "⬜ Open", "toestemming nodig": "🔒 Toestemming nodig", "niet openbaar": "🔒 Niet openbaar", "mogelijk dubbel": "🔁 Mogelijk dubbel" }).map(([k, v]) => [k, heel(v)]));
+    statusLabel["wacht op akkoord"] = "⏳ Wacht op akkoord";
     const legenda = (extra = []) => [
       "**Legenda**",
       "",
@@ -499,7 +630,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       return { ...c, ingeleverd, dagen: Math.max(0, Math.floor((now() - Date.parse(ingeleverd)) / DAG)) };
     }).sort((a, b) => a.ingeleverd.localeCompare(b.ingeleverd));
     const nameOf = (c) => c.bron.soort === "rapport" ? rapportById.get(c.bron.id).titel : kaderById.get(c.bron.id).titel;
-    const linkOf = (c) => c.bron.soort === "rapport" ? rijksmapUrl(c.bron.id) : kaderById.get(c.bron.id).link;
+    const linkOf = (c) => c.bron.soort === "rapport" ? bronUrl(c.bron.id) : kaderById.get(c.bron.id).link;
     const inDb = rows.filter((r) => r.status === "in database").sort((a, b) => b.datum.localeCompare(a.datum));
     const suggestions = aanbevolen.filter((r) => r.status === "open").slice(0, 15);
     const tellingen = {
@@ -518,7 +649,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "## Zo staat het ervoor",
       "",
-      `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap, en *kaders* zijn de wetten en kaders.`,
+      `Database van ${verwerkt.database}. Daarnaast zitten er ${verwerkt.modellen} onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.`,
       "",
       `**Volgende database:** bij ${RELEASE_BIJ} ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt. Nu ${wachtend.length === 1 ? "ligt er 1 bron" : `liggen er ${wachtend.length} bronnen`} klaar.`,
       "",
@@ -541,7 +672,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "Meer kiezen:",
       "",
       `- [Alle ${aanbevolen.length} aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.`,
-      `- [Alle ${nl(rows.length)} rapporten van de Rijksmap](werklijst/README.md), per soort bron en ministerie, met een claimlink per rapport.`,
+      `- [Alle ${nl(rows.length)} rapporten en beoordeelde voorstellen](werklijst/README.md), per soort bron en ministerie, met een claimlink per rapport.`,
       `- Liever een spreadsheet? Download [werklijst-rapporten.csv](werklijst-rapporten.csv). Dat bestand toont de stand van de database; wie waaraan werkt, staat op de werklijsten.`,
       "- [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.",
       "",
@@ -657,6 +788,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       ["Algemene Rekenkamer", "algemene-rekenkamer", "onderzoeken van de Algemene Rekenkamer"],
       ["Rijksinspecties en andere toezichthouders", "inspecties", "rapporten van inspecties en toezichthouders"],
       ["Onderzoeken en evaluaties", "onderzoeken", "onderzoeken en evaluaties van onderzoeksbureaus en planbureaus"],
+      ["Voorgestelde rapporten", "voorgesteld", "rapporten die via een voorstel zijn beoordeeld; akkoord geldt alleen voor de werklijst"],
     ];
     const bekend = new Set(SOORTEN.map(([naam]) => naam));
     const overig = rows.filter((r) => !bekend.has(r.bron));
@@ -733,7 +865,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "<!-- paginatype: data -->",
       "",
-      `> **In het kort:** alle ${nl(rows.length)} rapporten van de Rijksmap, per soort bron. Kies een soort en een ministerie, en klik op **Claimen**. Twijfel je waar je begint? Neem dan een [aanbevolen rapport](../werklijst-aanbevolen.md).`,
+      `> **In het kort:** alle ${nl(rows.length)} rapporten van de Rijksmap en beoordeelde voorstellen, per soort bron. Kies een soort en een ministerie, en klik op **Claimen**. Twijfel je waar je begint? Neem dan een [aanbevolen rapport](../werklijst-aanbevolen.md).`,
       "",
       AUTOMATISCH,
       "",
@@ -757,7 +889,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       ]),
       "## Liever een spreadsheet?",
       "",
-      "Download [werklijst-rapporten.csv](../werklijst-rapporten.csv), met dezelfde rapporten, de auteur en een claimlink per rapport. Wie waaraan werkt, staat alleen op de werklijsten.",
+      "Download [werklijst-rapporten.csv](../werklijst-rapporten.csv), met de Rijksmaprapporten, de auteur en een claimlink per rapport. Voorgestelde rapporten staan apart in deze werklijst. Wie waaraan werkt, staat alleen op de werklijsten.",
       "",
       "## Volgende stap",
       "",
@@ -806,7 +938,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     };
   }
 
-  return { identify, loadClaims, ensureLabels, reconcile, build, samenvatting, dubbelVan, repoUrl };
+  return { identify, loadClaims, ensureLabels, reviewProposals, reconcile, build, samenvatting, dubbelVan, repoUrl };
 }
 
 // ---------- ingeleverd pakket controleren ----------

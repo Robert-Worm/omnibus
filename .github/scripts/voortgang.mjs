@@ -2,8 +2,7 @@
 //
 // Lokaal draaien:
 //   node .github/scripts/voortgang.mjs
-// Zonder GITHUB_TOKEN leest het script de openbare claims alleen; het plaatst geen
-// reacties en wijzigt geen labels. In GitHub Actions verwerkt het ook de opdrachten
+// Zonder GITHUB_TOKEN of met --offline verandert het script niets. In GitHub Actions verwerkt het ook de opdrachten
 // /inleveren en /vrijgeven. De logica staat in voortgang-lib.mjs.
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -15,6 +14,10 @@ const dataDir = join(root, ".github", "voortgang");
 const repo = process.env.GITHUB_REPOSITORY || "Robert-Worm/omnibus";
 const token = process.env.GITHUB_TOKEN;
 const offline = process.argv.includes("--offline");
+if (offline || !token) {
+  console.log("Alleen lezen: geen GitHub- of bestandswijzigingen; actuele evidence is nodig om lijsten te vernieuwen.");
+  process.exit(0);
+}
 
 // Pagina's met tellingen tussen <!--n:…--> markeringen (zie database-publiceren.md).
 const MET_TELLINGEN = ["README.md", "docs/routekaart.md", "docs/begrippen.md", "docs/bijdragen/README.md"];
@@ -26,6 +29,7 @@ const data = {
   kaders: json("wetten-en-kaders.json"),
   modellen: json("modellen.json"),
   dubbelingen: json("dubbelingen.json"),
+  voorstellen: json("voorgestelde-rapporten.json"),
 };
 
 async function gh(path, options = {}) {
@@ -37,7 +41,7 @@ async function gh(path, options = {}) {
       Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(options.headers || {}),
     },
   });
-  if (!res.ok && res.status !== 422) throw new Error(`GitHub ${options.method || "GET"} ${path}: ${res.status} ${await res.text()}`);
+  if (!res.ok) throw new Error(`GitHub ${options.method || "GET"} ${path}: ${res.status} ${await res.text()}`);
   return res.status === 204 ? null : res.json();
 }
 
@@ -57,22 +61,25 @@ async function download(url, maxBytes) {
   return Buffer.concat(delen);
 }
 
-const v = maakVoortgang({ data, repo, gh, download: token ? download : null });
-let claims = [];
-if (!offline) {
-  try {
-    claims = await v.loadClaims();
-  } catch (fout) {
-    if (token) throw fout;
-    console.warn(`Claims konden niet worden gelezen (${fout.message.split(":")[0]}); de pagina's tonen nu geen claims.`);
-  }
+async function proposalRevision(number) {
+  const [owner, name] = repo.split("/");
+  const result = await graphql(`query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){issue(number:$number){lastEditedAt}}}`, { owner, name, number });
+  const issue = result?.repository?.issue;
+  if (!issue || !("lastEditedAt" in issue)) throw new Error("Voorstelrevisie ontbreekt.");
+  return issue.lastEditedAt;
 }
-if (token) {
-  await v.ensureLabels();
-  await v.reconcile(claims);
-  claims = await v.loadClaims();
-}
+const v = maakVoortgang({ data, repo, gh, proposalRevision, download });
+// Lees eerst claims: een API-fout mag geen bestaande claims wissen.
+await v.loadClaims();
+const eventName = process.env.GITHUB_EVENT_NAME || "";
+const event = process.env.GITHUB_EVENT_PATH ? JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")) : {};
+const voorstellen = await v.reviewProposals({ event, eventName });
+await v.ensureLabels();
+let claims = await v.loadClaims();
+await v.reconcile(claims);
+claims = await v.loadClaims();
 const { bestanden, tellingen, stats } = v.build(claims);
+writeFileSync(join(dataDir, "voorgestelde-rapporten.json"), JSON.stringify(voorstellen, null, 2) + "\n");
 for (const [rel, tekst] of Object.entries(bestanden)) {
   mkdirSync(dirname(join(root, rel)), { recursive: true });
   writeFileSync(join(root, rel), tekst);
