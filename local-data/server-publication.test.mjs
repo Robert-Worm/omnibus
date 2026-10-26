@@ -18,6 +18,36 @@ const scratch = fileURLToPath(new URL('../.tmp/', import.meta.url));
 // Normal runs use ephemeral ports; an isolated review can reserve an adjacent pair.
 const testPort = Number(process.env.OMNIBUS_PUBLICATION_TEST_PORT || 0);
 const secondPort = testPort ? testPort + 1 : 0;
+// https://fetch.spec.whatwg.org/#port-blocking
+const blockedBrowserPorts = new Set([
+  0,1,7,9,11,13,15,17,19,20,21,22,23,25,37,42,43,53,69,77,79,87,95,101,102,103,104,
+  109,110,111,113,115,117,119,123,135,137,139,143,161,179,389,427,465,512,513,514,
+  515,526,530,531,532,540,548,554,556,563,587,601,636,989,990,993,995,1719,1720,
+  1723,2049,3659,4045,4190,5060,5061,6000,6566,6665,6666,6667,6668,6669,6679,6697,10080,
+]);
+async function browserFixture(start, requestedPort = 0) {
+  // Keep ephemeral listeners separate: reusing a fixed port can reuse a closed
+  // fetch connection across fixtures. Only skip explicitly blocked ports.
+  for (let attempt = 0; attempt < 16; attempt++) {
+    const app = await start();
+    if (!blockedBrowserPorts.has(Number(new URL(app.url).port))) return app;
+    await app.close();
+    if (requestedPort) throw Error('Configured test port is blocked by Fetch');
+  }
+  throw Error('Could not allocate a browser-compatible ephemeral test port');
+}
+
+test('browser fixture closes unsuitable ephemeral listeners without retrying startup errors', async () => {
+  const ports = [6000, 6667, 8080], closed = [];
+  const app = await browserFixture(async () => {
+    const port = ports.shift();
+    return { url: `http://127.0.0.1:${port}`, close: async () => { closed.push(port); } };
+  });
+  assert.equal(app.url, 'http://127.0.0.1:8080');
+  assert.deepEqual(closed, [6000, 6667]);
+  const error = Error('Runtime readiness startup refused');
+  await assert.rejects(browserFixture(async () => { throw error; }), value => value === error);
+});
 const doc = (id, text) => ({ id, title: id, pages: [
   { page: 1, text: `1 Titel\n${text} 😀é` }, { page: 2, text: `${text} tweede pagina` },
 ] });
@@ -89,7 +119,7 @@ function fixture(t) {
       // including in deliberately corrupt startup cases.
       const reader = new CatalogueRepository(databasePath, { readOnly: true });
       try {
-        const app = await serveCatalogue(reader, { port: testPort, webRoot, ...options });
+        const app = await browserFixture(() => serveCatalogue(reader, { port: testPort, webRoot, ...options }), options.port ?? testPort);
         readers.push(reader); apps.push(app); return app;
       } catch (error) { reader.close(); throw error; }
     },
@@ -429,8 +459,8 @@ test('standalone catalogue tooling remains explicit through absence of a web bui
 test('supported preview entry point inherits the same publication restriction', async t => {
   const f = fixture(t);
   f.readOnly();
-  const app = f.own(await startDatabasePreview({ databasePath: f.databasePath, webRoot: f.webRoot, port: testPort,
-    release: f.release, publication: f.publication }));
+  const app = f.own(await browserFixture(() => startDatabasePreview({ databasePath: f.databasePath, webRoot: f.webRoot, port: testPort,
+    release: f.release, publication: f.publication }), testPort));
   assert.equal((await fetch(app.url + `/api/v1/documents/${f.selectedSource.version}/pages/1`)).status, 200);
   await denied(app.url, [
     `/api/v1/catalogue?release=${f.release}`,
