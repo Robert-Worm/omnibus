@@ -91,7 +91,10 @@ export function issueTekst(kapot, datum) {
 
 export function documentatieBestanden(root) {
   return execFileSync("git", ["ls-files", "README.md", "docs/*.md", "docs/**/*.md"], { cwd: root, encoding: "utf8" })
-    .split("\n").filter(Boolean);
+    .split("\n").filter(Boolean)
+    // De werklijsten per soort bron bevatten ruim 9.000 Rijksmap-links uit de bronlijst. Die wekelijks
+    // allemaal opvragen belast de Rijksmap; de aanbevolen werklijst blijft wel gecontroleerd.
+    .filter((rel) => !rel.startsWith("docs/bijdragen/werklijst/"));
 }
 
 async function controleerAlles(root) {

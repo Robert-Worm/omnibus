@@ -5,7 +5,7 @@
 // Zonder GITHUB_TOKEN leest het script de openbare claims alleen; het plaatst geen
 // reacties en wijzigt geen labels. In GitHub Actions verwerkt het ook de opdrachten
 // /inleveren en /vrijgeven. De logica staat in voortgang-lib.mjs.
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { maakVoortgang, readCsv, werkTellingenBij } from "./voortgang-lib.mjs";
@@ -77,6 +77,12 @@ for (const [rel, tekst] of Object.entries(bestanden)) {
   mkdirSync(dirname(join(root, rel)), { recursive: true });
   writeFileSync(join(root, rel), tekst);
 }
+// De werklijsten per soort en ministerie zijn allemaal gegenereerd: een pagina die niet meer
+// gemaakt wordt (bijvoorbeeld na een andere opsplitsing), gaat weg.
+const WERKLIJST = "docs/bijdragen/werklijst";
+if (existsSync(join(root, WERKLIJST)))
+  for (const naam of readdirSync(join(root, WERKLIJST)))
+    if (naam.endsWith(".md") && !(`${WERKLIJST}/${naam}` in bestanden)) rmSync(join(root, WERKLIJST, naam));
 for (const rel of MET_TELLINGEN) {
   const pad = join(root, rel);
   const oud = readFileSync(pad, "utf8");

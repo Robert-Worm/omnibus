@@ -510,3 +510,24 @@ test("wie een claim zelf sluit met /vrijgeven, krijgt alsnog een vrijgave; het w
   assert.match(week.tekst, /### ↩️ Weer vrijgegeven \(1\)/);
   assert.doesNotMatch(week.tekst, /Nieuw geclaimd/);
 });
+
+test("alle rapporten staan in bladerbare werklijsten, met auteur en dezelfde claimknop (#231, #232)", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  const v = await draai(g);
+  const { bestanden } = v.build(await v.loadClaims());
+  const index = bestanden["docs/bijdragen/werklijst/README.md"];
+  assert.match(index, /# Alle rapporten/);
+  const paginas = Object.keys(bestanden).filter((p) => p.startsWith("docs/bijdragen/werklijst/") && !p.endsWith("README.md"));
+  assert.ok(paginas.length >= 2, "een pagina per soort bron");
+  for (const p of paginas) assert.ok(index.includes(`](${p.split("/").pop()})`), `${p} staat in het overzicht`);
+  const alles = paginas.map((p) => bestanden[p]).join("\n");
+  // Elk open, openbaar rapport heeft een claimknop; de NZa-rapporten (niet aanbevolen) ook.
+  assert.match(alles, /Monitor toegankelijkheid van zorg gevolgen\]\([^)]+\)<br>2025‑0\d‑10 · NZa \| ⬜\s?Open \| \[Claimen\]/);
+  assert.doesNotMatch(alles, /Vertrouwelijk onderzoek[^\n]*\[Claimen\]/);
+  // Een lopende claim staat ook hier.
+  assert.match(alles, new RegExp(`\\[Claim van @anna\\]\\(https://github.com/x/y/issues/${n}\\)`));
+  // Auteur ook in de aanbevolen lijst en het CSV-bestand.
+  assert.match(bestanden["docs/bijdragen/werklijst-aanbevolen.md"], /· Auditdienst Rijk \|/);
+  assert.match(bestanden["docs/bijdragen/werklijst-rapporten.csv"].split("\n")[0], /auteur/);
+});

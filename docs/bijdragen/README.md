@@ -76,7 +76,7 @@ Binnen een paar minuten reageert de bot in je claim:
 | --- | --- |
 | [Voortgang](voortgang.md) | Het overzicht, met een paar aanbevolen rapporten om mee te beginnen |
 | [Aanbevolen rapporten](werklijst-aanbevolen.md) | <!--n:aanbevolen-->542<!--/n--> adviesrapporten van de Auditdienst Rijk, per ministerie, met een claimlink: veel bruikbare normen |
-| [Alle rapporten](werklijst-rapporten.csv) | Alle <!--n:alle-->9.116<!--/n--> rapporten van de [Rijksmap](https://www.rijksmap.nl) (CSV-bestand om te downloaden) |
+| [Alle rapporten](werklijst/README.md) | Alle <!--n:alle-->9.116<!--/n--> rapporten van de [Rijksmap](https://www.rijksmap.nl), per soort bron en ministerie, met auteur en een claimlink |
 | [Wetten en kaders](werklijst-wetten-en-kaders.md) | Wetten, regels en normenkaders, met wat er voor overheidsaudit het meest toe doen bovenaan |
 
 Begin bij voorkeur met een **aanbevolen rapport**: die leveren de meeste bruikbare normen op.

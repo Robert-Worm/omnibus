@@ -352,7 +352,7 @@ const heel = (tekst) => tekst.replace(" ", "\u00a0"); // icoon en eerste woord b
 const datumCel = (datum) => String(datum).replace(/-/g, "\u2011");
 const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\- ]/u.test(c)).join("").replace(/ /g, "-");
   // Claimlink met een titel die de bron noemt, zodat elke link herkenbaar is (ook voor een schermlezer).
-  const claimActie = (titel, url) => `[Claimen](${url} "Claimen: ${String(titel).replace(/"/g, "”")}")`;
+  const claimActie = (titel, url) => `[Claimen](${url} "Claimen: ${short(String(titel), 90).replace(/"/g, "”").replace(/\|/g, "/")}")`;
   const AUTOMATISCH = "*Automatisch bijgewerkt door het voortgangsscript. Pas deze pagina niet met de hand aan; de gegevens staan in `.github/voortgang/`.*";
   const esc = (s) => String(s).replace(/\|/g, "/");
   const nl = (n) => n.toLocaleString("nl-NL");
@@ -387,7 +387,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     // De CSV hangt niet af van claims, zodat hij niet bij elke claim opnieuw in Git komt.
     const csvRows = rows.map((r) => ({ ...r, status: r.vast }));
     bestanden["docs/bijdragen/werklijst-rapporten.csv"] = csvText(csvRows,
-      ["status", "titel", "datum", "ministerie", "onderdeel", "bron", "aanbevolen", "rijksmap", "claimen", "dubbel_van", "omnibus", "id"]);
+      ["status", "titel", "datum", "auteur", "ministerie", "onderdeel", "bron", "aanbevolen", "rijksmap", "claimen", "dubbel_van", "omnibus", "id"]);
 
     const count = (list, st) => list.filter((r) => r.status === st).length;
     const nietBeschikbaar = (list) => count(list, "niet openbaar") + count(list, "mogelijk dubbel") + count(list, "toestemming nodig");
@@ -541,7 +541,8 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "Meer kiezen:",
       "",
       `- [Alle ${aanbevolen.length} aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.`,
-      `- [Alle ${nl(rows.length)} rapporten van de Rijksmap](werklijst-rapporten.csv), als CSV-bestand om te downloaden en te filteren. Dit bestand toont de stand van de database; wie waaraan werkt, staat alleen op deze pagina.`,
+      `- [Alle ${nl(rows.length)} rapporten van de Rijksmap](werklijst/README.md), per soort bron en ministerie, met een claimlink per rapport.`,
+      `- Liever een spreadsheet? Download [werklijst-rapporten.csv](werklijst-rapporten.csv). Dat bestand toont de stand van de database; wie waaraan werkt, staat op de werklijsten.`,
       "- [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.",
       "",
       "## Nu in bewerking",
@@ -589,6 +590,9 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
     ].join("\n");
 
+    // Eén rij per rapport, overal gelijk: titel, datum en auteur, status en claimknop.
+    const rapportRij = (r) => `| [${afbreekbaar(esc(short(r.titel, 90)))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(short(r.auteur || "auteur onbekend", 40))} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`;
+
     // Aanbevolen rapporten als leesbare pagina, per ministerie
     const perMin = new Map();
     for (const r of aanbevolen) (perMin.get(r.ministerie) || perMin.set(r.ministerie, []).get(r.ministerie)).push(r);
@@ -624,7 +628,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
           "",
           "| Bron | Status | Actie |",
           "| --- | --- | --- |",
-          ...list.map((r) => `| [${afbreekbaar(esc(short(r.titel, 100)))}](${r.rijksmap})<br>${datumCel(r.datum)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`),
+          ...list.map(rapportRij),
           "",
           "</details>",
           "",
@@ -636,11 +640,132 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       "## Volgende stap",
       "",
-      `Na het claimen volg je [een bron verwerken](bron-verwerken.md). Alle ${nl(rows.length)} rapporten staan in [werklijst-rapporten.csv](werklijst-rapporten.csv).`,
+      `Na het claimen volg je [een bron verwerken](bron-verwerken.md). Alle ${nl(rows.length)} rapporten staan bij [alle rapporten](werklijst/README.md).`,
       "",
       "---",
       "",
       VOET,
+      "",
+    ].join("\n");
+
+    // Alle rapporten: per soort bron. Een grote soort per ministerie, een groot ministerie per periode,
+    // zodat elke pagina op GitHub snel laadt. Elke rij heeft dezelfde claimknop als de aanbevolen lijst.
+    const MAX_RIJEN = 450;
+    const slug = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const SOORTEN = [
+      ["Auditdienst Rijk", "auditdienst-rijk", "audits en adviezen van de interne auditdienst van het Rijk"],
+      ["Algemene Rekenkamer", "algemene-rekenkamer", "onderzoeken van de Algemene Rekenkamer"],
+      ["Rijksinspecties en andere toezichthouders", "inspecties", "rapporten van inspecties en toezichthouders"],
+      ["Onderzoeken en evaluaties", "onderzoeken", "onderzoeken en evaluaties van onderzoeksbureaus en planbureaus"],
+    ];
+    const bekend = new Set(SOORTEN.map(([naam]) => naam));
+    const overig = rows.filter((r) => !bekend.has(r.bron));
+    if (overig.length) SOORTEN.push(["Overige rapporten", "overig", "rapporten van andere bronnen"]);
+    const WL = "docs/bijdragen/werklijst";
+    const VOET_WL = "[↑ Alle rapporten](README.md) · [Wegwijzer](../../README.md) · [Begrippen](../../begrippen.md) · [Routekaart](../../routekaart.md)";
+    const stand = (list) => `**Stand:** ${nl(count(list, "in database"))} in de database · ${nl(count(list, "in bewerking") + count(list, "ingeleverd"))} in bewerking of ingeleverd · ${nl(count(list, "open"))} open.`;
+    const perPeriode = (list) => {
+      const delen = [];
+      for (let i = 0; i < list.length; i += MAX_RIJEN) delen.push(list.slice(i, i + MAX_RIJEN));
+      return delen.map((deel) => {
+        const nieuw = deel[0].datum.slice(0, 4), oud = deel.at(-1).datum.slice(0, 4);
+        return { deel, periode: nieuw === oud ? nieuw : `${oud}–${nieuw}` };
+      });
+    };
+    const lijstPagina = (pad, titel, uitleg, list) => {
+      bestanden[pad] = [
+        `# ${titel}`,
+        "",
+        "<!-- paginatype: data -->",
+        "<!-- check-docs: geen-woordcontrole -->",
+        "",
+        `> **In het kort:** ${uitleg} Klik op **Claimen** om een rapport op je naam te zetten.`,
+        "",
+        AUTOMATISCH,
+        "",
+        stand(list),
+        "",
+        legenda(),
+        "",
+        "## Rapporten",
+        "",
+        "Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur.",
+        "",
+        "| Bron | Status | Actie |",
+        "| --- | --- | --- |",
+        ...list.map(rapportRij),
+        "",
+        "## Volgende stap",
+        "",
+        "Na het claimen volg je [een bron verwerken](../bron-verwerken.md).",
+        "",
+        "---",
+        "",
+        VOET_WL,
+        "",
+      ].join("\n");
+    };
+    const overzicht = [];
+    for (const [naam, sleutel, uitleg] of SOORTEN) {
+      const list = (sleutel === "overig" ? overig : rows.filter((r) => r.bron === naam)).sort((a, b) => b.datum.localeCompare(a.datum) || a.titel.localeCompare(b.titel));
+      if (!list.length) continue;
+      const paginas = [];
+      if (list.length <= MAX_RIJEN) paginas.push({ label: "Alle", bestand: `${sleutel}.md`, list });
+      else {
+        const perMinisterie = new Map();
+        for (const r of list) (perMinisterie.get(r.ministerie) || perMinisterie.set(r.ministerie, []).get(r.ministerie)).push(r);
+        for (const m of [...perMinisterie.keys()].sort((a, b) => a.localeCompare(b, "nl"))) {
+          const delen = perMinisterie.get(m).length <= MAX_RIJEN ? [{ deel: perMinisterie.get(m), periode: null }] : perPeriode(perMinisterie.get(m));
+          delen.forEach(({ deel, periode }, i) => {
+            // Twee delen met dezelfde periode (veel rapporten in één jaar) krijgen een volgnummer.
+            const dubbel = periode && delen.some((d, j) => j !== i && d.periode === periode);
+            const naamDeel = periode ? `${periode}${dubbel ? ` (${i + 1})` : ""}` : null;
+            paginas.push({ label: naamDeel ? `${m}, ${naamDeel}` : m, bestand: `${sleutel}-${slug(m)}${naamDeel ? "-" + slug(naamDeel) : ""}.md`, list: deel });
+          });
+        }
+      }
+      for (const pg of paginas)
+        lijstPagina(`${WL}/${pg.bestand}`, `${naam}${pg.label === "Alle" ? "" : ` · ${pg.label}`}`, `${pg.list.length} ${uitleg}${pg.label === "Alle" ? "" : `, ${pg.label}`}.`, pg.list);
+      overzicht.push({ naam, uitleg, list, paginas });
+    }
+    bestanden[`${WL}/README.md`] = [
+      "# Alle rapporten",
+      "",
+      "<!-- paginatype: data -->",
+      "",
+      `> **In het kort:** alle ${nl(rows.length)} rapporten van de Rijksmap, per soort bron. Kies een soort en een ministerie, en klik op **Claimen**. Twijfel je waar je begint? Neem dan een [aanbevolen rapport](../werklijst-aanbevolen.md).`,
+      "",
+      AUTOMATISCH,
+      "",
+      stand(rows),
+      "",
+      "| Soort bron | Open | Totaal |",
+      "| --- | ---: | ---: |",
+      ...overzicht.map((o) => `| [${o.naam}](#${anker(o.naam)}) | ${nl(count(o.list, "open"))} | ${nl(o.list.length)} |`),
+      "",
+      ...overzicht.flatMap((o) => [
+        `## ${o.naam}`,
+        "",
+        `${nl(o.list.length)} ${o.uitleg}.`,
+        "",
+        ...(o.paginas.length === 1 ? [`Bekijk [alle ${nl(o.list.length)} rapporten](${o.paginas[0].bestand}).`, ""] : [
+          "| Ministerie | Open | Totaal |",
+          "| --- | ---: | ---: |",
+          ...o.paginas.map((pg) => `| [${esc(pg.label)}](${pg.bestand}) | ${nl(count(pg.list, "open"))} | ${nl(pg.list.length)} |`),
+          "",
+        ]),
+      ]),
+      "## Liever een spreadsheet?",
+      "",
+      "Download [werklijst-rapporten.csv](../werklijst-rapporten.csv), met dezelfde rapporten, de auteur en een claimlink per rapport. Wie waaraan werkt, staat alleen op de werklijsten.",
+      "",
+      "## Volgende stap",
+      "",
+      "Na het claimen volg je [een bron verwerken](../bron-verwerken.md).",
+      "",
+      "---",
+      "",
+      "[↑ Meedoen](../README.md) · [Wegwijzer](../../README.md) · [Begrippen](../../begrippen.md) · [Routekaart](../../routekaart.md)",
       "",
     ].join("\n");
 
