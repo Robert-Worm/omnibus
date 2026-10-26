@@ -4,6 +4,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sourceRuntimeFixture } from "./local-source-runtime-fixture.mjs";
+import { prepareCorrectionBrowserBase } from "./correction-browser-base.mjs";
 import { createReviewManifest } from "../review-change-set.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -67,26 +68,59 @@ function reviewed(f, version) {
   return { basis, manifest };
 }
 
-export async function correctionWorkflowFixture(t, { configureAfter = () => {} } = {}) {
+export async function correctionWorkflowFixture(t, { configureAfter = () => {}, kind = "framework", browser = false } = {}) {
   mkdirSync(join(root, "work"), { recursive: true });
   const dir = mkdtempSync(join(root, "work", "source-correction-"));
   const prior = Object.fromEntries(["TMP", "TEMP", "TMPDIR"].map(key => [key, process.env[key]]));
   for (const key of Object.keys(prior)) process.env[key] = dir;
   let before, after;
+  const author = kind === "report" ? authorReportVersion : authorSyntheticVersion;
   try {
-    before = await sourceRuntimeFixture(t, "framework", f => authorSyntheticVersion(f, 1));
-    after = await sourceRuntimeFixture(t, "framework", f => { authorSyntheticVersion(f, 2); configureAfter(f); });
+    before = await sourceRuntimeFixture(t, kind, f => author(f, 1));
+    after = await sourceRuntimeFixture(t, kind, f => { author(f, 2); configureAfter(f); });
   } finally {
     for (const [key, value] of Object.entries(prior)) if (value === undefined) delete process.env[key]; else process.env[key] = value;
   }
+  if (browser) prepareCorrectionBrowserBase(before);
   const old = reviewed(before, 1), current = reviewed(after, 2);
   const correction = { previousBasis: old.basis, previousManifest: old.manifest, currentBasis: current.basis,
     currentManifest: current.manifest, notes: [
       { sourceId: "FICTIEF", itemId: "C1", summary: "De maatregel benoemt nu de beheerder, behandelaar, ontvangstdatum en uitkomst." },
       { sourceId: "FICTIEF", itemId: "C2", summary: "De afhankelijkheid van C1 is opnieuw beoordeeld; de eigen norm en keten zijn ongewijzigd." }] };
+  if (kind === "report") correction.notes = [{ sourceId: "FICTIEF", itemId: "K1", summary: "De fictieve maatregel benoemt nu de ontvangstdatum." }];
   const correctionPath = join(dir, "correction.json"); put(correctionPath, correction);
   const fixture = { synthetic: true, dir, before, after, correction, correctionPath };
   put(join(dir, "paths.json"), { synthetic: true, correction: correctionPath,
     beforePlan: before.options.plan, afterPlan: after.options.plan, beforeBase: before.options.base });
   return fixture;
+}
+
+function authorReportVersion(f, version) {
+  f.manifest.package.version = "synthetic-correction-" + version;
+  const app = f.read("APP-FINAL.json"), line = app.framework.lines[0];
+  if (version === 2) line.control.text += " Leg ook de ontvangstdatum vast.";
+  f.set("APP-FINAL.json", app);
+  const projection = f.read("REUSE-VIEWER-PROJECTION.json");
+  projection.blocks[0].line = structuredClone(line); f.set("REUSE-VIEWER-PROJECTION.json", projection);
+  for (const role of ["SOURCE", "PRACTICAL"]) {
+    const review = f.read("reviews/" + role + ".json");
+    review.synthetic = true; review.test_version = version; f.set("reviews/" + role + ".json", review);
+  }
+  const originals = f.manifest.files.filter(file => file.roles.includes("source"));
+  const document = originals[0], edition = "synthetic-source-edition-1";
+  const basis = { format: "omnibus-review-basis", schemaVersion: 1, scopeId: "synthetic-report-correction",
+    inventoryComplete: true, rubricVersion: "synthetic-1", protocolVersion: "synthetic-1", context: { synthetic: true },
+    sources: [{ id: f.manifest.package.id, version: edition, context: { synthetic: true },
+      applicability: { scope: "Alleen fictieve meldingen" }, hold: { active: false },
+      documents: originals.map(file => ({ id: file.id, version: edition, sha256: file.sha256 })),
+      items: [{ id: line.id, norm: line.criterion.text, doel: line.objective.text, risico: line.risk.text,
+        beheersdoelstelling: f.read("REUSE-CANDIDATE.json").control_objectives[0].text, beheersmaatregel: line.control.text,
+        context: { line }, applicability: { scope: "Alleen fictieve meldingen" }, hold: { active: false },
+        toetspunten: [{ id: "K1/TP01", text: line.criterion.text, opzet: line.procedure.text, bestaan: "Bekijk één fictieve registratie." }],
+        passages: app.framework.evidence.map(e => ({ id: e.id, documentId: document.id, documentVersion: edition,
+          documentSha256: document.sha256, text: e.quote, location: { page: e.page, start: e.start, end: e.end }, context: line.exportContext })),
+        dependencies: [], evidence: { complete: true, gaps: [] } }] }] };
+  f.set("CORRECTION-BASIS.json", basis);
+  const reviewBasis = f.read("REVIEW-BASIS.json"); reviewBasis.files["CORRECTION-BASIS.json"] = f.paths.get("CORRECTION-BASIS.json").sha256;
+  f.set("REVIEW-BASIS.json", reviewBasis);
 }

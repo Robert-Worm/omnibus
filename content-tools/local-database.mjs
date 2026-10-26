@@ -12,7 +12,7 @@ import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { validateModelLibrary } from "../lib/model-library-validation.mjs";
 import { structureModelData } from "../lib/model-structure.mjs";
 import { prepareLocalModelRuntime, writeLocalModelRuntime } from "./local-model-runtime.mjs";
-import { prepareLocalSourceRuntime } from "./local-source-runtime.mjs";
+import { prepareLocalSourceRuntime, prepareLocalSourceCorrection } from "./local-source-runtime.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
 import { checkLocalSourceReview, localSourceSnapshot, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
 import { baselineArchiveIds, reserveLocalPackageBytes } from "./local-evidence-budget.mjs";
@@ -222,6 +222,50 @@ async function readPackage(entry, planRoot, budget) {
   return { ...snapshot, manifest, files, intakeBytes, root, checked, authorIds: entry.authorIds, admission };
 }
 
+// Shared by the ordinary builder and correction source gate. Always reads and
+// checks the actual bytes; returned snapshots never come from caller JSON.
+export async function readLocalDatabaseInputs(plan, budget = { bytes: 0, archiveBytes: 0 }, expectedPlanSha256) {
+  const planPath = resolve(plan), planBytes = readBytes(planPath, intakeLimits.manifestBytes, expectedPlanSha256);
+  const input = json(planBytes, "local database plan");
+  exactKeys(input, ["format", "schemaVersion", "packages", ...(Object.hasOwn(input ?? {}, "correction") ? ["correction"] : [])], "local database plan");
+  requireValue(input.format === "omnibus-local-database" && input.schemaVersion === 1, "Unsupported local database plan");
+  requireValue(Array.isArray(input.packages) && input.packages.length > 0 && input.packages.length <= localDatabaseLimits.packages,
+    "Select 1 to 64 explicit packages");
+  const snapshots = [], ids = new Set();
+  for (const [index, entry] of input.packages.entries()) {
+    try {
+      const snapshot = await readPackage(entry, dirname(planPath), budget), id = snapshot.manifest.package.id;
+      requireValue(!ids.has(id.toLowerCase()), `Duplicate package identity: ${id}`);
+      ids.add(id.toLowerCase()); snapshots.push(snapshot);
+    } catch (error) { throw new Error(`PACKAGE_CHECK[${index + 1}]: ${error.message}`, { cause: error }); }
+  }
+  return { input, planPath, planBytes, snapshots, budget };
+}
+
+export function localDatabaseBundle(snapshots, planSha256) {
+  const bundle = { manifest: { format: "omnibus-local-review-database", schemaVersion: 1,
+    contentGate: "INTEGRATION_REVIEW_REQUIRED", planSha256, runtimeContract: runtimeContractHash },
+  packages: [], documents: [], artifacts: [] };
+  for (const snapshot of snapshots) {
+    const { manifest, files, model, documents, review, checked, authorIds, intakeBytes } = snapshot;
+    const id = manifest.package.id;
+    bundle.packages.push({ id, kind: manifest.package.kind, title: manifest.package.title, intakeVersion: manifest.package.version,
+      intakeSha256: checked.manifestSha256, reviewStatus: review.status,
+      records: snapshot.records ?? [{ id, kind: "model", title: model.title, status: "HOLD", data: model }] });
+    bundle.documents.push(...documents);
+    bundle.artifacts.push({ name: `${id}/intake`, data: { encoding: "base64", sha256: checked.manifestSha256,
+      bytes: intakeBytes.length, content: intakeBytes.toString("base64") } });
+    bundle.artifacts.push({ name: `${id}/review-check`, data: { authorIds, ...review, newContentApproval: false,
+      ...(snapshot.sourceEvidence ? { sourceEvidencePins: snapshot.sourceEvidence } : {}) } });
+    if (snapshot.admission) bundle.artifacts.push({ name: `${id}/local-owner-admission`, data: {
+      encoding: "base64", sha256: snapshot.admission.sha256, bytes: snapshot.admission.bytes.length,
+      content: snapshot.admission.bytes.toString("base64"), scope: "local-database-only" } });
+    for (const file of manifest.files) bundle.artifacts.push({ name: `${id}/files/${file.id}`,
+      data: { ...file, encoding: "base64", content: files.get(file.id).toString("base64") } });
+  }
+  return bundle;
+}
+
 function outputPath(out, roots) {
   requireValue(nonempty(out), "Choose an explicit new output folder");
   const target = resolve(out);
@@ -249,20 +293,8 @@ function verifyDatabase(database, release) {
 async function runLocalDatabase({ plan, out, base }, checkOnly) {
   let phase = "INPUT_CHECK";
   try {
-    const planPath = resolve(plan), planBytes = readBytes(planPath, intakeLimits.manifestBytes);
-    const input = json(planBytes, "local database plan");
-    exactKeys(input, ["format", "schemaVersion", "packages"], "local database plan");
-    requireValue(input.format === "omnibus-local-database" && input.schemaVersion === 1, "Unsupported local database plan");
-    requireValue(Array.isArray(input.packages) && input.packages.length > 0 && input.packages.length <= localDatabaseLimits.packages,
-      "Select 1 to 64 explicit packages");
     if (!checkOnly) outputPath(out, []);
-    const snapshots = [], ids = new Set(), budget = { bytes: 0, archiveBytes: 0 };
-    for (const [index, entry] of input.packages.entries()) {
-      phase = `PACKAGE_CHECK[${index + 1}]`;
-      const snapshot = await readPackage(entry, dirname(planPath), budget), id = snapshot.manifest.package.id;
-      requireValue(!ids.has(id.toLowerCase()), `Duplicate package identity: ${id}`);
-      ids.add(id.toLowerCase()); snapshots.push(snapshot);
-    }
+    const { input, planPath, planBytes, snapshots, budget } = await readLocalDatabaseInputs(plan);
     const ownerAdmissions = snapshots.filter(item => item.admission).map(item => ({
       packageId: item.manifest.package.id, intakeSha256: item.checked.manifestSha256,
       sha256: item.admission.sha256, ownerId: item.admission.receipt.ownerId,
@@ -284,32 +316,41 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
           ? "Local owner admissions are recorded against checked evidence. Standalone runtime projection and application integration remain required. No runtime publication or local-build.json was created."
           : "Checked package evidence does not grant application access. Actual reading and role independence require retained coordinator and owner observations. No runtime publication or local-build.json was created." } };
     phase = "BASE_PUBLICATION_CHECK";
-    const runtimeBase = base ? (snapshots.some(item => !item.model) ? prepareLocalSourceRuntime : prepareLocalModelRuntime)(base, snapshots) : null;
+    let runtimeBase;
+    let correctionEvidence;
+    let previousSnapshots = [];
+    if (Object.hasOwn(input, "correction")) {
+      phase = "CORRECTION_CHECK";
+      requireValue(base, "A correction needs the pinned current --base publication");
+      const ref = input.correction;
+      exactKeys(ref, ["file", "sha256", "beforePlan", "beforePlanSha256"], "correction reference");
+      requireValue(nonempty(ref.file) && nonempty(ref.beforePlan) && hash(ref.sha256) && hash(ref.beforePlanSha256),
+        "Correction needs independently retained evidence and previous plan hashes");
+      const evidenceBytes = readBytes(resolve(dirname(planPath), ref.file), localDatabaseLimits.jsonBytes, ref.sha256);
+      const previous = await readLocalDatabaseInputs(resolve(dirname(planPath), ref.beforePlan), budget, ref.beforePlanSha256);
+      requireValue(!Object.hasOwn(previous.input, "correction"), "The previous package plan must not contain a nested correction");
+      previousSnapshots = previous.snapshots;
+      const { sourceCheckedCorrectionSnapshots } = await import("./review-change-set-workflow.mjs");
+      const handoff = sourceCheckedCorrectionSnapshots(json(evidenceBytes, "correction evidence"), previous, { snapshots, planBytes });
+      runtimeBase = prepareLocalSourceCorrection(base, previousSnapshots, snapshots,
+        localDatabaseBundle(previousSnapshots, ref.beforePlanSha256));
+      correctionEvidence = { ...handoff, evidenceSha256: ref.sha256, before: runtimeBase.pins,
+        originalEvidence: { encoding: "base64", bytes: evidenceBytes.length, content: evidenceBytes.toString("base64") } };
+      checkedInputs.correction = { status: "SOURCE_CHECKED_REPLACEMENT", evidenceSha256: ref.sha256,
+        before: runtimeBase.pins, entries: handoff.entries, releaseNotes: handoff.releaseNotes };
+      checkedInputs.inputFiles += previousSnapshots.reduce((sum, item) => sum + item.checked.files, 0);
+      checkedInputs.reviewTargets += previousSnapshots.reduce((sum, item) => sum + item.targets, 0);
+      checkedInputs.baselineArchiveBytes = budget.archiveBytes;
+      checkedInputs.inputBytes = budget.bytes + budget.archiveBytes + evidenceBytes.length;
+      requireValue(budget.bytes + evidenceBytes.length <= localDatabaseLimits.bytes, "Correction exceeds local byte limit");
+    } else runtimeBase = base ? (snapshots.some(item => !item.model) ? prepareLocalSourceRuntime : prepareLocalModelRuntime)(base, snapshots) : null;
     if (checkOnly) return { status: runtimeBase ? "LOCAL_VIEWER_INPUTS_CHECKED" : "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED", ...checkedInputs,
       ...(runtimeBase ? { base: runtimeBase.pins, runtime: { status: "NOT_BUILT", code: "LOCAL_VIEWER_BUILD_REQUIRED", publication: null } } : {}),
       packages: snapshots.length, sourceTexts: snapshots.reduce((sum, item) => sum + item.documents.length, 0) };
     phase = "DATABASE_WRITE";
-    const destination = outputPath(out, snapshots.map(snapshot => snapshot.root));
-    const bundle = { manifest: { format: "omnibus-local-review-database", schemaVersion: 1,
-      contentGate: "INTEGRATION_REVIEW_REQUIRED", planSha256: sha256(planBytes), runtimeContract: runtimeContractHash },
-    packages: [], documents: [], artifacts: [] };
-    for (const snapshot of snapshots) {
-      const { manifest, files, model, documents, review, checked, authorIds, intakeBytes } = snapshot;
-      const id = manifest.package.id;
-      bundle.packages.push({ id, kind: manifest.package.kind, title: manifest.package.title, intakeVersion: manifest.package.version,
-        intakeSha256: checked.manifestSha256, reviewStatus: review.status,
-        records: snapshot.records ?? [{ id, kind: "model", title: model.title, status: "HOLD", data: model }] });
-      bundle.documents.push(...documents);
-      bundle.artifacts.push({ name: `${id}/intake`, data: { encoding: "base64", sha256: checked.manifestSha256,
-        bytes: intakeBytes.length, content: intakeBytes.toString("base64") } });
-      bundle.artifacts.push({ name: `${id}/review-check`, data: { authorIds, ...review, newContentApproval: false,
-        ...(snapshot.sourceEvidence ? { sourceEvidencePins: snapshot.sourceEvidence } : {}) } });
-      if (snapshot.admission) bundle.artifacts.push({ name: `${id}/local-owner-admission`, data: {
-        encoding: "base64", sha256: snapshot.admission.sha256, bytes: snapshot.admission.bytes.length,
-        content: snapshot.admission.bytes.toString("base64"), scope: "local-database-only" } });
-      for (const file of manifest.files) bundle.artifacts.push({ name: `${id}/files/${file.id}`,
-        data: { ...file, encoding: "base64", content: files.get(file.id).toString("base64") } });
-    }
+    const destination = outputPath(out, [...snapshots, ...previousSnapshots].map(snapshot => snapshot.root));
+    const bundle = localDatabaseBundle(snapshots, sha256(planBytes));
+    if (correctionEvidence) bundle.artifacts.push({ name: "corrections/" + correctionEvidence.evidenceSha256, data: correctionEvidence });
     mkdirSync(destination); // Exclusive reservation; never reuse a destination, even after failure.
     const database = join(destination, "catalogue.sqlite");
     writeFileSync(database, Buffer.alloc(0), { flag: "wx" });
@@ -326,6 +367,7 @@ async function runLocalDatabase({ plan, out, base }, checkOnly) {
       databaseSha256: sha256(readFileSync(database)),
       ...(publication ? { publication, base: runtimeBase.pins,
         runtime: { status: "LOCAL_READY", scope: "local-database-only", contract: runtimeContractHash, publication } } : {}) };
+    if (correctionEvidence) writeFileSync(join(destination, "release-notes.md"), correctionEvidence.releaseNotes, { flag: "wx" });
     if (publication) writeFileSync(join(destination, "local-build.json"),
       JSON.stringify({ database: "catalogue.sqlite", release, publication }, null, 2) + "\n", { flag: "wx" });
     writeFileSync(join(destination, "local-database-result.json"), JSON.stringify(result, null, 2) + "\n", { flag: "wx" });
@@ -346,8 +388,8 @@ export async function buildLocalDatabase({ plan, out, base }) {
 }
 
 export function localDatabaseFailure(error) {
-  const pending = error instanceof LocalSourceIntegrationRequired ? error
-    : error?.cause instanceof LocalSourceIntegrationRequired ? error.cause : null;
+  let pending = error;
+  while (pending && !(pending instanceof LocalSourceIntegrationRequired)) pending = pending.cause;
   return { status: "HOLD", publishable: false, newContentApproval: false,
     error: error instanceof Error ? error.message : "Local database build failed",
     ...(pending ? { reviewEvidence: pending.evidence, code: "SOURCE_INTEGRATION_REQUIRED" } : {}),

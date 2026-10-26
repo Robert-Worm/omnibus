@@ -170,9 +170,41 @@ npm run dev:database -- --settings work/eigen-viewer-01/local-build.json --web-r
 
 Open daarna `http://127.0.0.1:4328/`. De eerste opdracht maakt de nieuwe database. De volgende twee bouwen en openen de bestaande applicatie lokaal; daarvoor zijn de gewone applicatieafhankelijkheden nodig. Geen van deze opdrachten kiest een andere database voor een al draaiende Omnibus.
 
-Bij `LOCAL_VIEWER_DATABASE_CREATED` zijn `catalogue.sqlite`, `local-database-result.json` en `local-build.json` aanwezig. `runtime.status` is `LOCAL_READY`, met reikwijdte `local-database-only`. De basispakketten en brontekst blijven gelijk; uitsluitend de toegelaten pakketten en hun bewijs komen erbij. Bestaande pakket-, rapport-, norm- en kaderidentiteiten worden niet vervangen. De viewers, het laden per onderdeel, selecteren en projectherstel gebruiken dezelfde code als de gewone applicatie; het projectformaat verandert niet. Open een bewaard project met deze lokale publicatie om de eigen bronnen weer beschikbaar te hebben.
+Bij `LOCAL_VIEWER_DATABASE_CREATED` zijn `catalogue.sqlite`, `local-database-result.json` en `local-build.json` aanwezig. `runtime.status` is `LOCAL_READY`, met reikwijdte `local-database-only`. De basispakketten en brontekst blijven gelijk; uitsluitend de toegelaten pakketten en hun bewijs komen erbij. Zonder de expliciete correctieroute hieronder worden bestaande pakket-, rapport-, norm- en kaderidentiteiten niet vervangen. De viewers, het laden per onderdeel, selecteren en projectherstel gebruiken dezelfde code als de gewone applicatie; het projectformaat verandert niet. Open een bewaard project met deze lokale publicatie om de eigen bronnen weer beschikbaar te hebben.
 
 Alleen verwijzingen voor gegevensoverdracht krijgen de nieuwe releasehash. Bronpassages, paginaversies, modelteksten en bewijsbestanden worden niet herschreven. De lokale vrijgave geldt alleen voor de toegevoegde pakketten, niet als nieuwe inhoudelijke beoordeling van de basiscollectie.
+
+### Een bestaande lokale bron corrigeren
+
+Een eerder lokaal toegelaten rapport of kader kan met dezelfde opdracht worden vervangen in een **nieuwe** uitvoerdatabase. Voeg hiervoor aan het pakketplan met de nieuwe versies een expliciet veld toe:
+
+```json
+"correction": {
+  "file": "correctie.json",
+  "sha256": "APART_BEWAARDE_HASH_VAN_HET_CORRECTIEBEWIJS",
+  "beforePlan": "vorige-pakketten.json",
+  "beforePlanSha256": "APART_BEWAARDE_HASH_VAN_HET_VORIGE_PLAN"
+}
+```
+
+De paden zijn relatief aan het nieuwe pakketplan. Het vorige plan bevat de oude intakes, auteurs, bronbewijspins en eigenaarbesluiten voor precies dezelfde bronnen. Het bevat zelf geen veld `correction`. Bewaar dus ook na een correctie een afzonderlijk pakketplan zonder correctieverwijzing voor een eventuele volgende correctie. Het correctiebestand bevat de oorspronkelijke `previousBasis`, `previousManifest`, `currentBasis`, `currentManifest` en concrete `notes` volgens [de correctiecontrole](review-change-set.mjs). Een vooraf berekende handoff of controlemelding vervangt deze invoer niet.
+
+```text
+node scripts/build-local-database.mjs --plan work/correctie/pakketten.json --base work/huidig/local-build.json --check
+node scripts/build-local-database.mjs --plan work/correctie/pakketten.json --base work/huidig/local-build.json --out work/gecorrigeerd-01
+node scripts/compare-runtime-publications.mjs --before work/huidig/local-build.json --after work/gecorrigeerd-01/local-build.json
+npm run build:runtime -- --settings work/gecorrigeerd-01/local-build.json --out work/gecorrigeerd-web-01
+```
+
+Beide pakketversies doorlopen opnieuw de gewone intake-, bronpassage-, bronmethode-, review- en eigenaarcontroles. Iedere gewijzigde of afhankelijke bouwsteen moet een nieuwe, exact gebonden review en concrete verbeterbeschrijving hebben. De brongebonden reviews moeten ook de oorspronkelijke `CORRECTION-BASIS.json` omvatten. HOLD, afwijzing, ontbrekend leesbewijs, ontbrekende afhankelijkheidsreview of een gewijzigde pin stopt de opdracht vóór databaseaanmaak.
+
+De huidige `--base` wordt alleen gelezen en volledig gecontroleerd tegen release en publicatiehash. De bouwer vergelijkt de oude pakketrecords, bronpagina’s, intake, reviews, eigenaarbesluit en alle bewijsbytes met die publicatie. Ook de bestaande viewerinhoud moet exact passen bij de oude projectie. Alleen een lokaal herleidbare bron met die intake kan worden vervangen; een gelijk ID geeft op zichzelf geen toestemming. Correctie blijft mogelijk als inmiddels andere lokale bronnen aan de collectie zijn toegevoegd.
+
+De route behoudt de identiteiten van bronnen, documenten en bouwstenen. Bij rapporten moeten bovendien titel, thema, groepen, preset, proceskoppelingen en de inventaris van vragen en bronobjecten gelijk blijven. Toevoegen, schrappen, hergroeperen, modelcorrecties en vervanging van een openbare bron vallen buiten deze route en vereisen hun eigen inventaris-/integratiereview. Zonder geldig correctiebewijs blijft de normale weigering van bestaande ID’s gelden.
+
+De uitvoer bevat de nieuwe bronversie, de overige pakketten en bronnen ongewijzigd, het oorspronkelijke correctiebewijs en een archief van de vervangen pakket-/bewijsset. Alleen de brongebonden viewerbijdragen en bijbehorende afleververwijzingen veranderen. De bestaande database wordt nooit voor schrijven geopend. `release-notes.md` noemt elke gewijzigde en afhankelijke bouwsteen; `local-database-result.json` bevat de binding aan de oude publicatie en correctiehash. De gewone vergelijking vermeldt de daadwerkelijke verschillen en blijft `RUNTIME_DIFFERENCES_REVIEW_REQUIRED`: dit is geen inhoudelijk akkoord of activering. Gebruik hier geen `--expect-addition`, want die controle weigert terecht wijzigingen aan bestaande pakketten.
+
+Open de nieuwe publicatie daarna in de bestaande bronviewer en controleer selectie, exacte passages en projectherstel. Een project met oude bronbewijssnapshots mag niet stil worden omgebonden aan nieuwe inhoud; de bestaande herstelcontroles blijven gelden. `--check` voert alle invoer- en vervangingscontroles uit zonder uitvoer te maken. Een geslaagde bouw bewijst op zichzelf nog geen uitgevoerde browserproef. De lokale correctie geeft geen openbare publicatierechten: `publishable` blijft `false`.
 
 ### Alleen een controledatabase
 
@@ -219,6 +251,7 @@ Bij een fout stopt de opdracht met exitcode 1, `HOLD`, de stap en een concrete o
 | --- | --- |
 | `INPUT_CHECK` | Controleer het plan, de paden en de nieuwe uitvoermap. |
 | `PACKAGE_CHECK[2]` | Het tweede pakket faalt. Vraag de exacte ontbrekende bestanden of een nieuwe beoordeelde pakketversie op. |
+| `CORRECTION_CHECK` | Controleer beide oorspronkelijke pakketplannen, de correctiebewijspins, reviews van afhankelijke bouwstenen en de exacte huidige bronversie. Een oude of andere publicatie kan niet als vervangingsbasis dienen. |
 | `BASE_PUBLICATION_CHECK` | Controleer de expliciete basispins en eigenaarbesluiten. Een bestaand model-ID kan niet opnieuw worden toegevoegd. |
 | `Source review` | Een bestand, reviewkoppeling of objectbeoordeling ontbreekt of wijkt af. Vraag het oorspronkelijke bewijs of een nieuwe, daadwerkelijk gereviewde versie; vervang geen vastgelegde hashes. |
 | `Source passages` | Bronversie, paginagrenzen, letterlijke passages of bronverwijzingen wijken af. Vraag herstel en review van de geraakte inhoud; verander geen citaat of offset onder een bestaand akkoord. |
@@ -233,6 +266,16 @@ Er is geen optie om controles over te slaan. De opdracht voert nooit code uit ee
 Alleen als `supporting` ingediende rapportbijlagen die exact in de oorspronkelijke `BASELINE-FREEZE.json` staan, gebruiken daarnaast maximaal 128 MiB archiefruimte voor de hele opdracht. Hun bytes, pins en oorspronkelijke ontvangsten worden volledig gecontroleerd en bewaard; zij worden niet uitgevoerd of als nieuwe viewerinhoud geladen. Bron-, review- en viewerbestanden vallen niet onder dit aparte budget. `baselineArchiveBytes` vermeldt het gebruik. Het historische rapportregister heeft een aparte lezer: maximaal 64 MiB, 8 MiB per token, 128 nestingsniveaus en twee miljoen waarden. Die controleert de volledige JSON, weigert dubbele sleutels en vergelijkt de rapport-/normaantallen zonder het hele objectmodel op te bouwen. Voor de viewer geldt ook de bestaande limiet van 100 modellen, 500 dimensies per model, 100 vragen per dimensie en 2 MiB per laaddeel. De bestaande strengere intakegrenzen blijven gelden. Houd pakketten en uitvoer lokaal en buiten Git.
 
 ## Testen met fictieve gegevens
+
+De correctieproef staat in `content-tools/review-change-set-workflow.test.mjs` en draait mee in `npm test` via `test:review-tools`. Zij gebruikt de gewone bouwopdracht voor kader- en rapportcorrecties, vergelijkt publicaties, controleert behoud van een later toegevoegde bron en weigert verouderde publicaties, onjuist bewijs, HOLD en ontbrekende afhankelijkheidsreviews.
+
+De optionele browserproef gebruikt uitsluitend nieuwe fictieve dossiers en een lege synthetische testbasis:
+
+```text
+node content-tools/review-change-set-browser.mjs --browser <bestaande-browser> --playwright <bestaande-playwright-module>
+```
+
+Voer deze onder de afgesproken gedeelde testvergrendeling uit. Er wordt niets geïnstalleerd; de proef maakt een eigen serverpoort en browsersessie. Een fictief ondersteunend rapport wordt eveneens via de gewone pakketaanmaak toegelaten, omdat de bestaande projectherstelcode een rapportlezer verwacht. Op 26 oktober 2026 slaagde de hele correctieroute: pakketcontrole, gepinde publicatie, gewone vergelijking, runtimewebbouw, gedeelde bronviewer met verbeterde maatregel en exacte markering, smal scherm, selectie met vraagkoppeling na herladen en openen van het opgeslagen projectbestand. De oorspronkelijke testdatabases bleven bytegelijk. Opdrachten, uitkomsten, screenshot en project staan in de nieuwe `work/source-correction-*`-map. Dit is softwarebewijs met fictieve reviews en eigenaarbesluiten, geen inhoudelijke vrijgave.
 
 ```text
 node --test content-tools/local-database.test.mjs content-tools/local-model-runtime.test.mjs content-tools/local-source-review.test.mjs content-tools/local-source-method.test.mjs content-tools/local-source-database.test.mjs content-tools/local-source-passages.test.mjs content-tools/local-report-viewer.test.mjs content-tools/local-report-workflow.test.mjs content-tools/local-framework-workflow.test.mjs content-tools/local-source-runtime.test.mjs content-tools/baseline-registry-counts.test.mjs content-tools/local-evidence-budget.test.mjs
