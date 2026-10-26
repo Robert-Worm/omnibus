@@ -20,7 +20,7 @@ function fixture() {
 }
 function authorReceipts(input, decision = 'behouden', suffix = '1') {
   input.reviews = input.questions.map(q => ({ sourceId: input.sourceId, itemId: input.itemId, questionId: q.id,
-    sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, itemHash: sha(input.item), contextHash: sha(input.context),
+    sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, itemHash: sha({ item: input.item, questions: input.questions }), contextHash: sha(input.context),
     questionHash: sha({ id: q.id, kind: q.kind, text: q.text }), decision,
     reviewId: 'synthetic-review-' + suffix + '-' + q.id, reviewer: 'synthetic-question-reviewer', reviewDate: '2026-10-26',
     basis: 'Fictieve softwaretest; geen werkelijk inhoudelijk oordeel.' }));
@@ -78,12 +78,14 @@ test('exact text, kind, variant identity and source/item context invalidate old 
     f => { f.sourceEdition = 'synthetic-2'; }, f => { f.sourceHash = sha('new source'); },
     f => { f.item.definition += ' New interpretation.'; },
     f => { f.context.dependencies.push('new dependency'); },
+    f => { f.questions[0].pointIds = ['OTHER-POINT']; },
   ];
   for (const change of changes) {
     const input = fixture(), { publication } = prepareQuestionReviewPublication(input);
     change(input);
     assert.throws(() => prepareQuestionReviewPublication(input), /Question (publication|review):/);
-    if (input.itemId === 'DIM' && input.sourceId === 'SYNTHETIC' && input.item.definition === 'Fictieve overdracht.' && !input.context.dependencies.length)
+    if (input.itemId === 'DIM' && input.sourceId === 'SYNTHETIC' && input.item.definition === 'Fictieve overdracht.' &&
+        !input.context.dependencies.length && !input.questions[0].pointIds)
       assert.equal(read(input, publication).approved, false);
     authorReceipts(input, 'behouden', 'fresh');
     assert.equal(read(input, prepareQuestionReviewPublication(input).publication).approved, true);
@@ -102,6 +104,7 @@ test('Unicode and whitespace are exact review text, never normalized to an old r
 test('one approved level cannot approve a different offered level', () => {
   const input = fixture();
   input.questions.push({ ...input.questions[0], id: 'DIM-Q1/strategic' });
+  authorReceipts(input); input.reviews.pop();
   const { publication, offeredQuestions } = prepareQuestionReviewPublication(input);
   assert.deepEqual(offeredQuestions.map(q => q.id), ['DIM-Q1']);
   assert.equal(read(input, publication, input.questions[1]).status, 'unknown');

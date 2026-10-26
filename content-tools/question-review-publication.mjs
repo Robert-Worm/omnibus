@@ -29,7 +29,9 @@ export function prepareQuestionReviewPublication(input) {
   need(inventoryComplete === true && item && context && !Array.isArray(item) && !Array.isArray(context) &&
     typeof item === 'object' && typeof context === 'object', 'complete inventory and item/context basis required');
   need(Array.isArray(reviews), 'explicit receipt array required (empty means unknown)');
-  const questionIds = questionReviewIds(questions), itemHash = sha(item), contextHash = sha(context);
+  // Include the complete adapter rows: a changed point/level association must
+  // invalidate review even when the displayed text and parent item are equal.
+  const questionIds = questionReviewIds(questions), itemHash = sha({ item, questions }), contextHash = sha(context);
   const rows = questions.map(({ id, kind, text }) => ({ id, kind, text, questionHash: sha({ id, kind, text }) }));
   const bindings = Object.fromEntries(rows.map(q => [q.id, { sourceEdition, sourceHash, contextHash, questionHash: q.questionHash }]));
   const checks = questionReviewIssues({ sourceId, itemId, itemHash, questionIds, reviews, bindings });

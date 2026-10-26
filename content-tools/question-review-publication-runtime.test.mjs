@@ -35,7 +35,7 @@ function author(f, revised) {
     context: { limitations: app.framework.limitations, evidence: app.framework.evidence, source: app.source },
     questions, reviews: [] };
   const receipt = (q, version, decision = 'behouden') => ({ sourceId: input.sourceId, itemId: input.itemId, questionId: q.id,
-    sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, itemHash: sha(input.item), contextHash: sha(input.context),
+    sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, itemHash: sha({ item: input.item, questions: input.questions }), contextHash: sha(input.context),
     questionHash: sha({ id: q.id, kind: q.kind, text: q.text }), decision, reviewId: `synthetic-${version}-${q.id}`,
     reviewer: 'synthetic-reviewer-only', reviewDate: '2026-10-26', basis: 'Fictieve softwaretest; geen echte review.' });
   input.reviews = questions.map(q => receipt(q, 'before'));
