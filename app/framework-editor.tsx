@@ -1139,7 +1139,7 @@ export default function FrameworkEditor() {
             count={draft.included.length}
           />
           <div className="workflow-surface" data-page={page}>
-          {page!=='entry'&&<CollectionChoice mode={collections.mode} disabled={!loaded||!modelsReady} hasOwn={availableCollections.origins.some(o=>o.kind==='own')} onChange={mode=>{rememberProject('Collectiekeuze wijzigen');setCollections(bindCollectionPreference({...collections,mode},availableCollections));}}/>}
+          {(availableCollections.origins.some(o=>o.kind==='own')||collections.mode==='own')&&['risk-start','catalogue','processes','topics','foundations','foundation-workspace','reports','report-themes'].includes(page)&&<CollectionChoice mode={collections.mode} disabled={!loaded||!modelsReady} hasOwn={availableCollections.origins.some(o=>o.kind==='own')} onChange={mode=>{rememberProject('Collectiekeuze wijzigen');setCollections(bindCollectionPreference({...collections,mode},availableCollections));}}/>}
           <CollectionNavigation
             discoveryAxis={discoveryView.axis}
             page={page}
