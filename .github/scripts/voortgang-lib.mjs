@@ -164,7 +164,7 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
         const labels = issue.labels.map((l) => l.name);
         claims.push({
           number: issue.number, url: issue.html_url, user: issue.user.login, open: issue.state === "open",
-          created: issue.created_at, since: issue.created_at.slice(0, 10), closed: issue.closed_at || null, labels,
+          created: issue.created_at, since: issue.created_at.slice(0, 10), closed: issue.closed_at || null, reden: issue.state_reason || null, labels,
           bron: found?.soort ? found : null, onbekendRapport: found?.onbekendRapport,
           model: formField(issue.body, "Welk model precies"),
           heeftModelveld: /###\s*Welk model precies/i.test(issue.body || ""),
@@ -181,6 +181,18 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, now = ()
   // gemiste of geannuleerde run vanzelf wordt ingehaald. Verborgen markeringen in de
   // reacties van de bot zorgen dat elke reactie maar één keer wordt geplaatst.
   async function reconcile(claims) {
+    // Sloot iemand de claim zelf met /vrijgeven ("Close with comment")? Dan zag de bot hem niet
+    // meer als open. Maak er alsnog een vrijgave van: sluitreden "niet gepland" en een bevestiging.
+    for (const claim of claims.filter((c) => !c.open && c.reden === "completed" && c.bron && !c.labels.includes("verwerkt"))) {
+      const comments = await gh(`/issues/${claim.number}/comments?per_page=100`);
+      const vrij = comments.find((c) => c.user.type !== "Bot" && (c.body || "").match(COMMAND)?.[1]?.toLowerCase() === "vrijgeven" &&
+        (c.user.login === claim.user || ["OWNER", "MEMBER", "COLLABORATOR"].includes(c.author_association)));
+      if (!vrij) continue;
+      const key = `vrijgeven-${vrij.id}`;
+      if (!comments.some((c) => c.user.type === "Bot" && (c.body || "").includes(mark(key))))
+        await comment(claim.number, `${mark(key)}\nDe bron is vrijgegeven en staat weer open in de werklijst. Bedankt voor het laten weten.`);
+      await closeIssue(claim.number, "not_planned"); claim.reden = "not_planned";
+    }
     const keyOf = (c) => `${c.bron.soort}:${c.bron.id}`;
     const actiefOp = (soort, id) => claims.find((c) => c.open && c.bron && !c.labels.includes("dubbel") && c.bron.soort === soort && c.bron.id === id);
     for (const claim of claims.filter((c) => c.open)) {
@@ -644,10 +656,11 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     const binnen = (iso) => Boolean(iso) && Date.parse(iso) > van && Date.parse(iso) <= tot;
     const naam = (c) => c.bron.soort === "rapport" ? rapportById.get(c.bron.id)?.titel : kaderById.get(c.bron.id)?.titel;
     const geldig = claims.filter((c) => c.bron && !c.labels.includes("dubbel") && naam(c));
-    const geclaimd = geldig.filter((c) => binnen(c.created));
+    const vrijgegeven = geldig.filter((c) => !c.open && !c.labels.includes("verwerkt") && binnen(c.closed));
+    const geclaimd = geldig.filter((c) => binnen(c.created) && !vrijgegeven.includes(c));
     const ingeleverd = geldig.filter((c) => binnen(ingeleverdOp.get(c.number)));
     const verwerktDezeWeek = geldig.filter((c) => c.labels.includes("verwerkt") && binnen(c.closed));
-    if (!geclaimd.length && !ingeleverd.length && !verwerktDezeWeek.length) return null;
+    if (!geclaimd.length && !ingeleverd.length && !verwerktDezeWeek.length && !vrijgegeven.length) return null;
     const week = new Date(tot).toISOString().slice(0, 10);
     const lijst = (titel, items) => items.length ? [`### ${titel} (${items.length})`, "", ...items.map((c) => `- ${naam(c)} · @${c.user} · #${c.number}`), ""] : [];
     return {
@@ -660,6 +673,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         ...lijst("✅ Verwerkt in de database", verwerktDezeWeek),
         ...lijst("📦 Ingeleverd", ingeleverd),
         ...lijst("🔄 Nieuw geclaimd", geclaimd),
+        ...lijst("↩️ Weer vrijgegeven", vrijgegeven),
         `Zelf meedoen? Kies een bron in de [voortgang](${docs("voortgang.md")}).`,
         "",
         "*Automatisch gemaakt door het claimsysteem.*",

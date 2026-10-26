@@ -41,7 +41,7 @@ flowchart LR
 3. **Inleveren (check-in).** Voeg je concept toe aan je claim en schrijf `/inleveren` in een reactie.
 4. **Controle.** De beheerder controleert het pakket. In de volgende databaserelease staat de bron op ✅ en wordt je claim gesloten.
 
-Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voor iemand anders. Geen probleem.
+Lukt het niet? Schrijf `/vrijgeven` bij je claim. Dan komt de bron weer vrij voor iemand anders. Geen probleem. Sluit de claim niet zelf; de bot doet dat en bevestigt het.
 
 **Zo ziet het eruit.** Het claimformulier vraagt welke bron je kiest, met welk AI-model je werkt en wanneer je klaar denkt te zijn:
 

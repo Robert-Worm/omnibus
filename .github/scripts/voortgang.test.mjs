@@ -492,3 +492,21 @@ test("de voortgang zegt hoeveel bronnen klaarliggen voor de volgende database", 
   const md = v.build(await v.loadClaims()).bestanden["docs/bijdragen/voortgang.md"];
   assert.match(md, /\*\*Volgende database:\*\* bij 5 ingeleverde bronnen[^\n]*Nu ligt er 1 bron klaar\./);
 });
+
+test("wie een claim zelf sluit met /vrijgeven, krijgt alsnog een vrijgave; het weekoverzicht toont hem als vrijgegeven", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-open-rapport") });
+  await draai(g);
+  g.wacht(2);
+  // "Close with comment": eerst de reactie, dan sluit GitHub het issue als voltooid.
+  g.reageer(n, "anna", "/vrijgeven");
+  Object.assign(g.issues.get(n), { state: "closed", state_reason: "completed", closed_at: new Date(g.nu()).toISOString() });
+  const v = await draai(g);
+  assert.equal(g.issues.get(n).state_reason, "not_planned");
+  assert.match(g.botTekst(n), /De bron is vrijgegeven/);
+  await draai(g);
+  assert.equal((g.botTekst(n).match(/De bron is vrijgegeven/g) || []).length, 1, "één bevestiging");
+  const week = v.samenvatting(await v.loadClaims());
+  assert.match(week.tekst, /### ↩️ Weer vrijgegeven \(1\)/);
+  assert.doesNotMatch(week.tekst, /Nieuw geclaimd/);
+});
