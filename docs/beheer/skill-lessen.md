@@ -72,7 +72,11 @@ Het aantal volledige lezingen (nu vier) is de grootste kostenpost. Minder lezing
 
 ## Volgende stap
 
-Elk idee staat als user story klaar om op te pakken. Zuiniger werken staat in epic [#169](https://github.com/Robert-Worm/omnibus/issues/169) (#187 tot en met #194), skills versterken in epic [#195](https://github.com/Robert-Worm/omnibus/issues/195) en testvragen voor de AI-koppeling in [#186](https://github.com/Robert-Worm/omnibus/issues/186). Meet een idee met [skills meten](skill-meting.md) voordat het in een skill komt.
+Skills versterken in epic [#195](https://github.com/Robert-Worm/omnibus/issues/195) is afgerond: alle negen stories, [#196](https://github.com/Robert-Worm/omnibus/issues/196) tot en met [#204](https://github.com/Robert-Worm/omnibus/issues/204), zijn gesloten met gekoppeld bewijs.
+
+De efficiëntie-experimenten blijven apart en gepauzeerd: epic [#169](https://github.com/Robert-Worm/omnibus/issues/169), het inkorten van instructies in [#172](https://github.com/Robert-Worm/omnibus/issues/172) en [#190](https://github.com/Robert-Worm/omnibus/issues/190) tot en met [#194](https://github.com/Robert-Worm/omnibus/issues/194). De afronding van #195 hervat deze experimenten niet. Meet een idee met [skills meten](skill-meting.md) voordat het in een skill komt.
+
+Testvragen voor de AI-koppeling staan apart in [#186](https://github.com/Robert-Worm/omnibus/issues/186).
 
 ---
 
