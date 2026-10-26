@@ -45,7 +45,9 @@ Heeft de lokale beheerroute je gecontroleerde bronpakketten samengevoegd met een
 
 De applicatie leest één samengestelde lokale publicatie. De oorspronkelijke openbare herkomst en de toelating van elk eigen pakket blijven daarin afzonderlijk vastgelegd. Bij normen en toetspunten staat **Openbare collectie** of **Eigen collectie**. De keuze werkt ook voor zoeken en volledige groepsselectie, inclusief normen buiten beeld. Materiaal dat je al in je onderzoek hebt opgenomen, blijft staan wanneer je een collectie verbergt.
 
-Projectbestanden en browseropslag bewaren de collectiekeuze en herkomstpinnen in projectversie 2. Bij het openen van versie 1 bewaart Omnibus eerst het oorspronkelijke project als herstelkopie. Ontbreekt later een vastgelegde collectie of bronversie, dan wordt het project niet uit een andere bron hersteld. De melding verwijst naar de oorspronkelijke publicatie; je onderzoekstekst en bronbewijs blijven in het oorspronkelijke bestand of de beschermde browseropslag behouden. Gebruik daar **Download herstelbestand** voordat je verdergaat.
+Projectbestanden en browseropslag bewaren de collectiekeuze en herkomstbindingen van de bronnen die het onderzoek bevat in projectversie 2. Alleen bladeren bindt geen ongebruikte pakketten. Ook bronmateriaal dat je hebt gedeselecteerd maar bewaard, houdt zijn binding. Bij het openen van versie 1 bewaart Omnibus eerst het oorspronkelijke project als herstelkopie.
+
+Een ondersteunde openbare opvolgpublicatie kan een project openen als de bestaande controles op bronversies en bewijssnapshots slagen. De historische binding blijft behouden; een nieuw gekozen openbare bron krijgt de huidige publicatiebinding. Een gebruikte eigen bron vereist dezelfde exacte pakketbinding. Ontbreekt of verandert die, dan blijft het oorspronkelijke project beschermd en wordt geen andere bron gebruikt. Bewaar bij die melding het **herstelbestand** voordat je verdergaat.
 
 Is de browseropslag te klein voor de verplichte herstelkopie, dan wordt het oude project niet geopend. De herstelmelding blijft zichtbaar in je huidige werkstap. Bewaar het herstelbestand; de oorspronkelijke opslag wordt niet overschreven.
 

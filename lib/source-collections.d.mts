@@ -1,11 +1,13 @@
 export type CollectionMode='public'|'own'|'both';
-export type CollectionPreference={mode:CollectionMode;origins:string[]};
+export type CollectionBinding={kind:CollectionKind;id:string;collection:'public'|'own';origin:string};
+export type CollectionPreference={mode:CollectionMode;origins:string[];bindings?:CollectionBinding[]};
 export type CollectionKind='report'|'foundation'|'model';
-export type SourceCollections={schema:1;origins:{id:string;kind:'public'|'own';release?:string;catalogue?:string;publication?:string;intake?:string}[];sources:Record<CollectionKind,Record<string,string>>};
+export type SourceCollections={schema:1;origins:{id:string;kind:'public'|'own';release?:string;catalogue?:string;publication?:string;intake?:string}[];sources:Record<CollectionKind,Record<string,string>>;reports?:Record<string,string>};
 export function sourceCollections(runtime:unknown):SourceCollections;
 export function collectionOrigin(collections:SourceCollections,kind:CollectionKind,id:string):SourceCollections['origins'][number]|undefined;
 export function collectionAllows(collections:SourceCollections,mode:CollectionMode,kind:CollectionKind,id:string):boolean;
 export function collectionViews<T extends {lineIds:string[];reportIds:string[]}>(views:T[],collections:SourceCollections,mode:CollectionMode,reports:Record<string,string>):T[];
-export function validateCollectionPreference(value:unknown):CollectionPreference;
+export function validateCollectionPreference(value:unknown,requireBindings?:boolean):CollectionPreference;
 export function bindCollectionPreference(value:CollectionPreference,collections:SourceCollections):CollectionPreference;
+export function projectCollectionPreference(value:CollectionPreference,draft:unknown,models:unknown):CollectionPreference;
 export function assertProjectCollections(value:unknown,collections:SourceCollections):void;
