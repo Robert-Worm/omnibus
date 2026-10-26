@@ -177,7 +177,7 @@ async function containedFile(root, file, index) {
 }
 
 /** @param {string} path @param {number} maximum @param {{collect?: boolean}} options */
-async function readVerifiedFile(path, maximum, { collect = false } = {}) {
+export async function readVerifiedFile(path, maximum, { collect = false } = {}) {
   const before = await regularFile(path, maximum);
   const handle = await open(path, constants.O_RDONLY | (constants.O_NOFOLLOW || 0));
   try {
