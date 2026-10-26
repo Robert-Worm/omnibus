@@ -8,6 +8,7 @@ import { applyCatalogueEdits } from "../lib/catalogue-runtime.mjs";
 import { projectLocalFrameworkViewer } from "./local-framework-viewer.mjs";
 import { additionalProcesses } from "../lib/additional-processes.mjs";
 import { reportDiscoveryProcesses } from "../lib/report-discovery.mjs";
+import { sourceCollections } from "../lib/source-collections.mjs";
 
 export const requireRuntime = (ok, message) => { if (!ok) throw Error("Local publication: " + message); };
 export function hydratedModule(prepared, id) {
@@ -56,14 +57,18 @@ function addReport(prepared, snapshot) {
   const moduleId = "app/report-additions.json", data = content.modules[moduleId], full = hydratedModule(prepared, moduleId);
   requireRuntime(Array.isArray(full.corpus) && Array.isArray(data.corpus), "missing report addition boundary");
   const prior = ["app/trial-corpus.json", "app/reviewed-reports.json", moduleId].flatMap(name => hydratedModule(prepared, name).corpus ?? []);
-  const ids = new Set(prior.flatMap(app => [app.framework.report.id, ...app.framework.lines.map(line => line.id)]));
+  const ids = new Set(prior.flatMap(app => [app.framework.report.id, ...app.framework.lines.map(line => line.id)]).map(id => id.toLowerCase()));
   const app = projected.additions.corpus[0], lines = app.framework.lines, cat = read("CATALOGUE.json");
   sourceDataOnly(projected); sourceDataOnly(cat);
   const processGroups = reportDiscoveryProcesses(cat.process_mappings,
     [...(content.modules["lib/process-catalogue.mjs"]?.processes ?? []), ...additionalProcesses]);
   requireRuntime([id, cat.theme.id, ...lines.map(line => line.id)].every(safeKey), "unsafe catalogue identity");
-  requireRuntime(!ids.has(id) && lines.every(line => !ids.has(line.id)), "existing report or norm identity cannot be replaced");
-  requireRuntime(projected.catalogue.points.every(point => !(full.catalogue.points ?? []).some(old => old.id === point.id)), "point identity already exists");
+  requireRuntime(!ids.has(id.toLowerCase()) && lines.every(line => !ids.has(line.id.toLowerCase())), "existing report or norm identity cannot be replaced");
+  const pointIds = new Set(["app/report-point-catalogue.json", "app/reviewed-reports.json", moduleId].flatMap(name => {
+    const prior = hydratedModule(prepared, name);
+    return (prior.catalogue?.points ?? prior.points ?? []).map(point => point.id.toLowerCase());
+  }));
+  requireRuntime(projected.catalogue.points.every(point => !pointIds.has(point.id.toLowerCase())), "point identity already exists");
   const lineIds = lines.map(line => line.id), theme = { ...cat.theme, lineIds, reportIds: [id] };
   // Keep the preceding corpus identity valid for saved projects. No incoming
   // package may supply its own historical acceptance hashes.
@@ -125,10 +130,11 @@ function addFramework(prepared, snapshot) {
     reviewBasis: snapshot.basisHash, title: snapshot.manifest.package.title });
   sourceDataOnly(packet);
   const { content, resources } = prepared, moduleId = "lib/topical-reviewed.json", id = packet.id;
-  requireRuntime(/^[a-zA-Z0-9_-]+$/.test(id) && safeKey(id), "framework identity cannot be used as a delivery key");
+  // Derived document IDs must also satisfy the saved sourceDocumentHashes gate.
+  requireRuntime(/^[a-zA-Z0-9-]+$/.test(id) && safeKey(id), "framework identity cannot be used as a delivery key");
   const data = content.modules[moduleId], nav = resources.catalogue;
   requireRuntime(Array.isArray(data?.packages) && nav?.foundationSummaries, "missing shared framework boundary");
-  requireRuntime(!data.packages.some(p => p.id.toLowerCase() === id.toLowerCase()) && !Object.hasOwn(nav.foundationSummaries, id), "existing framework cannot be replaced");
+  requireRuntime(!data.packages.some(p => p.id.toLowerCase() === id.toLowerCase()) && !Object.keys(nav.foundationSummaries).some(key=>key.toLowerCase()===id.toLowerCase()), "existing framework cannot be replaced");
   const index = data.packages.length, edits = [];
   for (const field of ["criteria", "points", "objectives", "goals", "source_dispositions", "issues"]) {
     edits.push(...arrayEdits(["packages", index, "catalogue", field], packet.catalogue[field])); packet.catalogue[field] = [];
@@ -147,6 +153,13 @@ function addFramework(prepared, snapshot) {
 export function prepareLocalSourceRuntime(settings, snapshots) {
   requireRuntime(snapshots.every(item => item.admission), "Every viewer package needs its own checked local-owner admission");
   const prepared = addLocalModels(readLocalRuntimeBase(settings), snapshots.filter(item => item.model));
+  const runtime = prepared.content.modules["lib/application-catalogue.mjs"];
+  requireRuntime(runtime?.ref, "missing pinned collection boundary");
+  requireRuntime(runtime.collections || prepared.bundle.manifest.scope !== "local-database-only",
+    "older local composition has no collection provenance; rebuild from its pinned public base");
+  const collections = structuredClone(sourceCollections(runtime));
+  if (!runtime.collections) collections.origins[0].publication = prepared.pins.publication;
+  runtime.collections = collections;
   prepared.sourcePackages = true;
   const ids = new Set(prepared.bundle.packages.map(p => p.id.toLowerCase()));
   for (const snapshot of snapshots.filter(item => !item.model)) {
@@ -155,6 +168,15 @@ export function prepareLocalSourceRuntime(settings, snapshots) {
     requireRuntime(snapshot.review.viewerShapeValidated, "shared viewer shape must pass before publication");
     if (snapshot.manifest.package.kind === "report") addReport(prepared, snapshot);
     else addFramework(prepared, snapshot);
+  }
+  for (const snapshot of snapshots) {
+    const kind = snapshot.model ? "model" : snapshot.manifest.package.kind === "report" ? "report" : "foundation";
+    const id = snapshot.model?.id ?? snapshot.manifest.package.id;
+    requireRuntime(!Object.hasOwn(collections.sources[kind], id), "existing collection source cannot be replaced");
+    const intake = snapshot.checked.manifestSha256;
+    const origin = { id: "own:" + intake, kind: "own", intake };
+    collections.origins.push(origin);
+    collections.sources[kind][id] = origin.id;
   }
   return prepared;
 }

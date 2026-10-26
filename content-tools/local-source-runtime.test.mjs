@@ -4,12 +4,13 @@ import { readFileSync, existsSync } from "node:fs";
 import { buildLocalDatabase } from "./local-database.mjs";
 import { sourceRuntimeFixture } from "./test-support/local-source-runtime-fixture.mjs";
 import { CatalogueRepository } from "../local-data/repository.mjs";
-import { readRuntimePublication } from "../local-data/runtime-publication.mjs";
+import { readRuntimePublication, publishRuntime } from "../local-data/runtime-publication.mjs";
 import { webResource, publicationReadScope } from "../local-data/web-resources.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { projectReportDelivery } from "../scripts/report-delivery-projection.mjs";
 import { applyCatalogueEdits } from "../lib/catalogue-runtime.mjs";
 import { hydratedModule } from "./local-source-runtime.mjs";
+import { collectionOrigin,collectionAllows,collectionViews,sourceCollections } from "../lib/source-collections.mjs";
 
 test("admitted report reaches a new pinned viewer publication and lossless lazy delivery", async t => {
   const f = await sourceRuntimeFixture(t), before = readFileSync(f.baseline.databasePath);
@@ -20,6 +21,12 @@ test("admitted report reaches a new pinned viewer publication and lossless lazy 
     const c = readRuntimePublication(reader, { ...built, contract: runtimeContractHash });
     const read = ref => webResource(reader, built.release, ref.hash), moduleId = "app/report-additions.json";
     const data = structuredClone(c.modules[moduleId]);
+    const collections=sourceCollections(c.modules['lib/application-catalogue.mjs']);
+    assert.equal(collectionOrigin(collections,'report','FICTIEF').kind,'own');
+    assert.equal(collectionOrigin(collections,'report','PUBLIC').kind,'public');
+    assert.equal(collections.origins.find(o=>o.kind==='public').release,f.baseline.release);
+    assert.notEqual(collections.origins.find(o=>o.kind==='public').release,built.release);
+    assert.equal(collections.origins.find(o=>o.kind==='own').intake,built.packagesChecked[0].manifestSha256);
     assert.equal(data.corpus[0].framework.lines.length, 0, "norms do not load at startup");
     const projection = projectReportDelivery(c, read);
     for (const part of [...projection.registrations[moduleId]].reverse()) applyCatalogueEdits(data, part.bundle[moduleId]);
@@ -94,6 +101,10 @@ test("framework publication preserves complete chains, actors, exceptions, HOLD 
     const moduleId = "lib/topical-reviewed.json", initial = content.modules[moduleId].packages[0];
     assert.deepEqual(initial.catalogue.points, []); assert.deepEqual(initial.documents[0].pages, []);
     const packet = hydratedModule({ content, resources }, moduleId).packages[0];
+    const collections=sourceCollections(content.modules['lib/application-catalogue.mjs']);
+    assert.equal(collectionOrigin(collections,'foundation','FICTIEF').kind,'own');
+    assert.equal(collectionAllows(collections,'public','foundation','FICTIEF'),false);
+    assert.equal(collectionAllows(collections,'own','foundation','FICTIEF'),true);
     assert.deepEqual(packet.catalogue, f.read("CATALOGUE.json"));
     assert.deepEqual(packet.bank, f.read("RECONCILED-SOURCE.json"));
     assert.deepEqual(packet.documents[0].pages, f.read("source/pages.json"));
@@ -104,12 +115,79 @@ test("framework publication preserves complete chains, actors, exceptions, HOLD 
   assert.deepEqual(readFileSync(f.baseline.databasePath), before);
 });
 
+test('public and own pins survive successive compositions and ID collisions fail closed',async t=>{
+  const report=await sourceRuntimeFixture(t,'report');
+  const writer=new CatalogueRepository(report.baseline.databasePath);
+  try{
+    const pins=JSON.parse(readFileSync(report.options.base)),content=readRuntimePublication(writer,{...pins,contract:runtimeContractHash});
+    const publicReport=JSON.parse(JSON.stringify(report.read('APP-FINAL.json')).replaceAll('FICTIEF','PUBLIC').replaceAll('K1','PUBLIC-K1'));
+    content.modules['app/reviewed-reports.json'].corpus.push(publicReport);
+    content.routing.reports['PUBLIC-K1']='PUBLIC';
+    const publication=publishRuntime(writer,content,{release:pins.release,contract:runtimeContractHash});
+    report.save('base.json',{...pins,publication});
+  }finally{writer.close();}
+  const first=await buildLocalDatabase(report.options);
+  const framework=await sourceRuntimeFixture(t,'framework',f=>{
+    f.manifest.package.id='OWN-FRAMEWORK';
+    for(const [name,file] of f.paths)f.set(name,f.files.get(file.id).toString('utf8').replaceAll('FICTIEF','OWN-FRAMEWORK'));
+    const catalogue=f.read('CATALOGUE.json');catalogue.source_bank_sha256=f.paths.get('RECONCILED-SOURCE.json').sha256;f.set('CATALOGUE.json',catalogue);
+  });
+  framework.save('base.json',{database:first.database,release:first.release,publication:first.publication});
+  const second=await buildLocalDatabase(framework.options),reader=new CatalogueRepository(second.database,{readOnly:true});
+  try{
+    const content=readRuntimePublication(reader,{...second,contract:runtimeContractHash}),collections=sourceCollections(content.modules['lib/application-catalogue.mjs']);
+    assert.equal(collections.origins.length,3);
+    assert.equal(collectionOrigin(collections,'report','PUBLIC').kind,'public');
+    assert.equal(collectionOrigin(collections,'report','FICTIEF').kind,'own');
+    assert.equal(collectionOrigin(collections,'foundation','OWN-FRAMEWORK').kind,'own');
+    const views=[{id:'mixed',lineIds:['PUBLIC-K1','K1'],reportIds:['PUBLIC','FICTIEF']}];
+    for(const [mode,expected] of [['public',['PUBLIC-K1']],['own',['K1']],['both',['PUBLIC-K1','K1']]]){
+      assert.deepEqual(collectionViews(views,collections,mode,content.routing.reports)[0].lineIds,expected);
+    }
+    assert.deepEqual(views[0].lineIds,['PUBLIC-K1','K1']);
+    // Same norm/point ID in different source families does not merge origins.
+    assert.equal(content.routing.reports.K1,'FICTIEF');
+  }finally{reader.close();}
+  report.save('base.json',{database:second.database,release:second.release,publication:second.publication});
+  await assert.rejects(buildLocalDatabase({...report.options,out:report.options.out+'-collision'}),/existing package cannot be replaced/);
+  assert.equal(existsSync(report.options.out+'-collision'),false);
+});
+
 test("framework viewer rejects incomplete chains rather than filling them automatically", async t => {
   const f = await sourceRuntimeFixture(t, "framework", f => {
     const cat = f.read("CATALOGUE.json"); cat.objectives[0].control_measure = ""; f.set("CATALOGUE.json", cat);
   });
   await assert.rejects(buildLocalDatabase(f.options), /Onvolledige beheersketen/);
   assert.equal(existsSync(f.options.out), false);
+});
+
+test('report norms, public report points and framework IDs cannot collide across collections, including case variants',async t=>{
+  for(const [kind,conflict,error] of [
+    ['report','norm',/existing report or norm identity/],['report','point',/point identity already exists/],
+    ['framework','source',/existing framework cannot be replaced/],
+  ]){
+    const f=await sourceRuntimeFixture(t,kind),writer=new CatalogueRepository(f.baseline.databasePath);
+    try{
+      const pins=JSON.parse(readFileSync(f.options.base)),content=readRuntimePublication(writer,{...pins,contract:runtimeContractHash});
+      if(conflict==='norm')content.modules['app/reviewed-reports.json'].corpus.push({framework:{report:{id:'PUBLIC'},lines:[{id:'k1'}]}});
+      if(conflict==='point')content.modules['app/report-point-catalogue.json']={points:[{id:f.read('REUSE-CANDIDATE.json').points[0].id.toLowerCase()}]};
+      if(conflict==='source')content.modules['lib/topical-reviewed.json'].packages.push({id:'fictief'});
+      const publication=publishRuntime(writer,content,{release:pins.release,contract:runtimeContractHash});
+      f.save('base.json',{...pins,publication});
+    }finally{writer.close();}
+    await assert.rejects(buildLocalDatabase(f.options),error);
+    assert.equal(existsSync(f.options.out),false);
+  }
+});
+
+test('framework identity must support the saved document-version boundary before publishing',async t=>{
+  const f=await sourceRuntimeFixture(t,'framework',f=>{
+    f.manifest.package.id='OWN_FRAMEWORK';
+    for(const [name,file] of f.paths)f.set(name,f.files.get(file.id).toString('utf8').replaceAll('FICTIEF','OWN_FRAMEWORK'));
+    const cat=f.read('CATALOGUE.json');cat.source_bank_sha256=f.paths.get('RECONCILED-SOURCE.json').sha256;f.set('CATALOGUE.json',cat);
+  });
+  await assert.rejects(buildLocalDatabase(f.options),/framework identity cannot be used as a delivery key/);
+  assert.equal(existsSync(f.options.out),false);
 });
 
 for (const status of ["HOLD", "CONTEXT_ONLY"]) test(`framework ${status} remains outside the selectable publication summary`, async t => {
