@@ -10,6 +10,8 @@ import {chooseFoundationItems} from '@/lib/foundation-workspace.mjs';
 import {flatLawPresentation,flatLawSelection} from '@/lib/admitted-foundation.mjs';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
+import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
+import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
 type Item=(typeof foundationProposals)[number];
 type Source=(typeof foundations)[number];
 function About({source,items}:{source:Source;items:Item[]}){
@@ -31,7 +33,8 @@ function SourceContent({item}:{item:Item}){
   active={active} onActive={setActive}/>;
 }
 function Approach({item}:{item:Item}){
- return <div className="cio-approach">{item.question&&<section className="cio-phase"><h4>Vraag aan de gesprekspartner</h4><p>{item.question}</p></section>}<div className="cio-phase-grid">{[['Opzet',item.testDesign],['Bestaan',item.testExistence]].map(([title,text])=><section key={title} className="cio-phase"><h4>{title}</h4><p>{text}</p></section>)}</div>
+ const question=foundationQuestionPresentation(item);
+ return <div className="cio-approach">{item.question&&<section className="cio-phase"><h4>Vraag aan de gesprekspartner</h4><p>{question.text || NO_APPROVED_QUESTION}</p>{question.text && !question.review.approved && <small>Inhoudelijke beoordeling van deze vraag niet vastgesteld.</small>}</section>}<div className="cio-phase-grid">{[['Opzet',item.testDesign],['Bestaan',item.testExistence]].map(([title,text])=><section key={title} className="cio-phase"><h4>{title}</h4><p>{text}</p></section>)}</div>
   {item.testOperation&&<section className="cio-phase"><h4>Werking · uit te werken voor je onderzoek</h4><p>{item.testOperation}</p></section>}
   <section className="cio-phase"><h4>Bewijsmateriaal · suggesties</h4><p>{item.documents}</p></section></div>;
 }

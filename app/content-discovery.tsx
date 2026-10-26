@@ -6,6 +6,7 @@ import {Input} from '@/components/ui/input';
 import {Checkbox} from '@/components/ui/checkbox';
 import {discoveryThemes,discoveryProcesses,discoveryItems,filterDiscovery,discoverySelected,chooseDiscovery,discoveryFacets,discoveryPage} from '@/lib/content-discovery.mjs';
 import type {Draft,Framework,Line} from '@/lib/framework-types';
+import {reportQuestionText} from '@/lib/source-question-presentation.mjs';
 type Item={key:string;id:string;kind:string;item:Line;title:string;risk:string;criterion:string;sourceId:string;sourceTitle:string;processIds:string[];themeIds:string[]};
 const preview=(text:string)=>text.length>240?text.slice(0,240).replace(/\s+\S*$/,'')+'…':text;
 const basisLabel:Record<string,string>={EXPLICIT:'Norm uit het rapport',INFERRED:'Afgeleide norm',PROPOSED:'Voorgestelde norm',NOT_ESTABLISHED:'Norm niet vastgesteld'};
@@ -61,6 +62,7 @@ export default function ContentDiscovery({framework,draft,onChange,axis,category
   <p className="discovery-boundary">Historische risico’s zijn aanknopingspunten, geen vastgestelde problemen in jouw organisatie.</p>
   <div className="discovery-results">{result.rows.map((row:Item)=>{
    const chosen=discoverySelected(row,draft),id='pick-'+row.key,isReport=row.kind==='report';
+   const question=isReport ? reportQuestionText(row.item) : '';
    return <article key={row.key} className={chosen?'discovery-card is-selected':'discovery-card'}>
     <div className="discovery-card-meta"><span className="discovery-kind">{isReport?'Risico · afgeleid uit rapport':'Norm · eigen uitwerking'}</span><span>{row.sourceId}</span>{chosen&&<span className="discovery-chosen"><Check size={14} aria-hidden="true"/>Gekozen</span>}</div>
     <h4 id={'title-'+row.key}>{row.title}</h4><p className="discovery-source">{row.sourceTitle}</p>
@@ -69,7 +71,7 @@ export default function ContentDiscovery({framework,draft,onChange,axis,category
     <details className="discovery-detail"><summary>Bekijk norm, gebruik en bron</summary>
      {row.risk&&<section><h5>{isReport?'Risico · volledige tekst':'Risicocontext'}</h5><p>{row.risk}</p></section>}
      <section><h5>{isReport?row.item.criterion.basis==='EXPLICIT'&&row.sourceId==='OCW26'?'Gedragsomschrijving uit het rapport':basisLabel[row.item.criterion.basis]||'Norm':'Norm · eigen uitwerking bij de bron'}</h5><p>{row.criterion}</p>{isReport&&row.item.criterion.basis==='EXPLICIT'&&<p className="discovery-meta">{row.item.criterion.reason}</p>}</section>
-     {isReport&&row.item.auditQuestion?.text&&<section><h5>Vraagvoorstel voor je onderzoek</h5><p>{row.item.auditQuestion.text}</p></section>}
+     {question&&<section><h5>Vraagvoorstel voor je onderzoek</h5><p>{question}</p></section>}
      <section className="discovery-use"><h5>Hoe gebruik je dit?</h5><p>{isReport?'Gebruik dit als vertrekpunt voor je eigen toetsing. Controleer of het risico en de beschreven verwachtingen passen bij jouw organisatie.':'Controleer of de bron en deze eigen uitwerking van toepassing zijn op jouw organisatie en onderzoek.'} Bij kiezen neem je dit item op in je selectie. Bij Bouw je kader kun je het aanpassen en aan een onderzoeksvraag koppelen.</p></section>
      <dl>{isReport&&row.item.entity&&<div><dt>Broncontext</dt><dd>{row.item.entity}</dd></div>}<div><dt>Proces</dt><dd>{row.processIds.map(pid=>discoveryProcesses.find(p=>p.id===pid)?.title).join(' · ')}</dd></div><div><dt>Bron</dt><dd>{row.sourceTitle}</dd></div><div><dt>Referentie</dt><dd>{row.id}</dd></div></dl>
      <Button variant="outline" onClick={()=>isReport?onReportItem(row.item):onFoundation(row.sourceId,row.id)}><BookOpen size={15} aria-hidden="true"/>Bekijk uitwerking en bron</Button>

@@ -81,7 +81,7 @@ export default function FrameworkFields({
                 )}
                 <span className={"basis-tag " + basis}>{provenance[basis]}</span>
                 {readOnly ? (
-                  <p className="readonly-field">{field.text || (kind==='controlObjective'?'Nog niet afzonderlijk beoordeeld.':'—')}</p>
+                  <p className="readonly-field">{(kind==='auditQuestion' ? draftValue(line,field.id,{...draft,overrides:{}}) : field.text) || (kind==='controlObjective'?'Nog niet afzonderlijk beoordeeld.':'—')}</p>
                 ) : (
                   <>
                     <label className="sr-only" htmlFor={`${line.id}-${field.id}`}>

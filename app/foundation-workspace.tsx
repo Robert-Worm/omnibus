@@ -54,6 +54,8 @@ import {topicalIds} from '@/lib/topical-content.mjs';
 import TopicalLawBrowser from './topical-law-browser';
 import AdmittedLawBrowser from './admitted-law-browser';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
+import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
+import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
 
 export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void)=>void;prepareDetails?:(id:string,action:()=>void)=>void}) {
   const [overview,setOverview]=useLawOverview(props);
@@ -139,6 +141,7 @@ function LegacyFoundationWorkspace({
     reviewedOnly,
   },preparedFoundationItems,foundations.filter(source=>allows('foundation',source.id)));
   const current = [...view.filtered,...view.contextItems].find((p) => p.id === active);
+  const currentQuestion = current && foundationQuestionPresentation(current);
   const showGroups = grouped && !groupId && view.groupResults.length > 0 && view.filtered.every(p => p.groupId);
   const workspaceRef = useRef<HTMLElement>(null);
   const returnPosition = useRef<{ id: string; offset: number; y: number } | null>(null);
@@ -611,7 +614,8 @@ function LegacyFoundationWorkspace({
               {current.risk && <><h3>Risico · auditvoorstel</h3><p>{current.risk}</p></>}
               <SourceControlReference material={current} showContext={false} showStatus={false} onRead={()=>showComparison('source',true)} />
               <h3>Vraag aan de gesprekspartner</h3>
-              <p>{current.question}</p>
+              <p>{currentQuestion?.text || NO_APPROVED_QUESTION}</p>
+              {currentQuestion?.text && !currentQuestion.review.approved && <small>Inhoudelijke beoordeling van deze vraag niet vastgesteld.</small>}
               {!current.testDesign && !current.testExistence && !current.testOperation &&
                 <><h3>Toetsing</h3><p>{current.procedure}</p></>}
               {current.testDesign && <><h3>Opzet</h3><p>{current.testDesign}</p></>}

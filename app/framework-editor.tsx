@@ -1529,7 +1529,7 @@ export default function FrameworkEditor() {
                             <SourceControlReference material={draft.investigation?.materials.find((m) => m.id === line.id)} criterion={<>
                               <h2>Norm in je onderzoek</h2>
                               <p className="edit-note">{line.id} · inclusief je eigen aanpassingen</p>
-                              {([['criterion','Norm'],['objective','Waarom relevant?'],['auditQuestion','Vraag'],['procedure','Toetsing']] as const).map(([kind,label])=><section key={kind}><h3>{label}</h3><p>{draft.overrides[line.id]?.[kind] ?? line[kind].text}</p></section>)}
+                              {([['criterion','Norm'],['objective','Waarom relevant?'],['auditQuestion','Vraag'],['procedure','Toetsing']] as const).map(([kind,label])=><section key={kind}><h3>{label}</h3><p>{draftValue(line,kind,draft)}</p></section>)}
                               <h3>Toepassing en voorwaarden uit de bron</h3><p>{draft.investigation?.materials.find(m=>m.id===line.id)?.sourceContext || 'Controleer de toepassing in de bron.'}</p>
                             </>} />
                             {line.sourcePointId ? <FrameworkFields framework={framework} line={line} draft={draft} readOnly={false} disabled={!loaded} onChange={commit} onEdit={edit} onEvidence={showEvidence}/> : <div className="material-form">
@@ -1560,7 +1560,7 @@ export default function FrameworkEditor() {
                                     id={`material-detail-${line.id}-${kind}`}
                                     rows={4}
                                     maxLength={10000}
-                                    value={draft.overrides[line.id]?.[kind] ?? line[kind].text}
+                                    value={draftValue(line,kind,draft)}
                                     onChange={(e) => edit(kind, e.target.value)}
                                     disabled={!loaded}
                                   />
