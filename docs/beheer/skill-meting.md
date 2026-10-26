@@ -71,24 +71,41 @@ Gemeten op 24 oktober 2026, met de skills uit deze repository.
 
 Wat dit laat zien:
 
-- **De bron lezen kost het meest.** De werkwijze voor rapporten en kaders laat de bron vier keer volledig lezen: twee lezers, een reconciliator en een eindreviewer. Bij een rapport van 41 pagina's is dat ruim zestien keer zoveel als de instructies.
+- **In tekst kost de bron het meest.** De werkwijze voor rapporten en kaders laat de bron vier keer volledig lezen: twee lezers, een reconciliator en een eindreviewer. Bij een rapport van 41 pagina's is dat ruim zestien keer zoveel als de instructies. In de werkelijke runs nam de coördinator met herhaalde context 36 tot 47 procent van de tokens; zie [de metingen](#metingen).
 - **Werkelijk verbruik vraagt verzoektelemetrie.** Herhaalde context, cache, uitvoer en beelden staan niet volledig in deze tekstschatting. Leid daaruit geen werkelijke tokens of kosten af.
 
 ## Metingen
 
-Er is nog geen volledige nulmeting. De eerste LVVN26-pilot heeft uitsluitend de intake doorlopen en staat op HOLD. `Agents` telt daadwerkelijk gestarte deelagenten; de coördinator staat afzonderlijk in het private dossier. Minuten en tokens hieronder betreffen een volledige inhoudelijke run en blijven bij deze geblokkeerde intake `null`.
+De nulmeting is af: alle vier bronnen uit de testset zijn volledig verwerkt op codebasis `5e37b68`. Per bron zijn twee blinde lezingen, reconciliatie, praktische conceptreview, afzonderlijke eindreviews en vier onafhankelijke OAK-perspectieven uitgevoerd ([#170](https://github.com/Robert-Worm/omnibus/issues/170)). `Agents` telt de technische deelcontexten zonder coördinator; dat zijn geen aantallen onafhankelijke beoordelaars. `Tokens` is inclusief cache-input en uitvoer.
 
 | Datum | Skill | Bron | Versie | Model | Agents | Minuten | Tokens | Score |
 | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: |
 | 2026-10-25 | omnibus-add-report | LVVN26 | c1c0586 | gpt-6-astra | 0 | null | null | null |
+| 2026-10-26 | omnibus-add-report | LVVN26 | 5e37b68 | gpt-6-astra | 11 | 225,39 | 108.437.098 | 8,2 |
+| 2026-10-26 | omnibus-add-report | PROO26 | 5e37b68 | gpt-6-astra | 13 | 340,69 | 76.480.394 | 8,0 |
+| 2026-10-26 | omnibus-add-report | IVHO25 | 5e37b68 | gpt-6-astra | 11 | 261,91 | 112.610.490 | 8,5 |
+| 2026-10-26 | omnibus-add-framework | TR-CYBER-20261016-cybersecurity-doc1 | 5e37b68 | gpt-6-astra | 18 | 280,09 | 125.849.220 | 8,0 |
 
-**Partiële nulmeting van 25 oktober 2026 — HOLD.** De originele PDF (14 pagina's) en de onafhankelijke vrijgave van rapportkit 1.1 zijn gevonden; alle 29 kitbestanden zijn geverifieerd. De publieke checkout mist het auteursregister dat de kit nodig heeft. Een afzonderlijke intakeproef met het beschikbare private register weigert LVVN26 met `Report already active`. Beide proeven eindigden zonder een analysepakket te maken. De gelijkheid van die private applicatiebasis met de huidige runtime is niet aangetoond.
+Wat de bouwstenen opleverden, en het deel van de tokens dat cache-input was:
 
-Alleen de coördinator heeft titel en colofon in tekst en beeld gecontroleerd. Geen blinde lezing, reconciliatie, praktische uitwerking, eindreview of OAK-panel is uitgevoerd; er is dus geen OAK-score of inhoudelijke PASS. Het private dossier bevat de bron- en skillhashes, contextidentiteit, tijden, intake-uitkomsten en apart gemeten voorbereidingsverbruik. De bestaande database is uitsluitend gelezen.
+- **LVVN26:** 11 normketens, 21 toetspunten; 104.609.664 tokens cache-input, 605.229 uitvoer.
+- **PROO26:** 15 normketens, 15 toetspunten; 73.676.032 cache-input, 426.230 uitvoer.
+- **IVHO25:** 11 normketens, 24 toetspunten; 108.712.320 cache-input, 687.972 uitvoer.
+- **TR-CYBER, hoofdtekst:** 19 normketens, 32 toetspunten; 121.642.496 cache-input, 712.965 uitvoer.
 
-De afzonderlijke coördinatorregistratie beslaat 14:23:29 tot 14:33:20 UTC: 591,857 seconden, inclusief voorbereiding en onderhoud van het meetscript. In dit afgebakende venster zijn 26 verzoeken vastgelegd met 2.614.136 inputtokens (waarvan 2.504.320 cache-input) en 22.597 outputtokens (waarvan 7.020 redeneertokens), samen 2.636.733 tokens. Dit zijn werkelijke lokale tellers voor dit voorbereidingswerk, geen verbruik of doorlooptijd van een volledige rapportverwerking. Eurokosten zijn `null`: er is geen factuurbedrag beschikbaar. Latere overdracht valt buiten dit venster.
+**Meetgrenzen.** Lees de cijfers alleen met deze grenzen:
 
-**Nog te controleren:** eerst is een geverifieerde route nodig om een reeds aanwezige testbron met ongewijzigde identiteit en bronwaarborgen opnieuw te verwerken. De kit of het auteursregister is voor deze pilot niet aangepast. Daarna volgt LVVN26 met alle rollen en volledige OAK-dekking. PROO26, IVHO25 en TR-CYBER volgen afzonderlijk met hetzelfde model en dezelfde vastgelegde skillbasis; deze drie runs zijn niet gestart. De story blijft open tot de volledige vaste testset werkelijk is gemeten.
+- **Model:** gpt-6-astra, gemengd *xhigh* en *High*, op verzoek van de beheerder. Een verschil met een latere meting is dus geen bewezen effect van *High* of van een andere instructie.
+- **Scores** beoordelen de gemaakte bouwstenen, niet de onderzochte organisaties. Het zijn gemiddelden van beslechte normoordelen, geen publicatiebesluit.
+- **LVVN26 blijft inhoudelijk HERZIEN.** Norm L09 scoort 6,0: een vergelijking door de auditor bewijst de eigen rapportagecontrole van de organisatie niet. L06 scoort 7,7. Het gemiddelde verbergt die blokkade niet.
+- **PROO26** bevat een onderbreking van 191,26 minuten. Vanaf de hervatting duurde de run 135,04 minuten; vergelijk 340,69 dus niet met actieve verwerkingstijd.
+- **IVHO25** toont alleen de inhoudelijke uitvoering. Met de aparte voorbereiding door de coördinator erbij is het 115.972.926 tokens, waarvan 111.943.808 cache-input en 714.133 uitvoer. Bij LVVN26 en TR-CYBER zitten voorbereiding en coördinatie al in de cijfers.
+- **Niet meegeteld:** automatische goedkeuringsreviews en administratie na de meetgrens. Eurokosten zijn `null`: er is geen factuur.
+- **Privé:** voorstellen, ruwe oordelen en meetlogs staan in een afgeschermde werkmap. Bronnen en de bestaande database zijn niet gewijzigd.
+
+**Eerste bevinding** ([#172](https://github.com/Robert-Worm/omnibus/issues/172)): de coördinator neemt 36 tot 47 procent van het tokenvolume voor zijn rekening, vooral herhaalde, gecachte context. Dat is geen aandeel in eurokosten. Het eerste onderzoek richt zich op compactere rolopdrachten en alleen de nodige dossierdelen in de context. De blinde lezingen, onafhankelijke reviews en brondekking blijven.
+
+**Eerdere pilot van 25 oktober 2026 (HOLD).** De eerste LVVN26-pilot is de regel met versie `c1c0586`. Die liep vast bij de intake: het auteursregister ontbrak in de openbare checkout, en een tweede proef weigerde de bron met `Report already active`. Er is toen geen lezing, review of score gemaakt. Alleen de voorbereiding is gemeten: 2.636.733 tokens in een venster van bijna tien minuten.
 
 `npm run skills:meting -- --metingen` vat de vastgelegde runs samen.
 

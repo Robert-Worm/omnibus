@@ -466,7 +466,8 @@ export function tabelControle(rel, tekst) {
   for (const t of tabellen(tekst)) {
     const plek = `${rel}:${t.nr}`;
     if (t.kop.some((c) => !c)) fouten.push(`${plek}: tabel met een lege kopcel; geef elke kolom een kop (zie de bouwstenen)`);
-    if (t.kop.length > 4 && t.kop.join("|") !== "ID|Datum|Besluit|Reden|Gevolg") waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
+    // Twee vaste tabellen hebben meer kolommen: de besluitenlijst en de metingen, die `npm run skills:meting` inleest.
+    if (t.kop.length > 4 && !["ID|Datum|Besluit|Reden|Gevolg", "Datum|Skill|Bron|Versie|Model|Agents|Minuten|Tokens|Score"].includes(t.kop.join("|"))) waarschuwingen.push(`${plek}: tabel met ${t.kop.length} kolommen; hooguit vier`);
     const status = t.kop.findIndex((c) => /^status$/i.test(c));
     t.kop.forEach((_, k) => {
       const waarden = t.rijen.map((r) => totStabiel(r.cellen[k] || "", /<!--[^>]*-->/g).trim()).filter((c) => c && c !== "–");
