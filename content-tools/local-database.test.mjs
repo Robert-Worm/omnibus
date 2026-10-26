@@ -345,3 +345,11 @@ await test("malformed plans and CLI options fail closed with machine-readable HO
   const checkError = JSON.parse(check.stderr.slice(check.stderr.indexOf("{"), check.stderr.lastIndexOf("}") + 1));
   assert.equal(checkError.status, "HOLD"); assert.match(checkError.error, /INPUT_CHECK/);
 });
+
+test("a missing owner admission points to the owner decision, not to rehashing evidence (#156)", () => {
+  const missing = localDatabaseFailure(new Error("Every viewer package needs its own checked local-owner admission"));
+  assert.match(missing.action, /local-owner admission/);
+  assert.doesNotMatch(missing.action, /Restore the exact source\/review files/);
+  const other = localDatabaseFailure(new Error("Source passages differ"));
+  assert.match(other.action, /Restore the exact source\/review files/);
+});

@@ -393,6 +393,8 @@ export function localDatabaseFailure(error) {
   return { status: "HOLD", publishable: false, newContentApproval: false,
     error: error instanceof Error ? error.message : "Local database build failed",
     ...(pending ? { reviewEvidence: pending.evidence, code: "SOURCE_INTEGRATION_REQUIRED" } : {}),
-    action: "Restore the exact source/review files and trusted intake hash, or request a corrected version with matching reviews. Never change HOLD or rehash rejected evidence to pass. Keep incomplete output separate and retry with a new output folder.",
+    action: /owner admission/i.test(error instanceof Error ? error.message : "")
+      ? "Add or correct the local-owner admission for this package (see the owner-decision section). Do not rehash or change source or review files that already passed. Retry with a new output folder."
+      : "Restore the exact source/review files and trusted intake hash, or request a corrected version with matching reviews. Never change HOLD or rehash rejected evidence to pass. Keep incomplete output separate and retry with a new output folder.",
     documentation: "content-tools/local-database.md" };
 }

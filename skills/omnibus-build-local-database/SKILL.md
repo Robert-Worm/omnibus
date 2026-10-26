@@ -17,10 +17,13 @@ Vraag in één ronde wat ontbreekt:
 
 - welke documenten, en per document de soort: rapport, wet of kader, of onderzoeksmodel;
 - of de gebruiker ze mag verwerken en met de gekozen AI-dienst mag delen;
-- of Omnibus al op deze computer draait: er is een map `omnibus` met
-  `local-data/runtime/local-build.json`. Zo niet, laat dan eerst installeren met één opdracht
-  (`docs/gebruiken/installeren.md`) en ga verder als het startscherm te zien is;
-- of de private verwerkingsomgeving met de rapportkit beschikbaar is.
+- of Omnibus al op deze computer draait, en of de private verwerkingsomgeving met de
+  rapportkit beschikbaar is.
+
+**De basis.** Gebruik alleen een gepinde installatie als basis:
+`local-data/runtime/local-build.json` uit een geslaagde installatie met één opdracht
+(`docs/gebruiken/installeren.md`). Ontbreekt die, laat dan eerst installeren. Een testdatabase,
+fixture of ontwikkelaarsproef is geen basis voor een eigen database.
 
 Zeg eerlijk wat er kan. Een rapport of kader komt alleen in de viewer met het volledige
 reviewbewijs uit de rapportkit of het broncontract. Zonder die omgeving lukt dat nog niet;
@@ -36,33 +39,48 @@ Werk vanuit de map `omnibus`. Lees vóór stap 3 `content-tools/local-database.m
 daar staan de exacte velden en meldingen. Laat na elke stap zien wat er gelukt is, en ga pas
 dan verder.
 
-1. **Verwerk elk document** met de passende skill: `omnibus-add-report`,
-   `omnibus-add-framework` of `omnibus-add-model`. Volg die skill volledig, met alle lezingen
-   en reviews in afzonderlijke contexten. Kan de app geen deelagenten maken, laat de gebruiker
-   dan elke rol in een nieuw gesprek doen. *Gelukt als:* elk pakket heeft een reviewbasis,
-   reviews en ontvangstbewijzen, zonder open HOLD.
-2. **Controleer de kwaliteit tussendoor.** Gebruik `omnibus-review-audit-quality` voor de
-   normen en toetspunten, en `omnibus-review-questions` voor de vragen. Een uitkomst
-   *herschrijven* of HOLD gaat terug naar stap 1 voor dat deel, met een nieuwe review. Keur
-   niets stil goed. *Gelukt als:* elke bouwsteen en vraag *behouden* is, of bewust is weggelaten.
-3. **Maak per pakket de intake** in `work/eigen-pakketten/<pakket>/`, volgens
-   `docs/beheer/pakket-controleren.md`: `plan.json`, dan `npm run content:prepare` en
-   `npm run content:intake`. Laat de gebruiker de manifesthash apart bewaren.
-   *Gelukt als:* `FILES_VERIFIED_REVIEW_REQUIRED`.
-4. **Maak `work/eigen-pakketten/packages.json`** met alleen de gekozen pakketten, hun
-   manifesthash, de echte auteurs en, bij rapporten en kaders, `sourceEvidence`.
-5. **Het besluit van de eigenaar.** De gebruiker is de lokale eigenaar. Vraag per punt of hij
-   zelf heeft nagegaan dat de reviewers onafhankelijk waren, de bron echt is gelezen en de
-   inhoud brongetrouw is. Leg zijn antwoord in eigen woorden vast in een verificatieverslag
-   (rol `supporting`). Maak het besluitbestand alleen na drie keer *ja*. Bij twijfel: geen
-   besluit, de uitvoer blijft een controledatabase.
-6. **Controleer de invoer:**
-   `node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json --base local-data/runtime/local-build.json --check`.
-   *Gelukt als:* `LOCAL_VIEWER_INPUTS_CHECKED`.
+1. **Verwerk elk document** met de passende skill en volg die volledig, met alle lezingen en
+   reviews in afzonderlijke contexten. Kan de app geen deelagenten maken, laat de gebruiker dan
+   elke rol in een nieuw gesprek doen.
+   - **Model** (`omnibus-add-model`): het pakket heeft twee reviews, theorie en praktijk,
+     gebonden aan de reviewbasis uit `prepareModelReview`. Geen ontvangstbewijzen of normketen;
+     die horen bij rapporten en kaders.
+   - **Rapport of kader:** de lees-, fase- en ontvangstbewijzen uit de kit of het broncontract.
+
+   *Gelukt als:* elk pakket heeft zijn reviewbasis en reviews, zonder open HOLD.
+2. **Controleer de kwaliteit tussendoor.** Dat zijn twee verschillende controles; doe ze allebei.
+   De vormcontrole (`voorcontrole()` uit `lib/question-quality.mjs`) vindt vormfouten. De
+   inhoudelijke review leest de bron: `omnibus-review-questions` voor de vragen en
+   `omnibus-review-audit-quality` voor normen en toetspunten. Een vraag die door de vormcontrole
+   komt, kan inhoudelijk toch herschreven moeten worden. *Herschrijven* of HOLD gaat terug naar
+   stap 1 voor dat deel, met een nieuwe review. *Gelukt als:* alles is *behouden*, of bewust
+   weggelaten.
+3. **Concept-intake en conceptcontrole.** Maak per pakket de intake in
+   `work/eigen-pakketten/<pakket>/` volgens `docs/beheer/pakket-controleren.md`. Voor een model
+   staat een minimaal plan bij [het modelplan](references/modelplan.md); lees dat vóór je het plan
+   maakt. Maak `work/eigen-pakketten/packages.json` met alleen de gekozen pakketten en de echte
+   auteurs. Controleer dan zonder basis:
+   `node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json --check`.
+   *Gelukt als:* `LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED`.
+4. **Verificatie en definitieve intake.** Pas nu gaat de gebruiker zelf na of de reviewers
+   onafhankelijk waren, of de bron echt is gelezen en of de inhoud klopt met de bron. Hij schrijft
+   dat in een verificatieverslag, in eigen woorden. Voeg het toe met de rol `supporting` en maak
+   de definitieve intake. Laat de gebruiker de nieuwe manifesthash apart bewaren en zet die in
+   `packages.json`. Bestaande reviews en akkoorden blijven byte voor byte gelijk; herbereken
+   nooit hun hash.
+5. **Het besluit van de eigenaar.** Stel twee aparte vragen:
+   - *Wil je deze pakketten toelaten in je eigen database?* Dat is de toestemming.
+   - De drie verklaringen uit stap 4: onafhankelijke reviewers, bron echt gelezen, brongetrouw.
+     De gebruiker beantwoordt elke verklaring zelf; jij vult geen antwoord in en leidt het niet af.
+
+   Maak het besluitbestand alleen bij *ja* op de toestemming én op alle drie de verklaringen.
+   Anders geen besluit; de uitvoer blijft een controledatabase.
+6. **Controleer met de basis:** dezelfde opdracht als in stap 3, met
+   `--base local-data/runtime/local-build.json`. *Gelukt als:* `LOCAL_VIEWER_INPUTS_CHECKED`.
 7. **Bouw en open** met de drie opdrachten uit *Gebruiken in de bestaande viewer* in
    `content-tools/local-database.md`, met een nieuwe uitvoermap zoals `work/eigen-viewer-01`.
-   *Gelukt als:* `LOCAL_VIEWER_DATABASE_CREATED`, en de gebruiker ziet zijn eigen bron op
-   `http://127.0.0.1:4328/`.
+   Kies een vrije poort, standaard 4328, en noem het adres met precies die poort.
+   *Gelukt als:* `LOCAL_VIEWER_DATABASE_CREATED`, en de gebruiker ziet zijn eigen bron op dat adres.
 8. **Rond af.** Zeg dat deze database alleen op deze computer staat, dat de gewone Omnibus
    ongewijzigd blijft, en dat **Bewaar project** zijn werk bewaart. Wil hij de bron openbaar
    delen, dan gaat dat via een claim (`docs/bijdragen/README.md`).
@@ -70,9 +88,10 @@ dan verder.
 ## Bij een HOLD
 
 Lees de melding en de tabel in *Los een HOLD op* in `content-tools/local-database.md`. Leg in
-gewone woorden uit wat er mis is en wat de gebruiker kan doen. Ontbreekt bewijs of review,
-ga dan terug naar de stap waar het ontstond. Gebruik bij een nieuwe poging een nieuwe
-uitvoermap. Pas nooit een hash, status of besluit aan om een fout weg te werken.
+gewone woorden uit wat er mis is en wat de gebruiker kan doen. Ontbreekt een eigenaarbesluit,
+ga dan naar stap 5; de bron- en reviewbestanden zijn dan in orde. Ontbreekt bewijs of review, ga
+terug naar de stap waar het ontstond. Gebruik bij een nieuwe poging een nieuwe uitvoermap. Pas
+nooit een hash, status of besluit aan om een fout weg te werken.
 
 ## Uitvoer
 
