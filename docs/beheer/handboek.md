@@ -50,6 +50,7 @@ Een nieuwe database volgt bij 5 ingeleverde bronnen, of een maand na de vorige a
 | Node-versie en onderdelen bijwerken | Beveiligingsupdates | Pas `.nvmrc` en `package.json` samen aan; de documentatiecheck bewaakt dat ze gelijk blijven |
 | Werklijst van de Rijksmap verversen | Nieuwe rapporten komen erbij | Vervang `.github/voortgang/rapporten.csv` door een nieuwe export |
 | Besluitenlijst nalopen | Kloppen de afspraken nog? | [Besluiten](besluiten.md) |
+| Opruimronde in de code, door ChatGPT Astra | Ongebruikte code, dubbel werk en verborgen fouten stapelen zich op | Eerst bevindingen met bewijs in een issue, dan alleen aantoonbaar ongebruikte code weg met groene `npm test`. Voorbeeld: [#229](https://github.com/Robert-Worm/omnibus/issues/229) |
 
 ## Wie pakt welk werk op?
 
