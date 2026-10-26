@@ -15,6 +15,7 @@ import {wwkeSelection,chooseWwkePoints,selectWwkePointsDirect} from '@/lib/wwke-
 import {useBrowseState} from './browse-state';
 import {useLawOverview,type LawOverviewProps} from './law-overview-state';
 import CompactMatrix from './compact-matrix';
+import {CollectionBadge} from './collection-choice';
 import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
@@ -114,7 +115,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  </div>
  <div className="law-group-stack">{groups.map((group,index)=>{const ids=group.rows.flatMap(r=>r.pointIds),state=select(ids);return <section className="law-group" key={group.id} data-wwke-group={group.id}><header className="law-group-heading"><div><h3>{group.title}</h3><p className="law-group-description">{group.description}</p><p className="law-group-location">Bron: hoofdstuk {[...new Set(group.rows.map(r=>r.sourceChapter))].join(' · ')}</p><p className="law-group-count">{state.selected} van {countLabel(state.total,'toetspunten')} gekozen</p></div><label className="law-select-group" htmlFor={checkboxId+group.id}><Checkbox id={checkboxId+group.id} checked={state.all} indeterminate={state.partial} disabled={disabled||!state.total} aria-label={'Selecteer hele groep '+group.title} onCheckedChange={v=>choose(ids,v===true)}/><span>Selecteer hele groep<small>{countLabel(state.total,'toetspunten')}</small></span></label></header>
  <DeferredViewerSection count={group.rows.length} immediate={index===0}>
- <CompactMatrix lines={group.rows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={'wwke-group-'+group.id+'-v3'} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]} onOpen={id=>open(id)} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:id=>open(id),onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
+ <CompactMatrix collectionSource={wwkeSourceId} lines={group.rows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={'wwke-group-'+group.id+'-v3'} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]} onOpen={id=>open(id)} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:id=>open(id),onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
  </DeferredViewerSection>
  </section>;})}</div>{!groups.length&&<div className="law-empty"><h3>Geen selecteerbare normen in deze weergave</h3><p>Pas je filters aan om andere normen en toetspunten te bekijken. Achtergrondinformatie en open bronvragen vind je bij Over dit kader.</p></div>}
  </>}{error&&<p role="alert">{error}</p>}</>}
@@ -131,6 +132,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  <p className="law-browse-boundary">{detailAudience?'Toetspunten voor '+wwkeAudiences.find(a=>a.id===detailAudience)?.title.toLocaleLowerCase('nl')+'. De voorwaarden en bronpassages van ieder punt blijven volledig beschikbaar.':'Alle toetspunten en brononderdelen van deze norm.'}</p>
  <div className="law-choice-grid">{children.map(p=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id);const ownText=material&&draft.overrides[material.id]?.criterion;const excluded=wwkeExcludedForSector(p.id,view.sector);return <article key={p.id} data-point={p.id} data-inspected={pointId===p.id||undefined} className={'law-choice-card'+(selected.has(p.id)?' is-chosen':'')}>
  {viewerOnly&&initialPointId===p.id&&<small>Deze bouwsteen</small>}<label>{p.selection_status==='SELECTABLE'&&<Checkbox checked={selected.has(p.id)} disabled={disabled||p.selection_status!=='SELECTABLE'||(excluded&&!selected.has(p.id))} aria-label={'Selecteer toetspunt '+p.id} onCheckedChange={v=>choose([p.id],v===true)}/>}<strong>{p.title}</strong></label><p>{p.text}</p>
+ <CollectionBadge kind="foundation" id={wwkeSourceId}/>
  {p.selection_status!=='SELECTABLE'&&<span className={'wwke-status '+p.selection_status.toLowerCase()}>{labels[p.selection_status]}</span>}
  {excluded&&<p className="wwke-warning">Artikel 23: uitgezonderd voor de sector in je overzichtsfilter.</p>}
  {ownText&&ownText!==p.text&&<details><summary>Jouw formulering</summary><p>{ownText}</p></details>}

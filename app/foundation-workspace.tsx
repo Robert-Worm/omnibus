@@ -1,5 +1,6 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
+import {useCollectionScope,CollectionBadge} from './collection-choice';
 import { Fragment, useState, useRef, useLayoutEffect, useEffect } from "react";
 import type {FoundationBrowse} from '@/lib/project-session.mjs';
 import { X, Eye, ExternalLink } from "lucide-react";
@@ -56,9 +57,10 @@ import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 
 export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void)=>void;prepareDetails?:(id:string,action:()=>void)=>void}) {
   const [overview,setOverview]=useLawOverview(props);
+  const allows=useCollectionScope();
   const overviewProps={overview,onOverviewChange:setOverview,prepareDetails:(action:()=>void)=>props.prepareDetails?props.prepareDetails(current||'',action):action()};
   const admitted=foundations.filter(isAdmittedFoundation).map(s=>s.id);
-  const known=[cioSourceId,wwkeSourceId,...topicalIds,...admitted],opened=foundations.filter(s=>known.includes(s.id)&&props.draft.investigation?.sourceIds.includes(s.id));
+  const known=[cioSourceId,wwkeSourceId,...topicalIds,...admitted].filter(id=>allows('foundation',id)),opened=foundations.filter(s=>known.includes(s.id)&&props.draft.investigation?.sourceIds.includes(s.id));
   const [active,setActive]=useState(props.initialSource||props.initialBrowse.sourceId||opened[0]?.id||'');
   const [previousSource,setPreviousSource]=useState(props.initialSource);
   if(previousSource!==props.initialSource){
@@ -94,6 +96,7 @@ function LegacyFoundationWorkspace({
   onBrowseChange:(value:FoundationBrowse)=>void;
 }) {
   const sameSource=initialSource===initialBrowse.sourceId;
+  const allows=useCollectionScope();
   const [query, setQuery] = useState(sameSource?initialBrowse.query:''),
     [sourceId, setSourceId] = useState(initialSource),
     [topic, setTopic] = useState(sameSource?initialBrowse.topic:''),
@@ -134,7 +137,7 @@ function LegacyFoundationWorkspace({
     page,
     selectedOnly,
     reviewedOnly,
-  });
+  },preparedFoundationItems,foundations.filter(source=>allows('foundation',source.id)));
   const current = [...view.filtered,...view.contextItems].find((p) => p.id === active);
   const showGroups = grouped && !groupId && view.groupResults.length > 0 && view.filtered.every(p => p.groupId);
   const workspaceRef = useRef<HTMLElement>(null);
@@ -481,6 +484,7 @@ function LegacyFoundationWorkspace({
                       <TableCell>
                         <span className="criterion-reference">
                           {p.id}
+                          <CollectionBadge kind="foundation" id={p.sourceId}/>
                         </span>
                         <button className="source-title" onClick={event => openCriterion(p.id,event.currentTarget)}>
                           {p.title}

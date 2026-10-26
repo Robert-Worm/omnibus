@@ -5,6 +5,7 @@ import {LawPointSourceLayout} from './law-point-source';
 import LazyReportLibrary from './lazy-report-library';
 import {reportPointTrace} from '@/lib/report-point-source.mjs';
 import catalogue from '@/lib/report-point-catalogue.mjs';
+import {CollectionBadge} from './collection-choice';
 
 type ReaderProps=ComponentProps<typeof LazyReportLibrary>;
 export type ReportSourceEntry={framework:NonNullable<ReaderProps['framework']>;source:ReaderProps['source']};
@@ -19,7 +20,7 @@ export default function ReportPointSource({pointId,entry,onReturn}:{pointId:stri
  // never made to look like direct support for the proposed test point.
  const passages=[{...relation,label:relation.evidence_id}];
  return <LawPointSourceLayout label="Bronpassage bij rapporttoetspunt" active={active} onActive={setActive}
-  summary={<div className="cio-source-summary"><strong>{point.title}</strong><p>{point.id} · Historisch rapport · voorgesteld toetspunt, geen actuele bevinding</p></div>}
+  summary={<div className="cio-source-summary"><strong>{point.title}</strong><CollectionBadge kind="report" id={point.report_id}/><p>{point.id} · Historisch rapport · voorgesteld toetspunt, geen actuele bevinding</p></div>}
   publication={<Button variant="outline" onClick={onReturn}>Terug naar toetspunten</Button>}
   criterion={<>
    <h3>Norm</h3><p>{catalogue.blocks.find(b=>b.id===point.legacy_line_id)?.criterion.text}</p>

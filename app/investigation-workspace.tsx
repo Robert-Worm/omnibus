@@ -1,5 +1,6 @@
 "use client";
 import FoundationSourceReader from './lazy-foundation-reader';
+import {useCollectionScope} from './collection-choice';
 import TermHelp, {TermText} from './term-help';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
 import DirectorySearch from './directory-search';
@@ -395,7 +396,8 @@ export function FoundationCatalogue({
   const [sourceArea,setLocalSourceArea]=useState<'laws'|'frameworks'>('laws');
   const setSourceArea=(value:'laws'|'frameworks')=>{setLocalSourceArea(value);onSourceScopeChange?.(value);};
   const scope=guided||onSourceScopeChange?sourceScope:sourceArea;
-  const scopedSources=scopeFoundationSources(foundations,scope);
+  const allows=useCollectionScope();
+  const scopedSources=scopeFoundationSources(foundations.filter(source=>allows('foundation',source.id)),scope);
   const [query, setQuery] = useState(searchQuery),
     [kind, setKind] = useState("all"),
     [selectedOnly, setSelectedOnly] = useState(false),

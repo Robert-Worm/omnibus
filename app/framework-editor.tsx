@@ -5,6 +5,9 @@ import {focusWorkflowHeading} from '@/lib/workflow-focus.mjs';
 import {collectionDestination,rememberCollectionPage} from '@/lib/collection-start.mjs';
 import "./investigation.css";
 import FoundationWorkspace from "./foundation-workspace";
+import CollectionChoice,{CollectionContext} from './collection-choice';
+import {availableCollections} from '@/lib/application-catalogue.mjs';
+import {collectionAllows,collectionViews,bindCollectionPreference,assertProjectCollections,type CollectionPreference} from '@/lib/source-collections.mjs';
 import DiscoveryCatalogue,{emptyDirectoryView} from './discovery-catalogue';
 import {chooseCatalogueItems} from '@/lib/catalogue-selection.mjs';
 import {relatedQuestionThemes} from '@/lib/discovery-navigation.mjs';
@@ -133,6 +136,7 @@ function previousStoredDraft() {
   return null;
 }
 const restoreOptions = {
+  collections:availableCollections,
   restoreDraft:(value:unknown) => {
     assertNoRemovedReportContent(value);
     const restored=personalDraft(upgradeDraft(value,baseFramework,baseFramework,getPreviousFrameworks),baseFramework) as Draft;
@@ -143,6 +147,8 @@ const restoreOptions = {
 };
 
 export default function FrameworkEditor() {
+  const [collections,setCollections]=useState<CollectionPreference>(()=>bindCollectionPreference({mode:'both',origins:[]},availableCollections));
+  const allows=(kind:'report'|'foundation'|'model',id:string)=>collectionAllows(availableCollections,collections.mode,kind,id);
   // Each catalogue publication supplies a current framework snapshot. Derived
   // framework data follows that snapshot instead of an implicit global read.
   const [catalogueSnapshot,setCatalogueSnapshot]=useState(()=>({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue,discoveryViews,legacyThemes}));
@@ -251,9 +257,9 @@ export default function FrameworkEditor() {
   const [reportViewReset,setReportViewReset]=useState(0);
   const [browseMode, setBrowseMode] = useState({ combined: false });
   const combinedView = browseMode.combined && workspace.openIds.length > 1;
-  const browseThemes = useMemo(()=>catalogueSnapshot.workspaces.filter((t) =>
+  const browseThemes = useMemo(()=>collectionViews(catalogueSnapshot.workspaces,availableCollections,collections.mode,catalogueRouting.reports).filter((t) =>
     combinedView ? workspace.openIds.includes(t.id) : t.id === workspace.activeId,
-  ),[combinedView,workspace,catalogueSnapshot]);
+  ),[combinedView,workspace,catalogueSnapshot,collections.mode]);
   const questionThemes = useMemo(()=>relatedQuestionThemes(workspace.openIds,catalogueSnapshot.discoveryViews,catalogueSnapshot.legacyThemes),
     [workspace.openIds,catalogueSnapshot]);
   const browseKey = combinedView ? "all-open-themes" : (activeTheme?.id ?? page);
@@ -410,6 +416,7 @@ export default function FrameworkEditor() {
     draftRef.current=project.draft;
     setDraftState({draft:project.draft});setModelLibrary(project.modelLibrary);setWorkspace(project.workspace);
     setAboutViews(project.view.aboutViews);
+    setCollections(bindCollectionPreference(project.collections,availableCollections));
     setLastCollectionPage(project.view.lastCollectionPage);
     setOpenModelIds(normalizeOpenModelIds(project.view.openModelIds,project.modelLibrary.models));
     setResearchRoute(project.view.researchRoute);
@@ -441,6 +448,7 @@ export default function FrameworkEditor() {
         if(store.raw()!==null) {
           const original=await readProjectInBackground(store.raw()!,{signal:reading.signal});
           if(cancelled)return;
+          assertProjectCollections(original,availableCollections);
           await ensureCatalogue(projectCatalogueKeys(original));
           // Source publication and project validation are separate atomic steps.
           // Let pending input/paint run between them, not one long microtask chain.
@@ -500,7 +508,7 @@ export default function FrameworkEditor() {
           ? 'De browseropslag is niet toegankelijk. Automatisch bewaren staat uit. Bewaar je huidige werk als projectbestand en controleer de opslaginstellingen van je browser.'
           : e instanceof Error && e.message.includes('verwijderde proefrapporten')
           ? e.message+' Download het herstelbestand of open een ander project.'
-          : 'Het opgeslagen project kon niet volledig worden geopend. Het origineel blijft beschermd. Download het herstelbestand of open een bewaard project.');
+          : (e instanceof Error?e.message+' ':'')+'Het opgeslagen project kon niet volledig worden geopend. Het origineel blijft beschermd. Download het herstelbestand of open een bewaard project.');
         try {setRecoveryOriginal(localStorage.getItem(PROJECT_KEY) ?? JSON.stringify({
           draft:localStorage.getItem(storageKey) ?? previousStoredDraft(),
           models:localStorage.getItem('rijksmap-model-library-v1'),workspace:localStorage.getItem(workspaceKey)}));}catch{/* Browser storage unavailable. */}
@@ -557,10 +565,10 @@ export default function FrameworkEditor() {
     if(!loaded || !modelsReady)return;
     const next=makeProject(draft,modelLibrary,workspace,{page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,
       researchRoute,discoveryAxis:discoveryView.axis,discoveryCategory:discoveryView.category,
-      ...modelView,aboutViews,openModelIds,combined:browseMode.combined,excluded:reportChoices.excluded,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId:choiceThemeId??''});
+      ...modelView,aboutViews,openModelIds,combined:browseMode.combined,excluded:reportChoices.excluded,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId:choiceThemeId??''},collections);
     projectRef.current=next;
     if(!storageBlocked.current&&storeRef.current)backgroundSave.current?.save(next);
-  },[loaded,modelsReady,draft,modelLibrary,workspace,page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,modelView,aboutViews,browseMode,reportChoices,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId,researchRoute,discoveryView,openModelIds,saveProject]);
+  },[loaded,modelsReady,draft,modelLibrary,workspace,page,lastCollectionPage,selected,readerId,reportPage,foundationFocus,sourceProcess,modelView,aboutViews,browseMode,reportChoices,foundationBrowse,foundationCatalogueScope,reportScope,choiceThemeId,researchRoute,discoveryView,openModelIds,saveProject,collections]);
   useEffect(()=>{
     const changed=(event:StorageEvent)=>{
       // localStorage.clear() reports key=null; it invalidates a saved project too.
@@ -780,6 +788,7 @@ export default function FrameworkEditor() {
       if (file.size > MAX_PROJECT_BYTES) throw new Error("Projectbestand is te groot.");
       const originalText=await file.text();
       const original=expandProject(JSON.parse(originalText));
+      assertProjectCollections(original,availableCollections);
       await ensureCatalogue(projectCatalogueKeys(original));
       if(request!==importRequest.current)return;
       if(draftRef.current!==previousDraft)throw Error('Je onderzoek is tijdens het laden gewijzigd. Open het projectbestand opnieuw als je die wijzigingen wilt vervangen.');
@@ -1023,6 +1032,7 @@ export default function FrameworkEditor() {
             </>
   );
   return (
+    <CollectionContext.Provider value={{collections:availableCollections,mode:collections.mode,reports:catalogueRouting.reports}}>
     <EvidenceDisplayContext.Provider value={showSources}>
       <div className="framework-app compact-app" onBlurCapture={() => {typingRecoveryRef.current = null;}}>
         <a className="skip-link" href="#main-workspace" onClick={event=>{event.preventDefault();document.getElementById('main-workspace')?.focus();}}>
@@ -1129,6 +1139,7 @@ export default function FrameworkEditor() {
             count={draft.included.length}
           />
           <div className="workflow-surface" data-page={page}>
+          {page!=='entry'&&<CollectionChoice mode={collections.mode} disabled={!loaded||!modelsReady} hasOwn={availableCollections.origins.some(o=>o.kind==='own')} onChange={mode=>{rememberProject('Collectiekeuze wijzigen');setCollections(bindCollectionPreference({...collections,mode},availableCollections));}}/>}
           <CollectionNavigation
             discoveryAxis={discoveryView.axis}
             page={page}
@@ -1153,12 +1164,12 @@ export default function FrameworkEditor() {
                 if (loaded) commit({ ...draft, exportSettings: settings });
               }}
             />}
+          </div>
             {problem && (
               <ProjectNotice key={message} message={message}
                 onRecover={recoveryOriginal ? ()=>download(recoveryOriginal,'rijksmap-herstel-origineel.json','application/json') : undefined}
                 onReload={()=>setReloadOpen(true)} />
             )}
-          </div>
           {resetNotice && <output className="navigation-notice">{resetNotice}<Button variant="ghost" onClick={()=>setResetNotice('')}>Sluiten</Button></output>}
           <Sheet open={Boolean(adoptingModel)} onOpenChange={open=>{if(!open)setAdoptingModel('');}}>
             <SheetContent className="project-recovery-sheet model-update-sheet">
@@ -1258,7 +1269,7 @@ export default function FrameworkEditor() {
             />
           ) : ['risk-start','catalogue','processes'].includes(page) ? (
             <>
-            <DiscoveryCatalogue views={discoveryViews}
+            <DiscoveryCatalogue views={collectionViews(discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)}
               onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map(reportOverviewKey));}}
               included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
               guided={page==='risk-start'}
@@ -1297,7 +1308,7 @@ export default function FrameworkEditor() {
             <ThemeCatalogue
               framework={baseFramework}
               onProcesses={() => navigate("processes")}
-              themes={legacyThemes}
+              themes={collectionViews(legacyThemes,availableCollections,collections.mode,catalogueRouting.reports)}
               openIds={workspace.openIds}
               onOpen={openWorkspace}
               onDeselectAll={() => setWorkspace(restoreWorkspace(null, workspaces))}
@@ -1332,7 +1343,7 @@ export default function FrameworkEditor() {
                 ready: choicesReady,
                 impact: (id) => reportNormImpact(framework, choiceTheme, id, draft),
               }}
-              frameworks={reportScope==='audit' ? corpus.map(c=>c.framework) : activeReportFrameworks(corpus.map(c=>c.framework))}
+              frameworks={reportScope==='audit' ? corpus.map(c=>c.framework) : activeReportFrameworks(corpus.map(c=>c.framework)).filter((f:Framework)=>allows('report',f.report.id))}
               themes={themes}
               reportIds={reportIds}
               auditReportIds={auditReportIds}
@@ -1428,10 +1439,9 @@ export default function FrameworkEditor() {
                   )}
                   {!editable && visibleLines.length === 0 && (
                     <section className="empty-framework">
-                      <h2>Geen normen binnen uw rapportkeuze</h2>
+                      <h2>Geen normen binnen je collectie- en rapportkeuze</h2>
                       <p>
-                        Zet een rapport aan om de bijbehorende normen weer te bekijken. Uw
-                        referentiekader is niet gewijzigd.
+                        Kies hierboven een andere collectie of zet een rapport aan om de bijbehorende normen te bekijken. Je referentiekader blijft behouden.
                       </p>
                       <Button
                         onClick={() => {
@@ -1835,5 +1845,6 @@ export default function FrameworkEditor() {
         <ProductFooter />
       </div>
     </EvidenceDisplayContext.Provider>
+    </CollectionContext.Provider>
   );
 }

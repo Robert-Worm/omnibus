@@ -1,5 +1,6 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
+import {NormCollection} from './collection-choice';
 import { useRef, useState, useEffect, useLayoutEffect, useCallback, useId, useMemo } from "react";
 import { Info } from 'lucide-react';
 import {Tooltip,TooltipTrigger,TooltipContent,TooltipProvider} from '@/components/ui/tooltip';
@@ -74,8 +75,10 @@ export default function CompactMatrix({
   groupLines,
   descriptiveTitles = false,
   subjectColumnLabel = descriptiveTitles ? 'Norm' : 'Onderdeel',
+  collectionSource,
 }: {
   lines: Line[];
+  collectionSource?:string;
   draft: Draft;
   viewDraft: Draft;
   disabled: boolean;
@@ -579,6 +582,7 @@ export default function CompactMatrix({
                       <span>Bekijk toetspunten</span><span className="matrix-count-label">{pointChoices.counts[l.id].selected}/{pointChoices.counts[l.id].total} gekozen</span>
                     </Button>}
                   </div>
+                  <NormCollection line={l} draft={draft} sourceId={collectionSource}/>
                   {combineIdentity && <div className="matrix-identity-title">{renderTitle(l)}</div>}
                   {pointSelection && <Button variant="outline" className="point-choice-button" disabled={disabled}
                     aria-label={`Kies toetspunten voor ${l.id}`}

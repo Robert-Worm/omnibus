@@ -1,4 +1,5 @@
 "use client";
+import {NormCollection} from './collection-choice';
 import {countLabel} from '@/lib/display-count.mjs';
 import { normId } from "@/lib/norm-navigation.mjs";
 import LegacyCioNotice from "./legacy-cio-notice";
@@ -591,6 +592,7 @@ export default function ResearchBuilder({
             preview={preview}
             eyeLabel={"Bekijk inhoud van " + id}
           />
+          <NormCollection line={line} draft={draft}/>
           {buildingBlockHeading(line).context && <small className="building-block-context">{buildingBlockHeading(line).context}</small>}
           {showInterviewText && line.materialKind === 'model-question' && <p className="building-block-question">{draftValue(line, 'auditQuestion', draft)}</p>}
           {line.provisionStatus && <span className="provision-status" title={line.provisionStatusDetails}>{line.provisionStatus}</span>}

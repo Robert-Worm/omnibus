@@ -1,5 +1,6 @@
 "use client";
 import {Button} from '@/components/ui/button';
+import {CollectionBadge} from './collection-choice';
 import {criterionIndex, searchCriteria} from '@/lib/criterion-search.mjs';
 import {preparedFoundationItems, sourceScopeProvisions} from '@/lib/foundation-workspace.mjs';
 import {foundations} from '@/lib/investigation.mjs';
@@ -35,6 +36,7 @@ export default function CriterionSearchResults({query,sourceIds,page,onPage,onOp
       {group.rows.map(({item,matchInCriterion})=><article key={item.originKey}>
         <div><small>{item.id} · {item.groupTitle || item.topic || 'Algemeen'}{item.auditRole==='scope' && ' · Afbakening, geen toetsnorm'}</small>
           <h4>{item.title}</h4>
+          <CollectionBadge kind="foundation" id={item.sourceId}/>
           <p>{item.auditNorm || item.body}</p>
           {!matchInCriterion && <small>Treffer via toepassingsvoorwaarden, groep of bronomschrijving.</small>}
           {item.effectiveStatus==='future' && <span className="provision-status">Voorbereiding · controleer ingangsdatum</span>}

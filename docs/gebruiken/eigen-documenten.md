@@ -39,6 +39,18 @@ Wil je je eigen documenten in Omnibus gebruiken, alleen op je computer? De skill
 
 Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bijdragen/bron-verwerken.md). De beheerder controleert het en neemt het op in de volgende database.
 
+## Openbare en eigen normen kiezen
+
+Heeft de lokale beheerroute je gecontroleerde bronpakketten samengevoegd met een vastgelegde openbare publicatie? Dan kies je boven de werkruimte bij **Collecties** voor **Openbaar**, **Eigen** of **Openbaar en eigen**. De keuze geldt voor normen uit rapporten, wetten en kaders. Modellen hebben hun bestaande eigen werkruimte.
+
+De applicatie leest één samengestelde lokale publicatie. De oorspronkelijke openbare herkomst en de toelating van elk eigen pakket blijven daarin afzonderlijk vastgelegd. Bij normen en toetspunten staat **Openbare collectie** of **Eigen collectie**. De keuze werkt ook voor zoeken en volledige groepsselectie, inclusief normen buiten beeld. Materiaal dat je al in je onderzoek hebt opgenomen, blijft staan wanneer je een collectie verbergt.
+
+Projectbestanden en browseropslag bewaren de collectiekeuze en herkomstpinnen in projectversie 2. Bij het openen van versie 1 bewaart Omnibus eerst het oorspronkelijke project als herstelkopie. Ontbreekt later een vastgelegde collectie of bronversie, dan wordt het project niet uit een andere bron hersteld. De melding verwijst naar de oorspronkelijke publicatie; je onderzoekstekst en bronbewijs blijven in het oorspronkelijke bestand of de beschermde browseropslag behouden. Gebruik daar **Download herstelbestand** voordat je verdergaat.
+
+Is de browseropslag te klein voor de verplichte herstelkopie, dan wordt het oude project niet geopend. De herstelmelding blijft zichtbaar in je huidige werkstap. Bewaar het herstelbestand; de oorspronkelijke opslag wordt niet overschreven.
+
+Voor oudere samengestelde lokale publicaties zonder deze herkomstmetadata moet de beheerroute een nieuwe publicatie uit de oorspronkelijke openbare basis en gecontroleerde pakketten maken. Bewaar de bestaande publicatie en projecten. De collectiekeuze verandert geen databasebestand en activeert geen nieuwe publicatie.
+
 ## Goed om te weten
 
 > [!WARNING]

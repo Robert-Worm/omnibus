@@ -1,5 +1,6 @@
 "use client";
 import CompactContextText from './compact-context-text';
+import {CollectionBadge} from './collection-choice';
 import ReportPointSource, {type ReportSourceEntry} from './report-point-source';
 import { useState } from "react";
 import {
@@ -179,7 +180,7 @@ export default function ControlObjectivePilot({
                         <h3>Norm</h3>
                         <span className="bd-label">Voorstel uit analyse</span>
                       </div>
-                      <p>{block.criterion.text}</p>
+                      <CollectionBadge kind="report" id={block.report_id}/><p>{block.criterion.text}</p>
                     </section>
                   <div className="bd-points-heading">
                     <div>
@@ -265,7 +266,7 @@ export default function ControlObjectivePilot({
                             />
                             <div className="bd-point-copy">
                               <label htmlFor={`choose-${p.id}`}>
-                                <strong>{title}</strong>
+                                <strong>{title}</strong><CollectionBadge kind="report" id={p.report_id}/>
                               </label>
                               <p id={`text-${p.id}`}>{text}</p>
                               <div className="bd-point-meta">

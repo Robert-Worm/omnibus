@@ -10,4 +10,5 @@ export const themes:Theme[];
 export const reportViews:Theme[];
 export const workspaces:Theme[];
 export const catalogueRouting:{reports:Record<string,string>;workspaces:Record<string,string[]>};
+export const availableCollections:import('./source-collections.mjs').SourceCollections;
 export function projectCatalogueKeys(value:unknown):string[];

@@ -16,6 +16,7 @@ import {catalogueDerived,catalogueRevision,onCatalogueChange} from '@/lib/catalo
 import {foundationOverview,foundationOverviewSelection} from '@/lib/foundation-overviews.mjs';
 import {closeFoundation} from '@/lib/foundation-workspace.mjs';
 import CompactMatrix from './compact-matrix';
+import {CollectionBadge} from './collection-choice';
 import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
@@ -147,7 +148,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
      <header className="law-group-heading"><div><p className="law-group-location">{adapter?'':groupLocation(group.allRows,pointMap,recordMap)}</p><h3 id={`law-group-${group.id}`}>{group.title}</h3><p className="law-group-count">{groupState.selected} van {countLabel(groupState.total,'toetspunten')} gekozen{hold>0&&` · ${hold} nog niet selecteerbaar`}{group.visibleRows.length<group.allRows.length&&` · ${group.visibleRows.length} van ${countLabel(group.allRows.length,'normen')} zichtbaar`}</p></div><label className="law-select-group" htmlFor={`law-group-all-${group.id}`}><Checkbox id={`law-group-all-${group.id}`} checked={groupState.all} indeterminate={groupState.partial} disabled={disabled||!groupState.total} aria-label={`Selecteer hele groep ${group.title}, ${countLabel(groupState.total,'toetspunten')}`} onCheckedChange={value=>choose(ids,value===true)}/><span>Selecteer hele groep<small>{countLabel(groupState.total,'toetspunten')}</small></span></label></header>
      <DeferredViewerSection count={group.visibleRows.length} immediate={index===0}>
      <CompactMatrix lines={group.visibleRows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={`${adapter?.sourceId||'cio'}-group-${group.id}-v2`} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity}
-      initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]}
+      collectionSource={sourceId} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]}
       onOpen={open} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:open,onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
      </DeferredViewerSection>
     </section>;
@@ -171,7 +172,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
       <div className="law-choice-grid">{children.map(p=><article key={p.id} data-point={p.id} data-inspected={initialPointId===p.id||undefined} className={`law-choice-card${selected.has(p.id)?' is-chosen':''}`}>
        {viewerOnly&&initialPointId===p.id&&<small className="viewer-current-point">Bekeken bouwsteen</small>}
        <label htmlFor={`law-${p.id}`}><Checkbox id={`law-${p.id}`} aria-label={`${p.title} selecteren`} disabled={disabled||p.selection_status!=='SELECTABLE'} checked={selected.has(p.id)} onCheckedChange={value=>choose([p.id],value===true)}/><strong>{p.title}</strong></label>
-       <p>{p.text}</p>{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">HOLD · {p.selection_reason}</p>}
+       <CollectionBadge kind="foundation" id={sourceId}/><p>{p.text}</p>{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">HOLD · {p.selection_reason}</p>}
        {(()=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id),text=material&&draft.overrides[material.id]?.criterion;return text!==undefined&&text!==p.text?<section className="viewer-own-wording"><strong>Eigen formulering in je kader</strong><p>{text}</p></section>:null;})()}
        <div className="law-choice-actions"><small>{p.id} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
       </article>)}</div>
