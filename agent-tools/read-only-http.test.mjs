@@ -17,6 +17,7 @@ import {createIndex, insertEntry, sha256} from './index-store.mjs';
 import {openReadOnlyAgentService} from './read-service.mjs';
 import {createReadOnlyHttpServer, readOnlyHttpLimits} from './read-only-http.mjs';
 import {openIsolatedReadOnlyService, readOnlyWorkLimits} from './read-only-http-service.mjs';
+import './read-only-http-online.test.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const scratch = resolve(root, 'work/read-only-http');

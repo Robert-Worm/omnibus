@@ -1,15 +1,19 @@
 import childProcess from 'node:child_process';
+import {publicRuntimePins} from './read-only-http-config.mjs';
 
 export const readOnlyWorkLimits = Object.freeze({
   concurrentReads: 4, readMs: 5000, responseBytes: 256 * 1024, oldSpaceMiB: 128,
 });
 const unavailable = () => Error('Leesverzoek niet uitgevoerd.');
+const publicReaders = new WeakMap();
+export const publicReadIdentity = service => publicReaders.get(service);
 
 // One disposable process per read, no queue or automatic restart. Unlike a
 // timer on the SQLite thread, the parent can kill synchronous native work.
 // The heap limit is not an OS/native-memory quota. Never use this as a public
 // hosting boundary. Only capped JSON crosses back into the HTTP process.
-export async function openIsolatedReadOnlyService({buildDirectory}) {
+export async function openIsolatedReadOnlyService({buildDirectory, publicRuntime}) {
+  const pins = publicRuntime === undefined ? undefined : publicRuntimePins(publicRuntime);
   const running = new Set();
   let closed = false, identity;
   function run(method, args, {signal, responseBytes = readOnlyWorkLimits.responseBytes} = {}) {
@@ -45,7 +49,7 @@ export async function openIsolatedReadOnlyService({buildDirectory}) {
         if (failed || code !== 0 || text === undefined) return reject(unavailable());
         try { resolve(JSON.parse(text)); } catch { reject(unavailable()); }
       });
-      child.send({buildDirectory, method, args, responseBytes, identity}, error => { if (error) stop(); });
+      child.send({buildDirectory, method, args, responseBytes, identity, publicRuntime: pins}, error => { if (error) stop(); });
     });
   }
   const service = Object.fromEntries(['guide', 'sources', 'search', 'get'].map(method =>
@@ -59,6 +63,7 @@ export async function openIsolatedReadOnlyService({buildDirectory}) {
   try {
     const {release, publication} = await service.guide();
     identity = {release, publication}; // Reopening must not silently switch builds.
+    if (pins) publicReaders.set(service, pins);
   } catch { await service.close(); throw unavailable(); }
-  return service;
+  return pins ? Object.freeze(service) : service;
 }

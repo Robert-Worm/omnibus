@@ -61,7 +61,7 @@ Voeg `--vragen` toe voor alleen vragen en hulpmiddelen, zonder verwachte antwoor
 **Bekende gaten**, elk met een eigen user story:
 
 - De [inhoudelijke vraagreview](../skills/omnibus-review-questions/README.md) blijft een afzonderlijke beoordeling; een geslaagde voorcontrole is geen inhoudelijke goedkeuring.
-- Alleen lokaal via STDIO; een koppeling via de online versie ontbreekt: [#149](https://github.com/Robert-Worm/omnibus/issues/149).
+- Een werkelijk gehoste leesverbinding en de hostingacceptatie ontbreken: [#149](https://github.com/Robert-Worm/omnibus/issues/149). De afzonderlijke HTTP-reader heeft een lokale proef en een expliciete proxyconfiguratie, zoals hieronder beschreven.
 
 Dit is een **lokale MCP-verbinding via STDIO**, geen online koppeling. De knop **AI koppelen**, naast de weergave- en opslagknoppen, toont de werkwijze en kopieerbare lokale instellingen. De website kan niet vaststellen of een AI-client daadwerkelijk verbonden is en toont daarom geen onbevestigde verbindingsstatus. Een geschikte AI-client start het proces zelf. Cloudclients die uitsluitend een publieke URL ondersteunen kunnen hier nog niet rechtstreeks mee verbinden. Ondersteuning hangt af van de gekozen client en de organisatie-instellingen; een AI-abonnement alleen garandeert geen connectorondersteuning.
 
@@ -157,6 +157,40 @@ Open voor de gezamenlijke acceptatie een gemaakt `omnibus-project.json` met **Op
 Serverversie 0.2.0 voegt het verplichte veld `consent` toe aan `prepare_research_draft` en `export_research_draft`. Herstart de lokale verbinding zodat de client de tools opnieuw opvraagt. Voeg het veld alleen na akkoord toe aan bestaande aanvraagbestanden voor `scripts/call-omnibus-mcp.mjs`; die brug geeft aanvragen ongewijzigd door en verzint geen toestemming. `test-fixture.mjs` levert bewust alleen het concept; tests voegen hun expliciet toegestane fictieve schrijfhandeling zelf toe. Eerder opgeslagen concepten zonder dit veld blijven exporteerbaar, met nieuw akkoord op de exportaanroep. De leesaanroepen en bestandsformaten blijven gelijk.
 
 Voor codeherstel kan de ontwikkelaar de betreffende commits terugdraaien en de lokale client herstarten. Dat verandert geen bronrelease of browserproject. Een vorige agent-build kan via de bestaande lokale pointer worden teruggekozen nadat de beheerder release/publicatie heeft gecontroleerd; deze proef wijzigt geen globale registratie. De huidige opdracht bevat geen publiek MCP-endpoint, tunnel, login, accountbeheer of online opslag.
+
+## Afzonderlijke HTTP-leesroute
+
+`node agent-tools/start-read-only-http.mjs --build-directory <agent-build> [--port <poort>]` start uitsluitend op `127.0.0.1`, standaard op een vrije poort, met exact `/mcp`. Dit verandert `npm start`, de website en STDIO niet. De route biedt alleen `get_workflow_guide`, `list_sources`, `search_building_blocks` en `get_building_block`. Er zijn geen projecten, eigen documenten, bestandsroutes, schrijf- of exporttools, sessies of SSE-streams. HOLD, bronhashes en paginering blijven behouden.
+
+Voor een **later afzonderlijk te beoordelen** TLS-reverseproxy op dezelfde host bestaat `--online-config <bestand.json>`. Zonder die optie blijft de lokale Host/Origin-controle gelden; omgevingsvariabelen activeren niets. Het instellingenbestand heeft uitsluitend deze velden:
+
+```json
+{
+  "enabled": true,
+  "publicOrigin": "https://omnibus.example.invalid",
+  "missingOrigin": "reject",
+  "publicRuntime": {
+    "release": "<64 kleine hextekens van de goedgekeurde openbare release>",
+    "publication": "<64 kleine hextekens van de goedgekeurde runtimepublicatie>",
+    "databaseSha256": "<64 kleine hextekens van de goedgekeurde agentcatalogue.sqlite>"
+  }
+}
+```
+
+Dit voorbeeld bevat ongeldige plaatshouders en schakelt niets in. `enabled` moet expliciet `true` zijn; een onvolledig of onbekend veld stopt de start. De beheerder levert de drie **afzonderlijk beoordeelde openbare pinnen** aan. Een hash uit een willekeurige lokale build berekenen is geen publicatiegoedkeuring. De databasehash bindt ook de afgeleide zoekindex en zoekkolommen aan die beoordeling; alleen release/publicatie noemen bindt die index niet. De reader controleert de hash, de echte runtimepublicatie, resources en het codecontract in ieder geïsoleerd leesproces. Een gewijzigd bestand of niet-lege WAL/journal wordt geweigerd. Lever een afgeronde, onveranderlijke build op een alleen-lezen volume aan; wijzig of checkpoint nooit een actieve database om deze controle te passeren.
+
+De bronrelease moet `omnibus-catalogue-release`, schema 1 zijn. Lokale model-/bronpublicaties, reviewdatabases, onbekende formaten en afwijkende scope/contentgate worden geweigerd, ook met correcte expliciet opgegeven hashes. `LOCAL_OWNER_ADMITTED` is geen openbare toelating. Deze controle filtert geen privéregels weg: een verkeerde of gewijzigde collectie wordt als geheel geweigerd. Broninhoud en review blijven buiten deze codewijziging.
+
+Het reverseproxycontract is bewust beperkt:
+
+- Extern uitsluitend de exact ingestelde HTTPS-origin plus `/mcp`; intern `http://127.0.0.1:<poort>/mcp`. De reader accepteert alleen de echte loopback-peer en bindt nooit op een publiek adres. Een proxy op een ander systeem of in een ander netwerknamespace valt buiten dit contract.
+- De proxy valideert de externe authority en bewaart exact de publieke `Host` en de oorspronkelijke `Origin` en `Sec-Fetch-*`-headers. Hij herschrijft geen foute Origin naar een vertrouwde waarde en verwijdert geen browsermetadata. Alleen `POST /mcp` zonder query of herschreven pad wordt doorgestuurd. `Accept`, `Content-Type` en MCP-protocolheaders blijven behouden. De reader controleert dit zelf opnieuw; geen wildcard-CORS of CORS-preflightondersteuning.
+- `missingOrigin: "reject"` weigert verzoeken zonder Origin. Alleen expliciet `"server-client"` laat serverclients zonder Origin toe, mits alle `Sec-Fetch-*`-headers ontbreken. Een aanwezige Origin moet altijd exact overeenkomen. Dit is geen authenticatie: de inhoud is bewust openbaar. Een cloudclient die een andere Origin meestuurt valt buiten dit contract; verruim daarvoor geen checks.
+- `Forwarded`, `X-Forwarded-*` en vergelijkbare clientclaims bepalen geen host, schema, toegangsrecht of verzoekbudget. Alle toegelaten clients delen het budget van deze reader. De proxy bewaakt daarnaast zijn eigen totale verbindingen, header-/bodygrootte, buffering en deadlines, zonder retries of een onbegrensde wachtrij. Schakel requestbodylogging uit.
+
+De bestaande bovengrenzen gelden in beide modi: 16 KiB body, 8 KiB headers, 256 KiB antwoord, 4 gelijktijdige verzoeken/leesprocessen, 16 verbindingen, 60 verzoeken burst en 1 verzoek per seconde aanvulling. De absolute verbindings- en leestijd is 5 seconden. Geen leeswachtrij; gestopte processen blijven meetellen tot ze zijn opgeruimd. V8 old space blijft 128 MiB per leesproces. Dit is **geen OS/native-geheugenquota**. Het opnieuw controleren van de database en publicatie valt binnen dezelfde leestijd; een te grote of trage build wordt geweigerd, de grenzen worden niet automatisch verruimd.
+
+De synthetische proeven in `read-only-http-online.test.mjs` lopen mee via `read-only-http.test.mjs` in `npm test`. Ze bewijzen lokale startup, protocol, weigering van lokale collecties en de veranderde toegangsgrens. Voor hosting blijven bewijs van TLS/proxyrouting en headerbehoud, afscherming van de interne poort, alleen-lezen openbare build, OS/native-geheugen-/procesquota, totale capaciteit en herstel, en de gekozen echte cloudclient nodig. Er is geen publieke route, deployment, service, tunnel of hostinggoedkeuring toegevoegd. Sluit #149 niet op basis van deze lokale proeven alleen.
 
 ## Verder lezen
 

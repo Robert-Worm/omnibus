@@ -27,12 +27,12 @@ if (isMainThread) {
   });
 } else {
   const {openReadOnlyAgentService} = await import('./read-service.mjs');
-  const {buildDirectory, method, args, responseBytes, identity} = workerData;
+  const {buildDirectory, method, args, responseBytes, identity, publicRuntime} = workerData;
   let service, text;
   try {
     if (!['guide', 'sources', 'search', 'get'].includes(method) || !Number.isSafeInteger(responseBytes) ||
         responseBytes < 1024 || responseBytes > readOnlyWorkLimits.responseBytes) throw Error();
-    service = openReadOnlyAgentService({buildDirectory});
+    service = openReadOnlyAgentService({buildDirectory, publicRuntime});
     const guide = service.guide();
     if (identity && (identity.release !== guide.release || identity.publication !== guide.publication)) throw Error();
     text = JSON.stringify(service[method](args));

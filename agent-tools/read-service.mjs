@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import {AgentIndex} from './index-store.mjs';
 import {searchSchema, itemSchema} from './schemas.mjs';
 import {workflowGuide} from './guidance.mjs';
+import {verifyPublicReadFile, verifyPublicReadPublication} from './read-only-http-publication.mjs';
 
 // Shared with STDIO. Keep source evidence, HOLD and pagination identical.
 export function createReadMethods(index, release) {
@@ -33,13 +34,17 @@ export function createReadMethods(index, release) {
 
 // Opens only the disposable agent index; never imports the build's workflow or
 // creates an output directory. No project, intake, export or file-reading tool.
-export function openReadOnlyAgentService({buildDirectory}) {
+export function openReadOnlyAgentService({buildDirectory, publicRuntime}) {
   const manifest = JSON.parse(readFileSync(join(buildDirectory, 'omnibus-release.json'), 'utf8'));
-  const index = new AgentIndex(join(buildDirectory, 'catalogue.sqlite'), manifest.release);
+  const database = join(buildDirectory, 'catalogue.sqlite');
+  const unchanged = publicRuntime ? verifyPublicReadFile(database, manifest, publicRuntime) : () => {};
+  const index = new AgentIndex(database, manifest.release);
+  try { if (publicRuntime) verifyPublicReadPublication(index, publicRuntime); unchanged(); }
+  catch (error) { index.close(); throw error; }
   return {
     ...createReadMethods(index, manifest.release),
     guide: () => ({
-      status: 'Lokale leesproef; geen online dienst.',
+      status: publicRuntime ? 'Openbare leesruntime; beschikbaarheid via de host afzonderlijk te toetsen.' : 'Lokale leesproef; geen online dienst.',
       release: manifest.release, publication: manifest.publication,
       sequence: workflowGuide.sequence.slice(1, 4),
       sourceRules: {...workflowGuide.sourceRules,
@@ -48,6 +53,6 @@ export function openReadOnlyAgentService({buildDirectory}) {
       limits: {searchPage: 40, sourceSectionCharacters: 12000},
       access: 'Alleen bronnen zoeken en lezen. Stuur geen projecten, intakes of eigen documenten. Opslag, export en lokale bestanden zijn niet beschikbaar.',
     }),
-    close: () => index.close(),
+    close: () => { try { unchanged(); } finally { index.close(); } },
   };
 }
