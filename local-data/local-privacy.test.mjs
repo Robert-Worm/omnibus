@@ -4,9 +4,10 @@ import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {newPrivacyRun, runPackagePrivacy, runBrowserPrivacy, root, guard} from './local-privacy.mjs';
-import {privacyProbe,containsProbe} from './local-privacy-probe.mjs';
+import {privacyProbe,containsProbe,requestedSourceHashes} from './local-privacy-probe.mjs';
+import {prepareGuardedRuntime} from './local-privacy-sources.mjs';
 
-test('real local package CLI stays offline and ends in HOLD without a runtime publication', async () => {
+void test('real local package CLI stays offline and ends in HOLD without a runtime publication', async () => {
   const dir=newPrivacyRun(), result = await runPackagePrivacy(dir);
   assert.equal(result.runtime, 'HOLD');
   assert.equal(result.sourceRoundTrip, true);
@@ -19,7 +20,7 @@ test('real local package CLI stays offline and ends in HOLD without a runtime pu
   assert(!existsSync(join(dir,'browser-result.json')),'No successful browser receipt for a held database');
 });
 
-test('private source probes are bounded, publication-bound and never become selectors or output text',()=>{
+void test('private source probes are bounded, publication-bound and never become selectors or output text',()=>{
   const dir=newPrivacyRun(),path=join(dir,'probe.json');
   const pins={release:'a'.repeat(64),publication:'b'.repeat(64)};
   const value={schema:1,...pins,criterionId:'FICTIEF-K01',pointId:'FICTIEF-K01/TP02',sourceTextMarker:'Fictieve café bron'};
@@ -40,9 +41,36 @@ test('private source probes are bounded, publication-bound and never become sele
   assert(!containsProbe('%invalid','not present'));
   assert(!containsProbe('ordinary request',''));
   assert.equal(privacyProbe(undefined,pins).identity,null);
+  const framework={...value,schema:2,kind:'framework',sourceId:'FICTIEF',criterionId:'C1',pointId:'K1'};
+  writeFileSync(path,JSON.stringify(framework));
+  assert.equal(privacyProbe(path,pins).kind,'framework');
+  for(const change of [{kind:'model'},{sourceId:'bad" selector'},{publication:'f'.repeat(64)},
+    {kind:'report'},{pointId:'bad" selector'}]) {
+    writeFileSync(path,JSON.stringify({...framework,...change}));
+    assert.throws(()=>privacyProbe(path,pins),/Invalid private privacy probe/);
+  }
 });
 
-test('outbound probes fail before networking; telemetry also catches swallowed errors', () => {
+void test('source delivery counts only exact pinned framework resources, including batches',()=>{
+  const expected=new Set(['a'.repeat(64),'b'.repeat(64)]), release='c'.repeat(64), other='d'.repeat(64);
+  const first=[...expected][0], second=[...expected][1];
+  const url=path=>new URL('http://127.0.0.1:12345'+path);
+  assert.deepEqual(requestedSourceHashes(url('/api/v1/content/'+first+'?release='+release),release,expected),[first]);
+  assert.deepEqual(requestedSourceHashes(url('/api/v1/content-batch?release='+release+'&hash='+other+'&hash='+second),release,expected),[second]);
+  for(const path of ['/api/v1/content/'+other+'?release='+release,
+    '/api/v1/content/'+first+'?release='+other,'/api/v1/content/'+first,
+    '/api/v1/version?release='+release+'&hash='+first])
+    assert.deepEqual(requestedSourceHashes(url(path),release,expected),[]);
+});
+
+for(const kind of ['report','framework']) void test('new admitted synthetic '+kind+' runtime is constructed without Node networking',()=>{
+  const dir=newPrivacyRun(), result=prepareGuardedRuntime(kind,dir);
+  assert.equal(result.runtime,'LOCAL_READY'); assert.equal(result.baselineUnchanged,true);
+  const pins=JSON.parse(readFileSync(result.settings));
+  assert.equal(privacyProbe(join(dir,'probe.json'),pins).kind,kind);
+});
+
+void test('outbound probes fail before networking; telemetry also catches swallowed errors', () => {
   const dir = newPrivacyRun(), receipt = join(dir, 'negative-control.json');
   const child = spawnSync(process.execPath, ['--import', guard, '--input-type=module', '-e', `
     import net from 'node:net'; import tls from 'node:tls'; import http from 'node:http';

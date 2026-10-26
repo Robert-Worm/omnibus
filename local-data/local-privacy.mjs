@@ -10,7 +10,9 @@ import {CatalogueRepository} from './repository.mjs';
 import {checkRuntimeDatabase} from '../scripts/check-runtime-database.mjs';
 import {readDatabaseSettings} from '../scripts/database-build-options.mjs';
 import {createPrivacyPackage, syntheticMarker, syntheticSource, bytesHash, saveJson} from './local-privacy-fixture.mjs';
-import {privacyProbe,containsProbe} from './local-privacy-probe.mjs';
+import {privacyProbe,containsProbe,requestedSourceHashes} from './local-privacy-probe.mjs';
+import {readRuntimePublication} from './runtime-publication.mjs';
+import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const guard = new URL('./local-privacy-guard.mjs', import.meta.url).href;
@@ -104,17 +106,29 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
   // Use the existing full release/publication/source checks before any browser starts.
   // In particular, an intake/review database must not be promoted by this rehearsal.
   checkRuntimeDatabase(pins);
+  const sourceHashes=new Set(), deliveredSourceHashes=new Set();
+  if(probe.kind==='framework') {
+    const repository=new CatalogueRepository(pins.database,{readOnly:true});
+    try {
+      const publication=readRuntimePublication(repository,{...pins,contract:runtimeContractHash});
+      const prefix='source:'+probe.sourceId;
+      for(const [key,ref] of Object.entries(publication.refs))
+        if(key===prefix || key.startsWith(prefix+':'))sourceHashes.add(ref.hash);
+      assert(sourceHashes.size,'Requested framework must have pinned source resources');
+    } finally {repository.close();}
+  }
   const manifest = readJson(join(webRoot, 'omnibus-release.json'));
   const result = {status:'running', node:process.version, code:manifest.codeRevision ?? null,
     release:pins.release, publication:pins.publication, steps:[], requests:[], errors:[],
     probeSha256:probe.identity,
-    scope:probe.identity ? 'Explicit report point in a pre-existing checked publication; not intake-to-publication approval' :
+    scope:probe.identity ? 'Explicit '+probe.kind+' point in a checked publication; not content approval' :
       'Local supported web build with public reference data and only synthetic user input; not own-package runtime import'};
   let server, proxy, browser;
   let phase = 'application';
   try {
     const {chromium} = createRequire(import.meta.url)(playwrightModule || 'playwright');
     const {expandProject} = await import('../lib/project-codec.mjs');
+    const {unzipSync,strFromU8} = await import('fflate');
     server = await startGuardedServer({databasePath:pins.database, release:pins.release,
       publication:pins.publication, webRoot:resolve(webRoot), port:0}, dir);
     proxy = await denyProxy();
@@ -128,26 +142,30 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     const record = (request, channel = request.resourceType()) => {
       const url = new URL(request.url());
       const local = url.origin === server.url;
+      const sourceResources=local?requestedSourceHashes(url,pins.release,sourceHashes):[];
+      for(const hash of sourceResources)deliveredSourceHashes.add(hash);
       const text = request.url() + JSON.stringify(request.headers()) + (request.postData() || '');
       // Evidence contains classifications, never raw headers, text, queries or source URLs.
       const entry = {phase, channel, local, method:request.method(), hasBody:request.postData() !== null,
         containsSyntheticInput:containsProbe(text,syntheticMarker),
         containsSourceProbe:containsProbe(text,probe.sourceTextMarker),
-        kind:url.pathname.startsWith('/api/v1/documents/') ? 'source' : url.pathname.startsWith('/api/') ? 'api' : 'asset'};
+        kind:url.pathname.startsWith('/api/v1/documents/') || sourceResources.length ? 'source' : url.pathname.startsWith('/api/') ? 'api' : 'asset'};
       result.requests.push(entry);
       return entry;
     };
     await context.route('**/*', async route => {
       const request = route.request(), entry = record(request);
       if (phase === 'control' && request.url() === 'http://privacy-control.invalid/') {
+        entry.disposition='fulfilled-control';
         await route.fulfill({contentType:'text/html', body:'<!doctype html><title>Synthetic network control</title>'});
-      } else if (entry.local && entry.method === 'GET' && !entry.hasBody && !entry.containsSyntheticInput && !entry.containsSourceProbe) await route.continue();
-      else await route.abort('blockedbyclient');
+      } else if (entry.local && entry.method === 'GET' && !entry.hasBody && !entry.containsSyntheticInput && !entry.containsSourceProbe) {
+        entry.disposition='allowed-loopback'; await route.continue();
+      } else {entry.disposition='blocked'; await route.abort('blockedbyclient');}
     });
     await context.routeWebSocket('**/*', socket => {
       result.requests.push({phase, channel:'websocket', local:false, method:'CONNECT', hasBody:false,
         containsSyntheticInput:containsProbe(socket.url(),syntheticMarker),
-        containsSourceProbe:containsProbe(socket.url(),probe.sourceTextMarker), kind:'socket'});
+        containsSourceProbe:containsProbe(socket.url(),probe.sourceTextMarker), kind:'socket',disposition:'blocked'});
       socket.close();
     });
     context.on('page', page => {
@@ -174,26 +192,57 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     await page.reload();
     assert.equal(await page.locator('#goal-subject').inputValue(), syntheticMarker);
     result.steps.push('synthetic input, automatic save and reload');
-    // Use exactly the requested report point, never the first available fallback.
-    await page.evaluate(() => {location.hash = '#rapporten';});
-    await page.getByRole('textbox', {name:'Zoek rapport', exact:true}).fill(probe.criterionId);
-    await page.getByRole('button', {name:'Bekijk normen en toetspunten →', exact:true}).click();
+    // Use exactly the requested source/point, never the first available fallback.
+    if(probe.kind==='framework') {
+      await page.evaluate(() => {location.hash = '#grondslagen';});
+      await page.getByRole('group',{name:'Bronnen verkennen',exact:true}).getByRole('button', {name:/^Kaders/}).click();
+      await page.locator('#foundation-search').fill(probe.sourceId);
+      await page.getByRole('button', {name:/^Open in viewer:/}).click();
+    } else {
+      await page.evaluate(() => {location.hash = '#rapporten';});
+      await page.getByRole('textbox', {name:'Zoek rapport', exact:true}).fill(probe.sourceId || probe.criterionId);
+      await page.getByRole('button', {name:'Bekijk normen en toetspunten →', exact:true}).click();
+    }
     await page.getByRole('button', {name:'Kies toetspunten voor '+probe.criterionId, exact:true}).first().click();
     const detail = page.locator('.bd-pilot-detail'), point = detail.locator('[data-point="'+probe.pointId+'"]');
     await point.getByRole('checkbox').click();
-    await point.getByRole('button', {name:'Bronpassage', exact:true}).click();
+    await point.getByRole('button', {name:/^Bronpassage/}).click();
     await detail.locator('.report-library mark').first().waitFor();
     if(probe.sourceTextMarker) assert((await detail.locator('.report-library').innerText()).includes(probe.sourceTextMarker),
       'Requested source fragment was not displayed');
-    result.steps.push('pinned report point, source read and selection');
+    result.steps.push('pinned '+probe.kind+' point, source read and selection');
     await page.keyboard.press('Escape');
+    const savedProject=async()=>{
+      await page.locator('.project-save-indicator[data-state="saved"]').waitFor();
+      return expandProject(JSON.parse(await page.evaluate(()=>localStorage.getItem('rijksmap-project-v1'))));
+    };
+    const selected=await savedProject();
+    const material=selected.draft.investigation.materials.find(m=>m.sourcePointId===probe.pointId);
+    assert(material && selected.draft.included.includes(material.id),'Exact requested point must be selected');
+    assert.equal(material.originKey,probe.kind==='framework'?probe.sourceId+':'+probe.pointId:'report-point:'+probe.pointId);
+    if(probe.kind==='report' && probe.sourceId) assert.equal(JSON.parse(material.reportTrace).report_id,probe.sourceId);
+    const questionText=syntheticMarker+' Hoe wordt de fictieve melding afgehandeld?';
+    await page.evaluate(()=>{location.hash='#mijn-kader';});
+    await page.getByRole('button',{name:/^Zelf een vraag maken/}).click();
+    await page.locator('#central-question-input').fill(questionText);
+    await page.getByRole('button',{name:/^Vragen toevoegen/}).click();
+    await page.getByRole('button',{name:'Koppel '+material.id+' aan een vraag',exact:true}).click();
+    await page.locator('.norm-link-picker').getByRole('radio').check();
+    await page.locator('.norm-link-picker').getByRole('button',{name:'Koppelen',exact:true}).click();
+    const linked=await savedProject(), question=linked.draft.research.questions.find(q=>q.text===questionText);
+    assert(question && linked.draft.research.links.some(l=>l.question_id===question.id && l.line_id===material.id));
+    const checkRestored=value=>{
+      for(const key of ['included','research','investigation','overrides','notes'])
+        assert.deepEqual(value.draft[key],linked.draft[key],'Restore must retain '+key);
+      assert(JSON.stringify(value).includes(syntheticMarker));
+    };
+    await page.reload(); checkRestored(await savedProject());
+    result.steps.push('question linked to selected point, automatic save and reload with exact source snapshots');
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', {name:'Bewaar project', exact:true}).click();
     const download = await downloadPromise, project = join(dir, 'synthetic-project.json');
     await download.saveAs(project);
-    const projectText=JSON.stringify(expandProject(readJson(project)));
-    assert(projectText.includes(syntheticMarker), 'Downloaded project must contain the synthetic input');
-    assert(projectText.includes(probe.pointId), 'Downloaded project must retain the selected point');
+    checkRestored(expandProject(readJson(project)));
     await page.getByRole('button', {name:'Nieuw project', exact:true}).click();
     await page.getByRole('button', {name:'Wis project en begin opnieuw', exact:true}).click();
     await page.locator('.entry-options').waitFor();
@@ -205,12 +254,24 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     await page.reload();
     await page.locator('.project-save-indicator[data-state="saved"]').waitFor();
     const restored = await page.evaluate(() => localStorage.getItem('rijksmap-project-v1'));
-    assert(JSON.stringify(expandProject(JSON.parse(restored))).includes(syntheticMarker));
-    assert(JSON.stringify(expandProject(JSON.parse(restored))).includes(probe.pointId));
+    checkRestored(expandProject(JSON.parse(restored)));
     result.steps.push('local project download, reopen and reload');
     await page.evaluate(() => {location.hash = '#kaderexport';});
     await page.getByRole('group', {name:'Werkvorm', exact:true}).waitFor();
-    result.steps.push('export preview');
+    await page.getByRole('group', {name:'Werkvorm', exact:true}).getByRole('button',{name:/^Risico-controlmatrix/}).click();
+    const exportDownload=page.waitForEvent('download');
+    await page.getByRole('button',{name:'Download Excel (.xlsx)',exact:true}).click();
+    const workbook=join(dir,'synthetic-export.xlsx');
+    await (await exportDownload).saveAs(workbook);
+    const files=unzipSync(readFileSync(workbook));
+    assert(files['xl/workbook.xml'],'Download must be an Excel workbook');
+    const xml=Object.entries(files).filter(([name])=>name.startsWith('xl/')&&name.endsWith('.xml'))
+      .map(([,bytes])=>strFromU8(bytes)).join('\n');
+    const decoded=xml.replaceAll('&amp;','&').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&quot;','"').replaceAll('&apos;',"'");
+    assert(decoded.includes(questionText),'Export must contain the linked question');
+    assert(decoded.includes(material.body),'Export must contain the selected own norm');
+    result.exportVerified={workbook:true,linkedQuestion:true,selectedNorm:true};
+    result.steps.push('local Excel download verified with linked question and selected norm');
     await page.waitForTimeout(1000); // Bounded settling window for delayed work.
     // Include closing the app in its own measurement. Its workers must be gone
     // before injected controls begin, so a late app request cannot be excused as
@@ -218,6 +279,8 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     for (const open of context.pages()) await open.close();
     const application = result.requests.filter(r => r.phase === 'application');
     assert(application.some(r => r.kind === 'source'), 'Exercise actual source delivery');
+    if(probe.kind==='framework')assert(deliveredSourceHashes.size>0,'Exercise a pinned framework source resource');
+    result.sourceDeliveryVerified=probe.kind==='framework'?'pinned-source-resources':'local-document-pages';
     assert(application.every(r => r.local && r.method === 'GET' && !r.hasBody && !r.containsSyntheticInput && !r.containsSourceProbe),
       'Unexpected application request: inspect the local evidence before making any privacy claim');
     assert.deepEqual(result.errors, []);
@@ -242,7 +305,7 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     await control.waitForTimeout(500);
     const controls = result.requests.filter(r => r.phase === 'control');
     for (const channel of ['fetch','xhr','ping','image','websocket','document'])
-      assert(controls.some(r => r.channel === channel && !r.local), 'Missing negative control: ' + channel);
+      assert(controls.some(r => r.channel === channel && !r.local && r.disposition==='blocked'), 'Missing negative control: ' + channel);
     assert(controls.some(r => r.channel === 'fetch' && r.method === 'POST' && r.containsSyntheticInput));
     assert(controls.filter(r => r.channel === 'document').length >= 2, 'New-tab source navigation must be intercepted');
     result.steps.push('blocked fetch, XHR, beacon, image, WebSocket and explicit external source controls');
