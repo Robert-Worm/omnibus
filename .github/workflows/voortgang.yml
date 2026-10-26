@@ -4,12 +4,12 @@ name: Voortgang bijwerken
 # wat is ingeleverd (check-in) en wat in de database zit.
 on:
   issues:
-    types: [opened, edited, closed, reopened]
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
   issue_comment:
     types: [created]
   push:
     branches: [main]
-    paths: ['.github/voortgang/**', '.github/scripts/voortgang*.mjs', '.github/workflows/voortgang.yml']
+    paths: ['.github/voortgang/**', '.github/scripts/voortgang*.mjs', '.github/scripts/rapportvoorstel*.mjs', '.github/workflows/voortgang.yml']
   workflow_dispatch:
   schedule:
     # Elke maandagochtend: herinneringen en verlopen claims.
@@ -31,12 +31,14 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24.21.0'
           package-manager-cache: false
       - name: Tests van het claimsysteem
-        run: node --test .github/scripts/voortgang.test.mjs
+        run: node --test .github/scripts/voortgang.test.mjs .github/scripts/rapportvoorstel-lib.test.mjs
       - name: Claims verwerken en pagina's opnieuw maken
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,8 +47,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs README.md
+          git add .github/voortgang/voorgestelde-rapporten.json docs/bijdragen/werklijst docs/bijdragen/voortgang.md docs/bijdragen/werklijst-aanbevolen.md docs/bijdragen/werklijst-wetten-en-kaders.md docs/bijdragen/werklijst-rapporten.csv README.md docs/routekaart.md docs/begrippen.md docs/bijdragen/README.md
           if git diff --cached --quiet; then echo "Geen wijzigingen"; exit 0; fi
           git commit -m "Voortgang bijgewerkt"
-          git pull --rebase --quiet
-          git push
+          git push origin HEAD:main
