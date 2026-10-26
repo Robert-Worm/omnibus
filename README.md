@@ -13,7 +13,7 @@
   <!--badge:database-->
   <a href="https://github.com/Robert-Worm/omnibus/releases/latest"><img alt="Database: 27 rapporten" src="https://img.shields.io/badge/database-27%20rapporten-01689b?style=flat-square&labelColor=15233b"></a>
   <!--/badge-->
-  <a href="skills/README.md"><img alt="7 AI-skills" src="https://img.shields.io/badge/AI--skills-7-01689b?style=flat-square&labelColor=15233b"></a>
+  <a href="skills/README.md"><img alt="8 AI-skills" src="https://img.shields.io/badge/AI--skills-8-01689b?style=flat-square&labelColor=15233b"></a>
   <a href="#licentie"><img alt="Code: PolyForm Noncommercial" src="https://img.shields.io/badge/code-PolyForm%20Noncommercial-01689b?style=flat-square&labelColor=15233b"></a>
 </p>
 

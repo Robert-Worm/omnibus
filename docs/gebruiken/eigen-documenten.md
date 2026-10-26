@@ -35,6 +35,8 @@ Zo ziet een verwerkte bron er straks uit in Omnibus: links de norm en het toetsp
 
 *Een norm met de onderbouwende passage geel gemarkeerd in het rapport.*
 
+Wil je je eigen documenten in Omnibus gebruiken, alleen op je computer? De skill [`omnibus-build-local-database`](../../skills/omnibus-build-local-database/README.md) begeleidt je stap voor stap van pdf tot eigen database.
+
 Wil je dat pakket met anderen delen? Lever het in via [een bron verwerken](../bijdragen/bron-verwerken.md). De beheerder controleert het en neemt het op in de volgende database.
 
 ## Goed om te weten

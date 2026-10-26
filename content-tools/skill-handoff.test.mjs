@@ -7,7 +7,7 @@ import { installContentSkills, skillNames } from "../scripts/install-content-ski
 import { checkIntake, prepareIntake, intakeContracts } from "./intake.mjs";
 
 // Exercise the actual portable skill assets, not a second copy of their schema.
-test("all seven skills install separately with licences and preserve local edits", async (t) => {
+test("all eight skills install separately with licences and preserve local edits", async (t) => {
   const target = await mkdtemp(join(tmpdir(), "omnibus-public-skills-"));
   t.after(() => rm(target, { recursive: true, force: true }));
   const licence = await readFile(new URL("../LICENSE", import.meta.url));

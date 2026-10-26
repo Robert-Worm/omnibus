@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus: eigen database bouwen"
+  short_description: "Begeleid stap voor stap van eigen pdf tot eigen lokale database"
+  default_prompt: "Gebruik $omnibus-build-local-database om mij stap voor stap te begeleiden van mijn eigen documenten tot een eigen lokale Omnibus-database in de bestaande viewer. Vraag eerst wat ontbreekt, zeg eerlijk wat kan, en sla geen controle over."

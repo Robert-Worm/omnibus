@@ -1,12 +1,12 @@
 # AI-skills (`skills/`)
 
-> **In het kort:** zeven werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, vier helpen bij vragen en kwaliteit. Je installeert alleen wat je nodig hebt.
+> **In het kort:** acht werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, vier helpen bij vragen en kwaliteit, en één begeleidt je naar een eigen database. Je installeert alleen wat je nodig hebt.
 
 ## Wat is een skill?
 
 Een skill is een map met instructies (`SKILL.md`) en naslag die een AI-assistent stap voor stap volgt. Het is geen programma of getraind model: de kwaliteit hangt af van je assistent en van jouw controle.
 
-## De zeven skills
+## De acht skills
 
 ```mermaid
 flowchart TD
@@ -21,10 +21,14 @@ flowchart TD
         T["Thema's ordenen<br/>omnibus-curate-themes"]
         K["Kwaliteit beoordelen<br/>omnibus-review-audit-quality"]
     end
+    subgraph Eigen["Eigen database"]
+        E["Eigen database bouwen<br/>omnibus-build-local-database"]
+    end
     Bron --> Kwaliteit
+    Kwaliteit --> Eigen
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
     classDef groep fill:#f6f8fb,stroke:#9fb3c8,color:#15233b;
-    class Bron,Kwaliteit groep;
+    class Bron,Kwaliteit,Eigen groep;
 ```
 
 | Je wilt… | Skill |
@@ -36,6 +40,7 @@ flowchart TD
 | [Vragen beoordelen: behouden, herschrijven of schrappen](omnibus-review-questions/README.md) | `omnibus-review-questions` |
 | [Te grote thema's ordenen en overlap vinden](omnibus-curate-themes/README.md) | `omnibus-curate-themes` |
 | [De kwaliteit van bouwstenen beoordelen](omnibus-review-audit-quality/README.md) | `omnibus-review-audit-quality` |
+| [Van eigen pdf naar een eigen database op je computer](omnibus-build-local-database/README.md) | `omnibus-build-local-database` |
 
 ## Installeren
 
@@ -47,7 +52,7 @@ npm run skills:install -- --skill omnibus-add-report
 ```
 
 - `skills:check` controleert alleen; `skills:install` installeert.
-- Laat `--skill` weg om alle zeven te installeren.
+- Laat `--skill` weg om alle acht te installeren.
 - Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
 - Andere bestemming? Gebruik `--target <map>`.
 - `skills:check` meldt ook afwijkingen van de vaste controlelijst voor skills. Alleen die controle: `npm run skills:regels`.
