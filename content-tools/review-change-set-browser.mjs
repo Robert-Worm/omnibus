@@ -9,6 +9,7 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { correctionWorkflowFixture } from "./test-support/correction-workflow-fixture.mjs";
 import { sourceRuntimeFixture } from "./test-support/local-source-runtime-fixture.mjs";
+import { assertExactSourceHighlights } from "./test-support/correction-source-highlights.mjs";
 import { startDatabasePreview } from "../scripts/serve-database-web.mjs";
 import { parseProjectText } from "../lib/project-codec.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -85,9 +86,47 @@ try {
   await point.getByRole("checkbox").click();
   await point.getByRole("button", { name: /^Bronpassage/ }).click();
   await detail.locator(".report-library mark").first().waitFor();
-  const quotes = f.after.read("RECONCILED-SOURCE.json").records[0].source_spans.map(span => span.quote);
-  const marks = await detail.locator(".report-library mark").allTextContents();
-  assert(marks.some(mark => quotes.some(quote => quote.includes(mark) || mark.includes(quote))));
+  const sourceIds = f.after.read("CATALOGUE.json").points.find(row => row.id === "K1").source_links.map(link => link.record_id);
+  assert.deepEqual(sourceIds, ["R1"], "Revisit every source contribution if the fixture's selected point changes");
+  const spans = f.after.read("RECONCILED-SOURCE.json").records.find(row => row.id === sourceIds[0]).source_spans;
+  const pages = f.after.read("source/pages.json"), expected = [], observed = [], reader = detail.locator(".report-library");
+  let pageStart = 0;
+  // Raw mode retains every codepoint; readable mode may legitimately join
+  // whitespace. Inspect every page, including those with no expected marks.
+  await reader.getByRole("tab", { name: "Ongewijzigde brontekst", exact: true }).click();
+  for (const sourcePage of pages) {
+    const text = Array.from(sourcePage.text);
+    for (const span of spans.filter(span => span.page === sourcePage.page)) {
+      assert.equal(text.slice(span.start, span.end).join(""), span.quote);
+      expected.push({ page: span.page, start: pageStart + span.start, end: pageStart + span.end, quote: span.quote });
+    }
+    await reader.getByLabel("Pagina", { exact: true }).fill(String(sourcePage.page));
+    await reader.getByRole("button", { name: "Ga", exact: true }).click();
+    const raw = reader.getByLabel("Ongewijzigde brontekst pagina " + sourcePage.page, { exact: true });
+    await raw.waitFor();
+    const actual = await raw.evaluate(element => ({
+      text: element.textContent,
+      marks: [...element.querySelectorAll("mark")].map(mark => {
+        const prefix = document.createRange(); prefix.selectNodeContents(element); prefix.setEndBefore(mark);
+        return { start: Number(mark.getAttribute("data-passage-start")), end: Number(mark.getAttribute("data-passage-end")),
+          text: mark.textContent, localStart: Array.from(prefix.toString()).length };
+      }),
+    }));
+    assert.equal(actual.text, sourcePage.text, "The displayed raw page must match the pinned original");
+    for (const mark of actual.marks) {
+      assert.equal(mark.start, pageStart + mark.localStart, "Mark metadata must match its actual DOM position");
+      observed.push({ page: sourcePage.page, start: mark.start, end: mark.end, text: mark.text });
+    }
+    pageStart += text.length;
+  }
+  assert.equal(expected.length, spans.length, "Every pinned passage must belong to a checked page");
+  assertExactSourceHighlights(expected, observed);
+  result.sourceHighlights = { expected, observed, pagesChecked: pages.map(row => row.page) };
+  const marks = observed.map(row => row.text);
+  await reader.getByLabel("Pagina", { exact: true }).fill("1");
+  await reader.getByRole("button", { name: "Ga", exact: true }).click();
+  await reader.getByRole("tab", { name: "Leesweergave", exact: true }).click();
+  await reader.getByLabel("Leesweergave pagina 1", { exact: true }).waitFor();
   await page.screenshot({ path: join(f.dir, "corrected-source.png"), fullPage: true });
   await page.setViewportSize({ width: 820, height: 1000 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);

@@ -12,9 +12,32 @@ import { fileURLToPath } from "node:url";
 import { correctionWorkflowFixture } from "./test-support/correction-workflow-fixture.mjs";
 import { prepareSourceCheckedCorrection } from "./review-change-set-workflow.mjs";
 import { createReviewManifest } from "./review-change-set.mjs";
+import { assertExactSourceHighlights } from "./test-support/correction-source-highlights.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const save = (file, value) => writeFileSync(file, JSON.stringify(value, null, 2) + "\n", { flag: "wx" });
+
+test("source highlights require all exact Unicode characters, pages and ranges", () => {
+  const expected = [{ page: 1, start: 1, end: 4, quote: "😀e\u0301" }, { page: 3, start: 10, end: 16, quote: "klacht" }];
+  const exact = expected.map(({ quote, ...range }) => ({ ...range, text: quote }));
+  assert.doesNotThrow(() => assertExactSourceHighlights(expected, exact));
+  assert.doesNotThrow(() => assertExactSourceHighlights(expected, [
+    { page: 1, start: 1, end: 2, text: "😀" }, { page: 1, start: 2, end: 4, text: "e\u0301" }, exact[1],
+  ]));
+  for (const bad of [
+    [{ ...exact[0], end: 3, text: "😀e" }, exact[1]], // a shorter, internally consistent range
+    [{ ...exact[0], start: 0, text: "x😀e\u0301" }, exact[1]], // extra leading character
+    [exact[0], { ...exact[1], end: 17, text: "klacht!" }], // extra trailing character
+    [exact[0]], // missing the other page's passage
+    [...exact, { page: 3, start: 20, end: 21, text: "x" }], // extra mark
+    [exact[0], exact[0], exact[1]], // duplicate mark
+    [exact[0], { ...exact[1], page: 2 }], // correct text on the wrong page
+    [exact[0], { ...exact[1], start: 11, end: 17 }], // correct text at the wrong position
+    [{ ...exact[0], text: "😀é" }, exact[1]], // no Unicode normalization
+    [{ ...exact[0], text: "😀a\u0301" }, exact[1]], // same length, wrong character
+    [{ page: 1, start: 1, end: 2, text: "😀" }, { page: 1, start: 3, end: 4, text: "\u0301" }, exact[1]], // split with a gap
+  ]) assert.throws(() => assertExactSourceHighlights(expected, bad), { name: "AssertionError" });
+});
 
 test("source correction crosses ordinary CLI gates, replaces a pinned source and preserves unrelated content", async t => {
   // Retain the NEW synthetic dossier and actual command output for handover.
