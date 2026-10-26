@@ -40,6 +40,23 @@ De proef controleert de verkeerde oude basis, een score zonder reviews, een herg
 
 **Synthetische publicatie is geen echte contentvrijgave.** De testreviews en minimale runtimegegevens zijn fictieve softwaretestgegevens. De proef voert de private auteursopdracht niet uit en bewijst geen menselijke goedkeuring, echte brontoelating of werkende viewer. Zij bewijst de technische verbinding tussen de genoemde bestaande functies. De private bronafhankelijke toelating, volledige publicatieopdracht, testbuild en het publicatiebesluit blijven vereist bij echte inhoud. Gebruik de testcode nooit als importer voor een bronpakket.
 
+## Correctie aan de gewone bronpakketcontrole binden
+
+De [brongebonden aansluiting](../content-tools/review-change-set-workflow.mjs) controleert beide pakketplannen met de bestaande `checkLocalDatabase`. Daarmee blijven intake, letterlijke passages, relaties, bronlezings- en ontvangstbewijzen, afzonderlijke reviews en het gepinde lokale eigenaarbesluit verplicht. De aansluiting schrijft geen database en voert geen auteurscode uit.
+
+Neem de volledige beoordelingsbasis als `CORRECTION-BASIS.json` met rol `supporting` op in elk betrokken pakket, **vóór de bronafhankelijke review**. Haar hash hoort in `REVIEW-BASIS.json`: bij rapporten onder `files`, bij kaders onder `target_hashes`. De reviewers beoordelen daardoor de binding tussen de correctiebasis en de aangeboden inhoud mee. Achteraf toevoegen aan een bewaarde review is niet toegestaan. Ontbreekt deze binding in een oud dossier, dan stopt de aansluiting. Bewaar het origineel en laat de ontbrekende binding afzonderlijk beoordelen via de bestaande inhoudelijke route.
+
+De document-IDs in de correctiebasis verwijzen naar de intake-IDs van alle oorspronkelijke bestanden met rol `source`, met hun exacte hashes. Voeg aan elke registratie in `previousManifest.reviews` en `currentManifest.reviews` een `packageReviews`-lijst toe met `{ "fileId": "<intake-ID>", "sha256": "<bewaarde reviewhash>" }` voor alle bronafhankelijke eindreviews van dat pakket. Dit zijn verwijzingen naar bewaarde bytes, geen nieuwe besluiten. Bij een geraakt pakket zijn een nieuwe pakketversie en nieuwe reviews vereist, ook voor de afhankelijke bouwstenen.
+
+```text
+node content-tools/review-change-set-workflow.mjs --correction work/correctie-01/correction.json --before-plan work/correctie-01/oud/packages.json --after-plan work/correctie-01/nieuw/packages.json
+node --test content-tools/review-change-set-workflow.test.mjs
+```
+
+Succes geeft `SOURCE_CHECKED_CORRECTION_HANDOFF`, de controlegetallen van beide dossiers en het bestaande `releaseNotes`-fragment. `publishable`, `publicationCreated`, `comparisonExecuted` en `viewerExecuted` blijven `false`. Een ontbrekende notitie, oude reviewbinding of HOLD in de correctiebasis of aangeboden inhoud stopt de overdracht. Het programma controleert de vastgelegde reviewbindingen; het bewijst geen werkelijke menselijke bronlezing en leidt de inhoudelijke vertaling naar de correctiebasis niet zelf af.
+
+De nieuwe [workflowproef](../content-tools/review-change-set-workflow.test.mjs) gebruikt uitsluitend nieuwe fictieve dossiers en voert de gewone opdrachten daadwerkelijk uit. Beide bronpakketcontroles slagen; de eerste pakketversie kan naar een aparte lokale publicatie. De correctie op die publicatie stopt vervolgens met `existing package cannot be replaced`. De lokale route ondersteunt momenteel toevoegingen, geen vervanging. Gebruik daarom geen oudere lege basis, andere bron-ID of losse importer om deze blokkade te omzeilen. De gepinde private auteursopdracht blijft een afzonderlijke route met vereiste private invoer. Zonder geslaagde correctiepublicatie zijn vergelijking en een werkende correctieviewer nog niet bewezen. Bewaar het notitiefragment dan als concept; voeg het pas na die controles aan de gewone release toe.
+
 ## Volgende stap
 
 Controleer het nieuwe pakket via [pakket controleren](beheer/pakket-controleren.md) en volg daarna de bestaande inhoudelijke toelating.
