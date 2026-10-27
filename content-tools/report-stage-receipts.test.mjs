@@ -28,6 +28,8 @@ async function fixture(t) {
   const files = {};
   for (const name of ["stage-receipts.mjs", "report-stages.mjs", "baseline-registry-counts.mjs", "taxonomy-snapshot.mjs"])
     files["scripts/" + name] = await put("kit/scripts/" + name, await readFile(new URL(tool + name, import.meta.url)));
+  const reviewContract = "references/report-kit/REVIEW-CONTRACT.json.example";
+  files[reviewContract] = await put("kit/" + reviewContract, await readFile(new URL("../skills/omnibus-add-report/" + reviewContract, import.meta.url)));
   const manifest = { author_agent: "synthetic-helper-author", files };
   const releaseSha256 = await put("kit/RELEASE-MANIFEST.json", manifest);
   const approvalSha256 = await put("kit/APPROVAL.json", { decision: "APPROVE", reviewer_agent: "synthetic-independent-reviewer", target_manifest_sha256: releaseSha256 });
@@ -147,6 +149,108 @@ test("taxonomy refuses unusable definitions, executable modules and output recor
   const late = await fixture(t); await taxonomyBaseline(late);
   await late.put("APP-DRAFT.json", { alreadyWritten: true });
   await assert.rejects(late.run({ action: "snapshot-taxonomy" }), /already exists/);
+});
+
+// Fictitious stage evidence only: no reading, review or helper approval is issued.
+async function reviewReady(t) {
+  const f = await fixture(t); await taxonomyBaseline(f);
+  const source = await f.read("SOURCE.json");
+  source.text_sha256 = await f.put("source.txt", Buffer.from("Synthetic source only."));
+  await f.put("SOURCE.json", source);
+  f.options.inputFreezeSha256 = await f.put("INPUT-FREEZE.json", {
+    pdf_sha256: source.pdf_sha256, text_sha256: source.text_sha256, packet_hashes: {},
+  });
+  await f.run({ action: "snapshot-taxonomy" });
+  const complete = async stage => { const begin = await f.start(stage); await f.output(stage); return f.finish(stage, begin.receipt.sha256); };
+  for (const stage of ["source_a", "source_b"]) await complete(stage);
+  await f.put("FIRST-SUBMISSIONS.json", { synthetic: true });
+  const index = await f.read("STAGE-INDEX.json"), files = {};
+  for (const name of ["PILOT-CONTROL.json", "INPUT-FREEZE.json", "BASELINE-FREEZE.json", "FIRST-SUBMISSIONS.json", "SELECTION.json", "RELEASE-BINDING.json"])
+    files[name] = hash(await readFile(join(f.packet, name)));
+  const firstPath = "stage-receipts/first.json";
+  const firstReceiptSha256 = await f.put(firstPath, { packet_id: "packet", files, created_at: new Date().toISOString(),
+    first_stage_receipts: Object.fromEntries(["source_a", "source_b"].map(name => [name, index[name].end])) });
+  await f.put("CUSTODY-FIRST.json", { path: firstPath, sha256: firstReceiptSha256 });
+  for (const stage of ["reconciliation", "practical_authoring", "practical_draft_review"]) await complete(stage);
+  const end = await complete("repairs");
+  const basisOptions = { action: "review-basis", repairsSha256: end.receipt.sha256, firstReceiptSha256 };
+  return { ...f, basisOptions };
+}
+
+test("installed review basis binds the unchanged final set and evidence for both independent final reviews", async t => {
+  const f = await reviewReady(t);
+  const originals = new Map();
+  for (const name of ["source.pdf", "source.txt", "BASELINE-FREEZE.json", "FIRST-SUBMISSIONS.json", "stage-receipts/first.json", "REPAIRS.json", "APP-FINAL.json"])
+    originals.set(name, await readFile(join(f.packet, name)));
+  await assert.rejects(f.start("source_final_review"), /Externally retained review basis/);
+  await f.put("extra/context.txt", Buffer.from("Additional synthetic context."));
+  await installContentSkills(join(f.root, "skills"), { names: ["omnibus-add-report"], checkOnly: false });
+  const { stdout } = await promisify(execFile)(process.execPath, [join(f.root, "skills/omnibus-add-report/scripts/stage-receipts.mjs"),
+    "review-basis", "--packet", f.packet, "--release-sha256", f.options.releaseSha256, "--approval-sha256", f.options.approvalSha256,
+    "--input-freeze-sha256", f.options.inputFreezeSha256, "--baseline-freeze-sha256", f.options.baselineFreezeSha256,
+    "--first-receipt-sha256", f.basisOptions.firstReceiptSha256, "--repairs-sha256", f.basisOptions.repairsSha256,
+    "--extra", "extra/context.txt"]);
+  const result = JSON.parse(stdout), basis = await f.read("REVIEW-BASIS.json");
+  assert.equal(result.status, "READY_FOR_SUBSTANTIVE_REVIEWS_NOT_APPROVED");
+  assert.equal(result.publishable || result.contentValidated || result.reviewValidated || basis.human_validation, false);
+  assert.equal(basis.first_custody_receipt_sha256, f.basisOptions.firstReceiptSha256);
+  assert.equal(basis.source_contract, "4.22");
+  assert.equal(basis.source_pdf_sha256, hash(originals.get("source.pdf")));
+  assert.equal(Object.hasOwn(basis.files, "REVIEW-BASIS.json"), false);
+  assert.equal(basis.files["extra/context.txt"], hash(await readFile(join(f.packet, "extra/context.txt"))));
+  assert.deepEqual(Object.keys(result.target_hashes), reportStages.source_final_review[1]);
+  for (const [name, expected] of Object.entries({ ...basis.files, ...result.target_hashes }))
+    assert.equal(hash(await readFile(join(f.packet, name))), expected);
+  assert.deepEqual(await readFile(join(f.packet, "REVIEW-CONTRACT.json")), await readFile(join(f.packet, "kit/references/report-kit/REVIEW-CONTRACT.json.example")));
+  for (const [name, bytes] of originals) assert.deepEqual(await readFile(join(f.packet, name)), bytes);
+  await assert.rejects(f.run(f.basisOptions), /already exists/);
+  f.options.reviewBasisSha256 = result.receipt.sha256;
+  for (const stage of ["source_final_review", "practical_final_review"]) {
+    const begin = await f.start(stage);
+    const start = await f.read(begin.receipt.path);
+    for (const [name, expected] of Object.entries(result.target_hashes)) assert.equal(start.inputs[name], expected);
+    await f.output(stage); const end = await f.finish(stage, begin.receipt.sha256);
+    assert.equal((await f.run({ action: "check", stage, endSha256: end.receipt.sha256 })).reviewValidated, false);
+  }
+  await f.put("extra/context.txt", Buffer.from("Changed after review"));
+  const indexAfter = await f.read("STAGE-INDEX.json");
+  await assert.rejects(f.run({ action: "check", stage: "source_final_review", endSha256: indexAfter.source_final_review.end.sha256 }), /input\/output changed/);
+});
+
+test("review basis requires external custody, completed repairs, approved contract and all dependencies before writing", async t => {
+  const cases = [
+    ["repairs pin", async f => { f.basisOptions.repairsSha256 = "0".repeat(64); }, /repairs end hash/],
+    ["first pin", async f => { f.basisOptions.firstReceiptSha256 = "0".repeat(64); }, /first custody hash/],
+    ["uncompleted repairs", async f => { const i = await f.read("STAGE-INDEX.json"); delete i.repairs.end; await f.put("STAGE-INDEX.json", i); }, /repairs end hash/],
+    ["changed first anchor", async f => { await f.put("FIRST-SUBMISSIONS.json", { changed: true }); }, /input\/output changed/],
+    ["changed final file", async f => { await f.put("APP-FINAL.json", { changed: true }); }, /input\/output changed/],
+    ["missing dependency", async f => { await rm(join(f.packet, "ISSUES.json")); }, /ENOENT/],
+    ["path traversal", async f => { f.basisOptions.extra = ["../outside.json"]; }, /Unsafe packet path/],
+    ["self reference", async f => { f.basisOptions.extra = ["REVIEW-BASIS.json"]; }, /itself/],
+    ["future output", async f => { f.basisOptions.extra = ["STAGE-INDEX.json"]; }, /future mutable/],
+    ["review already supplied", async f => { await f.put("audit-final-review.json", { synthetic: true }); }, /already exists/],
+  ];
+  for (const [name, edit, error] of cases) await t.test(name, async t => {
+    const f = await reviewReady(t); await edit(f);
+    await assert.rejects(f.run(f.basisOptions), error);
+    for (const path of ["REVIEW-BASIS.json", "REVIEW-CONTRACT.json"]) await assert.rejects(readFile(join(f.packet, path)), /ENOENT/);
+  });
+  const f = await reviewReady(t), original = await f.put("REVIEW-CONTRACT.json", { altered: true });
+  await assert.rejects(f.run(f.basisOptions), /differs from approved release/);
+  assert.equal(hash(await readFile(join(f.packet, "REVIEW-CONTRACT.json"))), original);
+});
+
+test("changed review basis or dependencies cannot be adopted midway through a final review", async t => {
+  const f = await reviewReady(t), result = await f.run(f.basisOptions);
+  f.options.reviewBasisSha256 = result.receipt.sha256;
+  const original = await readFile(join(f.packet, "REVIEW-BASIS.json"));
+  const begin = await f.start("source_final_review"); await f.output("source_final_review");
+  await f.put("REVIEW-BASIS.json", { changed: true });
+  await assert.rejects(f.finish("source_final_review", begin.receipt.sha256), /review basis hash/);
+  await f.put("REVIEW-BASIS.json", original);
+  await f.put("ISSUES.json", { changed: true });
+  await assert.rejects(f.finish("source_final_review", begin.receipt.sha256), /input\/output changed/);
+  await assert.rejects(f.run(f.basisOptions), /must precede final reviews/);
 });
 
 test("standalone baseline freeze retains actual snapshots and binds subsequent readings to the external pin", async t => {

@@ -132,5 +132,6 @@ De eerste bronlezingen blijven blind voor deze taxonomie.
 Dit is een bevriezing van aangeleverde momentopnamen. Het script kan niet bewijzen
 dat de eigenaar de juiste actieve collectie heeft aangeleverd, of dat de actieve
 database daarna ongewijzigd blijft. De bestaande actuele publicatie- en
-toelatingscontroles blijven nodig. Reviewbasis en eindvrijgave worden hiermee
-niet uitgevoerd. Bewaar gegenereerde bestanden en oorspronkelijke gegevens privé.
+toelatingscontroles blijven nodig. Leg na de herstelronde de
+[reviewbasis](review-basis.md) vast. Deze voorbereiding geeft geen eindvrijgave.
+Bewaar gegenereerde bestanden en oorspronkelijke gegevens privé.

@@ -9,6 +9,7 @@ import { projectLocalReportViewer, reportViewerFiles } from "./local-report-view
 import { projectLocalFrameworkViewer } from "./local-framework-viewer.mjs";
 import { checkLocalSourceStructure } from "./local-source-structure.mjs";
 import { checkLocalSourceMethod } from "./local-source-method.mjs";
+import { reportReviewTargets as reportTargets, reportReviewDependencies as reportDependencies } from "../skills/omnibus-add-report/scripts/report-stages.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const text = value => typeof value === "string" && Boolean(value.trim());
@@ -20,13 +21,6 @@ const safePath = name => typeof name === "string" && name.length <= 240 &&
 const digestMap = value => object(value) && Object.keys(value).length > 0 &&
   Object.entries(value).every(([name, hash]) => safePath(name) && /^[a-f0-9]{64}$/.test(hash));
 
-const reportTargets = ["APP-FINAL.json", "CATALOGUE.json", "RECONCILED-SOURCE.json",
-  "INCLUSION-DECISIONS.json", "APP-SOURCE-LINKS.json", "REVIEW-BASIS.json"];
-const reportDependencies = ["SOURCE.json", "source.txt", "INPUT-FREEZE.json", "FIRST-SUBMISSIONS.json",
-  "ISSUES.json", "REPAIRS.json", "AUTHORING.json", "audit-draft-review.json", "REVIEW-CONTRACT.json",
-  "TAXONOMY-SNAPSHOT.json", "RECONCILIATION-LOG.json",
-  ...["extractor", "inventory"].flatMap(role => ["result.json", "READ-LOG.json", "VISUAL-EVIDENCE.json"]
-    .map(name => role + "/output/" + name))];
 const frameworkTargets = ["SOURCE-MANIFEST.json", "CONTRACT.txt", "CONTRACT-ADDENDUM-01.txt",
   "source/pages.json", "source/source.pdf", "RECONCILED-SOURCE.json", "RECONCILIATION.json",
   "CATALOGUE.json", "MIGRATION.json", "ISSUES.json", "SOURCE-STATUS.json",

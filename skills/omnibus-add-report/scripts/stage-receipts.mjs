@@ -7,7 +7,7 @@ import { lstat, mkdir, open, readFile, rename, rmdir } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
-import { reportStages } from "./report-stages.mjs";
+import { reportStages, reportReviewTargets, reportReviewDependencies } from "./report-stages.mjs";
 import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
 import { taxonomySnapshot } from "./taxonomy-snapshot.mjs";
 
@@ -20,6 +20,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const order = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 const clock = () => new Date().toISOString();
 const time = value => { need(text(value) && Number.isFinite(Date.parse(value)), "Invalid recorded time"); return Date.parse(value); };
+const finalStage = name => ["source_final_review", "practical_final_review"].includes(name);
 
 // Evidence paths are relative to this packet. Never follow supplied symlinks,
 // URLs, absolute paths, Windows device names, alternate streams or parent paths.
@@ -335,9 +336,63 @@ async function freezeFirst(io, index, manifest, options) {
   return { status: "FIRST_SUBMISSIONS_FROZEN_BEFORE_COMPARISON", receipt, publishable: false, contentValidated: false, reviewValidated: false };
 }
 
+async function reviewBasis(io, index, manifest, baseline, options) {
+  need(baseline && await checkTaxonomy(io, manifest, baseline), "Prepared baseline and taxonomy required");
+  need(!Object.keys(index).some(finalStage), "Review basis must precede final reviews");
+  await absent(io, ["REVIEW-BASIS.json", ...Object.entries(reportStages).filter(([name]) => finalStage(name)).flatMap(([, [outputs]]) => outputs)]);
+  need(isHash(options.repairsSha256) && options.repairsSha256 === index.repairs?.end?.sha256,
+    "Externally retained repairs end hash required");
+  await current(io, index, "repairs");
+  const firstPointer = await io.read("CUSTODY-FIRST.json");
+  need(isHash(options.firstReceiptSha256) && firstPointer.sha256 === options.firstReceiptSha256,
+    "Externally retained first custody hash required");
+  const first = await pinned(io, firstPointer);
+  const anchors = ["PILOT-CONTROL.json", "INPUT-FREEZE.json", "BASELINE-FREEZE.json", "FIRST-SUBMISSIONS.json", "SELECTION.json", "RELEASE-BINDING.json"];
+  await checkHashes(io, first.files, anchors);
+  need(first.packet_id === (await io.read("PILOT-CONTROL.json")).packet_id &&
+    ["source_a", "source_b"].every(name => same(first.first_stage_receipts?.[name], index[name]?.end)), "Original first custody differs");
+  need(time(first.created_at) <= time((await pinned(io, index.reconciliation.start)).started_at), "First custody must precede comparison");
+  const source = await io.read("SOURCE.json"), freeze = await io.read("INPUT-FREEZE.json");
+  need(isHash(options.inputFreezeSha256) && await io.digest("INPUT-FREEZE.json") === options.inputFreezeSha256,
+    "Externally retained input freeze hash required");
+  need(source.pdf_sha256 === await io.digest(source.pdf_path) && source.text_sha256 === await io.digest("source.txt") &&
+    freeze.pdf_sha256 === source.pdf_sha256 && freeze.text_sha256 === source.text_sha256, "Changed original source");
+  const contract = await readFile(new URL("../references/report-kit/REVIEW-CONTRACT.json.example", import.meta.url));
+  need(manifest.files["references/report-kit/REVIEW-CONTRACT.json.example"] === sha(contract), "Unapproved review contract");
+  let copyContract = false;
+  try { need(await io.digest("REVIEW-CONTRACT.json") === sha(contract), "Review contract differs from approved release"); }
+  catch (error) { if (error.code !== "ENOENT") throw error; copyContract = true; }
+  const extra = options.extra ?? [];
+  need(Array.isArray(extra) && extra.length <= 1000 && extra.every(text), "Explicit relative extra dependency paths required");
+  const names = [...new Set([...reportReviewDependencies, ...reportReviewTargets.filter(name => name !== "REVIEW-BASIS.json"),
+    ...anchors, ...Object.keys(baseline.files), ...Object.keys(freeze.packet_hashes ?? {}), ...Object.keys(first.files),
+    firstPointer.path, "CUSTODY-FIRST.json", source.pdf_path,
+    ...Object.values(index).flatMap(entry => [entry.start.path, entry.end.path]), ...extra])].sort(order);
+  need(!names.some(name => ["REVIEW-BASIS.json", "STAGE-INDEX.json", "STAGES.json", "CUSTODY-FINAL.json", "source-final-review.json", "audit-final-review.json"].includes(name)),
+    "Review basis cannot include itself or future mutable review outputs");
+  const files = {};
+  for (const name of names) files[name] = name === "REVIEW-CONTRACT.json" ? sha(contract) : await io.digest(name);
+  // All input checks finish before writing; the schema copy is never an approval.
+  if (copyContract) await io.write("REVIEW-CONTRACT.json", contract);
+  const receipt = await io.write("REVIEW-BASIS.json", { files, source_pdf_sha256: source.pdf_sha256,
+    first_custody_receipt_sha256: firstPointer.sha256, source_contract: "4.22", human_validation: false,
+    preparation: { tool: "stage-receipts.mjs", repairs: index.repairs.end, first_receipt: firstPointer } });
+  return { status: "READY_FOR_SUBSTANTIVE_REVIEWS_NOT_APPROVED", receipt,
+    target_hashes: Object.fromEntries(reportReviewTargets.map(name => [name, name === "REVIEW-BASIS.json" ? receipt.sha256 : files[name]])),
+    publishable: false, contentValidated: false, reviewValidated: false };
+}
+
+async function checkReviewBasis(io, index, options) {
+  need(isHash(options.reviewBasisSha256) && await io.digest("REVIEW-BASIS.json") === options.reviewBasisSha256,
+    "Externally retained review basis hash required");
+  const basis = await io.read("REVIEW-BASIS.json");
+  need(basis.preparation?.tool === "stage-receipts.mjs" && same(basis.preparation.repairs, index.repairs?.end), "Review basis preparation differs");
+  await checkHashes(io, basis.files, [...reportReviewDependencies, ...reportReviewTargets.filter(name => name !== "REVIEW-BASIS.json")]);
+}
+
 export async function recordStage(options) {
   const { action, stage } = options;
-  need(["freeze-first", "freeze-baseline", "snapshot-taxonomy"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
+  need(["freeze-first", "freeze-baseline", "snapshot-taxonomy", "review-basis"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
   const io = await storage(options.packet);
   const lock = join(io.root, ".stage-receipts.lock");
   await mkdir(lock); // Exclusive ownership; never take over an interrupted run automatically.
@@ -356,7 +411,9 @@ export async function recordStage(options) {
     }
     const taxonomy = await checkTaxonomy(io, manifest, baseline);
     if (action === "freeze-first") return await freezeFirst(io, index, manifest, options);
+    if (action === "review-basis") return await reviewBasis(io, index, manifest, baseline, options);
     if (baseline && practical(stage)) need(taxonomy, "Frozen taxonomy required before practical work");
+    if (baseline && finalStage(stage)) await checkReviewBasis(io, index, options);
     let pointer;
     if (action === "start") {
       need(text(options.actor), "Actual actor required");
@@ -408,9 +465,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const { values, positionals } = parseArgs({ allowPositionals: true, options: { ...Object.fromEntries(
       ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation",
-        "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python", "plan", "plan-sha256", "baseline-freeze-sha256"].map(name => [name, { type: "string" }])),
-      "comparison-not-started": { type: "boolean" } } });
-    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline|snapshot-taxonomy --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
+        "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python", "plan", "plan-sha256", "baseline-freeze-sha256",
+        "first-receipt-sha256", "repairs-sha256", "review-basis-sha256"].map(name => [name, { type: "string" }])),
+      extra: { type: "string", multiple: true }, "comparison-not-started": { type: "boolean" } } });
+    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline|snapshot-taxonomy|review-basis --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));
   } catch (error) { console.error(error.message); process.exitCode = 1; }

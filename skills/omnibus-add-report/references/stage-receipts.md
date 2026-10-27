@@ -34,8 +34,9 @@ bestaande Omnibus-broncontrole.
   De praktische fases gebruiken precies die bevroren definities.
 
 **Deze skill levert geen ingevulde releasegoedkeuring mee.** Het hulpmiddel maakt
-die ook niet zelf. Ontbreekt deze controle, dan stopt het. Reviewbasis en definitieve
-eindcontrole zijn nog niet zelfstandig meegeleverd. Dit hulpmiddel vervangt die
+die ook niet zelf. Ontbreekt deze controle, dan stopt het. De [reviewbasis](review-basis.md)
+wordt na herstel en vóór de eindreviews vastgelegd. Definitieve
+eindcontrole is nog niet zelfstandig meegeleverd. Dit hulpmiddel vervangt die
 stappen niet en past geen historische pakketten aan.
 
 ## Per fase
@@ -43,6 +44,8 @@ stappen niet en past geen historische pakketten aan.
 Voer de opdrachten uit vanuit de geïnstalleerde skillmap. Vervang de waarden
 tussen `<...>` door de werkelijk vastgelegde waarden. `source_a` is een voorbeeld;
 gebruik voor de andere rollen hun naam uit het fasecontract.
+Voor beide eindreviews is bovendien bij elke opdracht
+`--review-basis-sha256 <bewaarde-reviewbasishash>` verplicht.
 
 1. Leg de start vast **vóór** het lees- of reviewwerk:
 

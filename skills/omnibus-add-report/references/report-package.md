@@ -36,8 +36,11 @@ De skill maakt daaruit het vaste taxonomieoverzicht voor praktische uitwerking.
 Na de werkelijke lezingen kun je [beide eerste inzendingen bevriezen](first-submissions.md)
 en hun ontvangstbewijs vastleggen vóór vergelijking.
 
-**Nog niet zelfstandig meegeleverd:** reviewbasis
-en eindcontrole. De opdrachten met `tools/workflow.py` in het
+Na de herstelronde kun je [de reviewbasis vastleggen](review-basis.md), zodat
+beide onafhankelijke eindreviewers dezelfde eindset en afhankelijkheden ontvangen.
+
+**Nog niet zelfstandig meegeleverd:** eindcontrole en definitieve ontvangst.
+De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
 `HOLD`/`PENDING_REVIEW`. Maak geen vervangend ontvangstbewijs, leeslog, vrijgaveanker
