@@ -23,7 +23,7 @@ flowchart TD
 
 | Pad | Status | Epic |
 | --- | --- | --- |
-| [🌐 A · Online versie](#pad-a--online-versie) | ✅ Klaar; snelheid loopt apart ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | [#140](https://github.com/Robert-Worm/omnibus/issues/140) |
+| [🌐 A · Online versie](#pad-a--online-versie) | ✅ Klaar | [#140](https://github.com/Robert-Worm/omnibus/issues/140); snelheid apart in [#84](https://github.com/Robert-Worm/omnibus/issues/84) |
 | [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | 🔄 Bezig | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
 | [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
 | [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
