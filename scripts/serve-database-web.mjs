@@ -5,6 +5,7 @@ import { CatalogueRepository } from "../local-data/repository.mjs";
 import { readRuntimePublication } from "../local-data/runtime-publication.mjs";
 import { serveCatalogue } from "../local-data/server.mjs";
 import { createHostingPolicy } from "../local-data/hosting-policy.mjs";
+import { requestVisitorAddress } from "../local-data/request-rate-limit.mjs";
 import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { readDatabaseSettings } from "./database-build-options.mjs";
 import { startupCheck, startupFailureReason } from "../local-data/startup-diagnostics.mjs";
@@ -19,11 +20,12 @@ const invalidStart = () => {
 };
 
 function hostingOptions(options) {
-  if (!Object.hasOwn(options, "publicOrigin") && !Object.hasOwn(options, "listenHost")) return {};
+  if (!Object.hasOwn(options, "publicOrigin") && !Object.hasOwn(options, "listenHost") && !Object.hasOwn(options, "sliplaneGateway")) return {};
   const { publicOrigin, listenHost, port } = options;
   // Reuse the server's exact origin grammar; never maintain a looser CLI policy.
   try {
     createHostingPolicy({ publicOrigin, listenHost, webRoot: options.webRoot });
+    requestVisitorAddress({publicMode:publicOrigin !== undefined, sliplaneGateway:options.sliplaneGateway});
   } catch {
     invalidStart();
   }
@@ -34,7 +36,7 @@ function hostingOptions(options) {
     !validPath(options.databasePath) || !validHash(options.release) ||
     !validHash(options.publication) || !validPath(options.webRoot)
   ) invalidStart();
-  return { publicOrigin, listenHost };
+  return { publicOrigin, listenHost, ...(options.sliplaneGateway === undefined ? {} : {sliplaneGateway:options.sliplaneGateway}) };
 }
 
 /** Validate before filesystem/database access; forward only the server contract. */
@@ -48,7 +50,7 @@ export function validatePreviewStartOptions(options) {
   return { port, webRoot, ...hosting };
 }
 
-export function parsePreviewArgs(args, { packaged = false } = {}) {
+export function parsePreviewArgs(args, { packaged = false, env = process.env } = {}) {
   const options = {};
   const seen = new Set();
   const usage = previewUsage;
@@ -69,6 +71,8 @@ export function parsePreviewArgs(args, { packaged = false } = {}) {
     options[key] = value;
   }
   const hosting = seen.has("public-origin") || seen.has("listen-host");
+  const gateway = env.OMNIBUS_SLIPLANE_GATEWAY;
+  if (gateway !== undefined && !hosting) throw Error(usage);
   if (
     Boolean(options.database) === Boolean(options.settings) ||
     (options.settings && (seen.has("release") || seen.has("publication"))) ||
@@ -93,6 +97,7 @@ export function parsePreviewArgs(args, { packaged = false } = {}) {
   if (hosting) {
     result.publicOrigin = options["public-origin"];
     result.listenHost = options["listen-host"];
+    if (gateway !== undefined) result.sliplaneGateway = gateway;
     try {
       // The packaged entry point subsequently supplies and verifies its own root.
       hostingOptions({ ...result, ...(packaged ? { webRoot: "database-build" } : {}) });

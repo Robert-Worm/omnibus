@@ -10,7 +10,7 @@ import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
 import {createHostingPolicy} from './hosting-policy.mjs';
-import {createRequestRateLimit,createVisitorRequestRateLimit} from './request-rate-limit.mjs';
+import {createRequestRateLimit,createVisitorRequestRateLimit,requestVisitorAddress} from './request-rate-limit.mjs';
 import {startupCheck,startupFailureReason} from './startup-diagnostics.mjs';
 
 // Single-process resource ceilings, not per-user fairness or a request-rate SLA.
@@ -22,11 +22,12 @@ export const catalogueRequestLimits=Object.freeze({activeResponses:32,connection
 // With a webRoot, all data reads are bound to its verified publication. Without
 // a webRoot this is the standalone local catalogue tooling API (all releases).
 // There is no option or request parameter to disable the web publication scope.
-export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,listenHost='127.0.0.1'}={}){
+export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,listenHost='127.0.0.1',sliplaneGateway}={}){
  const hosting=startupCheck('start-options',()=>{
   if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid catalogue port');
   return createHostingPolicy({publicOrigin,listenHost,webRoot});
  });
+ const visitorAddress=startupCheck('start-options',()=>requestVisitorAddress({publicMode:hosting.publicMode,sliplaneGateway}));
  const readiness=webRoot===undefined?null:startupCheck('web-readiness',()=>createRuntimeReadiness(repository,()=>{
   const web=createStaticWeb(webRoot,repository);
   return {pins:web.pins,value:web};
@@ -137,10 +138,10 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   // Exact probes keep working when a peer exhausts its budget. They still pass
   // all request checks and the bounded active-response admission below.
   const probe=req.url==='/api/v1/health'||req.url==='/api/v1/ready';
-  // Assets/data share a budget per transport address, never per forwarded header.
-  // NAT/proxy peers share a bucket until a trusted ingress contract exists.
+  // Only an explicitly configured Sliplane gateway can supply a visitor IP.
+  // Other peers retain the transport-address budget, ignoring proxy headers.
   // Reject before taking an answer slot or reading any requested content.
-  const admission=probe?null:requestRateLimit?.take(req.socket.remoteAddress);
+  const admission=probe?null:requestRateLimit?.take(visitorAddress(req));
   if(admission&&!admission.allowed){
    if(refusalLogLimit.take().allowed){
     console.error(JSON.stringify({event:'catalogue_request_limited',requestId,status:429,

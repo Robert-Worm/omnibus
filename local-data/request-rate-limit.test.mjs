@@ -1,9 +1,49 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequestRateLimit, createVisitorRequestRateLimit, publicRequestRateLimits, publicVisitorLimits } from './request-rate-limit.mjs';
+import { createRequestRateLimit, createVisitorRequestRateLimit, publicRequestRateLimits, publicVisitorLimits, requestVisitorAddress } from './request-rate-limit.mjs';
 
 const allowed = { allowed: true, retryAfter: 0 };
 const denied = retryAfter => ({ allowed: false, retryAfter });
+
+const proxyRequest = (peer, address, rawHeaders = ['X-Forwarded-For', address]) =>
+  ({ socket: { remoteAddress: peer }, headers: { 'x-forwarded-for': address }, rawHeaders });
+
+test('only the explicitly configured Sliplane gateway supplies visitor identity', () => {
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+  for (const peer of ['10.1.0.2', '::ffff:10.1.0.2', '::ffff:a01:2']) {
+    assert.equal(address(proxyRequest(peer, '192.0.2.1')), '192.0.2.1');
+    assert.equal(address(proxyRequest(peer, '2001:db8::1')), '2001:db8::1');
+  }
+  for (const peer of ['10.1.1.2', '10.4.0.2', '10.9.0.2', '127.0.0.1', '192.0.2.2'])
+    assert.equal(address(proxyRequest(peer, '192.0.2.1')), peer, 'direct clients cannot select an identity');
+  assert.equal(requestVisitorAddress({publicMode:true})(proxyRequest('10.1.0.2', '192.0.2.1')), '10.1.0.2');
+});
+
+test('a trusted gateway must supply exactly one unambiguous IP header', () => {
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+  for (const value of [undefined, '', '192.0.2.1, 192.0.2.2', ['192.0.2.1'], 'unknown',
+    '192.0.2.1:80', '[2001:db8::1]', 'fe80::1%eth0', ' 192.0.2.1', 'x'.repeat(10000)])
+    assert.equal(address(proxyRequest('10.1.0.2', value)), null);
+  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', [])), null);
+  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', ['X-Forwarded-For','192.0.2.1','x-forwarded-for','192.0.2.1'])), null);
+});
+
+test('two visitors behind one gateway have separate budgets; direct spoofing does not', () => {
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+  const limiter = createVisitorRequestRateLimit({ capacity: 1, now: () => 0 });
+  const take = (peer, ip) => limiter.take(address(proxyRequest(peer, ip)));
+  assert.deepEqual(take('10.1.0.2', '192.0.2.1'), allowed);
+  assert.deepEqual(take('10.1.0.2', '192.0.2.1'), denied(1));
+  assert.deepEqual(take('10.1.0.2', '192.0.2.2'), allowed);
+  assert.deepEqual(take('10.9.0.2', '192.0.2.3'), allowed);
+  assert.deepEqual(take('10.9.0.2', '192.0.2.4'), denied(1));
+});
+
+test('proxy trust cannot be enabled locally or widened to arbitrary private networks', () => {
+  for (const value of ['', '*', '10.0.0.0/8', '0.0.0.0/0', '10.1.0.2', '10.1.0.0/24,10.4.0.0/24', null])
+    assert.throws(() => requestVisitorAddress({publicMode:true, sliplaneGateway:value}));
+  assert.throws(() => requestVisitorAddress({sliplaneGateway:'10.1.0.0/24'}));
+});
 
 function fixture(options = {}, initialTime = 0) {
   let time = initialTime;

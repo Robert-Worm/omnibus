@@ -21,6 +21,16 @@ const webArgs = ["--web-root", "synthetic-web"];
 const publicOptions = { databasePath: resolve("synthetic.sqlite"), release, publication,
   port: 8080, webRoot: resolve("synthetic-web"), publicOrigin, listenHost: "127.0.0.1" };
 
+test('Sliplane gateway trust is an explicit validated public start setting', () => {
+  const env = {OMNIBUS_SLIPLANE_GATEWAY:'10.1.0.0/24'};
+  assert.equal(parsePreviewArgs([...pinArgs, ...hostArgs, ...webArgs], {env}).sliplaneGateway, env.OMNIBUS_SLIPLANE_GATEWAY);
+  assert.equal(parsePreviewArgs([...pinArgs, ...hostArgs], {packaged:true, env}).sliplaneGateway, env.OMNIBUS_SLIPLANE_GATEWAY);
+  assert.throws(() => parsePreviewArgs(pinArgs, {env}));
+  for (const value of ['', 'true', '10.0.0.0/8', '0.0.0.0/0'])
+    assert.throws(() => parsePreviewArgs([...pinArgs, ...hostArgs, ...webArgs], {env:{OMNIBUS_SLIPLANE_GATEWAY:value}}));
+  assert.throws(() => validatePreviewStartOptions({databasePath:'local.sqlite',sliplaneGateway:'10.1.0.0/24'}));
+});
+
 function replace(args, flag, value) {
   const result = [...args];
   result[result.indexOf(flag) + 1] = value;
@@ -160,7 +170,7 @@ test("pinned preview and verified package pass only the agreed server options (s
   writeFileSync(join(webRoot, "omnibus-release.json"), JSON.stringify(manifest));
   packageRuntime({ databasePath: f.databasePath, webRoot, out });
   const options = { ...publicOptions, databasePath: f.databasePath, webRoot,
-    release: f.release, publication: f.publication, trustProxy: true, arbitrary: "never-forward" };
+    release: f.release, publication: f.publication, sliplaneGateway:'10.1.0.0/24', trustProxy: true, arbitrary: "never-forward" };
   const child = spawnSync(process.execPath, ["--input-type=module", "-e", `
     import assert from 'node:assert/strict';
     import { registerHooks } from 'node:module';
@@ -179,7 +189,7 @@ test("pinned preview and verified package pass only the agreed server options (s
     const { startDatabasePreview } = await import(pathToFileURL(join(root, 'scripts/serve-database-web.mjs')));
     const { startRuntimePackage } = await import(pathToFileURL(join(out, 'scripts/start-runtime-package.mjs')));
     const expected = { port: options.port, webRoot: options.webRoot,
-      publicOrigin: options.publicOrigin, listenHost: options.listenHost };
+      publicOrigin: options.publicOrigin, listenHost: options.listenHost, sliplaneGateway:options.sliplaneGateway };
     const app = await startDatabasePreview(options);
     assert.deepEqual(globalThis.serverCalls, [expected]);
     await app.close();

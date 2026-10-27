@@ -34,6 +34,14 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 | Gezondheidscontrole | Vastgelegd pad `/api/v1/health`: alleen bereikbaarheid; zie hieronder |
 | Automatisch uitrollen | Aan: elke push naar `main` bouwt en rolt opnieuw uit (ongeveer een halve minuut) |
 
+### Verzoeken per bezoeker begrenzen
+
+Stel bij Sliplane `OMNIBUS_SLIPLANE_GATEWAY` in op de gatewayreeks van **jouw serverregio**, bijvoorbeeld `10.1.0.0/24` voor Falkenstein. Controleer de regio en waarde in de [officiële proxydocumentatie](https://docs.sliplane.io/services/reverse-proxy/). Zonder deze instelling deelt verkeer via dezelfde proxy één verzoekenbudget.
+
+Omnibus gebruikt het door Sliplane overschreven bezoekersadres alleen bij verbindingen uit die ene gatewayreeks. Rechtstreekse verbindingen kunnen geen ander adres opgeven. Ontbrekende of dubbele adresheaders worden geweigerd. De adreswaarden blijven uitsluitend kort in geheugen voor de begrenzing; ze komen niet in de log. `/api/v1/health` en `/api/v1/ready` blijven buiten dit budget.
+
+Deze instelling is niet automatisch aangezet. Controleer na instellen met twee onafhankelijke bezoekers dat één bezet budget de ander niet blokkeert. Staat er nog een CDN of proxy vóór Sliplane, dan ziet Sliplane diens adres; gebruik deze instelling dan niet als bewijs van afzonderlijke bezoekersbudgetten.
+
 `/api/v1/health` dient als bereikbaarheidscontrole: het proces antwoordt ook als de database niet meer gereed is. De server controleert pakket en database voordat hij begint te luisteren. Dat verklaart de beperkte startcontrole via `/health`, maar bewijst geen gereedheid tijdens gebruik. Gebruik daarvoor `/api/v1/ready`: 200 betekent gereed, 503 betekent niet gereed. Voor een gezondheidscontrole die ook de databasestand bewaakt, is `/ready` het passende pad. De beheerder moet een omschakeling bij Sliplane apart controleren; die is hier niet bevestigd.
 
 De gereedheidscontrole leest vaste metadata via dezelfde databaseverbinding en merkt waargenomen SQLite-wijzigingen op. Hij berekent niet telkens alle controlegetallen opnieuw en detecteert niet elke vervanging van een bestand op schijf. Zie [gereedheid en grenzen](../../docs/beheer/runtime-pakket.md#gereedheid-en-grenzen).

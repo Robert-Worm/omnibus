@@ -1,4 +1,31 @@
-import { isIP } from 'node:net';
+import { BlockList, isIP } from 'node:net';
+
+// Explicit, region-specific Sliplane ingress contract; never trust all private
+// peers. https://docs.sliplane.io/services/reverse-proxy/ (2026-10-27).
+const sliplaneGateways = new Set(['10.1.0.0/24', '10.4.0.0/24', '10.6.0.0/24',
+  '10.7.0.0/24', '10.8.0.0/24', '10.10.0.0/24']);
+
+export function requestVisitorAddress({publicMode = false, sliplaneGateway} = {}) {
+  const trusted = new BlockList();
+  if (sliplaneGateway !== undefined) {
+    if (!publicMode || !sliplaneGateways.has(sliplaneGateway))
+      throw Error('Choose one documented Sliplane gateway range in public mode');
+    trusted.addSubnet(sliplaneGateway.split('/')[0], 24, 'ipv4');
+  }
+  return req => {
+    const peer = req.socket.remoteAddress, family = isIP(peer ?? '');
+    if (!family) return null;
+    if (!trusted.check(peer, family === 4 ? 'ipv4' : 'ipv6')) return peer;
+    // Sliplane overwrites XFF with ONE client IP. Ambiguous or missing data
+    // fails closed; Forwarded, X-Real-IP and caller-selected ports are ignored.
+    let count = 0;
+    for (let i = 0; i < req.rawHeaders.length; i += 2)
+      if (req.rawHeaders[i].toLowerCase() === 'x-forwarded-for') count++;
+    const address = req.headers['x-forwarded-for'];
+    return count === 1 && typeof address === 'string' && address.length <= 64 && !address.includes('%') && isIP(address)
+      ? address : null;
+  };
+}
 
 // Per-peer admission budget for explicit public mode. These initial values
 // leave room for viewer bursts; they are not hosted sizing or a rate/fairness SLA.
