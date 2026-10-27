@@ -370,7 +370,7 @@ async function reviewBasis(io, index, manifest, baseline, options) {
     ...Object.values(index).flatMap(entry => [entry.start.path, entry.end.path]), ...extra])].sort(order);
   need(!names.some(name => ["REVIEW-BASIS.json", "STAGE-INDEX.json", "STAGES.json", "CUSTODY-FINAL.json", "source-final-review.json", "audit-final-review.json"].includes(name)),
     "Review basis cannot include itself or future mutable review outputs");
-  const files = {};
+  const files = Object.create(null);
   for (const name of names) files[name] = name === "REVIEW-CONTRACT.json" ? sha(contract) : await io.digest(name);
   // All input checks finish before writing; the schema copy is never an approval.
   if (copyContract) await io.write("REVIEW-CONTRACT.json", contract);

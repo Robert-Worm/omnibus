@@ -184,12 +184,13 @@ test("installed review basis binds the unchanged final set and evidence for both
     originals.set(name, await readFile(join(f.packet, name)));
   await assert.rejects(f.start("source_final_review"), /Externally retained review basis/);
   await f.put("extra/context.txt", Buffer.from("Additional synthetic context."));
+  await f.put("__proto__", Buffer.from("A literal filename, not an object property."));
   await installContentSkills(join(f.root, "skills"), { names: ["omnibus-add-report"], checkOnly: false });
   const { stdout } = await promisify(execFile)(process.execPath, [join(f.root, "skills/omnibus-add-report/scripts/stage-receipts.mjs"),
     "review-basis", "--packet", f.packet, "--release-sha256", f.options.releaseSha256, "--approval-sha256", f.options.approvalSha256,
     "--input-freeze-sha256", f.options.inputFreezeSha256, "--baseline-freeze-sha256", f.options.baselineFreezeSha256,
     "--first-receipt-sha256", f.basisOptions.firstReceiptSha256, "--repairs-sha256", f.basisOptions.repairsSha256,
-    "--extra", "extra/context.txt"]);
+    "--extra", "extra/context.txt", "--extra", "__proto__"]);
   const result = JSON.parse(stdout), basis = await f.read("REVIEW-BASIS.json");
   assert.equal(result.status, "READY_FOR_SUBSTANTIVE_REVIEWS_NOT_APPROVED");
   assert.equal(result.publishable || result.contentValidated || result.reviewValidated || basis.human_validation, false);
@@ -198,6 +199,7 @@ test("installed review basis binds the unchanged final set and evidence for both
   assert.equal(basis.source_pdf_sha256, hash(originals.get("source.pdf")));
   assert.equal(Object.hasOwn(basis.files, "REVIEW-BASIS.json"), false);
   assert.equal(basis.files["extra/context.txt"], hash(await readFile(join(f.packet, "extra/context.txt"))));
+  assert.equal(basis.files.__proto__, hash(await readFile(join(f.packet, "__proto__"))));
   assert.deepEqual(Object.keys(result.target_hashes), reportStages.source_final_review[1]);
   for (const [name, expected] of Object.entries({ ...basis.files, ...result.target_hashes }))
     assert.equal(hash(await readFile(join(f.packet, name))), expected);
