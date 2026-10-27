@@ -85,6 +85,7 @@ De nulmeting is af: alle vier bronnen uit de testset zijn volledig verwerkt op c
 | 2026-10-26 | omnibus-add-report | PROO26 | 5e37b68 | gpt-6-astra | 13 | 340,69 | 76.480.394 | 8,0 |
 | 2026-10-26 | omnibus-add-report | IVHO25 | 5e37b68 | gpt-6-astra | 11 | 261,91 | 112.610.490 | 8,5 |
 | 2026-10-26 | omnibus-add-framework | TR-CYBER-20261016-cybersecurity-doc1 | 5e37b68 | gpt-6-astra | 18 | 280,09 | 125.849.220 | 8,0 |
+| 2026-10-27 | omnibus-add-report | LVVN26 | 5609166 | gpt-6-astra | 8 | 57,03 | null | 8,5 |
 
 Wat de bouwstenen opleverden, en het deel van de tokens dat cache-input was:
 
@@ -108,6 +109,25 @@ Wat de bouwstenen opleverden, en het deel van de tokens dat cache-input was:
 **Eerdere pilot van 25 oktober 2026 (HOLD).** De eerste LVVN26-pilot is de regel met versie `c1c0586`. Die liep vast bij de intake: het auteursregister ontbrak in de openbare checkout, en een tweede proef weigerde de bron met `Report already active`. Er is toen geen lezing, review of score gemaakt. Alleen de voorbereiding is gemeten: 2.636.733 tokens in een venster van bijna tien minuten.
 
 `npm run skills:meting -- --metingen` vat de vastgelegde runs samen.
+
+### Begrensde bijdragersproef van 27 oktober 2026
+
+Voor [#225](https://github.com/Robert-Worm/omnibus/issues/225) is uitsluitend **LVVN26, een rapport van 14 pagina's**, opnieuw verwerkt. Alle acht inhoudelijke deelcontexten gebruikten **Astra High**. De proef gebruikte de meegeleverde openbare rolinstructies en hulpmiddelen; de private rapportkit is niet uitgevoerd. Twee blinde lezers, een onafhankelijke reconciliator, een auteur en vier afzonderlijke reviewperspectieven leverden nieuwe resultaten. De praktische reviewer deed ook de concept- en eindreview; de bronreviewer las alle tekstpagina's en paginabeelden. De eerste onafhankelijke oordelen zijn bewaard vóór de beslechting van verschillen.
+
+De opbrengst is **10 normketens en 16 toetspunten**, met een beschrijvend gemiddelde van **8,5** en een bereik van **6,0–9,0**. Negen ketens zijn bruikbaar voor vervolgreview. **L06 blijft HERZIEN:** de norm accepteert een concrete aanpak van capaciteitstekorten als alternatief voor passende capaciteit, terwijl het beheersdoel daadwerkelijke dekking vraagt. Een herstelplan heft een tekort niet op. Het hoge gemiddelde maakt deze norm niet geschikt voor vrijgave.
+
+De vergelijking met de eerdere **8,2** is beperkt tot dit rapport. De PDF is dezelfde; de tekstextractie en indeling verschillen (eerder 11 ketens en 21 punten). Normnummers zijn daardoor niet rechtstreeks vergelijkbaar. De eerdere run gebruikte deels *xhigh* en deels *High*. Deze proef bewijst geen modelvoordeel of kwaliteitsbehoud voor de volledige vierbronnentest van B-018.
+
+De **57,03 minuten** lopen vanaf de eerste daadwerkelijke bronlezing tot de vastgelegde eindbeslechting, inclusief tussentijdse wachttijd. Voorbereiding, de aparte korte startcontrole, technische tests en publicatieadministratie vallen erbuiten. De eerdere 225,39 minuten bevatten ook voorbereiding; dit verschil is geen zuivere snelheidsmeting. Werkelijk tokenverbruik en eurokosten blijven **`null`**, omdat verzoektelemetrie voor deze proef ontbreekt.
+
+De gewone intake weigerde LVVN26 terecht omdat het rapport al actief is in de vastgelegde vergelijkingscollectie. Daarom is alleen de bestaande route voor een analyseproef gebruikt. Er is geen bron uit het register verwijderd, geen toelatingsbewijs nagebootst en geen database gewijzigd. Deze proef bewijst nog niet dat een nieuw bijdragerspakket de volledige ontvangst en toelating doorloopt. **#225 blijft daarom open.**
+
+Twee concrete lessen:
+
+- De bronvoorbereiding neemt de volledige kwaliteitsregels op in `TASK.md`. De rolinstructie verduidelijkt nu dat een apart `QUALITY.md` dan niet ontbreekt. De gemeten instructies op versie `5609166` zijn tijdens de proef ongewijzigd gebleven.
+- Beoordeel een bestaand tekort en de aanpak daarvan afzonderlijk. Een goede toetsbeschrijving herstelt een te ruime norm niet. De L06-bevinding blijft zichtbaar; er is geen extra reparatieronde gestart om de gemeten score te verhogen.
+
+Bronnen, ruwe beoordelingen en meetbestanden blijven privé. De bestaande database en applicatieworkflows zijn ongewijzigd. Er is geen tweede rapport verwerkt.
 
 ## Samengevat
 
