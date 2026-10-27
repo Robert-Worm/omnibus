@@ -20,7 +20,12 @@ De Python-recordcontrole toetst structuur, letterlijke citaten binnen de
 aangeleverde context en interpretatiegrenzen. Zij bewijst geen volledige bronlezing
 of inhoudelijke kwaliteit.
 
-**Nog niet meegeleverd:** de uitvoerbare voorbereiding, fasebewijzen, bevriezing,
+Voor het vastleggen en controleren van fasebewijzen is een
+[afzonderlijk hulpmiddel](stage-receipts.md) meegeleverd. Het vereist een extern
+vastgelegde, onafhankelijk beoordeelde hulpmiddelenversie en echte uitvoering;
+het verleent geen goedkeuring.
+
+**Nog niet meegeleverd:** de uitvoerbare voorbereiding, bevriezing,
 reviewbasis en eindcontrole. De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
