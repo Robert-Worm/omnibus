@@ -11,6 +11,7 @@
 !/.github/voortgang/wetten-en-kaders.json
 !/.github/voortgang/modellen.json
 !/.github/voortgang/dubbelingen.json
+!/.github/overdracht/volgorde.json
 /content-tools/evidence-paths.test.mjs
 /node_modules
 **/node_modules/
