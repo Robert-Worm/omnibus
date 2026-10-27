@@ -129,6 +129,14 @@ Twee concrete lessen:
 
 Bronnen, ruwe beoordelingen en meetbestanden blijven privé. De bestaande database en applicatieworkflows zijn ongewijzigd. Er is geen tweede rapport verwerkt.
 
+### Gerichte correctie van L06
+
+Op 27 oktober 2026 is, na een afzonderlijke opdracht, alleen **L06 met beide bijbehorende toetspunten** herzien. Dezelfde bestaande bewijzen zijn hergebruikt; er is geen nieuw rapport verwerkt. Drie velden zijn aangepast: de norm, de tekst van het tweede toetspunt en de beslisgrens bij bestaan. Ze onderscheiden nu het oordeel over passende capaciteit van het oordeel over tekortafhandeling. Een herstelplan maakt een capaciteitstekort niet tot een voldoende uitkomst.
+
+Eén inhoudelijke reviewer op **Astra High** las de gewijzigde keten en geraakte relaties opnieuw. De nieuwe score is **8,8**, bron **9**, laagste onderdeel **8**, met status `BRUIKBAAR_VOOR_VERVOLGREVIEW`. Dit is **`SELF_REVIEW`**, geen nieuwe onafhankelijke panelbeoordeling. Het oorspronkelijke panelcijfer **6** en het proefgemiddelde **8,5** blijven staan voor de oorspronkelijke versie; er is geen nieuw rapportgemiddelde berekend.
+
+De herstelversie bevat uitsluitend de gewijzigde keten en de bijbehorende voorstel- en bronlinkfragmenten. Vier herhalingen van de gewijzigde tekst zijn daarin gelijkgetrokken. De oorspronkelijke bestanden en database blijven intact. De rapportskill heeft de korte les over herstelplannen meegekregen, maar daarmee is geen nieuwe volledige skillmeting of toelating uitgevoerd. De herstelversie blijft privé en is niet in de actieve tool opgenomen; **#225 blijft open** voor de nog ontbrekende volledige ontvangst- en kwaliteitsproef. Werkelijk tokenverbruik en kosten van deze tekstherstelronde zijn onbekend.
+
 ## Samengevat
 
 Meet vaste kosten met het script, draai de skill op de vier bronnen van de testset, beoordeel met de OAK-score en leg elke run vast. Daalt de score bij één bron, dan gaat de wijziging niet door.

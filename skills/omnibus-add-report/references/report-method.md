@@ -164,6 +164,10 @@ Gerichte lessen uit de vervolgreviews:
   Dit vervangt geen geldende afrondingseis of termijn; toets die afzonderlijk.
   Houd bij tijdmetingen de ouderdom van open posten tot een benoemde peildatum
   apart van de afgesloten doorlooptijd tot betaling of afhandeling.
+  Als de norm een feitelijke beheerssituatie vereist, beoordeel die apart van de
+  afhandeling van tekorten. Een herstelplan bewijst bijvoorbeeld geen passende
+  capaciteit. Laat de norm of het toetspunt dat plan dan niet als vervanging van
+  de vereiste situatie behandelen. Houd ook beslisgrens en relatieteksten hiermee in lijn.
 - Houd de toets uitvoerbaar binnen de beschreven gegevens- en systeemgrenzen,
   ook in de ouder-instructie. Als meerjarengegevens in een apart overzicht staan
   en het financiële systeem slechts één jaar bevat, vergelijk de meerjarenoverzichten
