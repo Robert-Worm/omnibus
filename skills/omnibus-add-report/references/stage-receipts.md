@@ -27,7 +27,7 @@ bestaande Omnibus-broncontrole.
   goedkeuring buiten het pakket en geeft die mee aan elke opdracht.
 
 **Deze skill levert geen ingevulde releasegoedkeuring mee.** Het hulpmiddel maakt
-die ook niet zelf. Ontbreekt deze controle, dan stopt het. De bevriezing van eerste inzendingen, reviewbasis en definitieve
+die ook niet zelf. Ontbreekt deze controle, dan stopt het. Reviewbasis en definitieve
 eindcontrole zijn nog niet zelfstandig meegeleverd. Dit hulpmiddel vervangt die
 stappen niet en past geen historische pakketten aan.
 
@@ -74,4 +74,5 @@ oude indexversies worden nooit overschreven. Bewaar ze privé bij het pakket.
 Voor een herhaalde of onderbroken fase bewaart de coördinator het origineel en
 bereidt een nieuwe pakketversie voor; dit hulpmiddel hervat of reconstrueert geen
 oude uitvoering. Een achtergebleven `.stage-receipts.lock` wordt niet automatisch
-overgenomen. Gebruik bij overdracht het [pakketoverzicht](report-package.md).
+overgenomen. Leg na beide blinde lezingen [de eerste inzendingen vast](first-submissions.md)
+voordat de vergelijking begint. Gebruik bij overdracht het [pakketoverzicht](report-package.md).

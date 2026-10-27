@@ -1,9 +1,11 @@
-// Local, dependency-free stage custody. Records observed work, never approves it.
+// Local stage custody. First submissions use the shipped Python record contract.
+// Records observed work, never approves it.
 // Run only in a coordinator-owned directory, not one concurrently edited by agents.
 import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
 import { lstat, mkdir, open, readFile, rename, rmdir } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { reportStages } from "./report-stages.mjs";
 
@@ -123,6 +125,7 @@ async function release(io, options) {
       need(isHash(resources[name]) && manifest.files["references/report-kit/" + name] === resources[name], "Unapproved reader instructions");
     await checkHashes(io, freeze.packet_hashes, ["source.pdf", "source.txt", "SOURCE.json"]);
   }
+  return manifest;
 }
 
 async function current(io, index, stage, seen = new Set()) {
@@ -166,16 +169,106 @@ async function saveIndex(io, index) {
   await rename(await io.pathFor(pending.path), await io.pathFor("STAGE-INDEX.json"));
 }
 
+async function absent(io, names) {
+  for (const name of names) {
+    try { await lstat(await io.pathFor(name)); throw Error("Comparison or first freeze already exists: " + name); }
+    catch (error) { if (error.code !== "ENOENT") throw error; }
+  }
+}
+
+async function freezeFirst(io, index, manifest, options) {
+  need(options.comparisonNotStarted === true && text(options.coordinator) && text(options.identityObservation),
+    "Coordinator must confirm observed independence and that comparison has not started");
+  need(isHash(options.inputFreezeSha256) && await io.digest("INPUT-FREEZE.json") === options.inputFreezeSha256,
+    "Externally retained input freeze hash required");
+  need(Object.keys(index).every(name => ["source_a", "source_b"].includes(name)), "Comparison has already started");
+  await absent(io, ["FIRST-SUBMISSIONS.json", "CUSTODY-FIRST.json", "stage-receipts/first.json",
+    ...Object.entries(reportStages).filter(([name]) => !["source_a", "source_b"].includes(name)).flatMap(([, [outputs]]) => outputs)]);
+  const ends = {};
+  for (const [stage, expected] of [["source_a", options.readerASha256], ["source_b", options.readerBSha256]]) {
+    need(isHash(expected) && index[stage]?.end?.sha256 === expected, "Externally retained reader end hash required");
+    ends[stage] = await current(io, index, stage);
+  }
+  need(ends.source_a.actor.trim() !== ends.source_b.actor.trim(), "Separate actual reader identities required");
+  const contract = new URL("../references/report-kit/contracts/record_contract.py", import.meta.url);
+  need(manifest.files["references/report-kit/contracts/record_contract.py"] === sha(await readFile(contract)), "Unapproved record validator");
+  const source = await io.read("SOURCE.json"), freeze = await io.read("INPUT-FREEZE.json");
+  const original = new TextDecoder("utf-8", { fatal: true }).decode(await io.bytes("source.txt")), points = Array.from(original);
+  need(source.quote === original && source.start === 0 && source.end === points.length &&
+    source.text_sha256 === await io.digest("source.txt") && source.pdf_sha256 === await io.digest(source.pdf_path) &&
+    freeze.pdf_sha256 === source.pdf_sha256 && freeze.text_sha256 === source.text_sha256, "Changed original source");
+  await checkHashes(io, freeze.packet_hashes, ["extractor", "inventory"].flatMap(role =>
+    ["TASK.md", "CONTRACT.md", "record_contract.py", "source.txt", "SOURCE.json"].map(name => role + "/" + name)));
+  const pages = source.pages?.map(page => page.page);
+  need(Array.isArray(pages) && pages.length && pages.every((page, i) => page === i + 1), "Complete ordered source pages required");
+  const coverage = values => Array.isArray(values) && values.length === pages.length && new Set(values).size === pages.length && pages.every(page => values.includes(page));
+  const literal = (start, end, quote) => Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start &&
+    end <= points.length && typeof quote === "string" && points.slice(start, end).join("") === quote;
+  for (const [role, stage] of [["extractor", "source_a"], ["inventory", "source_b"]]) {
+    const result = await io.read(role + "/output/result.json"), log = await io.read(role + "/output/READ-LOG.json");
+    const visual = await io.read(role + "/output/VISUAL-EVIDENCE.json");
+    need(visual && typeof visual === "object" && Object.keys(visual).length, "Visual evidence missing");
+    need(log.author_agent === ends[stage].actor && log.source_text_sha256 === source.text_sha256 && log.source_pdf_sha256 === source.pdf_sha256,
+      "Reading identity/source differs from observed stage");
+    need(coverage(log.text_pages_read) && coverage(log.visual_pages_read) && coverage(result.coverage?.map(row => row.page)), "Incomplete reading or page coverage");
+    need(Object.entries(log).some(([key, value]) => !["author_agent", "source_text_sha256", "source_pdf_sha256"].includes(key) && text(value)), "Actual reading description missing");
+    need(Array.isArray(result.records) && result.records.length, "No records: explicit non-eligible source decision required");
+    const ids = result.records.map(record => record.record_id);
+    need(ids.every(text) && new Set(ids).size === ids.length, "Missing or duplicate record identities");
+    for (const record of result.records) {
+      const span = record.source;
+      need(span?.source_id === source.source_id && literal(span.context_start, span.context_end, span.context_quote), "Nonliteral first source context");
+    }
+    need(Array.isArray(result.supplementary_sources), "Supplementary source accounting required");
+    for (const extra of result.supplementary_sources) need(literal(extra.start, extra.end, extra.quote), "Nonliteral supplementary source");
+    // Execute only the shipped, release-pinned validator, never packet code.
+    await new Promise((resolveCheck, reject) => {
+      execFile(options.python ?? "python", ["-I", "-B", fileURLToPath(contract), join(io.root, role, "output/result.json")],
+        { timeout: 30000, maxBuffer: 4 * 1024 * 1024, windowsHide: true }, (error, stdout) => {
+          try {
+            need(!error, "Record contract check failed: " + role);
+            const verdict = JSON.parse(stdout);
+            need(verdict.checks === "STRUCTURE_AND_INTERPRETATION_LIMITS_ONLY" && Array.isArray(verdict.results) &&
+              verdict.results.length === ids.length && verdict.results.every((row, i) => row.record_id === ids[i] &&
+                Array.isArray(row.errors) && row.errors.length === 0), "Record validator did not confirm this submission");
+            resolveCheck();
+          } catch (failure) { reject(failure); }
+        });
+    });
+  }
+  // Missing baseline/selection/control stops here; never manufacture those anchors.
+  const anchors = ["PILOT-CONTROL.json", "INPUT-FREEZE.json", "BASELINE-FREEZE.json", "SELECTION.json", "RELEASE-BINDING.json"];
+  const files = Object.fromEntries(await Promise.all(anchors.map(async name => [name, await io.digest(name)])));
+  const control = await io.read("PILOT-CONTROL.json");
+  need(text(control.packet_id), "Original packet identity required");
+  // Recheck after the external validator, under the same coordinator lock.
+  for (const stage of ["source_a", "source_b"]) await current(io, index, stage);
+  const frozenAt = clock();
+  need(Object.values(ends).every(end => time(end.completed_at) <= time(frozenAt)), "Freeze precedes reader completion");
+  const frozen = await io.write("FIRST-SUBMISSIONS.json", {
+    first_submissions: Object.fromEntries(["extractor", "inventory"].map(role => [role, {
+      path: role + "/output/result.json", sha256: ends[role === "extractor" ? "source_a" : "source_b"].artifacts[role + "/output/result.json"],
+    }])), support_hashes: Object.fromEntries(Object.values(ends).flatMap(end => Object.entries(end.artifacts).filter(([name]) => !name.endsWith("/result.json")))),
+    comparison_started: false, frozen_at: frozenAt, frozen_by: options.coordinator,
+  });
+  const receipt = await io.write("stage-receipts/first.json", { packet_id: control.packet_id,
+    files: { ...files, "FIRST-SUBMISSIONS.json": frozen.sha256 }, first_stage_receipts: { source_a: index.source_a.end, source_b: index.source_b.end },
+    created_at: clock(), coordinator: options.coordinator, identity_verification_basis: options.identityObservation });
+  await io.write("CUSTODY-FIRST.json", receipt);
+  return { status: "FIRST_SUBMISSIONS_FROZEN_BEFORE_COMPARISON", receipt, publishable: false, contentValidated: false, reviewValidated: false };
+}
+
 export async function recordStage(options) {
   const { action, stage } = options;
-  need(["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage), "Known action and stage required");
+  need(action === "freeze-first" || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
   const io = await storage(options.packet);
   const lock = join(io.root, ".stage-receipts.lock");
   await mkdir(lock); // Exclusive ownership; never take over an interrupted run automatically.
   try {
-    await release(io, options);
+    const manifest = await release(io, options);
     const index = await readIndex(io);
     entries(index);
+    if (action === "freeze-first") return await freezeFirst(io, index, manifest, options);
     let pointer;
     if (action === "start") {
       need(text(options.actor), "Actual actor required");
@@ -224,9 +317,11 @@ export async function recordStage(options) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    const { values, positionals } = parseArgs({ allowPositionals: true, options: Object.fromEntries(
-      ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation"].map(name => [name, { type: "string" }])) });
-    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check --packet <directory> --stage <name> --release-sha256 <hash> --approval-sha256 <hash>");
+    const { values, positionals } = parseArgs({ allowPositionals: true, options: { ...Object.fromEntries(
+      ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation",
+        "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python"].map(name => [name, { type: "string" }])),
+      "comparison-not-started": { type: "boolean" } } });
+    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));
   } catch (error) { console.error(error.message); process.exitCode = 1; }

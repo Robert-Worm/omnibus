@@ -62,7 +62,7 @@ De [fasebewijscontrole](stage-receipts.md) gebruikt de afzonderlijk bewaarde
 dat de gebruikte `prepare-source.py` en de vijf broninstructies bij de goedgekeurde
 release horen. Een technische bevriezing is geen bewijs van gelezen broninhoud.
 `FIRST-SUBMISSIONS.json` hoort pas **na** beide werkelijke lezingen te ontstaan;
-die vervolgstap is nog niet zelfstandig meegeleverd.
+gebruik daarvoor [eerste inzendingen vastleggen](first-submissions.md).
 
 ## Als de voorbereiding stopt
 

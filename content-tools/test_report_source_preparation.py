@@ -3,6 +3,7 @@ import base64
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -129,19 +130,7 @@ class PreparationTest(unittest.TestCase):
     @unittest.skipUnless(shutil.which("node"), "Node required for the phase-helper integration test")
     def test_frozen_source_connects_to_stage_checks_without_approving_content(self):
         prepared = self.prepare()
-        files = {}
-        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs"]
-        names += ["references/report-kit/" + name for name in (
-            "contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md")]
-        for name in names:
-            target = self.packet / "kit" / name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            data = (prep.SKILL / name).read_bytes()
-            target.write_bytes(data); files[name] = prep.digest(data)
-        manifest_hash = prep.write(self.packet / "kit/RELEASE-MANIFEST.json", dict(author_agent="synthetic-author", files=files))
-        approval_hash = prep.write(self.packet / "kit/APPROVAL.json", dict(decision="APPROVE", reviewer_agent="synthetic-reviewer", target_manifest_sha256=manifest_hash))
-        prep.write(self.packet / "RELEASE-BINDING.json", dict(kit_manifest_path="kit/RELEASE-MANIFEST.json", kit_manifest_sha256=manifest_hash,
-                   kit_approval_path="kit/APPROVAL.json", kit_approval_sha256=approval_hash))
+        manifest_hash, approval_hash = self.bind_release()
         args = [shutil.which("node"), str(prep.SKILL / "scripts/stage-receipts.mjs"), "start", "--packet", str(self.packet),
                 "--stage", "source_a", "--actor", "synthetic-reader-a", "--release-sha256", manifest_hash, "--approval-sha256", approval_hash]
         rejected = subprocess.run(args, capture_output=True, text=True, timeout=30)
@@ -161,6 +150,115 @@ class PreparationTest(unittest.TestCase):
         rejected = subprocess.run(args, capture_output=True, text=True, timeout=30)
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn("input freeze hash required", rejected.stderr)
+
+    def bind_release(self):
+        files = {}
+        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs"]
+        names += ["references/report-kit/" + name for name in (
+            "contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md")]
+        for name in names:
+            target = self.packet / "kit" / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            data = (prep.SKILL / name).read_bytes()
+            target.write_bytes(data); files[name] = prep.digest(data)
+        manifest_hash = prep.write(self.packet / "kit/RELEASE-MANIFEST.json", dict(author_agent="synthetic-author", files=files))
+        approval_hash = prep.write(self.packet / "kit/APPROVAL.json", dict(decision="APPROVE", reviewer_agent="synthetic-reviewer", target_manifest_sha256=manifest_hash))
+        prep.write(self.packet / "RELEASE-BINDING.json", dict(kit_manifest_path="kit/RELEASE-MANIFEST.json", kit_manifest_sha256=manifest_hash,
+                   kit_approval_path="kit/APPROVAL.json", kit_approval_sha256=approval_hash))
+        return manifest_hash, approval_hash
+
+    def phase(self, action, extra=(), check=True):
+        return subprocess.run([shutil.which("node"), str(prep.SKILL / "scripts/stage-receipts.mjs"), action,
+            *self.phase_flags, *extra], capture_output=True, text=True, timeout=30, check=check)
+
+    def ready_first(self, change=lambda *_: None, same_actor=False):
+        prepared = self.prepare()
+        manifest, approval = self.bind_release()
+        self.phase_flags = ["--packet", str(self.packet), "--release-sha256", manifest, "--approval-sha256", approval,
+                            "--input-freeze-sha256", prepared["input_freeze_sha256"]]
+        prep.write(self.packet / "PILOT-CONTROL.json", {"packet_id": "synthetic-packet"})
+        prep.write(self.packet / "BASELINE-FREEZE.json", {"synthetic": True})
+        prep.write(self.packet / "SELECTION.json", {"synthetic": True})
+        source = json.loads((self.packet / "SOURCE.json").read_text("utf8"))
+        ends = []
+        for role, stage in (("extractor", "source_a"), ("inventory", "source_b")):
+            actor = "synthetic-source_a" if same_actor else "synthetic-" + stage
+            start = json.loads(self.phase("start", ["--stage", stage, "--actor", actor]).stdout)
+            record = dict(contract_version="4.22", record_id="synthetic-" + role, decision="NO_FINDING", source_reason="Software test only",
+                          source=dict(source_id=source["source_id"], context_start=0, context_end=source["end"], context_quote=source["quote"],
+                                      target_start=0, target_end=source["end"]), findings=[], extraction_status="NOT_APPLICABLE")
+            result = dict(records=[record], supplementary_sources=[], coverage=[dict(page=p, finding_record_ids=[],
+                          excluded_or_context_reason="Synthetic context only", unresolved_questions=[]) for p in (1, 2)])
+            log = dict(author_agent=actor, source_text_sha256=source["text_sha256"], source_pdf_sha256=source["pdf_sha256"],
+                       text_pages_read=[1, 2], visual_pages_read=[1, 2], method="Synthetic execution; not a real reading")
+            change(role, result, log)
+            prep.write(self.packet / role / "output/result.json", result)
+            prep.write(self.packet / role / "output/READ-LOG.json", log)
+            prep.write(self.packet / role / "output/VISUAL-EVIDENCE.json", {"pages": [dict(page=p, observation="Synthetic") for p in (1, 2)]})
+            end = json.loads(self.phase("finish", ["--stage", stage, "--start-sha256", start["receipt"]["sha256"], "--observation", "Synthetic completion"]).stdout)
+            ends.append(end["receipt"]["sha256"])
+        return ["--reader-a-sha256", ends[0], "--reader-b-sha256", ends[1], "--coordinator", "synthetic-coordinator",
+                "--identity-observation", "Synthetic isolated actors for software test only", "--comparison-not-started", "--python", sys.executable]
+
+    @unittest.skipUnless(shutil.which("node"), "Node required")
+    def test_first_receipt_preserves_submissions_and_allows_later_reconciliation(self):
+        flags = self.ready_first()
+        originals = {str(path.relative_to(self.packet)): path.read_bytes() for role in prep.ROLES for path in (self.packet / role / "output").iterdir()}
+        (self.packet / "sitecustomize.py").write_text("from pathlib import Path\nPath(__file__).with_suffix('.executed').write_text('unsafe')\n", encoding="utf8")
+        with patch.dict(os.environ, {"PYTHONPATH": str(self.packet)}):
+            result = json.loads(self.phase("freeze-first", flags).stdout)
+        self.assertFalse((self.packet / "sitecustomize.executed").exists())
+        self.assertEqual(result["status"], "FIRST_SUBMISSIONS_FROZEN_BEFORE_COMPARISON")
+        self.assertFalse(result["publishable"] or result["contentValidated"] or result["reviewValidated"])
+        pointer = json.loads((self.packet / "CUSTODY-FIRST.json").read_text("utf8"))
+        self.assertEqual(pointer, result["receipt"])
+        receipt_bytes = (self.packet / pointer["path"]).read_bytes()
+        self.assertEqual(prep.digest(receipt_bytes), pointer["sha256"])
+        for name, expected in json.loads(receipt_bytes)["files"].items():
+            self.assertEqual(prep.digest((self.packet / name).read_bytes()), expected)
+        for name, original in originals.items():
+            self.assertEqual((self.packet / name).read_bytes(), original)
+        again = self.phase("freeze-first", flags, check=False)
+        self.assertNotEqual(again.returncode, 0)
+        self.assertEqual((self.packet / pointer["path"]).read_bytes(), receipt_bytes)
+        self.assertEqual(json.loads(self.phase("start", ["--stage", "reconciliation", "--actor", "synthetic-reconciler"]).stdout)["status"], "STAGE_STARTED")
+
+    @unittest.skipUnless(shutil.which("node"), "Node required")
+    def test_first_receipt_refuses_incomplete_or_invalid_original_readings(self):
+        cases = [
+            ("pages", lambda r, x, log: log.update(visual_pages_read=[1]), False, "Incomplete reading"),
+            ("identity", lambda *_: None, True, "Separate actual reader"),
+            ("quote", lambda r, x, log: x["records"][0]["source"].update(context_quote="not source text"), False, "Nonliteral"),
+            ("contract", lambda r, x, log: x["records"][0].update(invented_summary="not allowed"), False, "Record contract check failed"),
+        ]
+        for label, change, same_actor, message in cases:
+            with self.subTest(label=label):
+                self.packet = self.root / label
+                flags = self.ready_first(change, same_actor)
+                result = self.phase("freeze-first", flags, check=False)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(message, result.stderr)
+                self.assertFalse((self.packet / "FIRST-SUBMISSIONS.json").exists())
+                self.assertFalse((self.packet / "CUSTODY-FIRST.json").exists())
+
+    @unittest.skipUnless(shutil.which("node"), "Node required")
+    def test_first_receipt_requires_external_pins_anchors_and_no_prior_comparison(self):
+        flags = self.ready_first()
+        wrong = list(flags); wrong[1] = "0" * 64
+        self.assertIn("Externally retained reader end", self.phase("freeze-first", wrong, check=False).stderr)
+        self.assertIn("confirm observed independence", self.phase("freeze-first", [v for v in flags if v != "--comparison-not-started"], check=False).stderr)
+        prep.write(self.packet / "RECONCILED-SOURCE.json", {"synthetic": True})
+        self.assertIn("Comparison", self.phase("freeze-first", flags, check=False).stderr)
+        self.assertFalse((self.packet / "FIRST-SUBMISSIONS.json").exists())
+        self.packet = self.root / "missing-anchor"
+        flags = self.ready_first()
+        (self.packet / "BASELINE-FREEZE.json").unlink()
+        self.assertNotEqual(self.phase("freeze-first", flags, check=False).returncode, 0)
+        self.assertFalse((self.packet / "FIRST-SUBMISSIONS.json").exists())
+        prep.write(self.packet / "BASELINE-FREEZE.json", {"synthetic": True})
+        (self.packet / "extractor/output/result.json").write_text("{}", encoding="utf8")
+        self.assertIn("input/output changed", self.phase("freeze-first", flags, check=False).stderr)
+        self.assertFalse((self.packet / "CUSTODY-FIRST.json").exists())
 
     @unittest.skipUnless(shutil.which("pdftoppm"), "Poppler unavailable; real render is also checked locally")
     def test_real_poppler_prepares_both_pdf_pages(self):

@@ -37,7 +37,7 @@ Het pakket bevat de bronbank (bevindingen met passages), voorgestelde normen en 
 ## Goed om te weten
 
 - Een historische bevinding is geen actueel feit en geen algemene norm. De skill houdt die twee uit elkaar.
-- De contracten en rolinstructies zijn [meegeleverd](references/report-package.md), met uitleg voor afzonderlijke gesprekken, [bronvoorbereiding](references/source-preparation.md) en [fasebewijzen](references/stage-receipts.md). Bevriezing van eerste inzendingen en definitieve vrijgave zijn nog niet zelfstandig meegeleverd. Zonder die controles blijft het pakket onvolledig.
+- De contracten en rolinstructies zijn [meegeleverd](references/report-package.md), met uitleg voor afzonderlijke gesprekken, [bronvoorbereiding](references/source-preparation.md), [fasebewijzen](references/stage-receipts.md) en [eerste ontvangstbewijzen](references/first-submissions.md). De zelfstandige vrijgaveketen is nog niet compleet; zonder de resterende controles blijft het pakket onvolledig.
 - Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
 - De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 
