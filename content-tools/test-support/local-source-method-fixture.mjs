@@ -1,19 +1,22 @@
 // Entirely fictitious execution evidence for software tests. These receipts do
 // not describe a real reading, reviewer or releasable source package.
 import { sourceReviewFixture } from "./local-source-review-fixture.mjs";
+import { readFileSync } from "node:fs";
 import { reportViewerFixture } from "./local-report-viewer-fixture.mjs";
 import { reportStages } from "../local-report-method.mjs";
 import { frameworkMethodDependencies } from "../local-framework-method.mjs";
+import { standaloneReportMembers } from "../standalone-report-method.mjs";
+import { taxonomySnapshot } from "../../skills/omnibus-add-report/scripts/taxonomy-snapshot.mjs";
 
 const stamp = minute => new Date(Date.UTC(2026, 0, 1, 0, minute)).toISOString();
-export function sourceMethodFixture(kind, configure = () => {}) {
+export function sourceMethodFixture(kind, configure = () => {}, { standalone = false } = {}) {
   const f = kind === "report" ? reportViewerFixture() : sourceReviewFixture(kind);
   configure(f); // Fictitious test authoring BEFORE the simulated custody stages.
   const { set, read, paths } = f, hash = name => paths.get(name).sha256;
   const hashes = names => Object.fromEntries(names.map(name => [name, hash(name)]));
   const proof = { firstReceipt: null, finalReceipt: null, paths: [], contracts: {} };
   const pin = name => ({ fileId: paths.get(name).id, sha256: hash(name) });
-  const pointer = name => ({ path: "/synthetic-evidence/" + name, sha256: hash(name) });
+  const pointer = name => ({ path: (standalone ? "" : "/synthetic-evidence/") + name, sha256: hash(name) });
   const external = name => { proof.paths.push({ original: pointer(name).path, fileId: paths.get(name).id }); return pointer(name); };
   const roles = kind === "report" ? ["SOURCE", "PRACTICAL"] : ["SOURCE", "LEGAL", "PRACTICAL"];
   function basisAndReviews() {
@@ -31,16 +34,17 @@ export function sourceMethodFixture(kind, configure = () => {}) {
     }
   }
   if (kind === "report") {
-    const kit = ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
+    const kit = standalone ? standaloneReportMembers : ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
       "contracts/CONTRACT.md", "contracts/record_contract.py", "QUALITY.md", "WORKFLOW.md", "OUTPUT-CONTRACT.md", "REVIEW-CONTRACT.json"];
-    for (const name of kit) set("kit/" + name, name === "REVIEW-CONTRACT.json" ? { synthetic: true } : "Fictief hulpmiddel; nooit uitvoeren.");
+    for (const name of kit) set("kit/" + name, standalone ? readFileSync(new URL("../../skills/omnibus-add-report/" + name, import.meta.url), "utf8")
+      : name === "REVIEW-CONTRACT.json" ? { synthetic: true } : "Fictief hulpmiddel; nooit uitvoeren.");
     set("kit/RELEASE-MANIFEST.json", { author_agent: "synthetic-kit-author", files: Object.fromEntries(kit.map(name => [name, hash("kit/" + name)])) });
     set("kit/APPROVAL.json", { reviewer_agent: "synthetic-kit-reviewer", decision: "APPROVE", target_manifest_sha256: hash("kit/RELEASE-MANIFEST.json") });
     proof.release = { manifest: pin("kit/RELEASE-MANIFEST.json"), approval: pin("kit/APPROVAL.json") };
     set("RELEASE-BINDING.json", { kit_manifest_path: external("kit/RELEASE-MANIFEST.json").path, kit_manifest_sha256: proof.release.manifest.sha256,
       kit_approval_path: external("kit/APPROVAL.json").path, kit_approval_sha256: proof.release.approval.sha256 });
-    for (const name of ["CONTRACT.md", "record_contract.py"]) proof.contracts[name] = hash("kit/contracts/" + name);
-    set("REVIEW-CONTRACT.json", { synthetic: true });
+    for (const name of ["CONTRACT.md", "record_contract.py"]) proof.contracts[name] = hash("kit/" + (standalone ? "references/report-kit/" : "") + "contracts/" + name);
+    set("REVIEW-CONTRACT.json", standalone ? f.files.get(paths.get("kit/references/report-kit/REVIEW-CONTRACT.json.example").id).toString("utf8") : { synthetic: true });
     const source = read("SOURCE.json"); source.pdf_path = "source.pdf"; set("SOURCE.json", source);
     const pages = source.pages.map(row => row.page), actors = Object.fromEntries(Object.keys(reportStages).map(name => [name,
       ({ source_a: "synthetic-reader-a", source_b: "synthetic-reader-b", reconciliation: "synthetic-reconciler",
@@ -50,7 +54,8 @@ export function sourceMethodFixture(kind, configure = () => {}) {
     for (const role of ["extractor", "inventory"]) {
       for (const name of ["TASK.md", "CONTRACT.md", "record_contract.py", "source.txt", "SOURCE.json"]) {
         const value = name === "SOURCE.json" ? source : name === "source.txt"
-          ? f.files.get(paths.get("source.txt").id).toString("utf8") : "Fictief hulpmiddel; nooit uitvoeren.";
+          ? f.files.get(paths.get("source.txt").id).toString("utf8") : standalone && ["CONTRACT.md", "record_contract.py"].includes(name)
+            ? f.files.get(paths.get("kit/references/report-kit/contracts/" + name).id).toString("utf8") : "Fictief hulpmiddel; nooit uitvoeren.";
         set(role + "/" + name, value); members.push(role + "/" + name);
       }
       set(role + "/output/READ-LOG.json", { author_agent: actors[role === "extractor" ? "source_a" : "source_b"], text_pages_read: pages, visual_pages_read: pages });
@@ -61,11 +66,34 @@ export function sourceMethodFixture(kind, configure = () => {}) {
     set("SELECTION.json", { synthetic: true });
     set("prior/viewer/app/reviewed-reports.json", f.baselineRegistry ?? { corpus: [] });
     set("BASELINE-FREEZE.json", { active_reports: 0, active_items: 0, files: hashes(["prior/viewer/app/reviewed-reports.json"]) });
+    if (standalone) {
+      for (const page of pages) set(`visual/page-${page}.png`, "Fictieve beeldbytes; geen echte pagina.");
+      const freeze = read("INPUT-FREEZE.json");
+      Object.assign(freeze.packet_hashes, hashes(["source.pdf", "source.txt", "SOURCE.json", ...pages.map(page => `visual/page-${page}.png`)]));
+      freeze.preparation = { tool: "prepare-source.py", tool_sha256: hash("kit/scripts/prepare-source.py"),
+        resource_hashes: Object.fromEntries(["contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md"]
+          .map(name => [name, hash("kit/references/report-kit/" + name)])) }; set("INPUT-FREEZE.json", freeze);
+      set("baseline/viewer/app/reviewed-reports.json", f.baselineRegistry ?? { corpus: [] });
+      set("baseline/release.json", { synthetic: true });
+      set("baseline/taxonomy.json", { processes: Object.entries(read("TAXONOMY-SNAPSHOT.json").processes).map(([id, row]) => ({ ...row, id })) });
+      const plan = { report_id: f.manifest.package.id, candidate: "Fictief", source_pdf_sha256: source.pdf_sha256,
+        selection: read("SELECTION.json"), baseline_observation: "Fictieve baseline, geen werkelijke waarneming.",
+        registry_path: "baseline/viewer/app/reviewed-reports.json", release_path: "baseline/release.json", taxonomy_path: "baseline/taxonomy.json",
+        files: hashes(["baseline/viewer/app/reviewed-reports.json", "baseline/release.json", "baseline/taxonomy.json"]) };
+      set("selection-plan.json", plan);
+      set("BASELINE-FREEZE.json", { active_reports: 0, active_items: 0, frozen_at: stamp(0),
+        files: { ...plan.files, ...hashes(["selection-plan.json", "PILOT-CONTROL.json", "SELECTION.json"]) },
+        preparation: { tool: "stage-receipts.mjs", plan: { path: "selection-plan.json", sha256: hash("selection-plan.json") },
+          registry_path: plan.registry_path, release_path: plan.release_path, taxonomy_path: plan.taxonomy_path, baseline_observation: plan.baseline_observation } });
+      set("TAXONOMY-SNAPSHOT.json", taxonomySnapshot(read(plan.taxonomy_path), plan.taxonomy_path, hash(plan.taxonomy_path)));
+    }
     const index = {}, stages = {};
     function stage(name, minute) {
       const [outputs, inputs, dependencies] = reportStages[name], startName = `custody/${name}-start.json`, endName = `custody/${name}-end.json`;
       const start = { stage: name, actor: actors[name], revision: 1, status: "STARTED", started_at: stamp(minute),
-        inputs: hashes([...inputs, "RELEASE-BINDING.json"]), dependencies: Object.fromEntries(dependencies.map(dep => [dep, index[dep].end])) };
+        inputs: hashes([...inputs, "RELEASE-BINDING.json", ...(standalone ? ["BASELINE-FREEZE.json",
+          ...(!["source_a", "source_b", "reconciliation"].includes(name) ? ["TAXONOMY-SNAPSHOT.json"] : [])] : [])]),
+        dependencies: Object.fromEntries(dependencies.map(dep => [dep, index[dep].end])) };
       set(startName, start);
       const end = { stage: name, actor: actors[name], status: "COMPLETE", completed_at: stamp(minute + 1), start: external(startName),
         inputs: start.inputs, artifacts: hashes(outputs), execution_observation: "Fictieve fase voor een softwaretest." };
@@ -88,9 +116,13 @@ export function sourceMethodFixture(kind, configure = () => {}) {
       target_hashes: hashes(["APP-DRAFT.json", "CATALOGUE-DRAFT.json"]), required_changes: [] }); stage("practical_draft_review", 9);
     set("REPAIRS.json", { author_agent: actors.repairs, draft_review_sha256: hash("audit-draft-review.json"), app_final_sha256: hash("APP-FINAL.json"),
       catalogue_sha256: hash("CATALOGUE.json"), dispositions: [] }); stage("repairs", 11);
-    set("taxonomy.json", { synthetic: true });
-    const taxonomy = read("TAXONOMY-SNAPSHOT.json"); Object.assign(taxonomy, { path: "taxonomy.json", file_sha256: hash("taxonomy.json") }); set("TAXONOMY-SNAPSHOT.json", taxonomy);
-    const basis = read("REVIEW-BASIS.json"); basis.first_custody_receipt_sha256 = proof.firstReceipt.sha256; set("REVIEW-BASIS.json", basis);
+    if (!standalone) {
+      set("taxonomy.json", { synthetic: true });
+      const taxonomy = read("TAXONOMY-SNAPSHOT.json"); Object.assign(taxonomy, { path: "taxonomy.json", file_sha256: hash("taxonomy.json") }); set("TAXONOMY-SNAPSHOT.json", taxonomy);
+    }
+    const basis = read("REVIEW-BASIS.json"); basis.first_custody_receipt_sha256 = proof.firstReceipt.sha256;
+    if (standalone) basis.preparation = { tool: "stage-receipts.mjs", repairs: index.repairs.end };
+    set("REVIEW-BASIS.json", basis);
     for (const role of roles) {
       const review = read(`reviews/${role}.json`);
       Object.assign(review, { taxonomy_approved: true, taxonomy_assessment: "Fictief.", scope_and_limitations: "Geen echte beoordeling.",
@@ -105,8 +137,21 @@ export function sourceMethodFixture(kind, configure = () => {}) {
       actual_agent_separation_verified: true, identity_verification_basis: "Synthetische testwaarneming, geen echte review.", human_acceptance_required: true, automatic_next_report_allowed: false,
       first_receipt_path: pointer("custody/first.json").path, first_receipt_sha256: proof.firstReceipt.sha256,
       files: hashes([...anchors, "STAGES.json", "APP-FINAL.json", "CATALOGUE.json", "RECONCILED-SOURCE.json", "INCLUSION-DECISIONS.json", "APP-SOURCE-LINKS.json", "REVIEW-BASIS.json"]),
-      engine: Object.fromEntries(["gate.py", "workflow.py", "stage_custody.py", "snapshot-taxonomy.mjs"].map(name => [name, hash("kit/tools/" + name)])),
-      actors, contract: proof.contracts, taxonomy_sha256: hash("taxonomy.json"), stage_receipts: Object.fromEntries(Object.entries(index).map(([name, entry]) => [name, entry.end])), sealed_at: stamp(15) });
+      engine: standalone ? Object.fromEntries(kit.filter(name => name.startsWith("scripts/")).map(name => [name, hash("kit/" + name)]))
+        : Object.fromEntries(["gate.py", "workflow.py", "stage_custody.py", "snapshot-taxonomy.mjs"].map(name => [name, hash("kit/tools/" + name)])),
+      actors, contract: proof.contracts, taxonomy_sha256: read("TAXONOMY-SNAPSHOT.json").file_sha256,
+      stage_receipts: Object.fromEntries(Object.entries(index).map(([name, entry]) => [name, entry.end])), sealed_at: stamp(15) });
+    if (standalone) {
+      set("attestation.json", { packet_id: "synthetic-packet", report_id: f.manifest.package.id, candidate: "Fictief", coordinator: "synthetic-coordinator",
+        actual_agent_separation_verified: true, identity_verification_basis: read("custody/final.json").identity_verification_basis, actors,
+        stage_end_hashes: Object.fromEntries(Object.entries(index).map(([name, entry]) => [name, entry.end.sha256])) });
+      const final = read("custody/final.json");
+      Object.assign(final, { receipt_kind: "standalone-stage-custody-v1", publishable: false, contentValidated: false, reviewValidated: false,
+        preparation: { tool: "stage-receipts.mjs", attestation: { path: "attestation.json", sha256: hash("attestation.json") }, coordinator: "synthetic-coordinator" } });
+      Object.assign(final.files, hashes(["CUSTODY-FIRST.json", "STAGE-INDEX.json", "attestation.json",
+        ...Object.keys(index).flatMap(name => [`custody/${name}-start.json`, `custody/${name}-end.json`])]));
+      set("custody/final.json", final); set("CUSTODY-FINAL.json", external("custody/final.json"));
+    }
     proof.finalReceipt = pin("custody/final.json");
   } else {
     const pages = read("source/pages.json").map(row => row.page), readers = ["synthetic-reader-a", "synthetic-reader-b"], coordinator = "synthetic-coordinator";

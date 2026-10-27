@@ -13,12 +13,12 @@ import { verifyReleaseContent } from "../local-data/release-integrity.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
-for (const kind of ["report", "framework"]) test(`${kind}: real CLI builds an isolated evidence database and preserves input/source/HOLD bytes`, async t => {
+for (const [kind, standalone] of [["report", false], ["framework", false], ["report", true]]) test(`${kind} ${standalone ? "standalone" : "legacy"}: real CLI builds an isolated evidence database and preserves input/source/HOLD bytes`, async t => {
   const scratch = join(root, "work/local-source-method-tests"); mkdirSync(scratch, { recursive: true });
   const dir = mkdtempSync(join(scratch, "case-"));
   t.after(() => { assert.equal(dirname(dir), scratch); rmSync(dir, { recursive: true, force: true }); });
   const input = join(dir, "input"); mkdirSync(input);
-  const f = sourceMethodFixture(kind), put = (name, value) => writeFileSync(join(dir, name), JSON.stringify(value, null, 2) + "\n");
+  const f = sourceMethodFixture(kind, undefined, { standalone }), put = (name, value) => writeFileSync(join(dir, name), JSON.stringify(value, null, 2) + "\n");
   for (const file of f.manifest.files) {
     const path = join(input, file.path); mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, f.files.get(file.id));
   }

@@ -82,7 +82,11 @@ for (const kind of ["report", "framework"]) {
     const payload = Buffer.from(
       "Synthetic test payload. NOT source evidence or an approved review. é😀",
     );
-    for (const file of plan.files) await writeFile(join(incoming, file.path), payload);
+    for (const file of plan.files) {
+      const path = join(incoming, file.path);
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, payload);
+    }
     const prepared = await prepareIntake(planPath, manifestPath);
     const received = await checkIntake(manifestPath, { expectedSha256: prepared.manifestSha256 });
     assert.equal(received.status, "FILES_VERIFIED_REVIEW_REQUIRED");

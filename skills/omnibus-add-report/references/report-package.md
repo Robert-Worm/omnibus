@@ -42,8 +42,9 @@ beide onafhankelijke eindreviewers dezelfde eindset en afhankelijkheden ontvange
 Na beide eindreviews kun je [de volledige ontvangstketen vastleggen en controleren](final-receipt.md).
 Dit bevestigt de bewijsketen, niet de inhoudelijke toelating.
 
-**Nog niet zelfstandig meegeleverd:** de inhoudelijke eindcontrole en de aansluiting
-van het nieuwe ontvangstformaat op de bestaande toelatingscontrole.
+De ontvangende Omnibus-codecheckout herkent het nieuwe ontvangstformaat en voert
+de bestaande bron-, review- en methodecontroles uit. Zie [ontvangst controleren](final-receipt.md#ontvangst-in-omnibus).
+**Nog niet zelfstandig meegeleverd in de skillmap:** de inhoudelijke eindcontrole.
 De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
@@ -93,7 +94,10 @@ Gebruik het [bestaande intakeplan](../assets/intake-plan.json.example). De paden
 zijn voorbeelden: wijs ze naar de werkelijke bestanden met de juiste rol.
 Hernoem geen bevroren eindbestanden. Zo wijst `source-review` naar de echte
 `source-final-review.json`, `practical-review` naar `audit-final-review.json` en
-`review-basis` naar `REVIEW-BASIS.json`. Neem ook alle afhankelijkheden mee.
+`review-basis` naar `REVIEW-BASIS.json`. Het voorbeeld bevat alleen de hoofdrollen:
+voeg alle bevroren afhankelijkheden, fasebewijzen, paginabeelden, baselinebestanden,
+verklaring en de goedgekeurde hulpmiddelenrelease toe als `supporting`. Behoud hun
+onderlinge paden. Geef de twee eindreviews uitsluitend de rol `review`.
 
 Een ontvangende Omnibus-codecheckout kan `content:prepare` en `content:intake`
 uitvoeren. `FILES_VERIFIED_REVIEW_REQUIRED` bevestigt bestandsrollen en ongewijzigd

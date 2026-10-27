@@ -3,12 +3,13 @@
 import { posix } from "node:path";
 import { need, text, same, exactKeys, cover, time, object } from "./source-evidence-reader.mjs";
 import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
+import { standaloneReportMembers, checkStandaloneReportPreparation } from "./standalone-report-method.mjs";
 
 import { reportStages } from "../skills/omnibus-add-report/scripts/report-stages.mjs";
 export { reportStages };
 const targets = reportStages.source_final_review[1];
 
-function releaseCheck(e) {
+function releaseCheck(e, standalone) {
   const { proof, final, read, pinned, manifest, digest } = e;
   exactKeys(proof.release, ["manifest", "approval"], "trusted kit release");
   const release = pinned(proof.release.manifest), approval = pinned(proof.release.approval), binding = read("RELEASE-BINDING.json");
@@ -18,7 +19,7 @@ function releaseCheck(e) {
     digest(binding.kit_approval_path, binding.kit_approval_sha256).file.id === proof.release.approval.fileId, "kit path identity mismatch");
   need(approval.decision === "APPROVE" && approval.target_manifest_sha256 === proof.release.manifest.sha256 &&
     text(approval.reviewer_agent) && text(release.author_agent) && approval.reviewer_agent !== release.author_agent, "independent exact kit approval required");
-  const required = ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
+  const required = standalone ? standaloneReportMembers : ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
     "contracts/CONTRACT.md", "contracts/record_contract.py", "QUALITY.md", "WORKFLOW.md", "OUTPUT-CONTRACT.md", "REVIEW-CONTRACT.json"];
   need(object(release.files) && required.every(name => Object.hasOwn(release.files, name)), "kit manifest omits required members");
   const folder = posix.dirname(manifest.files.find(file => file.id === proof.release.manifest.fileId).path);
@@ -29,14 +30,16 @@ function releaseCheck(e) {
     // Check actual bytes too, not just the manifest's declarations.
     e.pinBytes({ fileId: file.id, sha256: expected });
   }
-  for (const name of ["gate.py", "workflow.py", "stage_custody.py", "snapshot-taxonomy.mjs"])
+  if (standalone) need(same(final.engine, Object.fromEntries(Object.entries(release.files).filter(([name]) => name.startsWith("scripts/")))), "unreviewed extraction engine");
+  else for (const name of ["gate.py", "workflow.py", "stage_custody.py", "snapshot-taxonomy.mjs"])
     need(final.engine?.[name] === release.files["tools/" + name], "unreviewed extraction engine");
   need(same(final.contract, proof.contracts), "contract differs from externally retained version");
   for (const [name, expected] of Object.entries(proof.contracts)) {
-    need(release.files["contracts/" + name] === expected, "contract not in approved kit");
+    need(release.files[(standalone ? "references/report-kit/" : "") + "contracts/" + name] === expected, "contract not in approved kit");
     for (const role of ["extractor", "inventory"]) digest(role + "/" + name, expected);
   }
-  digest("REVIEW-CONTRACT.json", release.files["REVIEW-CONTRACT.json"]);
+  digest("REVIEW-CONTRACT.json", release.files[standalone ? "references/report-kit/REVIEW-CONTRACT.json.example" : "REVIEW-CONTRACT.json"]);
+  if (standalone) checkStandaloneReportPreparation(e, release);
 }
 
 function stagesCheck(e) {
@@ -75,6 +78,8 @@ function stagesCheck(e) {
 
 export function checkReportMethod(e) {
   const { read, lookup, digest, hashes, pointer, proof, first, final, manifest, reviews, authorIds } = e;
+  const standalone = final.receipt_kind === "standalone-stage-custody-v1";
+  need(!Object.hasOwn(final, "receipt_kind") || standalone, "unknown report receipt format");
   need(final.workflow_version === "single-report-kit-v1" && text(final.packet_id) && final.report_id === manifest.package.id && text(final.candidate), "report receipt scope mismatch");
   need(final.actual_agent_separation_verified === true && text(final.identity_verification_basis) &&
     final.human_acceptance_required === true && final.automatic_next_report_allowed === false, "coordinator observation/acceptance stop missing");
@@ -87,7 +92,7 @@ export function checkReportMethod(e) {
   need(read("REVIEW-BASIS.json").first_custody_receipt_sha256 === proof.firstReceipt.sha256, "review basis lost first custody anchor");
   const firstPointer = read("CUSTODY-FIRST.json"); pointer(firstPointer);
   need(firstPointer.sha256 === proof.firstReceipt.sha256 && same(pointer(firstPointer), first), "first pointer differs from external receipt");
-  releaseCheck(e);
+  releaseCheck(e, standalone);
   const control = read("PILOT-CONTROL.json");
   need(["packet_id", "report_id", "candidate"].every(key => control[key] === final[key]) && control.one_report_only === true &&
     control.acceptance_stop_required === true && control.second_report_authorized === false && control.model === "gpt-6-astra" &&
@@ -96,7 +101,8 @@ export function checkReportMethod(e) {
   digest(source.pdf_path, source.pdf_sha256);
   need(freeze.pdf_sha256 === source.pdf_sha256 && freeze.text_sha256 === source.text_sha256, "input source freeze differs");
   const members = ["extractor", "inventory"].flatMap(role => ["TASK.md", "CONTRACT.md", "record_contract.py", "source.txt", "SOURCE.json"].map(name => role + "/" + name));
-  hashes(freeze.packet_hashes); cover(Object.keys(freeze.packet_hashes).map(name => name.replaceAll("\\", "/")), members, null, "reader input freeze");
+  hashes(freeze.packet_hashes, standalone ? members : []);
+  if (!standalone) cover(Object.keys(freeze.packet_hashes).map(name => name.replaceAll("\\", "/")), members, null, "reader input freeze");
   for (const role of ["extractor", "inventory"]) {
     digest(role + "/source.txt", source.text_sha256); digest(role + "/SOURCE.json", lookup("SOURCE.json").file.sha256);
   }

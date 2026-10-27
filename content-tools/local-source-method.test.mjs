@@ -4,6 +4,10 @@ import { sourceMethodFixture } from "./test-support/local-source-method-fixture.
 import { checkLocalSourceReview, localSourceSnapshot } from "./local-source-review.mjs";
 import { checkLocalSourceMethod } from "./local-source-method.mjs";
 import { sourceEvidenceReader } from "./source-evidence-reader.mjs";
+import { mkdtemp, mkdir, readFile, writeFile, rm } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
+import { recordStage } from "../skills/omnibus-add-report/scripts/stage-receipts.mjs";
 
 const check = f => checkLocalSourceReview(f.manifest, f.files, f.authorIds, f.proof);
 const context = f => ({ ...localSourceSnapshot(f.manifest, f.files), manifest: f.manifest, files: f.files,
@@ -82,9 +86,68 @@ const reportCases = [
   ["missing draft review field", "audit-draft-review.json", v => { delete v.item_reviews[0].field_assessments.risk; }, /draft field assessment/],
   ["unresolved draft repair", "audit-draft-review.json", v => { v.required_changes = [{ id: "repair-1" }]; }, /repair dispositions incomplete/],
 ];
-for (const [label, name, edit, error] of reportCases) test(`report: ${String(label)} rejected even with rehashed synthetic custody`, () => {
-  const f = sourceMethodFixture("report"); changeSynthetic(f, name, edit);
+for (const standalone of [false, true]) for (const [label, name, edit, error] of reportCases) test(`report ${standalone ? "standalone" : "legacy"}: ${String(label)} rejected even with rehashed synthetic custody`, () => {
+  const f = sourceMethodFixture("report", undefined, { standalone }); changeSynthetic(f, name, edit);
   assert.throws(() => checkLocalSourceMethod("report", context(f), f.proof), error);
+});
+
+test("standalone report: existing substantive review and source checks accept the new receipt format read-only", () => {
+  const f = sourceMethodFixture("report", undefined, { standalone: true }), before = [...f.files].map(([id, bytes]) => [id, Buffer.from(bytes)]);
+  const result = check(f);
+  assert.equal(result.sourceMethodValidated, true);
+  assert.equal(result.method.completeReadings, 4);
+  assert.equal(result.sourcePassagesValidated, true);
+  assert.equal(result.sourceStructureValidated, true);
+  assert.equal(result.reviewValidated || result.newContentApproval || result.publishable, false);
+  assert.deepEqual([...f.files], before);
+});
+
+test("standalone report: receipt produced by the shipped helper reaches the existing substantive gate unchanged", async t => {
+  const f = sourceMethodFixture("report", undefined, { standalone: true });
+  const packet = await mkdtemp(join(tmpdir(), "omnibus-report-receive-"));
+  t.after(() => rm(packet, { recursive: true, force: true }));
+  for (const [name, file] of f.paths) {
+    if (["STAGES.json", "custody/final.json", "CUSTODY-FINAL.json"].includes(name)) continue;
+    const target = join(packet, name); await mkdir(dirname(target), { recursive: true }); await writeFile(target, f.files.get(file.id));
+  }
+  const options = { packet, releaseSha256: f.proof.release.manifest.sha256, approvalSha256: f.proof.release.approval.sha256,
+    inputFreezeSha256: f.hash("INPUT-FREEZE.json"), baselineFreezeSha256: f.hash("BASELINE-FREEZE.json"),
+    firstReceiptSha256: f.proof.firstReceipt.sha256, reviewBasisSha256: f.hash("REVIEW-BASIS.json") };
+  const recorded = await recordStage({ ...options, action: "record-final", attestation: "attestation.json", attestationSha256: f.hash("attestation.json") });
+  const checked = await recordStage({ ...options, action: "check-final", finalReceiptSha256: recorded.receipt.sha256 });
+  assert.equal(checked.status, "FINAL_CUSTODY_CHECKED_NOT_APPROVED");
+  for (const name of ["STAGES.json", "CUSTODY-FINAL.json", recorded.receipt.path]) f.set(name, await readFile(join(packet, name), "utf8"));
+  f.proof.finalReceipt = f.pin(recorded.receipt.path);
+  assert.equal(f.proof.finalReceipt.sha256, recorded.receipt.sha256);
+  const result = check(f);
+  assert.equal(result.sourceMethodValidated, true);
+  assert.equal(result.publishable || result.newContentApproval, false);
+});
+
+for (const [label, edit, error] of [
+  ["item coverage", v => { v.item_reviews = []; }, /coverage differs/],
+  ["full source assessment", v => { delete v.source_assessments.completeness; }, /missing full source review/],
+]) test(`standalone report: ordinary ${String(label)} checks remain mandatory beyond custody`, () => {
+  const f = sourceMethodFixture("report", undefined, { standalone: true });
+  for (const name of ["reviews/SOURCE.json", "source-final-review.json"]) changeSynthetic(f, name, edit);
+  assert.throws(() => check(f), error);
+});
+
+for (const [label, name, edit, error] of [
+  ["unknown format", "custody/final.json", v => { v.receipt_kind = "future-unchecked"; }, /unknown report receipt/],
+  ["claims approval", "custody/final.json", v => { v.contentValidated = true; }, /cannot grant content approval/],
+  ["missing helper", "kit/RELEASE-MANIFEST.json", v => { delete v.files["scripts/prepare-source.py"]; }, /omits required/],
+  ["wrong observed actor", "attestation.json", v => { v.actors.source_a = "someone-else"; }, /attestation differs/],
+  ["wrong observed phase", "attestation.json", v => { v.stage_end_hashes.source_a = "0".repeat(64); }, /stage end differs/],
+  ["unapproved reader instructions", "INPUT-FREEZE.json", v => { v.preparation.resource_hashes["QUALITY.md"] = "0".repeat(64); }, /reader instructions/],
+  ["omitted page image", "INPUT-FREEZE.json", v => { delete v.packet_hashes["visual/page-2.png"]; }, /page images incomplete/],
+  ["changed taxonomy definition", "TAXONOMY-SNAPSHOT.json", v => { Object.values(v.processes)[0].title = "Another definition"; }, /taxonomy differs/],
+  ["different selection", "selection-plan.json", v => { v.report_id = "OTHER"; }, /selection plan differs/],
+  ["missing item review", "source-final-review.json", v => { v.item_reviews = []; }, /review differs/],
+  ["missing full reading assessment", "source-final-review.json", v => { delete v.source_assessments.completeness; }, /review differs/],
+]) test(`standalone report: ${String(label)} remains blocked with consistent synthetic hashes`, () => {
+  const f = sourceMethodFixture("report", undefined, { standalone: true }); changeSynthetic(f, name, edit);
+  assert.throws(() => check(f), error);
 });
 
 const frameworkCases = [

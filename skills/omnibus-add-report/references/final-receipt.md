@@ -54,6 +54,29 @@ verklaringen, fasebewijzen of verwijzingen blokkeren deze controle.
 
 `publishable`, `contentValidated` en `reviewValidated` blijven `false`.
 Het ontvangstformaat heet `standalone-stage-custody-v1`; dit is nog geen
-`PASS_FOR_PARENT_REVIEW`. De aansluiting van dit nieuwe formaat op de bestaande
-inhoudelijke eindcontrole en toelatingscontrole volgt nog. Die controles blijven
-verplicht; een groen ontvangstbewijs mag ze niet vervangen. Houd het pakket privé.
+`PASS_FOR_PARENT_REVIEW`. De inhoudelijke controle loopt bij ontvangst in Omnibus.
+Een groen ontvangstbewijs mag die controle niet vervangen. Houd het pakket privé.
+
+## Ontvangst in Omnibus
+
+De ontvanger gebruikt de bestaande `content:prepare`- en `content:intake`-route.
+Neem de volledige bewijsketen en hulpmiddelenrelease over, met behoud van alle
+bytes en onderlinge paden. Het [intakevoorbeeld](../assets/intake-plan.json.example)
+bevat de hoofdrollen; alle overige bewijsbestanden krijgen de rol `supporting`.
+`FILES_VERIFIED_REVIEW_REQUIRED` bevestigt het transport, geen inhoudelijke vrijgave.
+
+Neem in het lokale pakketplan `sourceEvidence` op met de afzonderlijk bewaarde
+eerste en laatste ontvangsthash, contracthashes en de onafhankelijk goedgekeurde
+hulpmiddelenrelease. De Omnibus-handleiding `content-tools/local-database.md`
+beschrijft de velden. De ontvanger kan vanuit die codecheckout alleen-lezen controleren:
+
+```text
+node scripts/build-local-database.mjs --plan work/eigen-pakketten/packages.json --check
+```
+
+**Gelukt als:** `LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED` verschijnt met
+`sourceEvidence[].sourceMethodValidated: true`. De controle toetst ook letterlijke
+bronpassages, recordrelaties, volledige leeslogs, beoordelingen per item,
+rolscheiding en afgehandelde herstelpunten. Het commando bouwt of wijzigt geen
+database. De waargenomen lezingen blijven een verklaring van de coördinator;
+inhoudelijke vrijgave en de proef met een werkelijke bijdrager blijven afzonderlijk.
