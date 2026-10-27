@@ -19,6 +19,12 @@ export const guard = new URL('./local-privacy-guard.mjs', import.meta.url).href;
 const self = fileURLToPath(import.meta.url);
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'));
 
+// Decode one XML layer; literal text such as &amp;lt; must stay &lt;.
+export function decodeWorkbookXml(xml) {
+  const entities = {amp:'&', lt:'<', gt:'>', quot:'"', apos:"'"};
+  return xml.replace(/&(amp|lt|gt|quot|apos);/g, (_, name) => entities[name]);
+}
+
 export function newPrivacyRun() {
   const work = join(root, 'work');
   mkdirSync(work, {recursive:true});
@@ -267,7 +273,7 @@ export async function runBrowserPrivacy({settings, webRoot, executablePath, play
     assert(files['xl/workbook.xml'],'Download must be an Excel workbook');
     const xml=Object.entries(files).filter(([name])=>name.startsWith('xl/')&&name.endsWith('.xml'))
       .map(([,bytes])=>strFromU8(bytes)).join('\n');
-    const decoded=xml.replaceAll('&amp;','&').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&quot;','"').replaceAll('&apos;',"'");
+    const decoded=decodeWorkbookXml(xml);
     assert(decoded.includes(questionText),'Export must contain the linked question');
     assert(decoded.includes(material.body),'Export must contain the selected own norm');
     result.exportVerified={workbook:true,linkedQuestion:true,selectedNorm:true};

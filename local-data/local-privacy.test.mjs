@@ -3,9 +3,15 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
-import {newPrivacyRun, runPackagePrivacy, runBrowserPrivacy, root, guard} from './local-privacy.mjs';
+import {newPrivacyRun, runPackagePrivacy, runBrowserPrivacy, decodeWorkbookXml, root, guard} from './local-privacy.mjs';
 import {privacyProbe,containsProbe,requestedSourceHashes} from './local-privacy-probe.mjs';
 import {prepareGuardedRuntime} from './local-privacy-sources.mjs';
+
+void test('workbook verification decodes exactly one XML layer', () => {
+  assert.equal(decodeWorkbookXml('A &amp; B &lt; C &gt; D &quot;E&quot; &apos;F&apos;'), 'A & B < C > D "E" \'F\'');
+  assert.equal(decodeWorkbookXml('&amp;lt;script&amp;gt; &amp;quot; &amp;apos; &amp;amp;'), '&lt;script&gt; &quot; &apos; &amp;');
+  assert.equal(decodeWorkbookXml('Literal &amp;lt; vs encoded &lt;'), 'Literal &lt; vs encoded <');
+});
 
 void test('real local package CLI stays offline and ends in HOLD without a runtime publication', async () => {
   const dir=newPrivacyRun(), result = await runPackagePrivacy(dir);
