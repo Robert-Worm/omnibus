@@ -62,7 +62,8 @@ omnibus-add-report.zip
     │   ├── prepare-source.py
     │   ├── report-stages.mjs
     │   ├── requirements-source.txt
-    │   └── stage-receipts.mjs
+    │   ├── stage-receipts.mjs
+    │   └── taxonomy-snapshot.mjs
     ├── references/
     │   ├── report-method.md
     │   ├── report-package.md
