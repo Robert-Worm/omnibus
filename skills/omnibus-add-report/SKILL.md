@@ -23,7 +23,7 @@ Stel daarna geen nieuwe vragen, tenzij een stap niet terug te draaien is.
 
 Bij een expliciet tekstgerichte, kostenbewuste review van bestaande toegelaten
 inhoud: gebruik de tekstmodus van `omnibus-review-audit-quality` en de praktische
-ketenregels uit [de rapportwerkwijze](references/report-method.md). Herhaal niet
+ketenregels uit [de praktische rapportwerkwijze](references/practical-method.md). Herhaal niet
 de volledige extractie of technische integratie; originele bronnen en bronstatus
 blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissie.
 
@@ -33,7 +33,11 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
    geen complete toelatingsomgeving; gebruik daarvoor de expliciet aangewezen
    privé-verwerkingsomgeving. Kopieer ontbrekende inhoud niet naar Git.
    Vraag alleen naar de projectmap als die niet uit de opdracht blijkt.
-2. Lees [de rapportwerkwijze](references/report-method.md) volledig. Zoek daarnaast
+2. Lees [de bronwerkwijze](references/report-method.md) volledig. De praktische auteur,
+   conceptreviewer, beide eindreviewers en de coördinator vóór praktisch werk lezen ook
+   [de praktische uitwerking](references/practical-method.md) en
+   [de gerichte lessen](references/praktische-lessen.md) volledig. De praktische naslag
+   is niet nodig voor bronlezers en reconciliator. Zoek daarnaast
    de bestaande `report-ingestion/single-report-kit-v1.1` naast de checkout. Als die
    aanwezig is, lees `START-HERE.md`, `WORKFLOW.md`, `QUALITY.md` en
    `OUTPUT-CONTRACT.md`, plus de instructies voor de daadwerkelijk uitgevoerde rol.
