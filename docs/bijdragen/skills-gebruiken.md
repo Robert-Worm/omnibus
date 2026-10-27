@@ -15,7 +15,7 @@
 
 Je levert een **compleet pakket** aan, inclusief de vereiste onafhankelijke lezingen en reviews. De beheerder controleert de toelating en integreert het pakket. Ontbrekende onderdelen blijven `HOLD` of `PENDING_REVIEW`; een geïnstalleerde skill bewijst niet dat die stappen zijn uitgevoerd. Gebruik het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
 
-**Nog in ontwikkeling:** de rapportskill bevat de [contracten en rolinstructies](../../skills/omnibus-add-report/references/report-package.md) en een [hulpmiddel voor fasebewijzen](../../skills/omnibus-add-report/references/stage-receipts.md). De voorbereiding en definitieve vrijgave ontbreken nog in de zelfstandige route; zie [#225](https://github.com/Robert-Worm/omnibus/issues/225). Doe eerst de leesproef. Laat een ontbrekend hulpmiddel of bewijs niet door de AI verzinnen.
+**Nog in ontwikkeling:** de rapportskill bevat de [contracten en rolinstructies](../../skills/omnibus-add-report/references/report-package.md), [bronvoorbereiding](../../skills/omnibus-add-report/references/source-preparation.md) en een [hulpmiddel voor fasebewijzen](../../skills/omnibus-add-report/references/stage-receipts.md). Bevriezing van de eerste inzendingen en definitieve vrijgave ontbreken nog in de zelfstandige route; zie [#225](https://github.com/Robert-Worm/omnibus/issues/225). Doe eerst de leesproef. Laat een ontbrekend hulpmiddel of bewijs niet door de AI verzinnen.
 
 Alle voorbeelden gebruiken `omnibus-add-report`. Voor een wet of kader gebruik je `omnibus-add-framework`, voor een onderzoeksmodel `omnibus-add-model`.
 
@@ -58,12 +58,15 @@ omnibus-add-report.zip
     ├── agents/
     │   └── openai.yaml
     ├── scripts/
+    │   ├── prepare-source.py
     │   ├── report-stages.mjs
+    │   ├── requirements-source.txt
     │   └── stage-receipts.mjs
     ├── references/
     │   ├── report-method.md
     │   ├── report-package.md
     │   ├── stage-receipts.md
+    │   ├── source-preparation.md
     │   └── report-kit/
     │       ├── QUALITY.md
     │       ├── OUTPUT-CONTRACT.md

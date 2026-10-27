@@ -109,6 +109,20 @@ async function release(io, options) {
   }
   for (const name of ["stage-receipts.mjs", "report-stages.mjs"])
     need(manifest.files["scripts/" + name] === sha(await readFile(new URL(name, import.meta.url))), "Executing helper is not in approved release");
+  const freeze = await io.read("INPUT-FREEZE.json");
+  if (freeze.preparation || options.inputFreezeSha256) {
+    need(isHash(options.inputFreezeSha256) && await io.digest("INPUT-FREEZE.json") === options.inputFreezeSha256,
+      "Externally retained input freeze hash required");
+  }
+  if (freeze.preparation) {
+    need(freeze.preparation.tool === "prepare-source.py" && isHash(freeze.preparation.tool_sha256) &&
+      manifest.files["scripts/prepare-source.py"] === freeze.preparation.tool_sha256, "Unapproved source preparation helper");
+    const resources = freeze.preparation.resource_hashes;
+    need(entries(resources).length === 5, "Incomplete source preparation resources");
+    for (const name of ["contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md"])
+      need(isHash(resources[name]) && manifest.files["references/report-kit/" + name] === resources[name], "Unapproved reader instructions");
+    await checkHashes(io, freeze.packet_hashes, ["source.pdf", "source.txt", "SOURCE.json"]);
+  }
 }
 
 async function current(io, index, stage, seen = new Set()) {
@@ -211,7 +225,7 @@ export async function recordStage(options) {
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
     const { values, positionals } = parseArgs({ allowPositionals: true, options: Object.fromEntries(
-      ["packet", "stage", "actor", "release-sha256", "approval-sha256", "start-sha256", "end-sha256", "observation"].map(name => [name, { type: "string" }])) });
+      ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation"].map(name => [name, { type: "string" }])) });
     need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check --packet <directory> --stage <name> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));

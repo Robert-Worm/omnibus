@@ -34,5 +34,10 @@ jobs:
           package-manager-cache: false
       - name: Install the lockfile without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Bronvoorbereiding testen met fictieve PDFs
+        run: |
+          python3 -m venv "$RUNNER_TEMP/omnibus-pdf-tests"
+          "$RUNNER_TEMP/omnibus-pdf-tests/bin/python" -m pip install --only-binary=:all: --no-deps -r skills/omnibus-add-report/scripts/requirements-source.txt
+          "$RUNNER_TEMP/omnibus-pdf-tests/bin/python" -B content-tools/test_report_source_preparation.py
       - name: Alle tests (npm test)
         run: npm test

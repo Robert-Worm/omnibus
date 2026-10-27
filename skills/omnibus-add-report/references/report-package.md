@@ -25,8 +25,12 @@ Voor het vastleggen en controleren van fasebewijzen is een
 vastgelegde, onafhankelijk beoordeelde hulpmiddelenversie en echte uitvoering;
 het verleent geen goedkeuring.
 
-**Nog niet meegeleverd:** de uitvoerbare voorbereiding, bevriezing,
-reviewbasis en eindcontrole. De opdrachten met `tools/workflow.py` in het
+Ook [bronvoorbereiding en invoerbevriezing](source-preparation.md) zijn beschikbaar:
+de exacte PDF, volledige tekst en paginabeelden worden voor beide blinde lezingen
+klaargezet. Er worden geen leeslogs of eerste inzendingen aangemaakt.
+
+**Nog niet zelfstandig meegeleverd:** selectie/baseline/taxonomie, bevriezing van
+de eerste inzendingen, reviewbasis en eindcontrole. De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
 `HOLD`/`PENDING_REVIEW`. Maak geen vervangend ontvangstbewijs, leeslog, vrijgaveanker
