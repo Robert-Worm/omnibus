@@ -1,7 +1,7 @@
 // Reuse the CIO-shaped, multi-source viewer already used by Topical packages.
 // Copy authored data and exact spans; never flatten actor/condition relationships
 // or manufacture a missing control chain, legal status or review decision.
-import { digest } from "../local-data/repository.mjs";
+import { digest } from "./identity.mjs";
 import { lawReaderPassages } from "../lib/law-source-reader.mjs";
 import { validateFlatFoundationChain } from "../lib/admitted-foundation.mjs";
 

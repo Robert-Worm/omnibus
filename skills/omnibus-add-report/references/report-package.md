@@ -44,13 +44,15 @@ Dit bevestigt de bewijsketen, niet de inhoudelijke toelating.
 
 De ontvangende Omnibus-codecheckout herkent het nieuwe ontvangstformaat en voert
 de bestaande bron-, review- en methodecontroles uit. Zie [ontvangst controleren](final-receipt.md#ontvangst-in-omnibus).
-**Nog niet zelfstandig meegeleverd in de skillmap:** de inhoudelijke eindcontrole.
+Een voorbereide skillbundel kan deze controles ook [zelfstandig uitvoeren](end-check.md).
+Daarvoor moet de beheerder de bundel met de openbare installer voorbereiden;
+alleen de ruwe skillmap uit de codezip bevat de controlecode nog niet.
 De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
 `HOLD`/`PENDING_REVIEW`. Maak geen vervangend ontvangstbewijs, leeslog, vrijgaveanker
 of `APPROVE` om een controle te laten slagen. Deze bundel is nog geen zelfstandige
-vrijgavestraat.
+vrijgavestraat: werkelijk onafhankelijke uitvoering en inhoudelijke vrijgave blijven vereist.
 
 ## Invoer en uitvoer per rol
 

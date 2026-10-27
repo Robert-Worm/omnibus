@@ -54,7 +54,8 @@ verklaringen, fasebewijzen of verwijzingen blokkeren deze controle.
 
 `publishable`, `contentValidated` en `reviewValidated` blijven `false`.
 Het ontvangstformaat heet `standalone-stage-custody-v1`; dit is nog geen
-`PASS_FOR_PARENT_REVIEW`. De inhoudelijke controle loopt bij ontvangst in Omnibus.
+`PASS_FOR_PARENT_REVIEW`. Je kunt de [zelfstandige eindcontrole](end-check.md)
+uitvoeren; de ontvanger herhaalt de controle in Omnibus.
 Een groen ontvangstbewijs mag die controle niet vervangen. Houd het pakket privé.
 
 ## Ontvangst in Omnibus

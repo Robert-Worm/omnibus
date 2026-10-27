@@ -36,9 +36,9 @@ bestaande Omnibus-broncontrole.
 **Deze skill levert geen ingevulde releasegoedkeuring mee.** Het hulpmiddel maakt
 die ook niet zelf. Ontbreekt deze controle, dan stopt het. De [reviewbasis](review-basis.md)
 wordt na herstel en vóór de eindreviews vastgelegd. Na beide eindreviews kun je
-de [ontvangstketen afsluiten](final-receipt.md). De inhoudelijke
-eindcontrole is nog niet zelfstandig meegeleverd. Dit hulpmiddel vervangt die
-stappen niet en past geen historische pakketten aan.
+de [ontvangstketen afsluiten](final-receipt.md) en met een voorbereide bundel de
+[zelfstandige eindcontrole](end-check.md) uitvoeren. Een fasebewijs vervangt die
+controle niet en past geen historische pakketten aan.
 
 ## Per fase
 

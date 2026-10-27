@@ -9,7 +9,7 @@ import { standaloneReportMembers } from "../standalone-report-method.mjs";
 import { taxonomySnapshot } from "../../skills/omnibus-add-report/scripts/taxonomy-snapshot.mjs";
 
 const stamp = minute => new Date(Date.UTC(2026, 0, 1, 0, minute)).toISOString();
-export function sourceMethodFixture(kind, configure = () => {}, { standalone = false } = {}) {
+export function sourceMethodFixture(kind, configure = () => {}, { standalone = false, kitExtras = {} } = {}) {
   const f = kind === "report" ? reportViewerFixture() : sourceReviewFixture(kind);
   configure(f); // Fictitious test authoring BEFORE the simulated custody stages.
   const { set, read, paths } = f, hash = name => paths.get(name).sha256;
@@ -34,9 +34,9 @@ export function sourceMethodFixture(kind, configure = () => {}, { standalone = f
     }
   }
   if (kind === "report") {
-    const kit = standalone ? standaloneReportMembers : ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
-      "contracts/CONTRACT.md", "contracts/record_contract.py", "QUALITY.md", "WORKFLOW.md", "OUTPUT-CONTRACT.md", "REVIEW-CONTRACT.json"];
-    for (const name of kit) set("kit/" + name, standalone ? readFileSync(new URL("../../skills/omnibus-add-report/" + name, import.meta.url), "utf8")
+    const kit = [...(standalone ? standaloneReportMembers : ["tools/gate.py", "tools/workflow.py", "tools/stage_custody.py", "tools/measure_usage.py", "tools/snapshot-taxonomy.mjs",
+      "contracts/CONTRACT.md", "contracts/record_contract.py", "QUALITY.md", "WORKFLOW.md", "OUTPUT-CONTRACT.md", "REVIEW-CONTRACT.json"]), ...Object.keys(kitExtras)];
+    for (const name of kit) set("kit/" + name, Object.hasOwn(kitExtras, name) ? kitExtras[name] : standalone ? readFileSync(new URL("../../skills/omnibus-add-report/" + name, import.meta.url), "utf8")
       : name === "REVIEW-CONTRACT.json" ? { synthetic: true } : "Fictief hulpmiddel; nooit uitvoeren.");
     set("kit/RELEASE-MANIFEST.json", { author_agent: "synthetic-kit-author", files: Object.fromEntries(kit.map(name => [name, hash("kit/" + name)])) });
     set("kit/APPROVAL.json", { reviewer_agent: "synthetic-kit-reviewer", decision: "APPROVE", target_manifest_sha256: hash("kit/RELEASE-MANIFEST.json") });

@@ -36,6 +36,8 @@ De app moet alle nodige skillbestanden kunnen lezen en bestanden kunnen maken. C
 
 Deze download bevat de code en skills van de huidige `main`, geen database. De [downloaduitleg van GitHub](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-files-from-github) beschrijft dezelfde route.
 
+Voor de zelfstandige rapport-eindcontrole heb je een **voorbereide rapportskill** nodig. Vraag de beheerder om die bundel; die bevat ook `scripts/runtime/` en `scripts/runtime-members.mjs`. De ruwe skillmap uit de codezip bevat wel de instructies en fasehulpmiddelen, maar nog niet deze gekopieerde controlecode. De beheerder bereidt de bundel voor met de openbare installer; zie [zelfstandige eindcontrole](../../skills/omnibus-add-report/references/end-check.md). Daarna kun je de hele voorbereide map op dezelfde manier zippen en uploaden.
+
 **Gelukt als:** je in `skills/omnibus-add-report/` het bestand `SKILL.md` en de meegeleverde submappen ziet.
 
 ### 2. Maak een zip van de skillmap
@@ -47,7 +49,7 @@ Blijf in de uitgepakte map `skills`. Selecteer één hele skillmap, bijvoorbeeld
 
 Zie de uitleg voor [zippen in Windows](https://support.microsoft.com/nl-nl/windows/experience/storage-filemanagement/zip-and-unzip-files) of [zippen op de Mac](https://support.apple.com/nl-nl/guide/mac-help/mchlp2528/mac).
 
-Controleer de nieuwe `omnibus-add-report.zip`. Open hem in Verkenner, of pak een controlekopie uit in Finder. De zip bevat de skillmap zelf. Voor dit voorbeeld is de volledige inhoud:
+Controleer de nieuwe `omnibus-add-report.zip`. Open hem in Verkenner, of pak een controlekopie uit in Finder. De zip bevat de skillmap zelf. Dit is de indeling van een voorbereide rapportskill; laat ook alle bestanden binnen `runtime/` staan:
 
 ```text
 omnibus-add-report.zip
@@ -59,9 +61,12 @@ omnibus-add-report.zip
     │   └── openai.yaml
     ├── scripts/
     │   ├── baseline-registry-counts.mjs
+    │   ├── check-final.mjs
     │   ├── prepare-source.py
     │   ├── report-stages.mjs
     │   ├── requirements-source.txt
+    │   ├── runtime/
+    │   ├── runtime-members.mjs
     │   ├── stage-receipts.mjs
     │   └── taxonomy-snapshot.mjs
     ├── references/
@@ -73,6 +78,7 @@ omnibus-add-report.zip
     │   ├── first-submissions.md
     │   ├── review-basis.md
     │   ├── final-receipt.md
+    │   ├── end-check.md
     │   └── report-kit/
     │       ├── QUALITY.md
     │       ├── OUTPUT-CONTRACT.md

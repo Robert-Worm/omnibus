@@ -3,6 +3,7 @@ import { constants } from "node:fs";
 import { homedir } from "node:os";
 import { resolve, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { reportSkillRuntimeFiles } from "./report-skill-runtime.mjs";
 
 export const skillNames = ["omnibus-add-report", "omnibus-add-framework", "omnibus-add-model", "omnibus-build-questions", "omnibus-review-questions", "omnibus-curate-themes", "omnibus-review-audit-quality", "omnibus-build-local-database"];
 const sourceRoot = fileURLToPath(new URL("../skills/", import.meta.url));
@@ -39,8 +40,15 @@ export async function installContentSkills(target, { checkOnly = true, names = s
   for (const name of names) {
     const source = join(sourceRoot, name),
       output = join(destination, name);
-    const files = await filesUnder(source),
-      existing = await exists(output);
+    const members = new Map((await filesUnder(source)).map(file => [file, join(source, file)]));
+    if (name === "omnibus-add-report") members.set(join("scripts", "runtime-members.mjs"), fileURLToPath(new URL("./report-skill-runtime.mjs", import.meta.url)));
+    if (name === "omnibus-add-report") for (const file of reportSkillRuntimeFiles) {
+      const path = fileURLToPath(new URL("../" + file, import.meta.url));
+      const stat = await lstat(path);
+      if (!stat.isFile() || stat.isSymbolicLink()) throw Error("Unsupported report checker member: " + file);
+      members.set(join("scripts", "runtime", file), path);
+    }
+    const files = [...members.keys()].sort((left, right) => left.localeCompare(right)), existing = await exists(output);
     if (existing) {
       if (!existing.isDirectory() || existing.isSymbolicLink())
         throw new Error(`Unsafe skill destination: ${output}`);
@@ -48,10 +56,10 @@ export async function installContentSkills(target, { checkOnly = true, names = s
       if (JSON.stringify(files) !== JSON.stringify(current))
         throw new Error(`Existing skill differs; not overwritten: ${output}`);
       for (const file of files)
-        if (!(await readFile(join(source, file))).equals(await readFile(join(output, file))))
+        if (!(await readFile(members.get(file))).equals(await readFile(join(output, file))))
           throw new Error(`Existing skill differs; not overwritten: ${join(output, file)}`);
     }
-    plan.push({ name, source, output, files, action: existing ? "unchanged" : "install" });
+    plan.push({ name, source, output, files, members, action: existing ? "unchanged" : "install" });
   }
   if (!checkOnly) {
     await mkdir(destination, { recursive: true });
@@ -61,7 +69,7 @@ export async function installContentSkills(target, { checkOnly = true, names = s
       for (const file of entry.files) {
         const output = join(entry.output, file);
         await mkdir(resolve(output, ".."), { recursive: true });
-        await copyFile(join(entry.source, file), output, constants.COPYFILE_EXCL);
+        await copyFile(entry.members.get(file), output, constants.COPYFILE_EXCL);
       }
     }
   }

@@ -56,5 +56,5 @@ gedeeltelijke administratieve bestanden beschikbaar voor onderzoek.
 Deze stap bevestigt bestandsintegriteit en samenhang, geen bronlezing of kwaliteit.
 `publishable`, `contentValidated` en `reviewValidated` blijven `false`.
 Na beide eindreviews kun je [de ontvangstketen afsluiten](final-receipt.md).
-De zelfstandige inhoudelijke eindcontrole volgt nog; de bestaande bron-, review-
-en toelatingscontroles blijven verplicht. Bewaar het pakket privé.
+Een voorbereide bundel bevat de [zelfstandige eindcontrole](end-check.md).
+De bron-, review- en toelatingscontroles blijven verplicht. Bewaar het pakket privé.

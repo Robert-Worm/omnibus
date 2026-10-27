@@ -210,7 +210,7 @@ export async function readVerifiedFile(path, maximum, { collect = false } = {}) 
  * @param {string} manifestPath
  * @param {{expectedSha256?: string, historicalReport?: boolean}} options
  */
-export async function checkIntake(manifestPath, { expectedSha256, historicalReport = false } = {}) {
+async function inspectIntake(manifestPath, { expectedSha256, historicalReport = false } = {}, collect = false) {
   requireValue(typeof historicalReport === "boolean", "Invalid historical report option");
   requireValue(!historicalReport || expectedSha256 !== undefined,
     "Historical report intake requires an independently retained manifest SHA256");
@@ -227,13 +227,15 @@ export async function checkIntake(manifestPath, { expectedSha256, historicalRepo
   // Only the validated envelope crosses the unknown-data boundary.
   const manifest = /** @type {IntakeManifest} */ (input);
   const canonicalManifest = await realpath(absolute);
+  const files = new Map();
   for (const [index, file] of manifest.files.entries()) {
     const path = await containedFile(root, file, index);
     requireValue(path !== canonicalManifest, "Manifest cannot reference itself");
-    const actual = await readVerifiedFile(path, file.bytes);
+    const actual = await readVerifiedFile(path, file.bytes, { collect });
     requireValue(actual.bytes === file.bytes && actual.sha256 === file.sha256, `File checksum/size mismatch: ${file.path}`);
+    if (collect) files.set(file.id, actual.data);
   }
-  return {
+  const check = {
     status: "FILES_VERIFIED_REVIEW_REQUIRED",
     package: manifest.package,
     contract: manifest.contract,
@@ -245,6 +247,20 @@ export async function checkIntake(manifestPath, { expectedSha256, historicalRepo
     reviewValidated: false,
     publishable: false,
   };
+  return { check, manifest, files };
+}
+
+/** @param {string} manifestPath @param {{expectedSha256?: string, historicalReport?: boolean}} options */
+export async function checkIntake(manifestPath, options = {}) {
+  return (await inspectIntake(manifestPath, options)).check;
+}
+
+// Same bounded, link-free read as transport verification, retaining those exact
+// bytes for substantive checks rather than reopening supplied package paths.
+/** @param {string} manifestPath @param {{expectedSha256: string}} options */
+export async function readIntakeSnapshot(manifestPath, options) {
+  requireValue(typeof options?.expectedSha256 === "string" && shaPattern.test(options.expectedSha256), "Independent intake SHA256 required");
+  return inspectIntake(manifestPath, options, true);
 }
 
 /**
