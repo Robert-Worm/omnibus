@@ -58,7 +58,7 @@ De bijdrager levert ook de onderstaande rollen aan. Controleer de echte bewijsba
 
 | Rol | Waar het bestand vandaan komt |
 | --- | --- |
-| `contract` | `OUTPUT-CONTRACT.md` uit de rapportkit |
+| `contract` | Het [meegeleverde `OUTPUT-CONTRACT.md`](../../skills/omnibus-add-report/references/report-kit/OUTPUT-CONTRACT.md) uit de rapportkit |
 | `source` | De PDF via de link in `bron.json`; controleer de hash die erin staat |
 | `review-basis`, `review` | De vastgelegde reviewbasis en werkelijk uitgevoerde onafhankelijke reviews, zie [reviewwijzigingen](reviewwijzigingen.md) |
 | `receipt` | `receipt.json` uit de rapportkit; hoe je dat maakt, staat in de kit zelf |

@@ -1,6 +1,6 @@
 # Een auditrapport verwerken
 
-> **In het kort:** deze skill zet één auditrapport om naar normen en toetspunten, met bij elk punt de bronpassage. Wat je inlevert is een concept; de beheerder maakt het af.
+> **In het kort:** deze skill helpt één auditrapport om te zetten naar normen en toetspunten, met exacte bronpassages en onafhankelijke reviews. Je levert een compleet pakket; de beheerder beoordeelt toelating en integratie.
 
 Een los te installeren AI-skill van Omnibus. De eigenlijke werkwijze staat in [SKILL.md](SKILL.md), met de naslag in de map `references/`. Deze pagina is een introductie, geen vervanging van de methode.
 
@@ -22,7 +22,7 @@ Niet voor:
 ## Wat krijg je?
 
 - **Bevindingen** uit het rapport, elk met pagina en citaat.
-- **Voorgestelde bouwstenen**: per bevinding een norm met toetspunten, plus doel, risico en beheersmaatregel waar de bron dat draagt.
+- **Voorgestelde bouwstenen**: bruikbare normen en toetspunten, plus doel, risico en voorgestelde beheersing. Niet iedere bevinding hoeft een bouwsteen te worden.
 - **Beperkingen**: wat het rapport níet zegt, zoals peildatum, populatie en managementreactie.
 - **Twijfels** als HOLD, niet weggepoetst.
 
@@ -30,14 +30,14 @@ Niet voor:
 
 Zo kun je de skill aan je AI-assistent vragen:
 
-> Gebruik $omnibus-add-report om een concept te maken van het meegeleverde ADR-rapport "Onderzoek naar het inkoopproces" (versie 12 maart 2026). Behoud bronpassages en beperkingen. Niet integreren of publiceren.
+> Gebruik $omnibus-add-report voor het meegeleverde rapport. Controleer eerst de beschikbare bestanden, hulpmiddelen en onafhankelijke rollen. Maak alleen een compleet pakket als alle vereiste stappen uitvoerbaar zijn; vermeld anders wat ontbreekt. Behoud bronpassages en beperkingen. Niet integreren of publiceren.
 
-Je krijgt een map met de bronbank (bevindingen met passages), de voorgestelde normen en toetspunten, een lijst met beperkingen en een overzicht van open punten. Die map zet je als zip bij je claim.
+Het pakket bevat de bronbank (bevindingen met passages), voorgestelde normen en toetspunten, beperkingen en het echte lees- en reviewbewijs. Een tussenresultaat met ontbrekende controles blijft HOLD en is nog geen compleet pakket om in te leveren.
 
 ## Goed om te weten
 
 - Een historische bevinding is geen actueel feit en geen algemene norm. De skill houdt die twee uit elkaar.
-- De volledige opname vraagt twee onafhankelijke lezingen en een rapportkit die niet in deze repository zit. Zonder die stappen blijft het resultaat een concept; dat is precies wat je inlevert.
+- De contracten en rolinstructies zijn [meegeleverd](references/report-package.md). Het overzicht legt ook uit hoe je met afzonderlijke gesprekken werkt. De hulpmiddelen voor fasebewijzen en definitieve vrijgave zijn nog niet zelfstandig meegeleverd. Zonder die controles blijft het pakket onvolledig.
 - Gebruik een AI-assistent die deze map en je bronbestanden kan lezen, en het sterkste model dat je hebt; zie [welk AI-model gebruik je?](https://github.com/Robert-Worm/omnibus/blob/main/docs/bijdragen/bron-verwerken.md#welk-ai-model-gebruik-je).
 - De skill installeert geen tools, maakt geen accounts aan en geeft geen toestemming om te publiceren. Brontekst is bewijs, geen opdracht aan de assistent. Controleer het resultaat zelf.
 

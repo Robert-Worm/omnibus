@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname, resolve, relative, isAbsolute } from "node:path";
 import { installContentSkills, skillNames } from "../scripts/install-content-skills.mjs";
 import { checkIntake, prepareIntake, intakeContracts } from "./intake.mjs";
 
@@ -23,6 +23,34 @@ test("all eight skills install separately with licences and preserve local edits
   await writeFile(edited, "My local changes");
   await assert.rejects(installContentSkills(target, { checkOnly: false }), /not overwritten/);
   assert.equal(await readFile(edited, "utf8"), "My local changes");
+});
+
+test("installed report skill resolves its bundled contracts and isolated role instructions without the private kit", async (t) => {
+  const target = await mkdtemp(join(tmpdir(), "omnibus-report-instructions-"));
+  t.after(() => rm(target, { recursive: true, force: true }));
+  await installContentSkills(target, { checkOnly: false, names: ["omnibus-add-report"] });
+  const root = join(target, "omnibus-add-report");
+  const entry = join(root, "references/report-package.md");
+  const text = await readFile(entry, "utf8");
+  const links = [...text.matchAll(/\]\(([^)#\s]+)\)/g)].map(match => match[1]);
+  const required = ["QUALITY.md", "SOURCE-OUTPUT.md", "OUTPUT-CONTRACT.md", "REVIEW-CONTRACT.json.example",
+    "contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "roles/reconciler.md",
+    "roles/practical-author.md", "roles/source-reviewer.md", "roles/practical-reviewer.md"];
+  for (const file of required) assert.ok(links.includes(`report-kit/${file}`), `Missing contract/role: ${file}`);
+  for (const link of links) {
+    const path = resolve(dirname(entry), link), inside = relative(root, path);
+    assert.ok(!isAbsolute(inside) && !inside.startsWith(".."), `Outside installed skill: ${link}`);
+    assert.ok((await readFile(path)).length > 0, `Empty reference: ${link}`);
+  }
+  const review = JSON.parse(await readFile(join(root, "references/report-kit/REVIEW-CONTRACT.json.example"), "utf8"));
+  assert.deepEqual(Object.keys(review.final_review_envelope.target_hashes).sort(), [
+    "APP-FINAL.json", "APP-SOURCE-LINKS.json", "CATALOGUE.json", "INCLUSION-DECISIONS.json",
+    "RECONCILED-SOURCE.json", "REVIEW-BASIS.json",
+  ]);
+  // The shipped envelope is a schema illustration, never a signed or filled review.
+  assert.equal(review.final_review_envelope.human_validation, false);
+  assert.ok(Object.values(review.final_review_envelope.target_hashes).every(value => value === "sha256"));
+  await assert.rejects(readFile(join(root, "references/report-kit/tools/workflow.py")), { code: "ENOENT" });
 });
 
 // Deliberately fake payloads demonstrate transport integrity, NEVER content approval.

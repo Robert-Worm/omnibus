@@ -1,0 +1,55 @@
+{
+  "purpose": "Reusable single-report original-method workflow; all substantive review requirements retained. Schema is evidence of review, not approval by itself.",
+  "final_review_envelope": {
+    "review_kind": "SOURCE or PRACTICAL",
+    "reviewer_agent": "actual isolated agent identity",
+    "decision": "APPROVE or REVISE",
+    "human_validation": false,
+    "target_hashes": {
+      "APP-FINAL.json": "sha256",
+      "CATALOGUE.json": "sha256",
+      "RECONCILED-SOURCE.json": "sha256",
+      "INCLUSION-DECISIONS.json": "sha256",
+      "APP-SOURCE-LINKS.json": "sha256",
+      "REVIEW-BASIS.json": "sha256"
+    },
+    "taxonomy_approved": true,
+    "taxonomy_assessment": "Substantive assessment of meaningful theme and justified existing process mappings",
+    "item_reviews": [
+      {
+        "id": "REPORT-K01",
+        "decision": "APPROVE or REVISE",
+        "assessment": "Concrete source or practical content assessment",
+        "field_assessments": "PRACTICAL: separate objective/risk/control/criterion/auditQuestion/procedure/finding/owner assessments. SOURCE: separate literal_fidelity/attribution_and_scope/counterevidence/link_support assessments."
+      }
+    ],
+    "source_assessments": "SOURCE reviewer: explicit completeness/reconciliation/omissions/supplements/limitations/management_response assessments",
+    "process_mapping_reviews": [
+      {
+        "process_id": "PR08",
+        "decision": "APPROVE or REVISE",
+        "assessment": "Reasoned line-scope mapping review against frozen authoritative definition"
+      }
+    ],
+    "accepted_issue_ids": "All ISSUES.json issue IDs, in recorded order, independently accepted after review of their resolutions/limits",
+    "unresolved_issues": [],
+    "scope_and_limitations": "Actual reading performed, limits and no human validation",
+    "reading_log": "SOURCE: author_agent, text_pages_read, visual_pages_read, source_text_sha256, source_pdf_sha256, actual reading method and uncertainties. Full text and visuals required."
+  },
+  "reconciled_source_required": {
+    "records": "Unchanged v4.22 records; preserve source text, no invented OCR offsets",
+    "supplementary_sources": "Literal named context, recommendations, criteria and limitations",
+    "coverage": "Every actual source page, without a fixed page count, with substantive accounting",
+    "first_submission_mapping": [
+      {
+        "role": "extractor or inventory",
+        "first_record_id": "Every A and B first record",
+        "final_record_ids": [],
+        "disposition": "RETAIN/MERGE/REPAIR/EXCLUDE/CONTEXT/UNRESOLVED_WITH_LIMIT",
+        "reason": "Independent substantive decision"
+      }
+    ],
+    "limitations": "Source conflicts, OCR discrepancies, attribution, management counterevidence, dates/populations",
+    "author_agent": "actual reconciler; distinct from both source readers"
+  }
+}

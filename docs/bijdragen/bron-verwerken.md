@@ -45,7 +45,7 @@ Volg [skills gebruiken met je AI-assistent](skills-gebruiken.md). Voor de Claude
 
 Dezelfde handleiding bevat aparte routes voor Codex en Claude Code. Controleer bij elke route of je assistent alle nodige bestanden kan lezen.
 
-De zelfstandige rapportroute zonder private rapportkit is nog in ontwikkeling in [#225](https://github.com/Robert-Worm/omnibus/issues/225). Ontbreekt een verplicht contract, hulpmiddel of onafhankelijke rol, bewaar dan een tussenresultaat met `HOLD`. De stappen hieronder maken dat ontbrekende onderdeel niet beschikbaar.
+De rapportskill bevat de [contracten en rolinstructies](../../skills/omnibus-add-report/references/report-package.md). Hulpmiddelen voor fasebewijzen en definitieve vrijgave volgen nog in [#225](https://github.com/Robert-Worm/omnibus/issues/225). Ontbreekt een verplicht hulpmiddel of onafhankelijke rol, bewaar dan een tussenresultaat met `HOLD`. De stappen hieronder maken dat ontbrekende onderdeel niet beschikbaar.
 
 **Gelukt als:** je assistent de skillbestanden heeft gelezen en ontbrekende hulpmiddelen of reviews noemt.
 

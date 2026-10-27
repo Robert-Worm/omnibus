@@ -15,7 +15,7 @@
 
 Je levert een **compleet pakket** aan, inclusief de vereiste onafhankelijke lezingen en reviews. De beheerder controleert de toelating en integreert het pakket. Ontbrekende onderdelen blijven `HOLD` of `PENDING_REVIEW`; een geïnstalleerde skill bewijst niet dat die stappen zijn uitgevoerd. Gebruik het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
 
-**Nog in ontwikkeling:** de openbare rapportskill verwijst nog naar onderdelen van de private rapportkit. De zelfstandige route zonder die kit is nog niet volledig beschikbaar; dat wordt opgelost in [#225](https://github.com/Robert-Worm/omnibus/issues/225). Doe eerst de leesproef. Laat een ontbrekend contract of hulpmiddel niet door de AI verzinnen.
+**Nog in ontwikkeling:** de rapportskill bevat nu de [contracten en rolinstructies](../../skills/omnibus-add-report/references/report-package.md). De hulpmiddelen voor fasebewijzen en definitieve vrijgave ontbreken nog in de zelfstandige route; zie [#225](https://github.com/Robert-Worm/omnibus/issues/225). Doe eerst de leesproef. Laat een ontbrekend hulpmiddel of bewijs niet door de AI verzinnen.
 
 Alle voorbeelden gebruiken `omnibus-add-report`. Voor een wet of kader gebruik je `omnibus-add-framework`, voor een onderzoeksmodel `omnibus-add-model`.
 
@@ -58,7 +58,22 @@ omnibus-add-report.zip
     ├── agents/
     │   └── openai.yaml
     ├── references/
-    │   └── report-method.md
+    │   ├── report-method.md
+    │   ├── report-package.md
+    │   └── report-kit/
+    │       ├── QUALITY.md
+    │       ├── OUTPUT-CONTRACT.md
+    │       ├── SOURCE-OUTPUT.md
+    │       ├── REVIEW-CONTRACT.json.example
+    │       ├── contracts/
+    │       │   ├── CONTRACT.md
+    │       │   └── record_contract.py
+    │       └── roles/
+    │           ├── source-reader.md
+    │           ├── reconciler.md
+    │           ├── practical-author.md
+    │           ├── source-reviewer.md
+    │           └── practical-reviewer.md
     └── assets/
         └── intake-plan.json.example
 ```
@@ -87,7 +102,7 @@ OpenAI maakt onderscheid tussen lokale skills in de desktopapp en skills via plu
 
 Vraag je assistent:
 
-> Lees SKILL.md en de meegeleverde naslag. Noem per bestand het oorspronkelijke pad en één concrete vereiste die erin staat. Noem verwijzingen die je niet kunt openen. Voor omnibus-add-report: lees ook assets/intake-plan.json.example en noem de verplichte bestandsrollen. Maak nog geen extractie of reviewbewijs. Geef aan welke hulpmiddelen en afzonderlijke lezingen of reviews nog nodig zijn.
+> Lees SKILL.md en de meegeleverde naslag. Noem per bestand het oorspronkelijke pad en één concrete vereiste die erin staat. Noem verwijzingen die je niet kunt openen. Voor omnibus-add-report: lees references/report-package.md en assets/intake-plan.json.example. Noem de verplichte bestandsrollen en de nog ontbrekende uitvoerhulpmiddelen. Maak nog geen extractie of reviewbewijs. Geef aan welke afzonderlijke lezingen of reviews nog nodig zijn.
 
 **Gelukt als:** de assistent de bestanden kan lezen en ontbrekende onderdelen concreet noemt. Alleen zeggen dat de skill geladen is, bewijst dit niet.
 

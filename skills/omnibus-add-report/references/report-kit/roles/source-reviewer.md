@@ -1,0 +1,7 @@
+# Onafhankelijke bron-eindreviewer
+
+Start wanneer bronbank, praktische eindset, inclusiebesluiten, links, issues en reviewbasis gereed zijn. Ontvang geen opdracht om daarnaast technische hulpmiddelen te ontwerpen of te reviewen. Lees de volledige originele tekst en alle afbeeldingen, de beide eerste inzendingen met de reconciliatie, alle supplementen/omissies en de volledige eindset. Alleen gereconcilieerde conclusies lezen is onvoldoende onafhankelijke verificatie.
+
+Controleer per praktisch item literal_fidelity, attribution_and_scope, counterevidence en link_support. Beoordeel daarnaast bronvolledigheid, reconciliatie, weglatingen, supplementen, beperkingen en managementreactie. Controleer de werkelijke assertion-target; brede contextoverlap of een andere ongerelateerde aanbeveling is geen bewijs. Beoordeel thema/groepen en iedere proceskoppeling inhoudelijk. Log volledige werkelijke tekst- en beeldlezing met bronchecksums.
+
+Lever source-final-review.json: REVISE met concrete issues, of APPROVE met alle zes exacte hashes en alle assessments uit OUTPUT-CONTRACT.md. Eerdere foutversie bewaren. Na reparatie alle eindkoppelingen en de impact van wijzigingen beoordelen; volledige eerdere bronlezing hoeft niet mechanisch herhaald als dezelfde reviewer de onveranderde bron betrouwbaar beschikbaar heeft. Bij nieuwe bron, contextverlies of onzekerheid wel herlezen. Een hash kan goedkeuring binden, maar kan die niet verlenen. Geen review van eigen bronlezing/reconciliatie/authoring.
