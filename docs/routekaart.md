@@ -33,7 +33,7 @@ flowchart TD
 
 - Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md), of probeer de [proefversie online](https://omnibus.sliplane.app).
 - Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met <!--n:rapporten-->27<!--/n--> rapporten, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen.
-- Zes [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren.
+- Acht [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren, en om een eigen database te bouwen.
 
 ## Pad A · Online versie
 
@@ -47,8 +47,11 @@ flowchart TD
 | Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
 | Snelheid online aantoonbaar · [#84](https://github.com/Robert-Worm/omnibus/issues/84) | 🔄 Bezig |
 | [Logboek van de online versie bekijken](beheer/storingen-en-herstel.md#het-logboek-van-de-online-versie) · [#141](https://github.com/Robert-Worm/omnibus/issues/141) | ✅ Klaar |
-| [Online terug naar de vorige werkende versie](beheer/storingen-en-herstel.md#online-terug-naar-de-vorige-werkende-versie): beschreven, nog niet echt geoefend · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | 🔄 Bezig |
-| AI-review van beveiliging en overdracht · [#143](https://github.com/Robert-Worm/omnibus/issues/143) | ⬜ Gepland |
+| [Online terug naar de vorige werkende versie](beheer/storingen-en-herstel.md#online-terug-naar-de-vorige-werkende-versie), geoefend door opnieuw te bouwen · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | ✅ Klaar |
+| AI-review van beveiliging en overdracht; geen onafhankelijke audit · [#143](https://github.com/Robert-Worm/omnibus/issues/143) | ✅ Klaar |
+| Bewaarde projecten blijven openen na een nieuwe projectversie · [#218](https://github.com/Robert-Worm/omnibus/issues/218) | ✅ Klaar |
+| Terugzetten zonder bewaarde image: opnieuw bouwen is voorlopig genoeg ([B-024](beheer/besluiten.md#b-024)) · [#215](https://github.com/Robert-Worm/omnibus/issues/215) | ✅ Klaar |
+| Eén bezoeker kan de limiet niet meer voor iedereen opmaken; de proxygrens van Sliplane nog meten · [#213](https://github.com/Robert-Worm/omnibus/issues/213) | 🔄 Bezig |
 
 ## Pad B · AI rechtstreeks aan de database
 
