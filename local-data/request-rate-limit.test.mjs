@@ -27,9 +27,10 @@ test('an unusable header from the gateway falls back to the shared gateway budge
     assert.equal(address(proxyRequest('10.1.0.2', value)), '10.1.0.2');
   assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', [])), '10.1.0.2');
   assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', ['X-Forwarded-For','192.0.2.1','x-forwarded-for','192.0.2.1'])), '10.1.0.2');
-  assert.deepEqual(shapes, ['absent', 'empty', 'list', 'repeated', 'not-an-ip', 'ipv4-with-port', 'bracketed-ipv6', 'ipv6-zone', 'whitespace', 'too-long', 'absent', 'repeated']);
+  assert.deepEqual(shapes, ['absent', 'empty', 'list:public-ipv4+public-ipv4', 'repeated', 'not-an-ip', 'ipv4-with-port', 'bracketed-ipv6', 'ipv6-zone', 'whitespace', 'too-long', 'absent', 'repeated']);
   // The shape never contains the address itself.
-  assert.ok(shapes.every((s) => !/\d+\.\d+|:/.test(s)));
+  assert.ok(shapes.every((s) => !/\d+\.\d+/.test(s)));
+  assert.equal(forwardedShape(1, '203.0.113.9, 10.1.0.4, x'), 'list:public-ipv4+internal-ipv4+other');
   // A failing log callback cannot block the request.
   const loud = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24', onFallback: () => { throw Error('x'); } });
   assert.equal(loud(proxyRequest('10.1.0.2', 'unknown')), '10.1.0.2');

@@ -5,6 +5,18 @@ import { BlockList, isIP } from 'node:net';
 const sliplaneGateways = new Set(['10.1.0.0/24', '10.4.0.0/24', '10.6.0.0/24',
   '10.7.0.0/24', '10.8.0.0/24', '10.10.0.0/24']);
 
+// Only the kind of an address, never the address: public or internal, IPv4 or IPv6.
+const internal = new BlockList();
+for (const [net, bits] of [['10.0.0.0', 8], ['172.16.0.0', 12], ['192.168.0.0', 16], ['100.64.0.0', 10], ['127.0.0.0', 8], ['169.254.0.0', 16]])
+  internal.addSubnet(net, bits, 'ipv4');
+for (const [net, bits] of [['fc00::', 7], ['fe80::', 10], ['::1', 128]]) internal.addSubnet(net, bits, 'ipv6');
+export function addressKind(value) {
+  const family = isIP(value);
+  if (!family) return 'other';
+  const type = family === 4 ? 'ipv4' : 'ipv6';
+  return `${internal.check(value, type) ? 'internal' : 'public'}-${type}`;
+}
+
 /**
  * The shape of an unusable X-Forwarded-For value, without the value itself, so a
  * log can explain a fallback without storing any address.
@@ -14,7 +26,7 @@ export function forwardedShape(count, address) {
   if (count > 1 || Array.isArray(address)) return 'repeated';
   if (typeof address !== 'string' || !address.trim()) return 'empty';
   if (address.length > 64) return 'too-long';
-  if (address.includes(',')) return 'list';
+  if (address.includes(',')) return `list:${address.split(',').slice(0, 8).map((p) => addressKind(p.trim())).join('+')}`;
   if (/^\[.*\](:\d+)?$/.test(address)) return 'bracketed-ipv6';
   if (/^\d{1,3}(\.\d{1,3}){3}:\d+$/.test(address)) return 'ipv4-with-port';
   if (address.includes('%')) return 'ipv6-zone';
