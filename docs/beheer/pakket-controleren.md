@@ -54,13 +54,13 @@ Vul de echte pakketgegevens in, en geef elk bestand de rol die het werkelijk ver
 | `beperkingen.md` | `limitations` |
 | `LEESMIJ.md`, `bron.json`, `source.txt`, `INCLUSION-DECISIONS.json`, `controle.md`, `CHECKSUMS.sha256` | `supporting` |
 
-Een concept van een bijdrager is niet compleet voor deze controle. Deze rollen voeg je zelf toe. Daarvoor heb je de [rapportkit](../begrippen.md#rapportkit) nodig, in je [verwerkingsomgeving](../begrippen.md#verwerkingsomgeving).
+De bijdrager levert ook de onderstaande rollen aan. Controleer de echte bewijsbasis; ontbrekende bestanden zijn geen uitnodiging om goedkeuringen zelf in te vullen. Bij oudere, onvolledige concepten moet het ontbrekende werk nog worden uitgevoerd. De zelfstandige aanleverroute zonder private [rapportkit](../begrippen.md#rapportkit) wordt uitgewerkt in [#225](https://github.com/Robert-Worm/omnibus/issues/225).
 
 | Rol | Waar het bestand vandaan komt |
 | --- | --- |
 | `contract` | `OUTPUT-CONTRACT.md` uit de rapportkit |
 | `source` | De PDF via de link in `bron.json`; controleer de hash die erin staat |
-| `review-basis`, `review` | Je eigen inhoudelijke review, zie [reviewwijzigingen](reviewwijzigingen.md) |
+| `review-basis`, `review` | De vastgelegde reviewbasis en werkelijk uitgevoerde onafhankelijke reviews, zie [reviewwijzigingen](reviewwijzigingen.md) |
 | `receipt` | `receipt.json` uit de rapportkit; hoe je dat maakt, staat in de kit zelf |
 
 Ontbreekt een verplichte rol, dan weigert `content:prepare` het plan met `Missing file roles`. Voor een kader of model staan de verplichte rollen [hieronder](#welke-rollen-zijn-verplicht).

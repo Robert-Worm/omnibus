@@ -13,7 +13,9 @@
 | De skillbestanden gebruiken in ChatGPT | [ChatGPT](#chatgpt) |
 | Werken met Codex of Claude Code | [Ontwikkelaarsroutes](#technische-details) |
 
-Voor bijdragers is een **concept** genoeg: de beheerder doet de laatste controles. Ontbrekende bronlezingen, onafhankelijke reviews of hulpmiddelen blijven zichtbaar als beperking. Een geïnstalleerde skill bewijst niet dat die stappen zijn uitgevoerd. Gebruik het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
+Je levert een **compleet pakket** aan, inclusief de vereiste onafhankelijke lezingen en reviews. De beheerder controleert de toelating en integreert het pakket. Ontbrekende onderdelen blijven `HOLD` of `PENDING_REVIEW`; een geïnstalleerde skill bewijst niet dat die stappen zijn uitgevoerd. Gebruik het sterkste model dat je hebt; zie [welk AI-model gebruik je?](bron-verwerken.md#welk-ai-model-gebruik-je).
+
+**Nog in ontwikkeling:** de openbare rapportskill verwijst nog naar onderdelen van de private rapportkit. De zelfstandige route zonder die kit is nog niet volledig beschikbaar; dat wordt opgelost in [#225](https://github.com/Robert-Worm/omnibus/issues/225). Doe eerst de leesproef. Laat een ontbrekend contract of hulpmiddel niet door de AI verzinnen.
 
 Alle voorbeelden gebruiken `omnibus-add-report`. Voor een wet of kader gebruik je `omnibus-add-framework`, voor een onderzoeksmodel `omnibus-add-model`.
 
@@ -85,7 +87,7 @@ OpenAI maakt onderscheid tussen lokale skills in de desktopapp en skills via plu
 
 Vraag je assistent:
 
-> Lees SKILL.md en de meegeleverde naslag. Noem welke bestanden je hebt gelezen en welke verwijzingen je niet kunt openen. Voor omnibus-add-report: lees ook assets/intake-plan.json.example. Maak nog geen extractie. Geef aan welke hulpmiddelen en onafhankelijke reviews ontbreken voor deze werkwijze.
+> Lees SKILL.md en de meegeleverde naslag. Noem per bestand het oorspronkelijke pad en één concrete vereiste die erin staat. Noem verwijzingen die je niet kunt openen. Voor omnibus-add-report: lees ook assets/intake-plan.json.example en noem de verplichte bestandsrollen. Maak nog geen extractie of reviewbewijs. Geef aan welke hulpmiddelen en afzonderlijke lezingen of reviews nog nodig zijn.
 
 **Gelukt als:** de assistent de bestanden kan lezen en ontbrekende onderdelen concreet noemt. Alleen zeggen dat de skill geladen is, bewijst dit niet.
 
@@ -93,15 +95,15 @@ Vraag je assistent:
 
 | Jij | De beheerder |
 | --- | --- |
-| De skill laten werken en een concept maken | De technische controles en de formele toelating |
-| Zelf de bronpassages nalopen | Een tweede, onafhankelijke lezing |
-| Twijfels laten staan als HOLD | Beslissen over elk HOLD-punt |
+| De skill uitvoeren en het volledige pakket samenstellen | Bestanden, bronbinding en reviewbewijs controleren |
+| De vereiste onafhankelijke lezingen en reviews laten uitvoeren | Formele toelating en integratie beoordelen |
+| Bronpassages nalopen en twijfels als HOLD vastleggen | Onopgeloste punten teruggeven voor herstel |
 
-Mist je assistent iets voor een volledige review? Dan schrijft hij dat op als `HOLD` of `PENDING_REVIEW`. Dat is goed; zo ziet de beheerder wat nog moet.
+Mist je assistent iets voor een volledige review? Dan schrijft hij dat op als `HOLD` of `PENDING_REVIEW`. Bewaar het als tussenresultaat; lever het nog niet als compleet pakket in. Heeft je app geen deelagenten, gebruik dan een nieuwe chat per onafhankelijke rol. Geef een blinde lezer alleen de bron en de eigen rolinstructie, nooit de bevindingen van de andere lezer. Ontbreekt die rolinstructie, stop dan bij dat ontbrekende onderdeel.
 
 ## Goed om te weten
 
-- **De skill noemt soms opdrachten** zoals `npm run content:intake`. Die zijn voor de beheerder. Laat ze open; maak zelf geen goedkeuring.
+- **De skill noemt soms opdrachten** zoals `npm run content:intake`. Kun je die niet uitvoeren, vermeld dat dan. Laat de ontvangende omgeving de echte controle uitvoeren; maak zelf geen geslaagd resultaat of goedkeuring.
 - **Lange rapporten** passen niet altijd in één gesprek. Werk dan per hoofdstuk, en noteer welke pagina's gelezen zijn. Wat niet gelezen is, blijft `HOLD`.
 - **Deel alleen wat je mag delen.** Controleer of je de bron met jouw AI-dienst mag delen, ook bij een openbaar rapport. Vertrouwelijke stukken vereisen toestemming.
 - **Controleer altijd zelf** of de bronpassages kloppen, zoals beschreven in [een bron verwerken](bron-verwerken.md#4-controleer-het-resultaat).
@@ -131,7 +133,7 @@ Zie ook de [uitleg voor Claude Code](https://code.claude.com/docs/en/skills).
 
 ## Samengevat
 
-Download de codezip via GitHub, pak hem uit en zip één hele skillmap met Verkenner of Finder. Volg daarna de route voor jouw app en controleer of alle nodige bestanden leesbaar zijn. Lever een concept met de werkelijke lees- en reviewstatus.
+Download de codezip via GitHub, pak hem uit en zip één hele skillmap met Verkenner of Finder. Volg daarna de route voor jouw app en controleer of alle nodige bestanden leesbaar zijn. Lever pas een compleet pakket in als de vereiste lezingen, reviews en bestanden aanwezig zijn.
 
 ## Volgende stap
 
