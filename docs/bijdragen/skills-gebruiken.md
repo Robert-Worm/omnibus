@@ -58,6 +58,7 @@ omnibus-add-report.zip
     ├── agents/
     │   └── openai.yaml
     ├── scripts/
+    │   ├── baseline-registry-counts.mjs
     │   ├── prepare-source.py
     │   ├── report-stages.mjs
     │   ├── requirements-source.txt
@@ -67,6 +68,7 @@ omnibus-add-report.zip
     │   ├── report-package.md
     │   ├── stage-receipts.md
     │   ├── source-preparation.md
+    │   ├── selection-baseline.md
     │   ├── first-submissions.md
     │   └── report-kit/
     │       ├── QUALITY.md

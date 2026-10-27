@@ -52,7 +52,8 @@ bewijst geen onafhankelijke lezing; deel geen geschiedenis of andere inzendingen
 
 ## Daarna
 
-Volg het [pakketoverzicht](report-package.md) voor de verdere methode. Selectie,
+Volg het [pakketoverzicht](report-package.md) voor de verdere methode. Leg vóór de
+lezingen [selectie en baseline](selection-baseline.md) vast. Selectie,
 de actuele baseline/taxonomie en de onafhankelijk beoordeelde hulpmiddelenrelease
 moeten volgens het bestaande uitvoercontract worden vastgelegd. Deze voorbereiding
 maakt of keurt die stukken niet namens de coördinator goed.

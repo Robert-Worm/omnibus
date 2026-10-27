@@ -16,8 +16,9 @@ vergelijkt of herschrijft geen bevindingen en verleent geen inhoudelijke goedkeu
   en een concrete beschrijving van de uitvoering.
 - De oorspronkelijk vastgelegde `PILOT-CONTROL.json`, `BASELINE-FREEZE.json`,
   `SELECTION.json`, `INPUT-FREEZE.json` en `RELEASE-BINDING.json` zijn aanwezig.
-  De selectie/baseline-voorbereiding is nog niet zelfstandig meegeleverd. Maak
-  geen lege vervangers om de ontvangstcontrole te laten slagen.
+  Leg [selectie en baseline](selection-baseline.md) vóór de lezingen vast en geef
+  de bewaarde hash mee als `--baseline-freeze-sha256 <bewaarde-baselinehash>`.
+  Maak geen lege vervangers om de ontvangstcontrole te laten slagen.
 - Er is nog geen vergelijking, reconciliatie of praktische uitwerking begonnen.
   De coördinator bevestigt dit op basis van waargenomen uitvoering, niet omdat
   een script geen latere bestanden vindt.
@@ -32,7 +33,7 @@ vertrouwde Python-interpreter uit je lokale hulpmiddelenomgeving.
 Voer vanuit de skillmap uit en vervang de waarden tussen `<...>`:
 
 ```text
-node scripts/stage-receipts.mjs freeze-first --packet <pakketmap> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash> --reader-a-sha256 <bewaarde-eindhash-A> --reader-b-sha256 <bewaarde-eindhash-B> --coordinator <identiteit> --identity-observation "<hoe de afzonderlijke uitvoering is waargenomen>" --comparison-not-started --python <python-interpreter>
+node scripts/stage-receipts.mjs freeze-first --packet <pakketmap> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash> --baseline-freeze-sha256 <bewaarde-baselinehash> --reader-a-sha256 <bewaarde-eindhash-A> --reader-b-sha256 <bewaarde-eindhash-B> --coordinator <identiteit> --identity-observation "<hoe de afzonderlijke uitvoering is waargenomen>" --comparison-not-started --python <python-interpreter>
 ```
 
 **Gelukt als:** de uitvoer `FIRST_SUBMISSIONS_FROZEN_BEFORE_COMPARISON` meldt.

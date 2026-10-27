@@ -4,10 +4,11 @@
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { lstat, mkdir, open, readFile, rename, rmdir } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { reportStages } from "./report-stages.mjs";
+import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const isHash = value => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -57,9 +58,9 @@ async function storage(directory) {
     }
     return path;
   }
-  async function bytes(name) {
+  async function bytes(name, limit = 8 * 1024 * 1024) {
     const path = await pathFor(name), stat = await lstat(path);
-    need(stat.size <= 8 * 1024 * 1024, "Receipt JSON exceeds 8 MiB");
+    need(stat.size <= limit, "Receipt JSON exceeds permitted size");
     return readFile(path);
   }
   async function digest(name) {
@@ -176,6 +177,64 @@ async function absent(io, names) {
   }
 }
 
+async function baselineHelper(manifest) {
+  need(manifest.files["scripts/baseline-registry-counts.mjs"] ===
+    sha(await readFile(new URL("baseline-registry-counts.mjs", import.meta.url))), "Unapproved baseline reader");
+}
+
+async function freezeBaseline(io, index, manifest, options) {
+  need(!Object.keys(index).length, "Baseline must precede every reading stage");
+  await absent(io, ["BASELINE-FREEZE.json", "SELECTION.json", "PILOT-CONTROL.json", "FIRST-SUBMISSIONS.json", "CUSTODY-FIRST.json",
+    ...Object.values(reportStages).flatMap(([outputs]) => outputs)]);
+  need(text(options.coordinator) && text(options.plan) && isHash(options.planSha256), "Coordinator and externally retained selection plan hash required");
+  const plan = await pinned(io, { path: options.plan, sha256: options.planSha256 });
+  need(isHash(options.inputFreezeSha256) && await io.digest("INPUT-FREEZE.json") === options.inputFreezeSha256,
+    "Externally retained input freeze hash required");
+  const source = await io.read("SOURCE.json");
+  need(isHash(plan.source_pdf_sha256) && plan.source_pdf_sha256 === source.pdf_sha256 &&
+    await io.digest(source.pdf_path) === plan.source_pdf_sha256, "Selection belongs to a different source");
+  need([plan.report_id, plan.candidate].every(id => typeof id === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(id)), "Invalid selection identity");
+  need(plan.model === "gpt-6-astra", "Existing single-report method requires gpt-6-astra");
+  need(text(plan.selection?.classification_evidence) && text(plan.selection?.verified_by) && text(plan.baseline_observation),
+    "Actual classification verification and current baseline observation required");
+  const paths = [plan.registry_path, plan.release_path, plan.taxonomy_path];
+  need(paths.every(text) && new Set(paths).size === 3 && plan.registry_path.endsWith("/viewer/app/reviewed-reports.json"), "Distinct actual registry, release and taxonomy required");
+  const snapshots = entries(plan.files);
+  need(snapshots.length >= 3 && snapshots.length <= 64 && snapshots.every(([name]) => name.startsWith("baseline/")), "Baseline snapshots must stay in baseline/");
+  need(snapshots.filter(([name]) => name.endsWith("/viewer/app/reviewed-reports.json")).length === 1, "Exactly one active registry required");
+  await checkHashes(io, plan.files, paths);
+  await baselineHelper(manifest);
+  const counts = baselineRegistryCounts(await io.bytes(plan.registry_path, 64 * 1024 * 1024), plan.report_id);
+  // Freeze supplied evidence only. Classification and currentness are observations,
+  // not conclusions this helper can derive from a filename or an empty registry.
+  const selection = await io.write("SELECTION.json", plan.selection);
+  const control = await io.write("PILOT-CONTROL.json", { report_id: plan.report_id, candidate: plan.candidate, packet_id: basename(io.root),
+    workflow_version: "single-report-kit-v1", one_report_only: true, acceptance_stop_required: true, second_report_authorized: false,
+    model: plan.model, ordinary_allowance_only: true, paid_extras_authorized: false, created_at: clock() });
+  const receipt = await io.write("BASELINE-FREEZE.json", { active_reports: counts.reports, active_items: counts.lines,
+    files: { ...plan.files, [options.plan]: options.planSha256, "SELECTION.json": selection.sha256, "PILOT-CONTROL.json": control.sha256 },
+    scope: "Actual current baseline; never refresh to hide changes", frozen_at: clock(), frozen_by: options.coordinator,
+    preparation: { tool: "stage-receipts.mjs", plan: { path: options.plan, sha256: options.planSha256 },
+      registry_path: plan.registry_path, release_path: plan.release_path, taxonomy_path: plan.taxonomy_path,
+      baseline_observation: plan.baseline_observation } });
+  return { status: "SELECTION_AND_BASELINE_FROZEN_NOT_APPROVED", receipt, publishable: false, contentValidated: false, reviewValidated: false };
+}
+
+async function checkBaseline(io, manifest, options) {
+  let baseline;
+  try { baseline = await io.read("BASELINE-FREEZE.json"); }
+  catch (error) { if (error.code !== "ENOENT" || options.baselineFreezeSha256) throw error; return false; }
+  if (!baseline.preparation && !options.baselineFreezeSha256) return false; // Retained historical format.
+  need(isHash(options.baselineFreezeSha256) && await io.digest("BASELINE-FREEZE.json") === options.baselineFreezeSha256,
+    "Externally retained baseline freeze hash required");
+  need(baseline.preparation?.tool === "stage-receipts.mjs", "Unknown baseline preparation");
+  await baselineHelper(manifest);
+  await pinned(io, baseline.preparation.plan);
+  await checkHashes(io, baseline.files, ["SELECTION.json", "PILOT-CONTROL.json", baseline.preparation.plan.path,
+    baseline.preparation.registry_path, baseline.preparation.release_path, baseline.preparation.taxonomy_path]);
+  return true;
+}
+
 async function freezeFirst(io, index, manifest, options) {
   need(options.comparisonNotStarted === true && text(options.coordinator) && text(options.identityObservation),
     "Coordinator must confirm observed independence and that comparison has not started");
@@ -260,7 +319,7 @@ async function freezeFirst(io, index, manifest, options) {
 
 export async function recordStage(options) {
   const { action, stage } = options;
-  need(action === "freeze-first" || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
+  need(["freeze-first", "freeze-baseline"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
   const io = await storage(options.packet);
   const lock = join(io.root, ".stage-receipts.lock");
   await mkdir(lock); // Exclusive ownership; never take over an interrupted run automatically.
@@ -268,6 +327,8 @@ export async function recordStage(options) {
     const manifest = await release(io, options);
     const index = await readIndex(io);
     entries(index);
+    if (action === "freeze-baseline") return await freezeBaseline(io, index, manifest, options);
+    const baseline = await checkBaseline(io, manifest, options);
     if (action === "freeze-first") return await freezeFirst(io, index, manifest, options);
     let pointer;
     if (action === "start") {
@@ -281,7 +342,7 @@ export async function recordStage(options) {
         try { await io.bytes("FIRST-SUBMISSIONS.json"); throw Error("First submissions already frozen"); }
         catch (error) { if (error.code !== "ENOENT") throw error; }
       }
-      const inputs = Object.fromEntries(await Promise.all([...reportStages[stage][1], "RELEASE-BINDING.json"]
+      const inputs = Object.fromEntries(await Promise.all([...reportStages[stage][1], "RELEASE-BINDING.json", ...(baseline ? ["BASELINE-FREEZE.json"] : [])]
         .map(async name => [name, await io.digest(name)])));
       const start = { stage, actor: options.actor, revision: 1, status: "STARTED", started_at: clock(), inputs,
         dependencies: Object.fromEntries(reportStages[stage][2].map(name => [name, index[name]?.end])) };
@@ -319,9 +380,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const { values, positionals } = parseArgs({ allowPositionals: true, options: { ...Object.fromEntries(
       ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation",
-        "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python"].map(name => [name, { type: "string" }])),
+        "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python", "plan", "plan-sha256", "baseline-freeze-sha256"].map(name => [name, { type: "string" }])),
       "comparison-not-started": { type: "boolean" } } });
-    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
+    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));
   } catch (error) { console.error(error.message); process.exitCode = 1; }

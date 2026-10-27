@@ -29,10 +29,13 @@ Ook [bronvoorbereiding en invoerbevriezing](source-preparation.md) zijn beschikb
 de exacte PDF, volledige tekst en paginabeelden worden voor beide blinde lezingen
 klaargezet. Er worden geen leeslogs of eerste inzendingen aangemaakt.
 
+Vóór de lezingen kun je [selectie en baseline vastleggen](selection-baseline.md)
+op basis van door de eigenaar aangeleverde, gecontroleerde momentopnamen.
 Na de werkelijke lezingen kun je [beide eerste inzendingen bevriezen](first-submissions.md)
 en hun ontvangstbewijs vastleggen vóór vergelijking.
 
-**Nog niet zelfstandig meegeleverd:** selectie/baseline/taxonomie, reviewbasis
+**Nog niet zelfstandig meegeleverd:** export van actuele baselinegegevens,
+het praktische taxonomieoverzicht, reviewbasis
 en eindcontrole. De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk

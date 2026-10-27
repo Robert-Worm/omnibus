@@ -2,6 +2,16 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
 const count = text => baselineRegistryCounts(Buffer.from(text));
+
+test("selection counts require unique actual report identities and reject an already active candidate", () => {
+  const check = corpus => baselineRegistryCounts(Buffer.from(JSON.stringify({ corpus })), "NEW");
+  const row = id => ({ framework: { report: { id }, lines: [{ id: "line" }] } });
+  assert.deepEqual(check([row("OLD")]), { reports: 1, lines: 1 });
+  assert.deepEqual(check([]), { reports: 0, lines: 0 });
+  assert.throws(() => check([row("NEW")]), /already active/);
+  for (const corpus of [[row("OLD"), row("OLD")], [row("")], [row(null)], [{ framework: { lines: [] } }], [row(undefined)]])
+    assert.throws(() => check(corpus), /identity|object key|missing id/);
+});
 test("large baseline retains exact counts without materialising the corpus", () => {
   const raw = JSON.stringify({ corpus: [{ framework: { lines: [{ id: "A" }, { id: "B" }] } },
     { framework: { lines: [{ id: "C" }] } }], unrelated: Array(10_000).fill('x'.repeat(1000)) });

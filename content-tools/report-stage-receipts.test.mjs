@@ -26,7 +26,7 @@ async function fixture(t) {
   };
   const read = async name => JSON.parse(await readFile(join(packet, name), "utf8"));
   const files = {};
-  for (const name of ["stage-receipts.mjs", "report-stages.mjs"])
+  for (const name of ["stage-receipts.mjs", "report-stages.mjs", "baseline-registry-counts.mjs"])
     files["scripts/" + name] = await put("kit/scripts/" + name, await readFile(new URL(tool + name, import.meta.url)));
   const manifest = { author_agent: "synthetic-helper-author", files };
   const releaseSha256 = await put("kit/RELEASE-MANIFEST.json", manifest);
@@ -76,6 +76,94 @@ test("installed standalone helper records all eight stages, retains original rec
     "--end-sha256", index.source_a.end.sha256,
   ]);
   assert.equal(JSON.parse(stdout).status, "STAGE_RECORDED_NOT_APPROVED");
+});
+
+async function baselinePlan(f) {
+  const registry = "baseline/viewer/app/reviewed-reports.json", release = "baseline/release.json", taxonomy = "baseline/taxonomy.mjs";
+  const files = {
+    [registry]: await f.put(registry, { corpus: [{ framework: { report: { id: "SYNTHETIC-OLD" }, lines: [{ id: "a" }, { id: "b" }] } }] }),
+    [release]: await f.put(release, { synthetic: "existing data release" }),
+    [taxonomy]: await f.put(taxonomy, Buffer.from("throw Error('Snapshot code must never execute');")),
+  };
+  const sourceHash = await f.put("source.pdf", Buffer.from("Synthetic source bytes; no PDF parsing in this step"));
+  await f.put("SOURCE.json", { pdf_path: "source.pdf", pdf_sha256: sourceHash });
+  const plan = { report_id: "SYNTHETIC-NEW", candidate: "synthetic-candidate", model: "gpt-6-astra", source_pdf_sha256: sourceHash,
+    selection: { classification_evidence: "Synthetic classification only", verified_by: "synthetic-verifier", retained_detail: "Keep this exact value" },
+    baseline_observation: "Synthetic current collection for software testing only", registry_path: registry, release_path: release, taxonomy_path: taxonomy, files };
+  const options = { action: "freeze-baseline", plan: "selection-plan.json", planSha256: await f.put("selection-plan.json", plan),
+    inputFreezeSha256: hash(await readFile(join(f.packet, "INPUT-FREEZE.json"))), coordinator: "synthetic-coordinator" };
+  return { plan, options };
+}
+
+test("standalone baseline freeze retains actual snapshots and binds subsequent readings to the external pin", async t => {
+  const f = await fixture(t), { plan, options } = await baselinePlan(f);
+  await installContentSkills(join(f.root, "skills"), { names: ["omnibus-add-report"], checkOnly: false });
+  const { stdout } = await promisify(execFile)(process.execPath, [join(f.root, "skills/omnibus-add-report/scripts/stage-receipts.mjs"),
+    "freeze-baseline", "--packet", f.packet, "--plan", options.plan, "--plan-sha256", options.planSha256,
+    "--input-freeze-sha256", options.inputFreezeSha256, "--coordinator", options.coordinator,
+    "--release-sha256", f.options.releaseSha256, "--approval-sha256", f.options.approvalSha256]);
+  const result = JSON.parse(stdout), baseline = await f.read("BASELINE-FREEZE.json");
+  assert.equal(result.status, "SELECTION_AND_BASELINE_FROZEN_NOT_APPROVED");
+  assert.equal(result.publishable || result.contentValidated || result.reviewValidated, false);
+  assert.deepEqual([baseline.active_reports, baseline.active_items], [1, 2]);
+  assert.deepEqual(await f.read("SELECTION.json"), plan.selection);
+  const control = await f.read("PILOT-CONTROL.json");
+  assert.deepEqual([control.packet_id, control.report_id, control.one_report_only, control.second_report_authorized], ["packet", plan.report_id, true, false]);
+  for (const [name, expected] of Object.entries(baseline.files)) assert.equal(hash(await readFile(join(f.packet, name))), expected);
+  await assert.rejects(f.start("source_a"), /Externally retained baseline/);
+  f.options.baselineFreezeSha256 = result.receipt.sha256;
+  await assert.rejects(f.run(options), /already exists/);
+  const start = await f.start("source_a");
+  assert.equal((await f.read(start.receipt.path)).inputs["BASELINE-FREEZE.json"], result.receipt.sha256);
+  await f.output("source_a");
+  await f.put(plan.taxonomy_path, { changed: true });
+  await assert.rejects(f.finish("source_a", start.receipt.sha256), /input\/output changed/);
+});
+
+test("selection freeze rejects wrong identity, unverified decisions and changed baseline before writing anchors", async t => {
+  const cases = [
+    ["active report", p => { p.report_id = "SYNTHETIC-OLD"; }, /already active/],
+    ["classification", p => { p.selection.classification_evidence = ""; }, /Actual classification/],
+    ["baseline observation", p => { p.baseline_observation = ""; }, /baseline observation/],
+    ["source", p => { p.source_pdf_sha256 = "0".repeat(64); }, /different source/],
+    ["changed snapshot", p => { p.files[p.registry_path] = "0".repeat(64); }, /input\/output changed/],
+    ["missing release", p => { delete p.files[p.release_path]; }, /Baseline snapshots/],
+    ["scope", p => { p.model = "unverified-method"; }, /Existing single-report method/],
+    ["path", p => { p.files["baseline/../../outside"] = "0".repeat(64); }, /Unsafe packet path/],
+  ];
+  for (const [name, change, message] of cases) await t.test(name, async t => {
+    const f = await fixture(t), { plan, options } = await baselinePlan(f);
+    change(plan); options.planSha256 = await f.put(options.plan, plan);
+    await assert.rejects(f.run(options), message);
+    for (const name of ["SELECTION.json", "PILOT-CONTROL.json", "BASELINE-FREEZE.json"])
+      await assert.rejects(readFile(join(f.packet, name)), /ENOENT/);
+  });
+});
+
+test("selection freeze cannot reconstruct earlier execution, replace anchors or ignore externally retained hashes", async t => {
+  const f = await fixture(t), { options } = await baselinePlan(f);
+  await assert.rejects(f.run({ ...options, planSha256: "0".repeat(64) }), /Receipt changed/);
+  await assert.rejects(f.run({ ...options, inputFreezeSha256: undefined }), /Externally retained input/);
+  await f.put("inventory/output/READ-LOG.json", { alreadyRead: true });
+  await assert.rejects(f.run(options), /already exists/);
+  await assert.rejects(readFile(join(f.packet, "SELECTION.json")), /ENOENT/);
+  const other = await fixture(t), second = await baselinePlan(other);
+  await other.start("source_a");
+  await assert.rejects(other.run(second.options), /precede every reading/);
+  const partial = await fixture(t), third = await baselinePlan(partial);
+  const original = await partial.put("SELECTION.json", { original: true });
+  await assert.rejects(partial.run(third.options), /already exists/);
+  assert.equal(hash(await readFile(join(partial.packet, "SELECTION.json"))), original);
+});
+
+test("baseline pins and observed plan cannot be removed or rewritten after freezing", async t => {
+  const f = await fixture(t), { options } = await baselinePlan(f);
+  const frozen = await f.run(options);
+  f.options.baselineFreezeSha256 = frozen.receipt.sha256;
+  await assert.rejects(f.run({ action: "start", stage: "source_a", actor: "test", baselineFreezeSha256: "0".repeat(64) }), /baseline freeze hash/);
+  await f.put(options.plan, { changed: true });
+  await assert.rejects(f.start("source_a"), /Receipt changed/);
+  await assert.rejects(readFile(join(f.packet, "STAGE-INDEX.json")), /ENOENT/);
 });
 
 test("release must be independently approved and bound to actual executing helper bytes", async t => {

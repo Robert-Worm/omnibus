@@ -153,7 +153,7 @@ class PreparationTest(unittest.TestCase):
 
     def bind_release(self):
         files = {}
-        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs"]
+        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs", "scripts/baseline-registry-counts.mjs"]
         names += ["references/report-kit/" + name for name in (
             "contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md")]
         for name in names:
@@ -176,10 +176,21 @@ class PreparationTest(unittest.TestCase):
         manifest, approval = self.bind_release()
         self.phase_flags = ["--packet", str(self.packet), "--release-sha256", manifest, "--approval-sha256", approval,
                             "--input-freeze-sha256", prepared["input_freeze_sha256"]]
-        prep.write(self.packet / "PILOT-CONTROL.json", {"packet_id": "synthetic-packet"})
-        prep.write(self.packet / "BASELINE-FREEZE.json", {"synthetic": True})
-        prep.write(self.packet / "SELECTION.json", {"synthetic": True})
         source = json.loads((self.packet / "SOURCE.json").read_text("utf8"))
+        registry, release, taxonomy = "baseline/viewer/app/reviewed-reports.json", "baseline/release.json", "baseline/taxonomy.json"
+        files = {}
+        for name, data in ((registry, {"corpus": [{"framework": {"report": {"id": "OLD"}, "lines": []}}]}),
+                           (release, {"synthetic": "data release"}), (taxonomy, {"synthetic": "taxonomy"})):
+            target = self.packet / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            files[name] = prep.write(target, data)
+        plan = dict(report_id="NEW", candidate="synthetic", model="gpt-6-astra", source_pdf_sha256=source["pdf_sha256"],
+                    selection=dict(classification_evidence="Synthetic classification", verified_by="synthetic-verifier"),
+                    baseline_observation="Synthetic baseline only", registry_path=registry, release_path=release, taxonomy_path=taxonomy, files=files)
+        plan_hash = prep.write(self.packet / "selection-plan.json", plan)
+        frozen = json.loads(self.phase("freeze-baseline", ["--plan", "selection-plan.json", "--plan-sha256", plan_hash,
+                                                         "--coordinator", "synthetic-coordinator"]).stdout)
+        self.phase_flags += ["--baseline-freeze-sha256", frozen["receipt"]["sha256"]]
         ends = []
         for role, stage in (("extractor", "source_a"), ("inventory", "source_b")):
             actor = "synthetic-source_a" if same_actor else "synthetic-" + stage
@@ -252,10 +263,11 @@ class PreparationTest(unittest.TestCase):
         self.assertFalse((self.packet / "FIRST-SUBMISSIONS.json").exists())
         self.packet = self.root / "missing-anchor"
         flags = self.ready_first()
+        original_baseline = (self.packet / "BASELINE-FREEZE.json").read_bytes()
         (self.packet / "BASELINE-FREEZE.json").unlink()
         self.assertNotEqual(self.phase("freeze-first", flags, check=False).returncode, 0)
         self.assertFalse((self.packet / "FIRST-SUBMISSIONS.json").exists())
-        prep.write(self.packet / "BASELINE-FREEZE.json", {"synthetic": True})
+        prep.write(self.packet / "BASELINE-FREEZE.json", original_baseline)
         (self.packet / "extractor/output/result.json").write_text("{}", encoding="utf8")
         self.assertIn("input/output changed", self.phase("freeze-first", flags, check=False).stderr)
         self.assertFalse((self.packet / "CUSTODY-FIRST.json").exists())

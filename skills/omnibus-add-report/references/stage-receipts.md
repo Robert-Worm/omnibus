@@ -25,6 +25,10 @@ bestaande Omnibus-broncontrole.
   goedkeuringsbestand bevat `decision: APPROVE`, `reviewer_agent` en
   `target_manifest_sha256`. De coördinator bewaart de checksums van manifest en
   goedkeuring buiten het pakket en geeft die mee aan elke opdracht.
+- Na [selectie en baseline vastleggen](selection-baseline.md) is bij iedere
+  volgende opdracht ook `--baseline-freeze-sha256 <bewaarde-baselinehash>` vereist.
+  De release bevat dan `scripts/baseline-registry-counts.mjs`. De baseline,
+  selectie en oorspronkelijke momentopnamen blijven aan de fasebewijzen gebonden.
 
 **Deze skill levert geen ingevulde releasegoedkeuring mee.** Het hulpmiddel maakt
 die ook niet zelf. Ontbreekt deze controle, dan stopt het. Reviewbasis en definitieve
@@ -40,7 +44,7 @@ gebruik voor de andere rollen hun naam uit het fasecontract.
 1. Leg de start vast **vóór** het lees- of reviewwerk:
 
    ```text
-   node scripts/stage-receipts.mjs start --packet <pakketmap> --stage source_a --actor <gespreksidentiteit> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash>
+   node scripts/stage-receipts.mjs start --packet <pakketmap> --stage source_a --actor <gespreksidentiteit> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash> --baseline-freeze-sha256 <bewaarde-baselinehash>
    ```
 
    Bewaar de teruggegeven `receipt.sha256` buiten het pakket. De vaste invoer,
@@ -50,7 +54,7 @@ gebruik voor de andere rollen hun naam uit het fasecontract.
    ontvangen bestanden ongewijzigd over op hun vaste plek. Rond daarna af:
 
    ```text
-   node scripts/stage-receipts.mjs finish --packet <pakketmap> --stage source_a --start-sha256 <bewaarde-starthash> --observation "<waargenomen uitvoering en herkomst van de overdracht>" --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash>
+   node scripts/stage-receipts.mjs finish --packet <pakketmap> --stage source_a --start-sha256 <bewaarde-starthash> --observation "<waargenomen uitvoering en herkomst van de overdracht>" --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash> --baseline-freeze-sha256 <bewaarde-baselinehash>
    ```
 
    Bewaar ook deze eindhash buiten het pakket. Zonder uitvoer, waarneming of juiste
@@ -60,7 +64,7 @@ gebruik voor de andere rollen hun naam uit het fasecontract.
 3. Controleer bij ontvangst opnieuw met de afzonderlijk bewaarde eindhash:
 
    ```text
-   node scripts/stage-receipts.mjs check --packet <pakketmap> --stage source_a --end-sha256 <bewaarde-eindhash> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash>
+   node scripts/stage-receipts.mjs check --packet <pakketmap> --stage source_a --end-sha256 <bewaarde-eindhash> --release-sha256 <manifesthash> --approval-sha256 <goedkeuringshash> --input-freeze-sha256 <bewaarde-invoerhash> --baseline-freeze-sha256 <bewaarde-baselinehash>
    ```
 
 **Gelukt als:** de fase levert `STAGE_RECORDED_NOT_APPROVED` op, met
