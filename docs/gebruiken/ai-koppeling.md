@@ -61,22 +61,26 @@ Je hebt twee paden nodig: waar Node staat, en waar `agent-tools/server.mjs` staa
 
 | Pad | Zo vind je het op macOS of Linux | Zo vind je het op Windows |
 | --- | --- | --- |
-| Node | `which node` | `where node` |
+| Node (24.21 of nieuwer) | `which node` | `where.exe node` of `(Get-Command node).Source` |
 | De server | `<je Omnibus-map>/agent-tools/server.mjs` | `<je Omnibus-map>\agent-tools\server.mjs` |
 
 **Codex** (de app in de terminal en de uitbreiding voor je editor):
 
 ```text
-codex mcp add omnibus -- <pad naar node> <pad naar server.mjs>
+codex mcp add omnibus -- "<pad naar node>" "<pad naar server.mjs>"
 codex mcp list
 ```
 
-Of zet dit in `~/.codex/config.toml`; een voorbeeld staat in [`agent-tools/codex-connection.example.toml`](../../agent-tools/codex-connection.example.toml). *Gelukt als:* `omnibus` in de lijst staat.
+Gebruik volledige paden en houd de aanhalingstekens: een mapnaam kan spaties bevatten. `mcp list` toont dat de koppeling **ingesteld** is; dat bewijst nog geen werkende verbinding. `Auth Unsupported` bij deze lokale koppeling is op zichzelf geen fout: Omnibus vraagt hier geen aanmelding.
+
+Het [configuratievoorbeeld](../../agent-tools/codex-connection.example.toml) voor `~/.codex/config.toml` stelt ook de wachttijden en bevestiging voor schrijftools in. De bovenstaande opdracht neemt die extra instellingen niet over. Voeg ze zelf toe volgens het voorbeeld en behoud je andere instellingen. Open daarna een gesprek en controleer de actieve verbinding met `/mcp`.
+
+**Gelukt als:** de [leesproef hieronder](#4-controleer-de-verbinding) slaagt. De [officiële MCP-uitleg](https://learn.chatgpt.com/docs/extend/mcp) beschrijft de configuratie voor Codex en de desktopapp.
 
 **Claude Desktop:**
 
 1. Kies in het menu van Claude **Settings → Developer → Edit Config**. Dat opent `claude_desktop_config.json`.
-2. Zet Omnibus erin, met je eigen paden. Gebruik volledige paden; Claude Desktop kent je zoekpad niet.
+2. Voeg Omnibus toe onder `mcpServers`, met je eigen volledige paden. Behoud bestaande servers. In JSON schrijf je Windows-paden met `/` of dubbele `\\`, bijvoorbeeld `C:/Program Files/nodejs/node.exe`.
 
    ```json
    {
@@ -88,18 +92,27 @@ Of zet dit in `~/.codex/config.toml`; een voorbeeld staat in [`agent-tools/codex
 
 3. Sluit Claude Desktop helemaal af en open het opnieuw.
 
-*Gelukt als:* Omnibus met zijn zes hulpmiddelen onder **Connectors** staat. Zo niet: kijk of er een komma te veel in het bestand staat.
+**Gelukt als:** de [leesproef hieronder](#4-controleer-de-verbinding) slaagt. Ontbreekt Omnibus, controleer dan de paden en de komma's in het configuratiebestand.
 
 **Claude Code:**
 
 ```text
-claude mcp add --scope user omnibus -- <pad naar node> <pad naar server.mjs>
+claude mcp add --transport stdio --scope user omnibus -- "<pad naar node>" "<pad naar server.mjs>"
 claude mcp list
 ```
 
-Met `--scope user` werkt Omnibus in elke map waarin je Claude Code start; zonder alleen in de huidige map. *Gelukt als:* `omnibus` in de lijst staat met **Connected**.
+Met `--scope user` werkt Omnibus in elke map waarin je Claude Code start; zonder alleen in de huidige map. Zie de [officiële Claude Code-uitleg](https://code.claude.com/docs/en/mcp). **Gelukt als:** de lijst **Connected** toont en de leesproef hieronder slaagt.
 
-**ChatGPT** kan nog niet: ChatGPT verbindt alleen met een server op een internetadres, niet met een lokaal programma. Dat staat in [#149](https://github.com/Robert-Worm/omnibus/issues/149). Zet de koppeling niet zelf open op internet.
+**ChatGPT:**
+
+- **Desktop met lokale MCP-instellingen:** open **Settings → MCP servers → Add server**, kies STDIO en vul de twee paden uit de tabel in. Bewaar en kies **Restart**. Deze route deelt de configuratie met Codex op dezelfde computer; voeg Omnibus niet nogmaals toe als het er al staat. Controleer daarna met `/mcp` en de leesproef hieronder. Zie de [officiële uitleg per omgeving](https://learn.chatgpt.com/docs/extend/mcp).
+- **Web of een omgeving zonder lokale MCP-instellingen:** deze lokale opdracht is daar niet beschikbaar. De Omnibus-route via een online server staat nog open in [#149](https://github.com/Robert-Worm/omnibus/issues/149). Zet de lokale koppeling niet zelf open op internet.
+
+### 4. Controleer de verbinding
+
+Vraag je assistent: *“Gebruik Omnibus: haal eerst `get_workflow_guide` op en daarna `list_sources`. Geef de collectie-identiteit en het aantal bronnen terug. Maak of bewaar nog geen project.”*
+
+**Gelukt als:** beide hulpmiddelen echt zijn uitgevoerd en de collectie overeenkomt met jouw lokale Omnibus. Alleen een servernaam of lijst met hulpmiddelen is niet genoeg. Werkt een aanroep niet, controleer dan de Node-versie, beide paden en stap 2; herstart daarna de verbinding. Voor deze leesproef hoef je niets op te slaan of te publiceren.
 
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 
@@ -109,7 +122,7 @@ Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een o
 > **Let op:** wat je deelt, gaat naar je AI-dienst. Werkt je assistent in de cloud, dan gelden de voorwaarden van die dienst. Deel alleen wat je mag delen.
 
 - **Nieuwe collectie geïnstalleerd?** Bereid de koppeling opnieuw voor met dezelfde database-instellingen als de website. Controleer dat je AI-assistent naar deze installatie verwijst en herstart de MCP-verbinding. Anders kan hij nog de vorige collectie gebruiken. Zie de [technische controle](../../agent-tools/README.md#browser-en-mcp-na-een-nieuwe-collectie-gelijkzetten).
-- **Alleen lokaal.** De koppeling werkt niet met AI-diensten die alleen een internetadres accepteren, zoals ChatGPT.
+- **Alleen lokaal.** Een AI-omgeving die uitsluitend internetadressen accepteert, kan deze STDIO-koppeling niet gebruiken.
 - **Controleer het voorstel.** De assistent kiest bouwstenen op basis van zoekresultaten. Beoordeel zelf of ze passen.
 
 ## Samengevat
