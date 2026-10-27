@@ -23,7 +23,7 @@ flowchart TD
 
 | Pad | Status | Epic |
 | --- | --- | --- |
-| [🌐 A · Online versie](#pad-a--online-versie) | 🔄 Bezig | [#140](https://github.com/Robert-Worm/omnibus/issues/140) |
+| [🌐 A · Online versie](#pad-a--online-versie) | ✅ Klaar; snelheid loopt apart ([#84](https://github.com/Robert-Worm/omnibus/issues/84)) | [#140](https://github.com/Robert-Worm/omnibus/issues/140) |
 | [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | 🔄 Bezig | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
 | [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
 | [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
@@ -51,7 +51,7 @@ flowchart TD
 | AI-review van beveiliging en overdracht; geen onafhankelijke audit · [#143](https://github.com/Robert-Worm/omnibus/issues/143) | ✅ Klaar |
 | Bewaarde projecten blijven openen na een nieuwe projectversie · [#218](https://github.com/Robert-Worm/omnibus/issues/218) | ✅ Klaar |
 | Terugzetten zonder bewaarde image: opnieuw bouwen is voorlopig genoeg ([B-024](beheer/besluiten.md#b-024)) · [#215](https://github.com/Robert-Worm/omnibus/issues/215) | ✅ Klaar |
-| Eén bezoeker kan de limiet niet meer voor iedereen opmaken; de proxygrens van Sliplane nog meten · [#213](https://github.com/Robert-Worm/omnibus/issues/213) | 🔄 Bezig |
+| Een verzoekenlimiet per bezoeker; het adres komt van Sliplane · [#213](https://github.com/Robert-Worm/omnibus/issues/213) | ✅ Klaar |
 
 ## Pad B · AI rechtstreeks aan de database
 
