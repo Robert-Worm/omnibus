@@ -53,7 +53,13 @@ export function requestVisitorAddress({publicMode = false, sliplaneGateway, onFa
     for (let i = 0; i < req.rawHeaders.length; i += 2)
       if (req.rawHeaders[i].toLowerCase() === 'x-forwarded-for') count++;
     const address = req.headers['x-forwarded-for'];
-    if (count === 1 && typeof address === 'string' && address.length <= 64 && !address.includes('%') && isIP(address)) return address;
+    // Measured online on 27 October 2026: Sliplane APPENDS the address it saw,
+    // as the last entry ("…, client"), instead of replacing the header. Only that
+    // rightmost entry is Sliplane's own observation; anything left of it came from
+    // the client or an earlier hop and can be forged, so it is never used.
+    const last = count === 1 && typeof address === 'string' && address.length <= 512
+      ? address.slice(address.lastIndexOf(',') + 1).trim() : null;
+    if (last && last.length <= 64 && !last.includes('%') && isIP(last)) return last;
     try { onFallback?.(forwardedShape(count, address)); } catch { /* a log must never block a request */ }
     return peer;
   };

@@ -22,12 +22,12 @@ test('only the explicitly configured Sliplane gateway supplies visitor identity'
 test('an unusable header from the gateway falls back to the shared gateway budget, never to a refusal (#213)', () => {
   const shapes = [];
   const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24', onFallback: (s) => shapes.push(s) });
-  for (const value of [undefined, '', '192.0.2.1, 192.0.2.2', ['192.0.2.1'], 'unknown',
-    '192.0.2.1:80', '[2001:db8::1]', 'fe80::1%eth0', ' 192.0.2.1', 'x'.repeat(10000)])
+  for (const value of [undefined, '', ['192.0.2.1'], 'unknown',
+    '192.0.2.1:80', '[2001:db8::1]', 'fe80::1%eth0', '192.0.2.1, x', 'x'.repeat(10000)])
     assert.equal(address(proxyRequest('10.1.0.2', value)), '10.1.0.2');
   assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', [])), '10.1.0.2');
   assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', ['X-Forwarded-For','192.0.2.1','x-forwarded-for','192.0.2.1'])), '10.1.0.2');
-  assert.deepEqual(shapes, ['absent', 'empty', 'list:public-ipv4+public-ipv4', 'repeated', 'not-an-ip', 'ipv4-with-port', 'bracketed-ipv6', 'ipv6-zone', 'whitespace', 'too-long', 'absent', 'repeated']);
+  assert.deepEqual(shapes, ['absent', 'empty', 'repeated', 'not-an-ip', 'ipv4-with-port', 'bracketed-ipv6', 'ipv6-zone', 'list:public-ipv4+other', 'too-long', 'absent', 'repeated']);
   // The shape never contains the address itself.
   assert.ok(shapes.every((s) => !/\d+\.\d+/.test(s)));
   assert.equal(forwardedShape(1, '203.0.113.9, 10.1.0.4, x'), 'list:public-ipv4+internal-ipv4+other');
@@ -374,4 +374,17 @@ test('high-cardinality synthetic peers never exceed the default storage ceiling'
   at(60000);
   assert.deepEqual(limiter.take('192.0.2.1'), allowed);
   assert.equal(limiter.size, 1);
+});
+
+test('Sliplane appends the address it saw: only the rightmost entry counts (#213)', () => {
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+  assert.equal(address(proxyRequest('10.1.0.2', '198.51.100.7, 192.0.2.1')), '192.0.2.1');
+  assert.equal(address(proxyRequest('10.1.0.2', ' 192.0.2.1')), '192.0.2.1');
+  assert.equal(address(proxyRequest('10.1.0.2', '2001:db8::5, 2001:db8::1')), '2001:db8::1');
+  // A forged left part cannot pick another visitor's budget.
+  const limiter = createVisitorRequestRateLimit({ capacity: 1, now: () => 0 });
+  const take = (xff) => limiter.take(address(proxyRequest('10.1.0.2', xff)));
+  assert.deepEqual(take('203.0.113.1, 192.0.2.1'), allowed);
+  assert.deepEqual(take('203.0.113.2, 192.0.2.1'), denied(1));
+  assert.deepEqual(take('203.0.113.2, 192.0.2.9'), allowed);
 });
