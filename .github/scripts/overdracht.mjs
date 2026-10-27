@@ -33,7 +33,9 @@ for (const i of issues) {
 const runs = (await gh(`/actions/workflows/code-only.yml/runs?branch=main&status=completed&per_page=1`)).workflow_runs;
 const tests = runs[0] ? { conclusie: runs[0].conclusion, commit: runs[0].head_sha, url: runs[0].html_url } : { conclusie: null, commit: null, url: null };
 
-const body = overdrachtTekst(issues, tests, { repoUrl: `https://github.com/${repo}` });
+// De vaste volgorde per assistent; zie docs/beheer/samenwerking-ai.md.
+const volgorde = JSON.parse(readFileSync(new URL("../overdracht/volgorde.json", import.meta.url), "utf8"));
+const body = overdrachtTekst(issues, tests, { repoUrl: `https://github.com/${repo}`, volgorde });
 const bestaand = issues.find((i) => (i.body || "").startsWith(MARKERING));
 if (!bestaand) {
   const nieuw = await gh("/issues", { method: "POST", body: JSON.stringify({ title: "Overdracht: wat pakt wie als volgende op?", body, labels: ["overdracht"] }) });

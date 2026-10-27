@@ -11,6 +11,6 @@ export function controleerNieuweStory(story) {
   const labels = story.labels ?? [];
   if (!labels.some((l) => WERKLABELS.includes(l)))
     throw new Error(`Story ${story.id} mist een werklabel: geef ${WERKLABELS.join(" of ")} mee (B-019).`);
-  const onbekend = labels.filter((l) => !WERKLABELS.includes(l) && !["story", "routekaart", "kwaliteit", "presentatie", "P1", "P2", "P3", "klaar", "bezig", "wacht-op-ander", "wacht-op-beheerder"].includes(l));
+  const onbekend = labels.filter((l) => !WERKLABELS.includes(l) && !["story", "routekaart", "kwaliteit", "presentatie", "P1", "P2", "P3", "klaar", "bezig", "wacht-op-ander", "wacht-op-beheerder", "gepauzeerd"].includes(l));
   if (onbekend.length) throw new Error(`Story ${story.id} heeft een onbekend label: ${onbekend.join(", ")}.`);
 }

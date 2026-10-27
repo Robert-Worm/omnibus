@@ -21,14 +21,20 @@ Elk open issue heeft labels voor wie, prioriteit en status:
 | --- | --- | --- |
 | Wie | `Opus 5.5`, `ChatGPT Astra` | Wie het werk oppakt; bij een gedeelde story beide |
 | Prioriteit | `P1`, `P2`, `P3` | P1 blokkeert ander werk of de beheerder; P2 is het volgende; P3 komt later |
-| Status | `klaar`, `bezig`, `wacht-op-ander`, `wacht-op-beheerder` | Of het nu op te pakken is, en zo niet, op wie het wacht. Precies één per issue |
+| Status | `klaar`, `bezig`, `wacht-op-ander`, `wacht-op-beheerder`, `gepauzeerd` | Of het nu op te pakken is, en zo niet, op wie of wat het wacht. Precies één per issue |
 | Rood | `rood` | De tests op `main` falen; dit issue gaat voor alles |
 
 ## Het issue Overdracht
 
-Het issue met het label `overdracht` toont per assistent de drie belangrijkste taken met status `klaar`, en altijd alle P1-taken en rode tests. Ook zie je wat bezig is en wat op de beheerder wacht. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label verandert, na elke testrun en elke ochtend. Daarbij houdt elk issue één status: de laatst gezette blijft staan.
+Het issue met het label `overdracht` toont per assistent een vaste **volgorde**: wat het makkelijkst af te ronden is, eerst. De volgorde staat in `.github/overdracht/volgorde.json`; Opus houdt die bij. Het issue toont alleen wat nu op te pakken is (`klaar` of `bezig`), in rondes van vijf. Een rode test gaat altijd voor.
 
-Je zegt tegen een assistent: *pak de volgende taak uit Overdracht*.
+Daaronder staat wat op de beheerder wacht en wat gepauzeerd is. Bovenaan staat of de tests op `main` groen zijn. GitHub werkt het vanzelf bij als een label of de volgorde verandert, na elke testrun en elke ochtend. Elk issue houdt één status: de laatst gezette blijft staan.
+
+Je zegt tegen een assistent: *pak de volgende ronde uit Overdracht*.
+
+## Besluiten van de beheerder
+
+Heeft een issue een besluit nodig, dan krijgt het `wacht-op-beheerder`. Opus legt de open besluiten in de chat aan de beheerder voor, met een advies. Na het besluit zet Opus het in het issue en de juiste status terug. Een assistent neemt nooit zelf een besluit namens de beheerder.
 
 ## Zo pak je een taak op
 

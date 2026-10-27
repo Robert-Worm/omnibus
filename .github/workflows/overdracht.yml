@@ -5,6 +5,9 @@ name: Overdracht bijwerken
 on:
   issues:
     types: [opened, closed, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+    paths: ['.github/overdracht/**', '.github/scripts/overdracht*.mjs']
   workflow_run:
     workflows: ["Alle tests"]
     types: [completed]

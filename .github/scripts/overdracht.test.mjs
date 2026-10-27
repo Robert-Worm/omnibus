@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { overdrachtTekst, sorteer, MARKERING, overbodigeStatussen } from "./overdracht-lib.mjs";
+import { overdrachtTekst, sorteer, MARKERING, overbodigeStatussen, volgordeVoor } from "./overdracht-lib.mjs";
 
 const issue = (number, title, ...labels) => ({ number, title, labels: labels.map((name) => ({ name })) });
 const issues = [
@@ -55,4 +55,25 @@ test("een issue houdt één status: de net gezette, anders gaat bezig of wachten
   assert.deepEqual(overbodigeStatussen(issue(1, "x", "bezig", "klaar"), "klaar"), ["bezig"]);
   assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar", "bezig")), ["klaar"]);
   assert.deepEqual(overbodigeStatussen(issue(1, "x", "klaar", "wacht-op-beheerder")), ["klaar"]);
+});
+
+test("met een vaste volgorde: alleen wat op te pakken is, in rondes van vijf; rood gaat voor", () => {
+  const lijst = [
+    issue(1, "a", "ChatGPT Astra", "P3", "klaar"),
+    issue(2, "b", "ChatGPT Astra", "P2", "wacht-op-beheerder"),
+    issue(3, "c", "ChatGPT Astra", "P2", "bezig"),
+    issue(4, "d", "ChatGPT Astra", "P1", "klaar"),
+    issue(5, "e", "ChatGPT Astra", "P2", "klaar"),
+    issue(6, "f", "ChatGPT Astra", "P2", "klaar"),
+    issue(7, "g", "ChatGPT Astra", "P2", "klaar"),
+    issue(8, "h", "ChatGPT Astra", "P3", "klaar", "rood"),
+    issue(9, "i", "ChatGPT Astra", "epic", "P3", "bezig"),
+    issue(10, "j", "ChatGPT Astra", "P3", "gepauzeerd"),
+  ];
+  assert.deepEqual(volgordeVoor("ChatGPT Astra", lijst, [9, 1, 2, 3, 4, 5]).map((i) => i.number), [8, 9, 1, 3, 4, 5, 6, 7]);
+  const tekst = overdrachtTekst(lijst, { conclusie: "success" }, { volgorde: { "ChatGPT Astra": [9, 1, 2, 3, 4, 5], "Opus 5.5": [] } });
+  assert.match(tekst, /\*\*Ronde 1\*\*\n\n1\. ❌ \*\*P3\*\* · #8\n2\. \*\*P3\*\* · #9 · bezig · epic afronden\n3\. \*\*P3\*\* · #1\n4\. \*\*P2\*\* · #3 · bezig\n5\. \*\*P1\*\* · #4\n\n\*\*Ronde 2\*\*\n\n6\. \*\*P2\*\* · #5/);
+  assert.match(tekst, /## Wacht op de beheerder[\s\S]*#2/);
+  assert.match(tekst, /## Gepauzeerd[\s\S]*#10/);
+  assert.doesNotMatch(tekst.split("## Wacht op de beheerder")[0], /#10\b|#2\b/);
 });
