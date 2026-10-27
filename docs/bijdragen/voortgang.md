@@ -8,7 +8,7 @@
 
 ## Zo staat het ervoor
 
-Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap, en *kaders* zijn de wetten en kaders.
+Database van 2026-10-19. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.
 
 **Volgende database:** bij 5 ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt. Nu liggen er 0 bronnen klaar.
 
@@ -56,7 +56,7 @@ Deze rapporten van de Auditdienst Rijk zijn **aanbevolen**: het zijn adviesrappo
 Meer kiezen:
 
 - [Alle 542 aanbevolen rapporten](werklijst-aanbevolen.md), per ministerie, met een claimlink per rapport.
-- [Alle 9.116 rapporten van de Rijksmap](werklijst/README.md), per soort bron en ministerie, met een claimlink per rapport.
+- [Alle 9.116 rapporten en beoordeelde voorstellen](werklijst/README.md), per soort bron en ministerie, met een claimlink per rapport.
 - Liever een spreadsheet? Download [werklijst-rapporten.csv](werklijst-rapporten.csv). Dat bestand toont de stand van de database; wie waaraan werkt, staat op de werklijsten.
 - [Wetten en kaders](werklijst-wetten-en-kaders.md): per bron of je hem openbaar mag verwerken.
 

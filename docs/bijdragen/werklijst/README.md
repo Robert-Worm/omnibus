@@ -2,7 +2,7 @@
 
 <!-- paginatype: data -->
 
-> **In het kort:** alle 9.116 rapporten van de Rijksmap, per soort bron. Kies een soort en een ministerie, en klik op **Claimen**. Twijfel je waar je begint? Neem dan een [aanbevolen rapport](../werklijst-aanbevolen.md).
+> **In het kort:** alle 9.116 rapporten van de Rijksmap en beoordeelde voorstellen, per soort bron. Kies een soort en een ministerie, en klik op **Claimen**. Twijfel je waar je begint? Neem dan een [aanbevolen rapport](../werklijst-aanbevolen.md).
 
 *Automatisch bijgewerkt door het voortgangsscript. Pas deze pagina niet met de hand aan; de gegevens staan in `.github/voortgang/`.*
 
@@ -91,7 +91,7 @@ Bekijk [alle 357 rapporten](algemene-rekenkamer.md).
 
 ## Liever een spreadsheet?
 
-Download [werklijst-rapporten.csv](../werklijst-rapporten.csv), met dezelfde rapporten, de auteur en een claimlink per rapport. Wie waaraan werkt, staat alleen op de werklijsten.
+Download [werklijst-rapporten.csv](../werklijst-rapporten.csv), met de Rijksmaprapporten, de auteur en een claimlink per rapport. Voorgestelde rapporten staan apart in deze werklijst. Wie waaraan werkt, staat alleen op de werklijsten.
 
 ## Volgende stap
 
