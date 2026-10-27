@@ -39,7 +39,11 @@ en hun ontvangstbewijs vastleggen vóór vergelijking.
 Na de herstelronde kun je [de reviewbasis vastleggen](review-basis.md), zodat
 beide onafhankelijke eindreviewers dezelfde eindset en afhankelijkheden ontvangen.
 
-**Nog niet zelfstandig meegeleverd:** eindcontrole en definitieve ontvangst.
+Na beide eindreviews kun je [de volledige ontvangstketen vastleggen en controleren](final-receipt.md).
+Dit bevestigt de bewijsketen, niet de inhoudelijke toelating.
+
+**Nog niet zelfstandig meegeleverd:** de inhoudelijke eindcontrole en de aansluiting
+van het nieuwe ontvangstformaat op de bestaande toelatingscontrole.
 De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk

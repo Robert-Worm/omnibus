@@ -72,6 +72,7 @@ omnibus-add-report.zip
     │   ├── selection-baseline.md
     │   ├── first-submissions.md
     │   ├── review-basis.md
+    │   ├── final-receipt.md
     │   └── report-kit/
     │       ├── QUALITY.md
     │       ├── OUTPUT-CONTRACT.md

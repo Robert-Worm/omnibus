@@ -390,9 +390,93 @@ async function checkReviewBasis(io, index, options) {
   await checkHashes(io, basis.files, [...reportReviewDependencies, ...reportReviewTargets.filter(name => name !== "REVIEW-BASIS.json")]);
 }
 
+// Custody only. The substantive source/review gate remains a separate requirement.
+async function finalRecords(io, index, manifest, options, attestation, sealedAt) {
+  const names = Object.keys(reportStages), exactNames = value => same(entries(value).map(([key]) => key).sort(order), [...names].sort(order));
+  need(exactNames(index), "All eight stages required for final custody");
+  await checkReviewBasis(io, index, options);
+  const att = await pinned(io, attestation), control = await io.read("PILOT-CONTROL.json");
+  need(att.actual_agent_separation_verified === true && text(att.coordinator) && text(att.identity_verification_basis) &&
+    exactNames(att.actors) && exactNames(att.stage_end_hashes), "Observed separation and all externally retained stage ends required");
+  need(["packet_id", "report_id", "candidate"].every(key => text(control[key]) && att[key] === control[key]) &&
+    control.one_report_only === true && control.acceptance_stop_required === true && control.second_report_authorized === false &&
+    control.paid_extras_authorized === false, "Original single-report scope required");
+  const firstPointer = await io.read("CUSTODY-FIRST.json");
+  need(isHash(options.firstReceiptSha256) && firstPointer.sha256 === options.firstReceiptSha256, "Externally retained first custody hash required");
+  const first = await pinned(io, firstPointer), basis = await io.read("REVIEW-BASIS.json");
+  need(basis.first_custody_receipt_sha256 === firstPointer.sha256 && first.packet_id === control.packet_id,
+    "Original first receipt differs from review basis");
+  await checkHashes(io, first.files, ["PILOT-CONTROL.json", "INPUT-FREEZE.json", "BASELINE-FREEZE.json", "FIRST-SUBMISSIONS.json", "SELECTION.json", "RELEASE-BINDING.json"]);
+  const stages = {}, actors = att.actors;
+  for (const name of names) {
+    const end = await current(io, index, name);
+    need(isHash(att.stage_end_hashes[name]) && att.stage_end_hashes[name] === index[name].end.sha256 &&
+      text(actors[name]) && actors[name] === actors[name].trim() && actors[name] === end.actor, "Attested stage end or actor differs: " + name);
+    need(time(end.completed_at) <= time(sealedAt), "Final custody precedes completed stage");
+    stages[name] = Object.fromEntries(["status", "actor", "inputs", "artifacts"].map(key => [key, end[key]]));
+  }
+  const readers = [actors.source_a, actors.source_b];
+  need(new Set(readers).size === 2 && !readers.includes(actors.reconciliation), "Reader/reconciler independence required");
+  for (const name of ["practical_draft_review", "source_final_review", "practical_final_review"])
+    need(![actors.practical_authoring, actors.repairs].includes(actors[name]), "Author cannot review own work");
+  need(![...readers, actors.reconciliation, actors.practical_final_review].includes(actors.source_final_review), "Source reviewer must be independent");
+  const targets = Object.fromEntries(await Promise.all(reportReviewTargets.map(async name => [name, await io.digest(name)])));
+  for (const [stage, kind] of [["source_final_review", "SOURCE"], ["practical_final_review", "PRACTICAL"]]) {
+    const review = await io.read(reportStages[stage][0][0]);
+    need(review.review_kind === kind && review.reviewer_agent === actors[stage] && review.decision === "APPROVE" &&
+      review.human_validation === false && Array.isArray(review.unresolved_issues) && review.unresolved_issues.length === 0,
+      "Actual completed final review required: " + kind);
+    need(entries(review.target_hashes).length === reportReviewTargets.length &&
+      reportReviewTargets.every(name => review.target_hashes[name] === targets[name]), "Final review targets differ: " + kind);
+  }
+  const contract = {};
+  for (const name of ["CONTRACT.md", "record_contract.py"]) {
+    const path = "references/report-kit/contracts/" + name;
+    contract[name] = sha(await readFile(new URL("../" + path, import.meta.url)));
+    need(manifest.files[path] === contract[name], "Unapproved source contract");
+  }
+  const stagesBytes = Buffer.from(JSON.stringify(stages, null, 2) + "\n");
+  const files = Object.fromEntries(await Promise.all([...new Set([...Object.keys(first.files), ...Object.keys(basis.files),
+    ...reportReviewTargets, "CUSTODY-FIRST.json", firstPointer.path, "STAGE-INDEX.json", attestation.path,
+    ...names.flatMap(name => [...reportStages[name][0], index[name].start.path, index[name].end.path])])]
+    .sort(order).map(async name => [name, await io.digest(name)])));
+  files["STAGES.json"] = sha(stagesBytes);
+  return { stagesBytes, value: { workflow_version: "single-report-kit-v1", receipt_kind: "standalone-stage-custody-v1",
+    engine: Object.fromEntries(entries(manifest.files).filter(([name]) => name.startsWith("scripts/"))),
+    stage_receipts: Object.fromEntries(names.map(name => [name, index[name].end])),
+    packet_id: control.packet_id, report_id: control.report_id, candidate: control.candidate,
+    human_acceptance_required: true, automatic_next_report_allowed: false, actual_agent_separation_verified: true,
+    identity_verification_basis: att.identity_verification_basis, actors, files,
+    first_receipt_path: firstPointer.path, first_receipt_sha256: firstPointer.sha256, contract,
+    taxonomy_sha256: (await io.read("TAXONOMY-SNAPSHOT.json")).file_sha256, sealed_at: sealedAt,
+    preparation: { tool: "stage-receipts.mjs", attestation, coordinator: att.coordinator },
+    publishable: false, contentValidated: false, reviewValidated: false } };
+}
+
+async function recordFinal(io, index, manifest, baseline, taxonomy, options) {
+  need(baseline && taxonomy, "Prepared baseline and taxonomy required for final custody");
+  if (options.action === "check-final") {
+    const pointer = await io.read("CUSTODY-FINAL.json");
+    need(isHash(options.finalReceiptSha256) && pointer.sha256 === options.finalReceiptSha256, "Externally retained final custody hash required");
+    const stored = await pinned(io, pointer);
+    need(stored.preparation?.tool === "stage-receipts.mjs", "Unknown final custody preparation");
+    const expected = await finalRecords(io, index, manifest, options, stored.preparation.attestation, stored.sealed_at);
+    need(same(stored, expected.value), "Final custody differs from recorded evidence");
+    await checkHashes(io, stored.files, ["STAGES.json", ...reportReviewTargets]);
+    return { status: "FINAL_CUSTODY_CHECKED_NOT_APPROVED", receipt: pointer, publishable: false, contentValidated: false, reviewValidated: false };
+  }
+  await absent(io, ["STAGES.json", "stage-receipts/final.json", "CUSTODY-FINAL.json"]);
+  const attestation = { path: options.attestation, sha256: options.attestationSha256 };
+  const final = await finalRecords(io, index, manifest, options, attestation, clock());
+  await io.write("STAGES.json", final.stagesBytes);
+  const receipt = await io.write("stage-receipts/final.json", final.value);
+  await io.write("CUSTODY-FINAL.json", receipt);
+  return { status: "FINAL_CUSTODY_RECORDED_NOT_APPROVED", receipt, publishable: false, contentValidated: false, reviewValidated: false };
+}
+
 export async function recordStage(options) {
   const { action, stage } = options;
-  need(["freeze-first", "freeze-baseline", "snapshot-taxonomy", "review-basis"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
+  need(["freeze-first", "freeze-baseline", "snapshot-taxonomy", "review-basis", "record-final", "check-final"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
   const io = await storage(options.packet);
   const lock = join(io.root, ".stage-receipts.lock");
   await mkdir(lock); // Exclusive ownership; never take over an interrupted run automatically.
@@ -412,6 +496,7 @@ export async function recordStage(options) {
     const taxonomy = await checkTaxonomy(io, manifest, baseline);
     if (action === "freeze-first") return await freezeFirst(io, index, manifest, options);
     if (action === "review-basis") return await reviewBasis(io, index, manifest, baseline, options);
+    if (["record-final", "check-final"].includes(action)) return await recordFinal(io, index, manifest, baseline, taxonomy, options);
     if (baseline && practical(stage)) need(taxonomy, "Frozen taxonomy required before practical work");
     if (baseline && finalStage(stage)) await checkReviewBasis(io, index, options);
     let pointer;
@@ -466,9 +551,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const { values, positionals } = parseArgs({ allowPositionals: true, options: { ...Object.fromEntries(
       ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation",
         "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python", "plan", "plan-sha256", "baseline-freeze-sha256",
-        "first-receipt-sha256", "repairs-sha256", "review-basis-sha256"].map(name => [name, { type: "string" }])),
+        "first-receipt-sha256", "repairs-sha256", "review-basis-sha256", "attestation", "attestation-sha256", "final-receipt-sha256"].map(name => [name, { type: "string" }])),
       extra: { type: "string", multiple: true }, "comparison-not-started": { type: "boolean" } } });
-    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline|snapshot-taxonomy|review-basis --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
+    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline|snapshot-taxonomy|review-basis|record-final|check-final --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));
   } catch (error) { console.error(error.message); process.exitCode = 1; }

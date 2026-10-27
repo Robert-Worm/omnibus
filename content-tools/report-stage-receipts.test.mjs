@@ -30,6 +30,10 @@ async function fixture(t) {
     files["scripts/" + name] = await put("kit/scripts/" + name, await readFile(new URL(tool + name, import.meta.url)));
   const reviewContract = "references/report-kit/REVIEW-CONTRACT.json.example";
   files[reviewContract] = await put("kit/" + reviewContract, await readFile(new URL("../skills/omnibus-add-report/" + reviewContract, import.meta.url)));
+  for (const name of ["CONTRACT.md", "record_contract.py"]) {
+    const path = "references/report-kit/contracts/" + name;
+    files[path] = await put("kit/" + path, await readFile(new URL("../skills/omnibus-add-report/" + path, import.meta.url)));
+  }
   const manifest = { author_agent: "synthetic-helper-author", files };
   const releaseSha256 = await put("kit/RELEASE-MANIFEST.json", manifest);
   const approvalSha256 = await put("kit/APPROVAL.json", { decision: "APPROVE", reviewer_agent: "synthetic-independent-reviewer", target_manifest_sha256: releaseSha256 });
@@ -253,6 +257,103 @@ test("changed review basis or dependencies cannot be adopted midway through a fi
   await f.put("ISSUES.json", { changed: true });
   await assert.rejects(f.finish("source_final_review", begin.receipt.sha256), /input\/output changed/);
   await assert.rejects(f.run(f.basisOptions), /must precede final reviews/);
+});
+
+async function finalReady(t, editReview = () => {}, finalActors = {}) {
+  const f = await reviewReady(t), basis = await f.run(f.basisOptions);
+  f.options.reviewBasisSha256 = basis.receipt.sha256;
+  f.options.firstReceiptSha256 = f.basisOptions.firstReceiptSha256;
+  for (const [stage, kind] of [["source_final_review", "SOURCE"], ["practical_final_review", "PRACTICAL"]]) {
+    const actor = finalActors[stage] ?? "synthetic-" + stage;
+    const start = await f.run({ action: "start", stage, actor });
+    // Deliberately NOT a substantive review: records receipt/header checks only.
+    const review = { review_kind: kind, reviewer_agent: actor, decision: "APPROVE", human_validation: false,
+      unresolved_issues: [], target_hashes: basis.target_hashes };
+    editReview(review);
+    await f.put(reportStages[stage][0][0], review);
+    await f.finish(stage, start.receipt.sha256);
+  }
+  const index = await f.read("STAGE-INDEX.json");
+  const attestation = { packet_id: "packet", report_id: "SYNTHETIC-NEW", candidate: "synthetic-candidate",
+    coordinator: "synthetic-coordinator", actual_agent_separation_verified: true, identity_verification_basis: "Fictitious actors for a software test only.",
+    actors: Object.fromEntries(Object.keys(index).map(name => [name, finalActors[name] ?? "synthetic-" + name])),
+    stage_end_hashes: Object.fromEntries(Object.entries(index).map(([name, entry]) => [name, entry.end.sha256])) };
+  const finalOptions = { action: "record-final", attestation: "attestation.json", attestationSha256: await f.put("attestation.json", attestation) };
+  return { ...f, finalOptions, attestation };
+}
+
+test("final custody records exact observed stages without approval; installed check preserves all original evidence", async t => {
+  const f = await finalReady(t), originals = new Map();
+  for (const name of ["STAGE-INDEX.json", "REVIEW-BASIS.json", "stage-receipts/first.json", "source.pdf", "source-final-review.json", "audit-final-review.json"])
+    originals.set(name, await readFile(join(f.packet, name)));
+  const recorded = await f.run(f.finalOptions), value = await f.read(recorded.receipt.path);
+  assert.equal(recorded.status, "FINAL_CUSTODY_RECORDED_NOT_APPROVED");
+  assert.equal(value.receipt_kind, "standalone-stage-custody-v1");
+  assert.equal(value.publishable || value.contentValidated || value.reviewValidated, false);
+  assert.equal(value.human_acceptance_required, true);
+  assert.equal(value.automatic_next_report_allowed, false);
+  assert.deepEqual(Object.keys(value.stage_receipts), Object.keys(reportStages));
+  for (const [name, expected] of Object.entries(value.files)) assert.equal(hash(await readFile(join(f.packet, name))), expected);
+  for (const [name, bytes] of originals) assert.deepEqual(await readFile(join(f.packet, name)), bytes);
+  await assert.rejects(f.run(f.finalOptions), /already exists/);
+  await installContentSkills(join(f.root, "skills"), { names: ["omnibus-add-report"], checkOnly: false });
+  const { stdout } = await promisify(execFile)(process.execPath, [join(f.root, "skills/omnibus-add-report/scripts/stage-receipts.mjs"),
+    "check-final", "--packet", f.packet, "--release-sha256", f.options.releaseSha256, "--approval-sha256", f.options.approvalSha256,
+    "--input-freeze-sha256", f.options.inputFreezeSha256, "--baseline-freeze-sha256", f.options.baselineFreezeSha256,
+    "--first-receipt-sha256", f.options.firstReceiptSha256, "--review-basis-sha256", f.options.reviewBasisSha256,
+    "--final-receipt-sha256", recorded.receipt.sha256]);
+  const checked = JSON.parse(stdout);
+  assert.equal(checked.status, "FINAL_CUSTODY_CHECKED_NOT_APPROVED");
+  assert.equal(checked.publishable || checked.contentValidated || checked.reviewValidated, false);
+  await assert.rejects(f.run({ action: "check-final", finalReceiptSha256: "0".repeat(64) }), /final custody hash/);
+  await f.put("STAGES.json", { changed: true });
+  await assert.rejects(f.run({ action: "check-final", finalReceiptSha256: recorded.receipt.sha256 }), /input\/output changed/);
+});
+
+test("final custody refuses incomplete stages and changed attestation, scope or receipt anchors before writing", async t => {
+  const cases = [
+    ["no attestation pin", async f => { f.finalOptions.attestationSha256 = undefined; }, /Invalid receipt pointer/],
+    ["changed attestation", async f => { await f.put("attestation.json", {}); }, /Receipt changed/],
+    ["no observed separation", async f => { f.attestation.actual_agent_separation_verified = false; f.finalOptions.attestationSha256 = await f.put("attestation.json", f.attestation); }, /Observed separation/],
+    ["other report", async f => { f.attestation.report_id = "OTHER"; f.finalOptions.attestationSha256 = await f.put("attestation.json", f.attestation); }, /single-report scope/],
+    ["wrong actor", async f => { f.attestation.actors.source_final_review = f.attestation.actors.practical_authoring; f.finalOptions.attestationSha256 = await f.put("attestation.json", f.attestation); }, /actor differs/],
+    ["wrong stage pin", async f => { f.attestation.stage_end_hashes.repairs = "0".repeat(64); f.finalOptions.attestationSha256 = await f.put("attestation.json", f.attestation); }, /stage end or actor/],
+    ["missing stage", async f => { const i = await f.read("STAGE-INDEX.json"); delete i.practical_final_review; await f.put("STAGE-INDEX.json", i); }, /All eight stages/],
+    ["incomplete stage", async f => { const i = await f.read("STAGE-INDEX.json"); delete i.practical_final_review.end; await f.put("STAGE-INDEX.json", i); }, /not complete/],
+    ["changed original", async f => { await f.put("stage-receipts/first.json", {}); }, /input\/output changed|Receipt changed/],
+  ];
+  for (const [name, edit, error] of cases) await t.test(name, async t => {
+    const f = await finalReady(t); await edit(f);
+    await assert.rejects(f.run(f.finalOptions), error);
+    for (const path of ["STAGES.json", "stage-receipts/final.json", "CUSTODY-FINAL.json"]) await assert.rejects(readFile(join(f.packet, path)), /ENOENT/);
+  });
+});
+
+test("final custody never substitutes a stale, unapproved or incorrectly attributed final review", async t => {
+  for (const [name, edit, error] of [
+    ["revision", r => { r.decision = "REVISE"; }, /completed final review/],
+    ["open issues", r => { r.unresolved_issues = ["Still unresolved"]; }, /completed final review/],
+    ["reviewer", r => { r.reviewer_agent = "Other actor"; }, /completed final review/],
+    ["target", r => { r.target_hashes = { ...r.target_hashes, "APP-FINAL.json": "0".repeat(64) }; }, /targets differ/],
+  ]) await t.test(name, async t => {
+    const f = await finalReady(t, edit);
+    await assert.rejects(f.run(f.finalOptions), error);
+    await assert.rejects(readFile(join(f.packet, "CUSTODY-FINAL.json")), /ENOENT/);
+  });
+});
+
+test("final custody preserves allowed reviewer reuse but rejects self-review even with matching observed stage identities", async t => {
+  const allowed = await finalReady(t, () => {}, { practical_final_review: "synthetic-practical_draft_review" });
+  assert.equal((await allowed.run(allowed.finalOptions)).status, "FINAL_CUSTODY_RECORDED_NOT_APPROVED");
+  for (const [actors, error] of [
+    [{ practical_final_review: "synthetic-practical_authoring" }, /Author cannot review/],
+    [{ source_final_review: "synthetic-source_a" }, /Source reviewer must/],
+    [{ source_final_review: "same-reviewer", practical_final_review: "same-reviewer" }, /Source reviewer must/],
+  ]) {
+    const f = await finalReady(t, () => {}, actors);
+    await assert.rejects(f.run(f.finalOptions), error);
+    await assert.rejects(readFile(join(f.packet, "CUSTODY-FINAL.json")), /ENOENT/);
+  }
 });
 
 test("standalone baseline freeze retains actual snapshots and binds subsequent readings to the external pin", async t => {
