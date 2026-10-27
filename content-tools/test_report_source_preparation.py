@@ -153,7 +153,7 @@ class PreparationTest(unittest.TestCase):
 
     def bind_release(self):
         files = {}
-        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs", "scripts/baseline-registry-counts.mjs"]
+        names = ["scripts/prepare-source.py", "scripts/stage-receipts.mjs", "scripts/report-stages.mjs", "scripts/baseline-registry-counts.mjs", "scripts/taxonomy-snapshot.mjs"]
         names += ["references/report-kit/" + name for name in (
             "contracts/CONTRACT.md", "contracts/record_contract.py", "roles/source-reader.md", "QUALITY.md", "SOURCE-OUTPUT.md")]
         for name in names:
@@ -180,7 +180,7 @@ class PreparationTest(unittest.TestCase):
         registry, release, taxonomy = "baseline/viewer/app/reviewed-reports.json", "baseline/release.json", "baseline/taxonomy.json"
         files = {}
         for name, data in ((registry, {"corpus": [{"framework": {"report": {"id": "OLD"}, "lines": []}}]}),
-                           (release, {"synthetic": "data release"}), (taxonomy, {"synthetic": "taxonomy"})):
+                           (release, {"synthetic": "data release"}), (taxonomy, {"processes": [{"id": "SYN", "title": "Synthetic process"}]})):
             target = self.packet / name
             target.parent.mkdir(parents=True, exist_ok=True)
             files[name] = prep.write(target, data)
@@ -191,6 +191,8 @@ class PreparationTest(unittest.TestCase):
         frozen = json.loads(self.phase("freeze-baseline", ["--plan", "selection-plan.json", "--plan-sha256", plan_hash,
                                                          "--coordinator", "synthetic-coordinator"]).stdout)
         self.phase_flags += ["--baseline-freeze-sha256", frozen["receipt"]["sha256"]]
+        taxonomy_result = json.loads(self.phase("snapshot-taxonomy").stdout)
+        self.assertEqual(taxonomy_result["status"], "TAXONOMY_SNAPSHOT_NOT_APPROVED")
         ends = []
         for role, stage in (("extractor", "source_a"), ("inventory", "source_b")):
             actor = "synthetic-source_a" if same_actor else "synthetic-" + stage

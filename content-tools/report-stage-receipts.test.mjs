@@ -26,7 +26,7 @@ async function fixture(t) {
   };
   const read = async name => JSON.parse(await readFile(join(packet, name), "utf8"));
   const files = {};
-  for (const name of ["stage-receipts.mjs", "report-stages.mjs", "baseline-registry-counts.mjs"])
+  for (const name of ["stage-receipts.mjs", "report-stages.mjs", "baseline-registry-counts.mjs", "taxonomy-snapshot.mjs"])
     files["scripts/" + name] = await put("kit/scripts/" + name, await readFile(new URL(tool + name, import.meta.url)));
   const manifest = { author_agent: "synthetic-helper-author", files };
   const releaseSha256 = await put("kit/RELEASE-MANIFEST.json", manifest);
@@ -94,6 +94,60 @@ async function baselinePlan(f) {
     inputFreezeSha256: hash(await readFile(join(f.packet, "INPUT-FREEZE.json"))), coordinator: "synthetic-coordinator" };
   return { plan, options };
 }
+
+async function taxonomyBaseline(f, processes = [{ id: "SYN", title: "Synthetic process", definition: "Exact definition", examples: ["Example"] }]) {
+  const { plan, options } = await baselinePlan(f);
+  delete plan.files[plan.taxonomy_path];
+  plan.taxonomy_path = "baseline/taxonomy.json";
+  plan.files[plan.taxonomy_path] = await f.put(plan.taxonomy_path, { processes });
+  options.planSha256 = await f.put(options.plan, plan);
+  const frozen = await f.run(options);
+  f.options.baselineFreezeSha256 = frozen.receipt.sha256;
+  return plan;
+}
+
+test("data-only taxonomy retains all frozen definitions, is required before authoring and is never overwritten", async t => {
+  const f = await fixture(t), plan = await taxonomyBaseline(f);
+  await assert.rejects(f.start("practical_authoring"), /Frozen taxonomy required/);
+  const result = await f.run({ action: "snapshot-taxonomy" }), snapshot = await f.read("TAXONOMY-SNAPSHOT.json");
+  assert.equal(result.status, "TAXONOMY_SNAPSHOT_NOT_APPROVED");
+  assert.equal(result.publishable || result.contentValidated || result.reviewValidated, false);
+  assert.equal(snapshot.file_sha256, plan.files[plan.taxonomy_path]);
+  assert.equal(snapshot.path, plan.taxonomy_path);
+  assert.deepEqual(Object.values(snapshot.processes), (await f.read(plan.taxonomy_path)).processes);
+  await assert.rejects(f.run({ action: "snapshot-taxonomy" }), /already exists/);
+  for (const stage of ["source_a", "source_b", "reconciliation"]) {
+    for (const path of reportStages[stage][1]) {
+      try { await readFile(join(f.packet, path)); }
+      catch (error) { if (error.code !== "ENOENT") throw error; await f.put(path, { synthetic: true }); }
+    }
+    const begin = await f.start(stage); await f.output(stage); await f.finish(stage, begin.receipt.sha256);
+  }
+  const begin = await f.start("practical_authoring");
+  assert.equal((await f.read(begin.receipt.path)).inputs["TAXONOMY-SNAPSHOT.json"], result.receipt.sha256);
+  snapshot.processes.SYN.definition = "Edited after start";
+  await f.put("TAXONOMY-SNAPSHOT.json", snapshot);
+  await f.output("practical_authoring");
+  await assert.rejects(f.finish("practical_authoring", begin.receipt.sha256), /differs from frozen definitions/);
+  await rm(join(f.packet, "TAXONOMY-SNAPSHOT.json"));
+  await assert.rejects(f.finish("practical_authoring", begin.receipt.sha256), /Frozen taxonomy required/);
+  await assert.rejects(f.run({ action: "snapshot-taxonomy" }), /must precede practical work/);
+});
+
+test("taxonomy refuses unusable definitions, executable modules and output recorded after authoring", async t => {
+  for (const processes of [[], [{ id: "SYN", title: "" }], [{ id: "__proto__", title: "Unsafe" }],
+    [{ id: "SYN", title: "One" }, { id: "SYN", title: "Two" }]]) {
+    const f = await fixture(t); await taxonomyBaseline(f, processes);
+    await assert.rejects(f.run({ action: "snapshot-taxonomy" }), /process/);
+    await assert.rejects(readFile(join(f.packet, "TAXONOMY-SNAPSHOT.json")), /ENOENT/);
+  }
+  const f = await fixture(t), { options } = await baselinePlan(f);
+  f.options.baselineFreezeSha256 = (await f.run(options)).receipt.sha256;
+  await assert.rejects(f.run({ action: "snapshot-taxonomy" }), /JSON|Unexpected token/);
+  const late = await fixture(t); await taxonomyBaseline(late);
+  await late.put("APP-DRAFT.json", { alreadyWritten: true });
+  await assert.rejects(late.run({ action: "snapshot-taxonomy" }), /already exists/);
+});
 
 test("standalone baseline freeze retains actual snapshots and binds subsequent readings to the external pin", async t => {
   const f = await fixture(t), { plan, options } = await baselinePlan(f);

@@ -27,8 +27,11 @@ bestaande Omnibus-broncontrole.
   goedkeuring buiten het pakket en geeft die mee aan elke opdracht.
 - Na [selectie en baseline vastleggen](selection-baseline.md) is bij iedere
   volgende opdracht ook `--baseline-freeze-sha256 <bewaarde-baselinehash>` vereist.
-  De release bevat dan `scripts/baseline-registry-counts.mjs`. De baseline,
+  De release bevat dan `scripts/baseline-registry-counts.mjs`. Voor het praktische
+  taxonomieoverzicht bevat ze ook `scripts/taxonomy-snapshot.mjs`. De baseline,
   selectie en oorspronkelijke momentopnamen blijven aan de fasebewijzen gebonden.
+- Maak vóór praktische uitwerking het [taxonomieoverzicht](selection-baseline.md#praktische-taxonomie-klaarzetten).
+  De praktische fases gebruiken precies die bevroren definities.
 
 **Deze skill levert geen ingevulde releasegoedkeuring mee.** Het hulpmiddel maakt
 die ook niet zelf. Ontbreekt deze controle, dan stopt het. Reviewbasis en definitieve

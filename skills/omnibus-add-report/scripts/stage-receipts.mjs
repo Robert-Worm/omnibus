@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { reportStages } from "./report-stages.mjs";
 import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
+import { taxonomySnapshot } from "./taxonomy-snapshot.mjs";
 
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
 const isHash = value => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -184,7 +185,7 @@ async function baselineHelper(manifest) {
 
 async function freezeBaseline(io, index, manifest, options) {
   need(!Object.keys(index).length, "Baseline must precede every reading stage");
-  await absent(io, ["BASELINE-FREEZE.json", "SELECTION.json", "PILOT-CONTROL.json", "FIRST-SUBMISSIONS.json", "CUSTODY-FIRST.json",
+  await absent(io, ["BASELINE-FREEZE.json", "SELECTION.json", "PILOT-CONTROL.json", "FIRST-SUBMISSIONS.json", "CUSTODY-FIRST.json", "TAXONOMY-SNAPSHOT.json",
     ...Object.values(reportStages).flatMap(([outputs]) => outputs)]);
   need(text(options.coordinator) && text(options.plan) && isHash(options.planSha256), "Coordinator and externally retained selection plan hash required");
   const plan = await pinned(io, { path: options.plan, sha256: options.planSha256 });
@@ -232,6 +233,23 @@ async function checkBaseline(io, manifest, options) {
   await pinned(io, baseline.preparation.plan);
   await checkHashes(io, baseline.files, ["SELECTION.json", "PILOT-CONTROL.json", baseline.preparation.plan.path,
     baseline.preparation.registry_path, baseline.preparation.release_path, baseline.preparation.taxonomy_path]);
+  return baseline;
+}
+
+async function expectedTaxonomy(io, manifest, baseline) {
+  need(baseline, "Pinned prepared baseline required for taxonomy");
+  need(manifest.files["scripts/taxonomy-snapshot.mjs"] === sha(await readFile(new URL("taxonomy-snapshot.mjs", import.meta.url))),
+    "Unapproved taxonomy helper");
+  const path = baseline.preparation.taxonomy_path;
+  return taxonomySnapshot(await io.read(path), path, baseline.files[path]);
+}
+
+async function checkTaxonomy(io, manifest, baseline) {
+  if (!baseline) return false; // Historical packages retain their existing final checks.
+  let actual;
+  try { actual = await io.read("TAXONOMY-SNAPSHOT.json"); }
+  catch (error) { if (error.code !== "ENOENT") throw error; return false; }
+  need(same(actual, await expectedTaxonomy(io, manifest, baseline)), "Taxonomy differs from frozen definitions");
   return true;
 }
 
@@ -319,7 +337,7 @@ async function freezeFirst(io, index, manifest, options) {
 
 export async function recordStage(options) {
   const { action, stage } = options;
-  need(["freeze-first", "freeze-baseline"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
+  need(["freeze-first", "freeze-baseline", "snapshot-taxonomy"].includes(action) || (["start", "finish", "check"].includes(action) && Object.hasOwn(reportStages, stage)), "Known action and stage required");
   const io = await storage(options.packet);
   const lock = join(io.root, ".stage-receipts.lock");
   await mkdir(lock); // Exclusive ownership; never take over an interrupted run automatically.
@@ -329,7 +347,16 @@ export async function recordStage(options) {
     entries(index);
     if (action === "freeze-baseline") return await freezeBaseline(io, index, manifest, options);
     const baseline = await checkBaseline(io, manifest, options);
+    const practical = name => !["source_a", "source_b", "reconciliation"].includes(name);
+    if (action === "snapshot-taxonomy") {
+      need(Object.keys(index).every(name => !practical(name)), "Taxonomy must precede practical work");
+      await absent(io, ["TAXONOMY-SNAPSHOT.json", ...Object.entries(reportStages).filter(([name]) => practical(name)).flatMap(([, [outputs]]) => outputs)]);
+      const receipt = await io.write("TAXONOMY-SNAPSHOT.json", await expectedTaxonomy(io, manifest, baseline));
+      return { status: "TAXONOMY_SNAPSHOT_NOT_APPROVED", receipt, publishable: false, contentValidated: false, reviewValidated: false };
+    }
+    const taxonomy = await checkTaxonomy(io, manifest, baseline);
     if (action === "freeze-first") return await freezeFirst(io, index, manifest, options);
+    if (baseline && practical(stage)) need(taxonomy, "Frozen taxonomy required before practical work");
     let pointer;
     if (action === "start") {
       need(text(options.actor), "Actual actor required");
@@ -342,7 +369,8 @@ export async function recordStage(options) {
         try { await io.bytes("FIRST-SUBMISSIONS.json"); throw Error("First submissions already frozen"); }
         catch (error) { if (error.code !== "ENOENT") throw error; }
       }
-      const inputs = Object.fromEntries(await Promise.all([...reportStages[stage][1], "RELEASE-BINDING.json", ...(baseline ? ["BASELINE-FREEZE.json"] : [])]
+      const inputs = Object.fromEntries(await Promise.all([...reportStages[stage][1], "RELEASE-BINDING.json", ...(baseline ? ["BASELINE-FREEZE.json"] : []),
+        ...(baseline && practical(stage) ? ["TAXONOMY-SNAPSHOT.json"] : [])]
         .map(async name => [name, await io.digest(name)])));
       const start = { stage, actor: options.actor, revision: 1, status: "STARTED", started_at: clock(), inputs,
         dependencies: Object.fromEntries(reportStages[stage][2].map(name => [name, index[name]?.end])) };
@@ -382,7 +410,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       ["packet", "stage", "actor", "release-sha256", "approval-sha256", "input-freeze-sha256", "start-sha256", "end-sha256", "observation",
         "coordinator", "identity-observation", "reader-a-sha256", "reader-b-sha256", "python", "plan", "plan-sha256", "baseline-freeze-sha256"].map(name => [name, { type: "string" }])),
       "comparison-not-started": { type: "boolean" } } });
-    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
+    need(positionals.length === 1 && text(values.packet), "Usage: node stage-receipts.mjs start|finish|check|freeze-first|freeze-baseline|snapshot-taxonomy --packet <directory> --release-sha256 <hash> --approval-sha256 <hash>");
     const options = Object.fromEntries(Object.entries(values).map(([key, value]) => [key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), value]));
     console.log(JSON.stringify(await recordStage({ ...options, action: positionals[0] }), null, 2));
   } catch (error) { console.error(error.message); process.exitCode = 1; }

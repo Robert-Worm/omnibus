@@ -31,11 +31,12 @@ klaargezet. Er worden geen leeslogs of eerste inzendingen aangemaakt.
 
 Vóór de lezingen kun je [selectie en baseline vastleggen](selection-baseline.md)
 op basis van door de eigenaar aangeleverde, gecontroleerde momentopnamen.
+De eigenaar kan die alleen-lezen exporteren vanuit een Omnibus-codecheckout.
+De skill maakt daaruit het vaste taxonomieoverzicht voor praktische uitwerking.
 Na de werkelijke lezingen kun je [beide eerste inzendingen bevriezen](first-submissions.md)
 en hun ontvangstbewijs vastleggen vóór vergelijking.
 
-**Nog niet zelfstandig meegeleverd:** export van actuele baselinegegevens,
-het praktische taxonomieoverzicht, reviewbasis
+**Nog niet zelfstandig meegeleverd:** reviewbasis
 en eindcontrole. De opdrachten met `tools/workflow.py` in het
 oorspronkelijke uitvoercontract zijn dus geen werkende opdrachten in deze skillmap.
 Zonder geverifieerde hulpmiddelen en echte fasebewijzen blijft voorbereidend werk
