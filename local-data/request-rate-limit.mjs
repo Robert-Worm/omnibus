@@ -5,7 +5,24 @@ import { BlockList, isIP } from 'node:net';
 const sliplaneGateways = new Set(['10.1.0.0/24', '10.4.0.0/24', '10.6.0.0/24',
   '10.7.0.0/24', '10.8.0.0/24', '10.10.0.0/24']);
 
-export function requestVisitorAddress({publicMode = false, sliplaneGateway} = {}) {
+/**
+ * The shape of an unusable X-Forwarded-For value, without the value itself, so a
+ * log can explain a fallback without storing any address.
+ */
+export function forwardedShape(count, address) {
+  if (count === 0 || address === undefined) return 'absent';
+  if (count > 1 || Array.isArray(address)) return 'repeated';
+  if (typeof address !== 'string' || !address.trim()) return 'empty';
+  if (address.length > 64) return 'too-long';
+  if (address.includes(',')) return 'list';
+  if (/^\[.*\](:\d+)?$/.test(address)) return 'bracketed-ipv6';
+  if (/^\d{1,3}(\.\d{1,3}){3}:\d+$/.test(address)) return 'ipv4-with-port';
+  if (address.includes('%')) return 'ipv6-zone';
+  if (address !== address.trim()) return 'whitespace';
+  return 'not-an-ip';
+}
+
+export function requestVisitorAddress({publicMode = false, sliplaneGateway, onFallback} = {}) {
   const trusted = new BlockList();
   if (sliplaneGateway !== undefined) {
     if (!publicMode || !sliplaneGateways.has(sliplaneGateway))
@@ -16,14 +33,17 @@ export function requestVisitorAddress({publicMode = false, sliplaneGateway} = {}
     const peer = req.socket.remoteAddress, family = isIP(peer ?? '');
     if (!family) return null;
     if (!trusted.check(peer, family === 4 ? 'ipv4' : 'ipv6')) return peer;
-    // Sliplane overwrites XFF with ONE client IP. Ambiguous or missing data
-    // fails closed; Forwarded, X-Real-IP and caller-selected ports are ignored.
+    // Sliplane overwrites XFF with ONE client IP. Forwarded, X-Real-IP and
+    // caller-selected ports are ignored. Ambiguous or missing data never selects a
+    // visitor: it falls back to the gateway's own shared budget. Failing closed
+    // here took the whole public site down on 27 October 2026 (#213).
     let count = 0;
     for (let i = 0; i < req.rawHeaders.length; i += 2)
       if (req.rawHeaders[i].toLowerCase() === 'x-forwarded-for') count++;
     const address = req.headers['x-forwarded-for'];
-    return count === 1 && typeof address === 'string' && address.length <= 64 && !address.includes('%') && isIP(address)
-      ? address : null;
+    if (count === 1 && typeof address === 'string' && address.length <= 64 && !address.includes('%') && isIP(address)) return address;
+    try { onFallback?.(forwardedShape(count, address)); } catch { /* a log must never block a request */ }
+    return peer;
   };
 }
 

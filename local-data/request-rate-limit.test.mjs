@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequestRateLimit, createVisitorRequestRateLimit, publicRequestRateLimits, publicVisitorLimits, requestVisitorAddress } from './request-rate-limit.mjs';
+import { createRequestRateLimit, createVisitorRequestRateLimit, forwardedShape, publicRequestRateLimits, publicVisitorLimits, requestVisitorAddress } from './request-rate-limit.mjs';
 
 const allowed = { allowed: true, retryAfter: 0 };
 const denied = retryAfter => ({ allowed: false, retryAfter });
@@ -19,13 +19,26 @@ test('only the explicitly configured Sliplane gateway supplies visitor identity'
   assert.equal(requestVisitorAddress({publicMode:true})(proxyRequest('10.1.0.2', '192.0.2.1')), '10.1.0.2');
 });
 
-test('a trusted gateway must supply exactly one unambiguous IP header', () => {
-  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+test('an unusable header from the gateway falls back to the shared gateway budget, never to a refusal (#213)', () => {
+  const shapes = [];
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24', onFallback: (s) => shapes.push(s) });
   for (const value of [undefined, '', '192.0.2.1, 192.0.2.2', ['192.0.2.1'], 'unknown',
     '192.0.2.1:80', '[2001:db8::1]', 'fe80::1%eth0', ' 192.0.2.1', 'x'.repeat(10000)])
-    assert.equal(address(proxyRequest('10.1.0.2', value)), null);
-  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', [])), null);
-  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', ['X-Forwarded-For','192.0.2.1','x-forwarded-for','192.0.2.1'])), null);
+    assert.equal(address(proxyRequest('10.1.0.2', value)), '10.1.0.2');
+  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', [])), '10.1.0.2');
+  assert.equal(address(proxyRequest('10.1.0.2', '192.0.2.1', ['X-Forwarded-For','192.0.2.1','x-forwarded-for','192.0.2.1'])), '10.1.0.2');
+  assert.deepEqual(shapes, ['absent', 'empty', 'list', 'repeated', 'not-an-ip', 'ipv4-with-port', 'bracketed-ipv6', 'ipv6-zone', 'whitespace', 'too-long', 'absent', 'repeated']);
+  // The shape never contains the address itself.
+  assert.ok(shapes.every((s) => !/\d+\.\d+|:/.test(s)));
+  // A failing log callback cannot block the request.
+  const loud = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24', onFallback: () => { throw Error('x'); } });
+  assert.equal(loud(proxyRequest('10.1.0.2', 'unknown')), '10.1.0.2');
+});
+
+test('with a wrong gateway setting every visitor still gets in (#213)', () => {
+  const address = requestVisitorAddress({ publicMode: true, sliplaneGateway: '10.1.0.0/24' });
+  const limiter = createVisitorRequestRateLimit({ capacity: 5, now: () => 0 });
+  for (let i = 0; i < 5; i++) assert.deepEqual(limiter.take(address(proxyRequest('10.1.0.2', '192.0.2.1:443'))), allowed);
 });
 
 test('two visitors behind one gateway have separate budgets; direct spoofing does not', () => {

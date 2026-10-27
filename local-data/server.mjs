@@ -27,7 +27,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid catalogue port');
   return createHostingPolicy({publicOrigin,listenHost,webRoot});
  });
- const visitorAddress=startupCheck('start-options',()=>requestVisitorAddress({publicMode:hosting.publicMode,sliplaneGateway}));
+ // A rejected forwarded address falls back to the gateway budget; log only its shape, at most once a minute.
+ let lastFallbackLog=-Infinity;
+ const onFallback=shape=>{const t=performance.now();if(t-lastFallbackLog<60_000)return;lastFallbackLog=t;
+  console.error(JSON.stringify({event:'visitor_address_fallback',shape,time:new Date().toISOString()}));};
+ const visitorAddress=startupCheck('start-options',()=>requestVisitorAddress({publicMode:hosting.publicMode,sliplaneGateway,onFallback}));
  const readiness=webRoot===undefined?null:startupCheck('web-readiness',()=>createRuntimeReadiness(repository,()=>{
   const web=createStaticWeb(webRoot,repository);
   return {pins:web.pins,value:web};
