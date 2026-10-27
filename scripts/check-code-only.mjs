@@ -9,7 +9,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'code-snapshot.json'),'utf8'));
 const git=(args,options={})=>execFileSync('git',args,{cwd:root,maxBuffer:64*1024*1024,...options});
 const withheld=new Set(manifest.withheld.map(entry=>entry.path));
-const jsonConfigs=new Set(['package.json','package-lock.json','components.json','tsconfig.json','.oxlintrc.json','code-snapshot.json','.github/voortgang/verwerkt.json','.github/voortgang/wetten-en-kaders.json','.github/voortgang/modellen.json','.github/voortgang/dubbelingen.json']);
+const jsonConfigs=new Set(['package.json','package-lock.json','components.json','tsconfig.json','.oxlintrc.json','code-snapshot.json','.github/voortgang/verwerkt.json','.github/voortgang/wetten-en-kaders.json','.github/voortgang/modellen.json','.github/voortgang/dubbelingen.json','.github/overdracht/volgorde.json']);
 const blocked=/^(?:node_modules|work|private|projects|exports|intakes|database-build|runtime-build|offline-build|\.openai|\.aws|\.ssh|local-data\/runtime)\/|(?:^|\/)\.env(?:\.|$)|\.(?:pdf|sqlite3?|db|xlsx?|docx|pem|key|pfx|zip|bin)$/i;
 const rules=[
   ['private-key', /-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/],
