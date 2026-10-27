@@ -10,7 +10,7 @@
     "test:release-prepare": "node --test scripts/prepare-release.test.mjs scripts/fetch-release-database.test.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "test:voortgang": "node --test .github/scripts/voortgang.test.mjs .github/scripts/backlog.test.mjs .github/scripts/overdracht.test.mjs",
+    "test:voortgang": "node --test .github/scripts/voortgang.test.mjs .github/scripts/rapportvoorstel-lib.test.mjs .github/scripts/backlog.test.mjs .github/scripts/overdracht.test.mjs",
     "test:docs": "node --test scripts/check-docs.test.mjs scripts/check-feiten.test.mjs scripts/check-links.test.mjs scripts/docs-screenshots.test.mjs scripts/check-contrast.test.mjs scripts/installeer.test.mjs && node scripts/check-docs.mjs",
     "check:links": "node scripts/check-links.mjs",
     "docs:screenshots": "node scripts/docs-screenshots.mjs",
