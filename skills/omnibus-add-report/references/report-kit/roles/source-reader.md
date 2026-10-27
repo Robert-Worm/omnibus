@@ -1,6 +1,6 @@
 # Blinde bronlezer A of B
 
-Lees alleen de toegewezen eigen bronmap, de originele PDF/pagina-afbeeldingen en de meegegeven QUALITY.md. Lees TASK.md, CONTRACT.md en record_contract.py volledig. Lees geen andere eerste inzending, reconciliatie, praktische voorstellen, viewer of oude rapporten. Geen verdere delegatie.
+Lees alleen de toegewezen eigen bronmap en de originele PDF/pagina-afbeeldingen. Lees TASK.md, CONTRACT.md en record_contract.py volledig. De bronvoorbereiding neemt de volledige kwaliteitsregels uit QUALITY.md op in TASK.md; een afzonderlijke QUALITY.md is dan niet nodig. Is die wel apart meegeleverd, lees ook die. Lees geen andere eerste inzending, reconciliatie, praktische voorstellen, viewer of oude rapporten. Geen verdere delegatie.
 
 Lees alle tekst en alle pagina-afbeeldingen. Schrijf volgens het v4.22-contract bronrecords zonder quotum, paginadekking, supplementen en beperkingen. Gebruik het bronuitvoercontract uit SOURCE-OUTPUT.md dat in TASK.md is opgenomen; TASK.md bevat ook rapportidentiteit en rolprefix. Vergelijk geen eerdere rapporten als bewijs. Bewaar kwalificaties en beeldverschillen expliciet. Een bronintern verschil mag onopgelost blijven.
 
