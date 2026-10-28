@@ -31,6 +31,11 @@ publicatieroute, na akkoord van de beheerder.
    - **schrappen**: er is geen zinnige vraag te maken uit deze bron.
    - **HOLD**: twijfel. Nooit stilletjes goedkeuren.
 5. Verzin geen bron, norm of ID. Een herschreven vraag voegt geen nieuwe eis toe.
+6. Beoordeel bij een kader ook de overkoepelende vraagopzet en de expliciete
+   koppelingen. Geen losse vraagtekst bij een norm betekent niet dat een centrale
+   vraag ontbreekt; controleer de bronplanroute. Ontbreekt de hele opzet, leg dat
+   als lacune vast en laat `omnibus-build-questions` passende voorstellen maken.
+   Een zinvolle vraag met verkeerde dekking moet eveneens worden hersteld.
 
 ## Uitvoer
 

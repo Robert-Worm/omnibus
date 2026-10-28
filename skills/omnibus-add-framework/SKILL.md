@@ -70,6 +70,16 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 
 ## Overdraagbare aanlevering
 
+Controleer ook de route van normselectie naar **Bouw je kader → Bekijk mijn
+vraagopzet**. Vraagvoorstellen zijn redactionele onderzoeksinstrumenten, niet
+uitsluitend gebruikersinhoud. Laat `omnibus-build-questions` een passende
+centrale vraag en samenhangende deelvragen met expliciete toetspuntkoppelingen
+maken en laat die met `omnibus-review-questions` beoordelen. Neem de goedgekeurde
+opzet op in dezelfde data-aanlevering; genereer geen losse vraag per norm om een
+veld te vullen. Ontbreekt een verdedigbaar voorstel, vermeld de inhoudelijke
+lacune en de route voor eigen vragen. Een selecteerbaar kader is daarmee nog
+niet bewezen bruikbaar voor de demo. Zie [vraagopzet en dekking](references/framework-method.md#vraagopzet-en-dekking).
+
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Lever een apart
 `intake.json` rond ongewijzigde kopieën van bron, bronbank, catalogus,
 migratierelaties, context, beperkingen en reviewbasis met werkelijke reviews.

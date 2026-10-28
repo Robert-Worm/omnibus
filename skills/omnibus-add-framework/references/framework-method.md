@@ -188,6 +188,29 @@ tot een vaststellingsplicht te maken.
 
 ## Review, reparatie en handoff
 
+### Vraagopzet en dekking
+
+Laat de hoofd- en deelvragen de geselecteerde taken onderzoeken. Een wetstitel
+of een generieke vraag naar implementatie is onvoldoende als er geen passende
+deelvragen en koppelingen achter zitten. Scheid verplichtingen van entiteiten,
+overheidstaken en het gebruik van bevoegdheden. Een gekozen norm bevestigt
+geen toepasselijkheid; facultatieve bevoegdheden worden geen uitvoeringsplicht.
+
+Bewaar de vraagopzet in de brondata met stabiele vraag-ID's en exacte
+toetspunt-ID's. Laat formulering én koppelingen beoordelen; leg ontbrekende
+dekking en besluiten tot herschrijven, schrappen of HOLD vast. Controleer dat
+de adapter het plan ook levert als het kader een eigen bronadapter heeft en
+geen vlakke catalogusregels. Een ontbrekende vraagtekst per norm hoeft geen
+probleem te zijn wanneer het kader een bruikbare overkoepelende vraagopzet heeft.
+
+Beproef alle selecteerbare punten, een beperkte selectie en verschillende
+normadressaten: vraagopzet openen, deelvragen kiezen, koppelingen controleren,
+eigen tekst bewaren, heropenen en exporteren. Geen vooraf aangevinkte vragen,
+stil toegevoegde normen of vervanging van eigen projectvragen. Afgekeurde
+voorstellen verdwijnen uit nieuwe keuzes; bewaarde gebruikersinhoud blijft.
+
+### Onafhankelijke eindbeoordeling
+
 Bewaar concept en hersteloverzicht. Bron-, juridisch/kader- en praktische
 eindreview zijn drie werkelijk onafhankelijke reviewerrollen; geen auteur keurt
 eigen praktische reparaties goed. Bronreviewer is ook geen oorspronkelijke

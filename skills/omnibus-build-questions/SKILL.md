@@ -87,6 +87,13 @@ Een centrale vraag, deelvraag en interviewvraag hebben verschillende functies.
 Kopieer niet dezelfde normzin naar alle drie niveaus. Produceer geen verplicht
 aantal vragen per norm; rechtvaardig het aantal met de inhoud.
 
+Controleer bij een kader zonder vraagvoorstellen of die opzet werkelijk nog
+ontbreekt, of onderweg verloren gaat in de bronadapter of het laden van de
+gegevens. Vul lege normgebonden interviewvragen niet met een algemene hoofdvraag.
+Lever de overkoepelende opzet en expliciete koppelingen via de bestaande
+bronplanroute. Een afkeuring blijft gelden bij wisselen van onderzoeksrichting;
+een algemene formulering mag die afkeuring niet omzeilen.
+
 ## 4. Maak interviewvragen die iemand kan beantwoorden
 
 - Stel een open, neutrale hoofdvraag met één focus. Gebruik concrete taal die
