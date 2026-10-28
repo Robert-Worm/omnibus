@@ -125,6 +125,11 @@ een algemene formulering mag die afkeuring niet omzeilen.
   door alleen functietitels te vervangen. Niet ieder toetspunt past bij ieder niveau.
 - Benoem wat aanvullend onderzocht moet worden voordat een oordeel mogelijk is.
   Maak niet van elke interviewvraag een volledige testinstructie of disclaimer.
+- Controleer de route **toetspunt selecteren → Interviewleidraad**, ook voor
+  rapportpunten onder een thema of proces. Laat iedere aangeboden opening en
+  niveauvariant als interviewvraag beoordelen. Hergebruik geen toetsvraag omdat
+  die grammaticaal klopt; geen passende vraag is beter dan een geforceerde vraag.
+  Een ontbrekend of afgekeurd niveau krijgt niet automatisch een andere variant.
 - Formuleringsvarianten voor de cycler behouden exact hetzelfde begrip, actor,
   periode, reikwijdte en koppelingen. Niveauvarianten zijn een andere categorie;
   zij mogen een andere invalshoek hebben en vragen een eigen dekkingstoets.

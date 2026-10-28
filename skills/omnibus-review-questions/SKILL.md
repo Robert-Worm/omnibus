@@ -36,6 +36,12 @@ publicatieroute, na akkoord van de beheerder.
    vraag ontbreekt; controleer de bronplanroute. Ontbreekt de hele opzet, leg dat
    als lacune vast en laat `omnibus-build-questions` passende voorstellen maken.
    Een zinvolle vraag met verkeerde dekking moet eveneens worden hersteld.
+7. Neem **Interviewleidraad** expliciet mee: beoordeel wat na selectie van een
+   norm of los toetspunt daadwerkelijk wordt voorgesteld, inclusief niveauvarianten
+   en doorvragen. Een goedgekeurde toetsvraag of hoofdvraag is geen goedgekeurde
+   interviewvraag. Een geslaagde vormcontrole evenmin. Ontbreekt de inhoudelijke
+   beoordeling voor die exacte vraag/variant, dan blijft zij onbekend en wordt zij
+   niet als goedgekeurd interviewvoorstel aangeboden. Eigen projectvragen blijven intact.
 
 ## Uitvoer
 

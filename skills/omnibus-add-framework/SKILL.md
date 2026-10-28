@@ -82,6 +82,12 @@ veld te vullen. Ontbreekt een verdedigbaar voorstel, vermeld de inhoudelijke
 lacune en de route voor eigen vragen. Een selecteerbaar kader is daarmee nog
 niet bewezen bruikbaar voor de demo. Zie [vraagopzet en dekking](references/framework-method.md#vraagopzet-en-dekking).
 
+Controleer tevens **Interviewleidraad** voor de selecteerbare toetspunten. Lever
+alleen inhoudelijk beoordeelde interviewopeningen en passende niveauvarianten;
+een toetsvraag of overkoepelende onderzoeksvraag is daarvoor geen vervanging.
+Gebruik de ontwerp- en reviewskills hierboven. Leg ontbrekende dekking vast;
+verzin geen vragen om lege velden te vullen.
+
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Lever een apart
 `intake.json` rond ongewijzigde kopieën van bron, bronbank, catalogus,
 migratierelaties, context, beperkingen en reviewbasis met werkelijke reviews.

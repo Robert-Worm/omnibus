@@ -76,6 +76,12 @@ vraagartefact mee; wijzig daarvoor geen bevroren rapportcontract of reviewbewijs
 Een nieuw rapport is geen reden om bestaande plannen of eigen projectvragen
 blind te vervangen. Zie de route voor thema's/processen in de vragenskill.
 
+Controleer ook **Interviewleidraad** bij afzonderlijk geselecteerde rapportpunten
+en via thema's/processen. Laat aangeboden vragen en niveauvarianten afzonderlijk
+als interview beoordelen. Een toetsvraag, oudernormreview of geslaagde vormcheck
+is geen interviewgoedkeuring. Lever ontbrekende vragen als lacune op; maak geen
+standaardzinnen rond de normtitel om de leidraad te vullen.
+
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Maak bij overdracht een
 apart `intake.json` rond kopieën van het bestaande rapportpakket; wijzig geen
 bevroren kitbestanden, reviewbasis of oorspronkelijke ontvangstbewijzen.

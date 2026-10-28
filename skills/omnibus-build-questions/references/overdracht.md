@@ -71,6 +71,12 @@ geen toestemming om een oud schema blind te kopiëren:
   centrale vraag, geen nieuw vrij te vullen subtypeveld op iedere deelvraag.
 - `lib/interview-structure.mjs`, `lib/model-context.mjs`: model-/interviewstructuur,
   onderzoeksobject en niveauvarianten. Gebruik bestaande selectie- en adoptiepaden.
+- `lib/source-question-presentation.mjs`: afzonderlijke interviewbeoordeling op
+  de actuele bronregel. Een `interviewReview` kan een gereviewde interviewformulering
+  leveren zonder de oorspronkelijke toetsvraag te vervangen. Gebruik de bestaande
+  `prepareQuestionReviewPublication`-route met echte besluiten en exacte bron-,
+  item-, context- en vraagbindingen. Geef niveauvelden afzonderlijke identiteiten.
+  Een review van de bovenliggende norm keurt geen losse rapportpunten goed.
 - `lib/research-question-formulations.mjs`: beperkte formuleringcyclers; maak
   onondersteunde inhoud niet passend met een generieke tekstvervanging.
 
