@@ -97,6 +97,20 @@ voor een andere onderzoeksrichting of uitbreiden met extra bronkoppelingen.
 Dat vraagt een eigen inhoudelijke beoordeling. Behoud wel de expliciet overgenomen
 koppelsleutels en eigen teksten in bestaande projecten.
 
+Voor een eigen procesopzet bevat de bestaande procescatalogus een optionele
+`questionPlans`-index per proces-ID. Lever daarin `central`, `subquestions`,
+`broadSubquestions`, `sourceEdition`, `sourceHash` en de voorbereide `questionReview`.
+Gebruik `prepareQuestionPlanPublication` met `sourceId: 'process:'+proces.id`,
+`item` gelijk aan het plan zonder review en `context: {process: proces}` met de
+exacte navigatieregel vóór toevoeging van het plan. Bind echte bevroren bronnen;
+de hash en bronlijst zijn geen bewijs van inhoudelijke lezing of volledige dekking.
+Elke deelvraag heeft stabiele sleutels en expliciete `originKeys` binnen de
+verklaarde procesbronnen. Brede sleutels beginnen met `broad:`.
+Beide niveaus krijgen afzonderlijke reviewbesluiten. Een ontbrekende/ongeldige
+review in een expliciet procesplan mag niet terugvallen op de generieke vragen.
+De bestaande vragenkeuze laat beide niveaus naast elkaar toe en bewaart eigen
+teksten en handmatige koppelingen; het plan verandert geen materiaalselectie.
+
 Voeg broninhoud toe via de bestaande inhoudslaag, niet als nieuwe ingebedde dataset
 in de viewer. Respecteer de laad-op-aanvraag-opzet en versiegebonden projecten.
 Een vraagontwerpopdracht hoeft geen nieuwe runtime, databasekolom of UI te bouwen.

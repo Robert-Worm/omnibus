@@ -6,6 +6,31 @@ import {questionPlanInventory} from '../lib/source-question-plan.mjs';
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
 
+/** Explicit process plans use the same plan receipts as frameworks. Bind the
+ * navigation scope too; a list of related sources is not automatic coverage. */
+export function verifyProcessQuestionPlans(processes,plans) {
+  if(plans===undefined)return;
+  if(!plans||typeof plans!=='object'||Array.isArray(plans))fail('invalid process question plans');
+  for(const [id,plan]of Object.entries(plans)){
+    const matches=processes.filter(p=>p.id===id),process=matches[0];
+    if(matches.length!==1||!Array.isArray(process.sourceIds)||typeof plan?.central!=='string'||!plan.central.trim()||
+        !plan.subquestions?.length||!plan.broadSubquestions?.length)
+      fail('process plan needs a known process and central, broad and specific questions: '+id);
+    const {questionReview,...item}=plan,questions=questionPlanInventory(plan);
+    verifyQuestionCapsule(questionReview);
+    if(questionReview.sourceId!=='process:'+id||questionReview.itemId!==`process:${id}:question-plan`||
+        questionReview.sourceEdition!==plan.sourceEdition||questionReview.sourceHash!==plan.sourceHash||
+        questionReview.itemHash!==hash({item,questions})||questionReview.contextHash!==hash({process})||
+        JSON.stringify(questionReview.planInventory)!==JSON.stringify(questions)||
+        JSON.stringify(questionReview.questions.map(({id,kind,text})=>({id,kind,text})))!==
+          JSON.stringify(questions.map(({id,kind,text})=>({id,kind,text}))))
+      fail('process plan differs from its reviewed scope: '+id);
+    if([...plan.subquestions,...plan.broadSubquestions].some(q=>q.originKeys.some(key=>
+      !process.sourceIds.some(source=>key.startsWith(source+':')))))
+      fail('process plan maps outside its declared sources: '+id);
+  }
+}
+
 /** Bind authored thematic text and its entire mapping before selection filters
  * it. Ordinary source review still establishes the edition and source evidence. */
 export function verifyMappedResearchQuestion(row,sourceId) {

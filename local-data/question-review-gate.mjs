@@ -2,7 +2,8 @@
 import {QUESTION_REVIEW_PUBLICATION_FORMAT} from '../lib/question-quality-review.mjs';
 import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
 import {localModelPublicationReview,modelWordingModules} from './model-review-gate.mjs';
-import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions,verifyMappedResearchQuestion} from '../content-tools/question-review-validation.mjs';
+import {additionalProcesses} from '../lib/additional-processes.mjs';
+import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions,verifyMappedResearchQuestion,verifyProcessQuestionPlans} from '../content-tools/question-review-validation.mjs';
 export {verifyQuestionCapsule} from '../content-tools/question-review-validation.mjs';
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
 
@@ -44,15 +45,17 @@ export function verifyPublishedQuestionCapsules(repository, value) {
       return resources.get(ref.hash);
     });
     const frameworks = id === 'lib/topical-reviewed.json';
+    const processPlans=id==='lib/process-catalogue.mjs';
     const reports=id===reportModule&&ownReports.length;
     const models=id==='lib/model-library.mjs'&&verifyModels;
     const wording=verifyModels&&modelWordingModules.includes(id);
-    if(!frameworks&&!reports&&!models&&!wording&&!relevant(initial)&&!edits.some(relevant))continue;
+    if(!frameworks&&!processPlans&&!reports&&!models&&!wording&&!relevant(initial)&&!edits.some(relevant))continue;
     // Check the actual assembled inventory, not isolated partial edits. A late
     // resource must not change a previously valid receipt or evade this gate.
     const hydrated=structuredClone(initial);
     for(const rows of edits)applyCatalogueEdits(hydrated,structuredClone(rows));
     visit(hydrated);
+    if(processPlans)verifyProcessQuestionPlans([...(hydrated.processes??[]),...additionalProcesses],hydrated.questionPlans);
     const presets=id==='lib/theme-workspaces.mjs'?hydrated.presets:
       ['app/reviewed-reports.json','app/report-additions.json'].includes(id)?hydrated.researchPresets:[];
     const groups=id==='lib/research-flow.mjs'?hydrated.groups:

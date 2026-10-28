@@ -7,6 +7,8 @@ import {prepareQuestionReviewPublication} from '../content-tools/question-review
 import {syntheticFrameworkQuestions} from '../content-tools/test-support/local-framework-questions.mjs';
 import {reportViewerFixture} from '../content-tools/test-support/local-report-viewer-fixture.mjs';
 import {questionReviewFixture} from '../lib/test-support/question-review-fixture.mjs';
+import {questionPlanInventory} from '../lib/source-question-plan.mjs';
+import {additionalProcesses} from '../lib/additional-processes.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -19,6 +21,46 @@ function fixture(t) {
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
   return {repository, release, contract, value};
 }
+
+test('explicit process plans bind both levels, source scope and exact reviews before publication',t=>{
+ const {repository,release,contract,value}=fixture(t),moduleId='lib/process-catalogue.mjs';
+ for(const additional of [false,true]){
+  const process=additional?additionalProcesses.find(p=>p.id==='PR05'):
+   {id:'SYNTHETIC',title:'Fictief proces',keywords:'',sourceIds:['AW'],question:'Oud voorstel?'};
+  const plan={central:'Hoe verloopt de fictieve behandeling?',sourceEdition:'synthetic-1',sourceHash:digest('fictitious sources'),
+   subquestions:[{key:'registration',text:'Hoe wordt de fictieve aanvraag geregistreerd?',originKeys:['AW:one']}],
+   broadSubquestions:[{key:'broad:handling',text:'Hoe is de fictieve behandeling ingericht?',originKeys:['AW:one','AW:two']}]};
+  const questions=questionPlanInventory(plan);
+  plan.questionReview={...questionReviewFixture({sourceId:'process:'+process.id,itemId:`process:${process.id}:question-plan`,
+   sourceEdition:plan.sourceEdition,sourceHash:plan.sourceHash,item:structuredClone(plan),context:{process},questions}),planInventory:questions};
+  const module={processes:additional?[]:[process],questionPlans:{[process.id]:plan}};
+  const publish=(data,extra={})=>publishRuntime(repository,{...value,modules:{[moduleId]:data},refs:{},registrations:{},...extra},{release,contract});
+  assert.doesNotThrow(()=>publish(module));
+  for(const mutate of [
+   p=>{p.central='Hoe verloopt een ander proces?';},p=>{p.sourceEdition='other';},p=>{p.sourceHash=digest('other');},
+   p=>{delete p.questionReview;},p=>{p.questionReview.reviews.pop();},p=>{p.subquestions[0].originKeys=['AW:two'];},
+   p=>{p.broadSubquestions=[];},p=>{p.questionReview.planInventory=[];},
+  ])for(const late of [false,true]){
+   const changed=structuredClone(module);mutate(changed.questionPlans[process.id]);
+   const extra=late?{refs:prepareWebResources(repository,release,{late:[{path:['questionPlans'],value:changed.questionPlans}]}),
+    registrations:{[moduleId]:['late']}}:{};
+   assert.throws(()=>publish(late?module:changed,extra),/question review publication/);
+  }
+  const negative=structuredClone(module);negative.questionPlans[process.id].questionReview.reviews[0].decision='HOLD';
+  assert.doesNotThrow(()=>publish(negative));
+  const outside=structuredClone(module),outsidePlan=outside.questionPlans[process.id];delete outsidePlan.questionReview;
+  outsidePlan.broadSubquestions[0].originKeys=['UNRELATED:one'];
+  const outsideQuestions=questionPlanInventory(outsidePlan);
+  outsidePlan.questionReview={...questionReviewFixture({sourceId:'process:'+process.id,itemId:`process:${process.id}:question-plan`,
+   sourceEdition:plan.sourceEdition,sourceHash:plan.sourceHash,item:structuredClone(outsidePlan),context:{process},questions:outsideQuestions}),planInventory:outsideQuestions};
+  assert.throws(()=>publish(outside),/outside its declared sources/,'Even internally matching synthetic receipts cannot expand the source scope');
+  assert.throws(()=>publish({...module,questionPlans:{unknown:plan}}),/known process/);
+  if(!additional){
+   assert.throws(()=>publish({...module,processes:[{...process,sourceIds:['other']}]}),/reviewed scope/);
+   assert.throws(()=>publish({...module,processes:[process,process]}),/known process/);
+  }
+ }
+});
 
 test('thematic publication binds reviewed text and mappings after deferred assembly',t=>{
   const {repository,release,contract,value}=fixture(t);
