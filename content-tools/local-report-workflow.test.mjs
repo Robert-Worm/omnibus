@@ -36,6 +36,7 @@ register("data:text/javascript," + encodeURIComponent(`
   if(specifier.endsWith('/reviewed-reports.json'))return json(empty);
   if(['/report-objectives.json','/organizational-goals.json','/product-scope-snapshots.json'].some(s=>specifier.endsWith(s)))return json({});
   const fixtures={
+   'report-point-catalogue.mjs':'export default '+JSON.stringify({...additions.catalogue,interview_questions:additions.interview_questions,visual_sources:additions.visual_sources})+';',
    'interview-structure.mjs':'export const starrPrompts=()=>[],modelStarrPrompts=()=>[],interviewLevels=[];',
    'foundations/registry.mjs':'export const importedFoundationItems=[],importedFoundationMetadata={};',
    'process-catalogue.mjs':'export const processes=[],activeProcesses=[];',
@@ -43,7 +44,7 @@ register("data:text/javascript," + encodeURIComponent(`
    'cio-content.mjs':'export function validateCioEditorialTrace(){throw Error("Unexpected CIO source");}',
    'topical-content.mjs':'export const topicalMetadata=[],topicalProposals=[],topicalIds=[];export function validateTopicalMaterial(){throw Error("Unexpected topical source");}',
    'wwke-law-data.mjs':'export const wwkeMetadata={id:"SYNTHETIC_WWKE"},wwkeProposals=[],wwkeSourceId="SYNTHETIC_WWKE";export function validateWwkeMaterial(){throw Error("Unexpected law source");}',
-   'report-quality-revisions.mjs':'export const revisedReportLine=l=>l;',
+   'report-quality-revisions.mjs':'export const revisedReportLine=l=>l,reportInterviewReviews=()=>({});',
    'research-flow.mjs':'export const subSuggestions=()=>[];'
   };
   for(const [file,code] of Object.entries(fixtures))if(specifier.endsWith('/'+file))return source(code);

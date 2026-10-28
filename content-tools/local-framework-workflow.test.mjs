@@ -35,13 +35,14 @@ register("data:text/javascript," + encodeURIComponent(`
   if(specifier==='omnibus-data:lib/control-objectives.mjs')return json({controlObjectives:{},objectiveAssignments:{}});
   if(['/report-objectives.json','/organizational-goals.json'].some(s=>specifier.endsWith(s)))return json({});
   const fixtures={
+   'report-point-catalogue.mjs':'export default {points:[],reports:[],interview_questions:[]};',
    'interview-structure.mjs':'export const starrPrompts=()=>[],modelStarrPrompts=()=>[],interviewLevels=[];',
    'foundations/registry.mjs':'export const importedFoundationItems=[],importedFoundationMetadata={};',
    'process-catalogue.mjs':'export const processes=[],activeProcesses=[];',
    'cio-law-data.mjs':'export const cioMetadata={id:"SYNTHETIC_CIO"},cioProposals=[],cioPoints=[],cioReviewBasis="synthetic";',
    'cio-content.mjs':'export function validateCioEditorialTrace(){throw Error("Unexpected CIO source");}',
    'wwke-law-data.mjs':'export const wwkeMetadata={id:"SYNTHETIC_WWKE"},wwkeProposals=[],wwkeSourceId="SYNTHETIC_WWKE";export function validateWwkeMaterial(){throw Error("Unexpected law source");}',
-   'report-quality-revisions.mjs':'export const revisedReportLine=l=>l;',
+   'report-quality-revisions.mjs':'export const revisedReportLine=l=>l,reportInterviewReviews=()=>({});',
    'research-flow.mjs':'export const subSuggestions=()=>[];'
   };
   for(const [file,code] of Object.entries(fixtures))if(specifier.endsWith('/'+file))return source(code);
