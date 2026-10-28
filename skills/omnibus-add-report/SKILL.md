@@ -82,6 +82,8 @@ als interview beoordelen. Een toetsvraag, oudernormreview of geslaagde vormcheck
 is geen interviewgoedkeuring. Lever ontbrekende vragen als lacune op; maak geen
 standaardzinnen rond de normtitel om de leidraad te vullen.
 
+Lees voor lokale pakketpublicatie [het interviewcontract](references/report-method.md#interviews-in-de-lokale-pakketroute) vóór de eindreview en bevriezing.
+
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Maak bij overdracht een
 apart `intake.json` rond kopieën van het bestaande rapportpakket; wijzig geen
 bevroren kitbestanden, reviewbasis of oorspronkelijke ontvangstbewijzen.

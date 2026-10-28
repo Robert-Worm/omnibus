@@ -197,6 +197,42 @@ weergaven. Daar kan de oude interpretatie blijven staan nadat de hoofdtekst al
 verbeterd is. Bewaar oude analyse en reviewbewijs als herkenbare eerdere versie,
 niet ongemerkt als actuele onderbouwing van de nieuwe tekst.
 
+## Interviews in de lokale pakketroute
+
+Nieuwe lokale rapportpakketten leveren in `REUSE-CANDIDATE.json` een
+`interviewReviews`-index aan. Laat deze samen met de bestaande hergebruiklaag
+beoordelen vóór het bevriezen; verander geen eerder ontvangen bron- of reviewbewijs.
+
+- Iedere oorspronkelijke norm en ieder toetspunt krijgt een eigen capsule,
+  geïndexeerd op de exacte norm- of punt-ID. Een oudernormreview vervangt geen
+  puntreview. `sourceId` is de rapport-ID, `sourceEdition` het rapportjaar als
+  tekst, `sourceHash` de bestaande `framework.report.source_hash`.
+- De normcapsule bevat een beoordeelde interviewopening met ID `auditQuestion`;
+  de oorspronkelijke toetsvraag blijft letterlijk behouden. Een eventuele
+  gekoppelde doorvraag heeft ID `auditQuestion:follow_up`. Deze route ondersteunt
+  één opening per norm; meld aanvullende respondentniveaus als integratiepunt.
+- Puntcapsules volgen de oorspronkelijke `interview_questions`: ID en tekst
+  van iedere gekoppelde opening, plus `<vraag-id>:follow_up` met soort `doorvraag`
+  wanneer `follow_up` is ingevuld. Beoordeel de puntkoppeling afzonderlijk, ook
+  wanneer dezelfde vraag bij meer punten terugkomt.
+- Gebruik `prepareQuestionReviewPublication` met `reportQuestionContext(framework,
+  reuse)` uit `content-tools/question-review-validation.mjs`, het volledige
+  norm-/puntobject als `item` en exacte `{id, kind, text}`-velden als inventaris.
+  Laat de werkelijke reviewer de tekst, bronbinding en context beoordelen;
+  genereer of ververs nooit goedkeuringen om hashes passend te maken.
+- Is voor een punt nog geen verdedigbare opening beschikbaar, behoud de lege
+  bronlijst en leg de lege positie expliciet vast als `{id:'question',
+  kind:'interview', text:''}` met een inhoudelijk gemotiveerd negatief besluit.
+  Dit blijft tegengehouden; het is geen goedgekeurde vraag of geaccepteerde NVT.
+  Een ontbrekende capsule of ontbrekend besluit blokkeert publicatie.
+
+Ontvangst, publicatie en correcties gebruiken dezelfde controle. De runtime
+levert de receipts apart van de ongewijzigde bronregels; persoonlijke vragen
+en historische projecten worden niet vervangen. Controleer ook de feitelijke
+Interviewleidraad en doorvragen na selectie en heropenen. De centrale en brede/
+specifieke thema-/procesvragen en alle passende niveaus houden hun afzonderlijke
+inhoudelijke volledigheidsreview; dit interviewcontract bewijst die dekking niet.
+
 ## Beoordelen en overdragen
 
 Praktische conceptreview gaat per item en veld; de auteur herstelt en bewaart
