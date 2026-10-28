@@ -6,6 +6,7 @@ import {publishRuntime, readRuntimePublication, validateRuntimeModules} from './
 import {prepareQuestionReviewPublication} from '../content-tools/question-review-publication.mjs';
 import {syntheticFrameworkQuestions} from '../content-tools/test-support/local-framework-questions.mjs';
 import {reportViewerFixture} from '../content-tools/test-support/local-report-viewer-fixture.mjs';
+import {questionReviewFixture} from '../lib/test-support/question-review-fixture.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -18,6 +19,33 @@ function fixture(t) {
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
   return {repository, release, contract, value};
 }
+
+test('thematic publication binds reviewed text and mappings after deferred assembly',t=>{
+  const {repository,release,contract,value}=fixture(t);
+  for(const [moduleId,field,sourceId] of [
+    ['lib/theme-workspaces.mjs','presets','theme:T'],['lib/research-flow.mjs','groups','theme-groups'],
+    ['app/reviewed-reports.json','researchPresets','theme:T'],['app/reviewed-reports.json','researchGroups','theme-groups'],
+    ['app/report-additions.json','researchPresets','theme:T'],
+  ]){
+    const row={key:'test',themeId:'T',text:'Hoe verloopt de fictieve afhandeling?',ids:['one','two'],groups:['g']};
+    row.questionReview=questionReviewFixture({sourceId,itemId:row.key,item:structuredClone(row),
+      questions:[{id:'question',kind:'onderzoeksvraag',text:row.text}]});
+    for(const late of [false,true])for(const mutate of [
+      r=>{r.ids=['other'];},r=>{r.groups=['other'];},r=>{r.themeId='other';},r=>{r.key='other';},
+      r=>{r.text='Hoe verloopt een andere afhandeling?';},r=>{r.questionReview.reviews=[];},
+    ]){
+      const changed=structuredClone(row);mutate(changed);
+      const refs=late?prepareWebResources(repository,release,{late:[{path:[field,0],value:changed}]}):{};
+      assert.throws(()=>publishRuntime(repository,{...value,modules:{[moduleId]:{[field]:[late?row:changed]}},
+        refs,registrations:late?{[moduleId]:['late']} : {}},{release,contract}),/question review publication/);
+    }
+    for(const decision of ['behouden','schrappen','HOLD']){
+      const changed=structuredClone(row);changed.questionReview.reviews[0].decision=decision;
+      assert.doesNotThrow(()=>publishRuntime(repository,{...value,modules:{[moduleId]:{[field]:[changed]}},
+        refs:{},registrations:{}},{release,contract}));
+    }
+  }
+});
 
 test('own report publication cannot omit parent or point interview reviews, including deferred changes',t=>{
   const {repository,release,contract,value}=fixture(t),{input}=reportViewerFixture();

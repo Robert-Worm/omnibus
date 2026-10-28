@@ -80,6 +80,23 @@ geen toestemming om een oud schema blind te kopiëren:
 - `lib/research-question-formulations.mjs`: beperkte formuleringcyclers; maak
   onondersteunde inhoud niet passend met een generieke tekstvervanging.
 
+Voor thematische centrale voorstellen en deelvraaggroepen gebruikt de huidige
+route een `questionReview` op de volledige catalogusregel. Bereid die voor met
+`prepareQuestionReviewPublication`: `item` is de regel zonder review, inclusief
+`ids`, eventuele `groups` en `themeId`; de vraag is `{id:'question',
+kind:'onderzoeksvraag',text:regel.text}`. Gebruik `sourceId: 'theme:'+themeId`
+voor centrale voorstellen, `sourceId: 'theme-groups'` voor deelvraaggroepen en
+`itemId: regel.key`. Bind de echte broneditie en de onderbouwde bron-/procescontext.
+Review de volledige koppeling voordat een gebruikersselectie die verkleint.
+Afwijzingen blijven als bewijs aanwezig; nieuwe publicatie weigert gewijzigde
+tekst of koppelingen met oude reviews. Oudere regels zonder review zijn daarmee
+niet alsnog inhoudelijk goedgekeurd.
+
+Een procesroute mag een beoordeelde kaderdeelvraag niet automatisch herschrijven
+voor een andere onderzoeksrichting of uitbreiden met extra bronkoppelingen.
+Dat vraagt een eigen inhoudelijke beoordeling. Behoud wel de expliciet overgenomen
+koppelsleutels en eigen teksten in bestaande projecten.
+
 Voeg broninhoud toe via de bestaande inhoudslaag, niet als nieuwe ingebedde dataset
 in de viewer. Respecteer de laad-op-aanvraag-opzet en versiegebonden projecten.
 Een vraagontwerpopdracht hoeft geen nieuwe runtime, databasekolom of UI te bouwen.

@@ -6,6 +6,20 @@ import {questionPlanInventory} from '../lib/source-question-plan.mjs';
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
 
+/** Bind authored thematic text and its entire mapping before selection filters
+ * it. Ordinary source review still establishes the edition and source evidence. */
+export function verifyMappedResearchQuestion(row,sourceId) {
+  if(!Object.hasOwn(row,'questionReview'))return;
+  const {questionReview,...item}=row;
+  verifyQuestionCapsule(questionReview);
+  const questions=[{id:'question',kind:'onderzoeksvraag',text:row.text}];
+  if(questionReview.sourceId!==sourceId || questionReview.itemId!==row.key ||
+      questionReview.questions.length!==1 || questionReview.questions[0].id!=='question' ||
+      questionReview.questions[0].kind!=='onderzoeksvraag' || questionReview.questions[0].text!==row.text ||
+      questionReview.itemHash!==hash({item,questions}))
+    fail('thematic question or mapping differs from its review: '+row.key);
+}
+
 /** A preparation may retain missing decisions for further review. A publication
  * must have a real, exact decision for every supplied question. Negative results
  * remain negative; this check never manufactures approval or removes a HOLD.

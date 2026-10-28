@@ -2,7 +2,7 @@
 import {QUESTION_REVIEW_PUBLICATION_FORMAT} from '../lib/question-quality-review.mjs';
 import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
 import {localModelPublicationReview,modelWordingModules} from './model-review-gate.mjs';
-import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions} from '../content-tools/question-review-validation.mjs';
+import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions,verifyMappedResearchQuestion} from '../content-tools/question-review-validation.mjs';
 export {verifyQuestionCapsule} from '../content-tools/question-review-validation.mjs';
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
 
@@ -53,6 +53,12 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     const hydrated=structuredClone(initial);
     for(const rows of edits)applyCatalogueEdits(hydrated,structuredClone(rows));
     visit(hydrated);
+    const presets=id==='lib/theme-workspaces.mjs'?hydrated.presets:
+      ['app/reviewed-reports.json','app/report-additions.json'].includes(id)?hydrated.researchPresets:[];
+    const groups=id==='lib/research-flow.mjs'?hydrated.groups:
+      id==='app/reviewed-reports.json'?hydrated.researchGroups:[];
+    for(const row of presets??[])verifyMappedResearchQuestion(row,'theme:'+row.themeId);
+    for(const row of groups??[])verifyMappedResearchQuestion(row,'theme-groups');
     if(models||wording)modelInputs[id]=hydrated;
     if(frameworks)for(const packet of hydrated.packages??[])
       if(packet.family==='local-framework')verifyLocalFrameworkQuestions(packet,hydrated.interviewReviews);
