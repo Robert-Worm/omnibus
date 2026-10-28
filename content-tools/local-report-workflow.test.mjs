@@ -63,6 +63,7 @@ register("data:text/javascript," + encodeURIComponent(`
 const { setReportPointSelection } = await import("../lib/content-adapters/report-point-adapter.mjs");
 const { emptyDraft, validateDraft, updateValue } = await import("../lib/framework-model.mjs");
 const { materialLine } = await import("../lib/investigation.mjs");
+const {currentReportPointInterview} = await import('../lib/report-point-source.mjs');
 const { addQuestion, linkQuestionLines } = await import("../lib/research-plan.mjs");
 const { makeProject, readProject } = await import("../lib/project-session.mjs");
 const { sourceEvidenceIds, validateSourceItems } = await import("../lib/framework-source-items.mjs");
@@ -81,6 +82,8 @@ test("new local report database reaches existing selection, questions and projec
   assert.equal(material.body, fixture.input.app.framework.lines[0].criterion.text);
   assert.equal(material.controlObjective, fixture.input.reuse.control_objectives[0].text);
   assert.equal(material.question, fixture.input.reuse.interview_questions[0].text);
+  assert.equal(currentReportPointInterview(material),fixture.input.reuse.interview_questions[0].text);
+  assert.equal(currentReportPointInterview({...material,question:'Mijn eigen vraag'}),undefined);
   assert.equal(material.testDesign, ""); assert.equal(material.testExistence, ""); assert.equal(material.testOperation, "");
   assert.match(material.procedure, /^ONDERZOEK\n/);
   assert.match(material.sourceContext, /Alleen bij een melding/);

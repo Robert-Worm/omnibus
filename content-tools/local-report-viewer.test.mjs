@@ -4,6 +4,34 @@ import { projectLocalReportViewer, reportViewerFiles } from "./local-report-view
 import { checkLocalSourceReview, LocalSourceIntegrationRequired } from "./local-source-review.mjs";
 import { reportViewerFixture } from "./test-support/local-report-viewer-fixture.mjs";
 import { refreshSyntheticReviewHashes } from "./test-support/local-source-passages-fixture.mjs";
+import { syntheticReportQuestions } from "./test-support/local-report-questions.mjs";
+import {reportPointInterviewPresentation} from '../lib/source-question-presentation.mjs';
+
+test('no suitable point interview is explicitly withheld, never silently absent or replaced with filler',()=>{
+  const {input}=reportViewerFixture();
+  input.reuse.interview_questions=[];input.projection.interview_questions=[];input.locators[0].question_ids=[];
+  syntheticReportQuestions(input.app.framework,input.reuse);
+  const result=projectLocalReportViewer(input), point=result.catalogue.points[0], report=input.app.framework.report;
+  const catalogue={...result.catalogue,interviewReviews:result.additions.interviewReviews};
+  assert.equal(reportPointInterviewPresentation(catalogue,{originKey:'report-point:'+point.id,sourcePointId:point.id,
+    sourceHash:report.source_hash,edition:String(report.year),question:''}),'');
+  input.reuse.interviewReviews[point.id].reviews[0].decision='behouden';
+  assert.throws(()=>projectLocalReportViewer(input),/question review publication/);
+  delete input.reuse.interviewReviews[point.id];
+  assert.throws(()=>projectLocalReportViewer(input),/incomplete report interview coverage/);
+});
+
+test('point probes retain their exact opening and scope binding',()=>{
+  const {input}=reportViewerFixture(), q=input.reuse.interview_questions[0];
+  q.follow_up='Waar is dit vastgelegd?';
+  syntheticReportQuestions(input.app.framework,input.reuse);
+  const result=projectLocalReportViewer(input), point=result.catalogue.points[0], report=input.app.framework.report;
+  const text=reportPointInterviewPresentation({...result.catalogue,interviewReviews:result.additions.interviewReviews},
+    {originKey:'report-point:'+point.id,sourcePointId:point.id,sourceHash:report.source_hash,edition:String(report.year),question:q.text});
+  assert.equal(text,q.text+'\n\nDoorvragen:\n'+q.follow_up);
+  q.follow_up='Wie behandelde de melding?';
+  assert.throws(()=>projectLocalReportViewer(input),/question review publication/);
+});
 
 test("existing report reuse packet supplies the shared viewer without authoring or admission", () => {
   const f = reportViewerFixture(), before = structuredClone(f.input);
@@ -72,6 +100,7 @@ test("three-phase packets and repeated evidence in different roles retain their 
   const context = { ...point.source_links[0], role: "PARENT_CONTEXT", context_scope: "PARENT_CRITERION" };
   point.context_source_links.push(context);
   input.locators[0].relations.push({ ...input.locators[0].relations[0], ...context });
+  syntheticReportQuestions(input.app.framework,input.reuse);
   const projected = projectLocalReportViewer(input);
   assert.deepEqual(projected.catalogue.points[0], point);
   assert.equal(projected.additions.locators[0].relations.length, 2);

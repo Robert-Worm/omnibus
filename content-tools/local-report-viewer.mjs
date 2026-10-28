@@ -2,6 +2,7 @@
 // step. The caller must bind ALL inputs to the final reviews before using this.
 import { canonical } from "./identity.mjs";
 import { indexPages } from "../lib/source-text-blocks.mjs";
+import { verifyLocalReportQuestions } from "./question-review-validation.mjs";
 
 export const reportViewerFiles = ["REUSE-CANDIDATE.json", "REUSE-VIEWER-PROJECTION.json", "POINT-SOURCE-LOCATORS.json"];
 const requireValue = (ok, message) => { if (!ok) throw Error("Report viewer: " + message); };
@@ -120,11 +121,13 @@ export function projectLocalReportViewer({ app, reuse, projection, locators }) {
     (visual.supports_point_ids ?? []).every(id => points.has(id)) &&
     (visual.context_line_ids ?? []).every(id => lines.has(id)), "foreign or unresolved visual context");
 
+  verifyLocalReportQuestions(app.framework, reuse, reuse.interviewReviews);
   // Preserve additional authored fields (including limitations and qualifiers).
   // These are data copies, not a new independently approved content edition.
   const additions = structuredClone({ corpus: [app], catalogue: projection, locators,
     organizational_goals: reuse.organizational_goals, control_objectives: reuse.control_objectives,
-    interview_questions: reuse.interview_questions, visual_sources: reuse.visual_sources });
+    interview_questions: reuse.interview_questions, visual_sources: reuse.visual_sources,
+    interviewReviews: reuse.interviewReviews });
   return { additions, catalogue: { ...additions.catalogue,
     interview_questions: additions.interview_questions, visual_sources: additions.visual_sources } };
 }

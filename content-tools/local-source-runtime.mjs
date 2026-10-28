@@ -96,6 +96,7 @@ function addReport(prepared, snapshot) {
   const snapshots = Object.fromEntries(lines.map(line => [line.id, { line: JSON.stringify(line), sourceHash: app.framework.report.source_hash }]));
   const edits = [...arrayEdits(["corpus", index, "framework", "lines"], lines),
     ...arrayEdits(["corpus", index, "framework", "evidence"], app.framework.evidence), ...mapEdits(["scopeSnapshots"], snapshots)];
+  edits.push(...mapEdits(["interviewReviews"], projected.additions.interviewReviews));
   for (const field of ["organizational_goals", "control_objectives", "interview_questions", "visual_sources", "locators"])
     edits.push(...arrayEdits([field], projected.additions[field]));
   for (const field of ["blocks", "points", "sources"]) edits.push(...arrayEdits(["catalogue", field], projected.catalogue[field]));
@@ -269,6 +270,11 @@ function replaceReport(prepared, before, after) {
   nextApp.source = { ...nextApp.source, pages: [], databaseSource: { schema: 1, release: prepared.pins.release,
     version: digest(after.documents[0]), indexHash: "pending-new-document-index" } };
   data.corpus[index] = nextApp;
+  for (const [key, capsule] of Object.entries(old.additions.interviewReviews)) {
+    same(data.interviewReviews?.[key], capsule, "report interview review");
+    delete data.interviewReviews[key];
+  }
+  Object.assign(data.interviewReviews, structuredClone(next.additions.interviewReviews));
   for (const field of ["organizational_goals", "control_objectives", "interview_questions", "visual_sources", "locators"])
     replaceRows(data[field], old.additions[field], next.additions[field], field);
   for (const field of ["reports", "blocks", "points", "sources"])
@@ -289,6 +295,7 @@ function replaceReport(prepared, before, after) {
   const edits = [...arrayEdits(["corpus", index, "framework", "lines"], nextApp.framework.lines),
     ...arrayEdits(["corpus", index, "framework", "evidence"], nextApp.framework.evidence),
     ...mapEdits(["scopeSnapshots"], Object.fromEntries(nextApp.framework.lines.map(line => [line.id, data.scopeSnapshots[line.id]])))];
+  edits.push(...mapEdits(["interviewReviews"], next.additions.interviewReviews));
   for (const field of ["organizational_goals", "control_objectives", "interview_questions", "visual_sources", "locators"])
     edits.push(...arrayEdits([field], next.additions[field]));
   for (const field of ["blocks", "points", "sources"]) edits.push(...arrayEdits(["catalogue", field], next.catalogue[field]));

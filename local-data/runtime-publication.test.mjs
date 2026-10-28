@@ -5,6 +5,7 @@ import {prepareWebResources} from './web-resources.mjs';
 import {publishRuntime, readRuntimePublication, validateRuntimeModules} from './runtime-publication.mjs';
 import {prepareQuestionReviewPublication} from '../content-tools/question-review-publication.mjs';
 import {syntheticFrameworkQuestions} from '../content-tools/test-support/local-framework-questions.mjs';
+import {reportViewerFixture} from '../content-tools/test-support/local-report-viewer-fixture.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -17,6 +18,35 @@ function fixture(t) {
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
   return {repository, release, contract, value};
 }
+
+test('own report publication cannot omit parent or point interview reviews, including deferred changes',t=>{
+  const {repository,release,contract,value}=fixture(t),{input}=reportViewerFixture();
+  const report=input.app.framework.report, id='app/report-additions.json';
+  const data={corpus:[input.app],catalogue:input.projection,...input.reuse};
+  const modules={'lib/application-catalogue.mjs':{collections:{origins:[{id:'own:test',kind:'own'}],
+    sources:{report:{[report.id]:'own:test'}}}},[id]:data};
+  const publish=(changed,extra={})=>publishRuntime(repository,{...value,modules:changed,registrations:{},...extra},{release,contract});
+  for(const change of [
+    modules=>{delete modules[id];},
+    modules=>{delete modules[id].interviewReviews;},
+    modules=>{delete modules[id].interviewReviews.K1;},
+    modules=>{delete modules[id].interviewReviews['K1/TP01'];},
+    modules=>{modules[id].interview_questions=[];},
+    modules=>{modules[id].interview_questions[0].text='Hoe beslist u over meldingen?';},
+    modules=>{modules[id].corpus[0].framework.lines[0].risk.text='Ander risico';},
+    modules=>{modules[id].corpus[0].framework.report.source_hash=digest('different source');},
+  ]){
+    const bad=structuredClone(modules);change(bad);
+    assert.throws(()=>publish(bad),/question review publication/);
+    assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(),undefined);
+  }
+  const refs=prepareWebResources(repository,release,{late:[{path:['interviewReviews'],value:{K1:null}}]});
+  assert.throws(()=>publish(modules,{refs,registrations:{[id]:['late']}}),/question review publication/);
+  const publication=publish(modules);
+  assert.equal(readRuntimePublication(repository,{release,publication,contract}).modules[id].interviewReviews.K1.itemId,'K1');
+  const withheld=structuredClone(modules);withheld[id].interviewReviews.K1.reviews[0].decision='HOLD';
+  assert.doesNotThrow(()=>publish(withheld),'Negative source decisions are preserved, not replaced with approval');
+});
 
 test('new local frameworks require complete reviewed plans and point interviews at the final write boundary', t=>{
   const {repository,release,contract,value}=fixture(t);

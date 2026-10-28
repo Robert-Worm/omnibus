@@ -1,13 +1,18 @@
 // Write boundary only. Old pinned releases and user projects remain readable.
 import {QUESTION_REVIEW_PUBLICATION_FORMAT} from '../lib/question-quality-review.mjs';
 import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
-import {verifyQuestionCapsule,verifyLocalFrameworkQuestions} from '../content-tools/question-review-validation.mjs';
+import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions} from '../content-tools/question-review-validation.mjs';
 export {verifyQuestionCapsule} from '../content-tools/question-review-validation.mjs';
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
 
 /** Visit both inline data and deferred data at the actual publication boundary.
  * Resource integrity has already been checked by publishRuntime. */
 export function verifyPublishedQuestionCapsules(repository, value) {
+  const collections=value.modules['lib/application-catalogue.mjs']?.collections;
+  const ownOrigins=new Set((collections?.origins??[]).filter(row=>row.kind==='own').map(row=>row.id));
+  const ownReports=Object.entries(collections?.sources?.report??{}).filter(([,origin])=>ownOrigins.has(origin)).map(([id])=>id);
+  const reportModule='app/report-additions.json';
+  if(ownReports.length&&!Object.hasOwn(value.modules,reportModule))fail('missing local report delivery');
   function capsule(node){
     if(!node||node.format!==QUESTION_REVIEW_PUBLICATION_FORMAT)fail('invalid or missing capsule');
     verifyQuestionCapsule(node);
@@ -36,7 +41,8 @@ export function verifyPublishedQuestionCapsules(repository, value) {
       return resources.get(ref.hash);
     });
     const frameworks = id === 'lib/topical-reviewed.json';
-    if(!frameworks&&!relevant(initial)&&!edits.some(relevant))continue;
+    const reports=id===reportModule&&ownReports.length;
+    if(!frameworks&&!reports&&!relevant(initial)&&!edits.some(relevant))continue;
     // Check the actual assembled inventory, not isolated partial edits. A late
     // resource must not change a previously valid receipt or evade this gate.
     const hydrated=structuredClone(initial);
@@ -44,5 +50,18 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     visit(hydrated);
     if(frameworks)for(const packet of hydrated.packages??[])
       if(packet.family==='local-framework')verifyLocalFrameworkQuestions(packet,hydrated.interviewReviews);
+    if(reports)for(const sourceId of ownReports){
+      const sources=(hydrated.corpus??[]).filter(app=>app.framework?.report.id===sourceId);
+      if(sources.length!==1)fail('missing or ambiguous local report: '+sourceId);
+      const framework=sources[0].framework, points=(hydrated.catalogue?.points??[]).filter(p=>p.report_id===sourceId);
+      const pointIds=new Set(points.map(p=>p.id)), ids=new Set([...framework.lines.map(l=>l.id),...pointIds]);
+      const reuse={points,organizational_goals:(hydrated.organizational_goals??[]).filter(row=>row.report_id===sourceId),
+        control_objectives:(hydrated.control_objectives??[]).filter(row=>row.report_id===sourceId),
+        interview_questions:(hydrated.interview_questions??[]).filter(q=>q.point_ids?.some(id=>pointIds.has(id))),
+        visual_sources:(hydrated.visual_sources??[]).filter(row=>row.report_id===sourceId),
+        interviewReviews:Object.fromEntries(Object.entries(hydrated.interviewReviews??{})
+          .filter(([id,capsule])=>ids.has(id)||capsule?.sourceId===sourceId))};
+      verifyLocalReportQuestions(framework,reuse,hydrated.interviewReviews);
+    }
   }
 }

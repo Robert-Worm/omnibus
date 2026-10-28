@@ -11,6 +11,7 @@ import { readRuntimePublication, publishRuntime } from "../../local-data/runtime
 import { prepareWebResources } from "../../local-data/web-resources.mjs";
 import { runtimeContractHash } from "../../lib/runtime-contract-identity.mjs";
 import { syntheticFrameworkQuestions } from "./local-framework-questions.mjs";
+import { syntheticReportQuestions } from "./local-report-questions.mjs";
 
 export async function sourceRuntimeFixture(t, kind = "report", configure = () => {}) {
   const f = sourceMethodFixture(kind, f => {
@@ -40,6 +41,11 @@ export async function sourceRuntimeFixture(t, kind = "report", configure = () =>
       }
     }
     configure(f);
+    if (kind === "report") {
+      const reuse=f.read("REUSE-CANDIDATE.json");
+      syntheticReportQuestions(f.read("APP-FINAL.json").framework,reuse);
+      f.set("REUSE-CANDIDATE.json",reuse);
+    }
     if (kind === "framework") {
       const cat = f.read("CATALOGUE.json");
       syntheticFrameworkQuestions(cat, f.read("RECONCILED-SOURCE.json"), f.paths.get("source/source.pdf").sha256);

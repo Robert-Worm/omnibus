@@ -33,6 +33,7 @@ test("admitted report reaches a new pinned viewer publication and lossless lazy 
     assert.deepEqual(data.corpus[0].framework.lines, f.read("APP-FINAL.json").framework.lines);
     assert.deepEqual(data.catalogue.points, f.read("REUSE-CANDIDATE.json").points);
     assert.deepEqual(data.control_objectives, f.read("REUSE-CANDIDATE.json").control_objectives);
+    assert.deepEqual(data.interviewReviews, f.read("REUSE-CANDIDATE.json").interviewReviews);
     assert.equal(data.scopeSnapshots.K1.line, JSON.stringify(data.corpus[0].framework.lines[0]));
     assert.equal(data.scopeDecisions.K1[0], "retain");
     assert.equal(c.routing.reports.K1, "FICTIEF");

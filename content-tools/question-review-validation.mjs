@@ -31,6 +31,57 @@ export function verifyQuestionCapsule(publication) {
   return publication;
 }
 
+/** Frozen report semantics, excluding source-page delivery and question receipts. */
+export function reportQuestionContext(framework, reuse) {
+  return {framework, points:reuse.points, organizational_goals:reuse.organizational_goals,
+    control_objectives:reuse.control_objectives, interview_questions:reuse.interview_questions,
+    visual_sources:reuse.visual_sources};
+}
+
+/** A new report needs a separate interview decision for every parent norm and
+ * point. An audit question, parent approval or empty list cannot stand in for it. */
+export function verifyLocalReportQuestions(framework, reuse, publishedInterviews) {
+  const report=framework.report, lines=framework.lines, points=reuse.points;
+  const ids=[...lines,...points].map(row=>row.id), context=reportQuestionContext(framework,reuse);
+  if(!ids.length||new Set(ids).size!==ids.length)fail('invalid report question scope');
+  const reviews=reuse.interviewReviews;
+  if(!reviews||Array.isArray(reviews)||Object.keys(reviews).length!==ids.length||ids.some(id=>!Object.hasOwn(reviews,id)))
+    fail('incomplete report interview coverage');
+  const fields=rows=>rows.map(({id,kind,text})=>({id,kind,text}));
+  function check(item, inventory) {
+    const capsule=reviews[item.id];
+    if(!capsule)fail('missing report interview capsule: '+item.id);
+    verifyQuestionCapsule(capsule);
+    if(capsule.sourceId!==report.id||capsule.itemId!==item.id||capsule.sourceEdition!==String(report.year)||
+        capsule.sourceHash!==report.source_hash||capsule.contextHash!==hash(context)||
+        capsule.itemHash!==hash({item,questions:inventory})||
+        JSON.stringify(fields(capsule.questions))!==JSON.stringify(inventory))
+      fail('report interviews differ from their source, item or context: '+item.id);
+    if(JSON.stringify(publishedInterviews?.[item.id])!==JSON.stringify(capsule))
+      fail('report interview delivery differs from reviewed inventory: '+item.id);
+  }
+  for(const line of lines){
+    const inventory=reviews[line.id]?.questions&&fields(reviews[line.id].questions);
+    if(!inventory?.length||inventory[0].id!=='auditQuestion'||inventory[0].kind!=='interview'||
+        inventory.length>2||inventory.length===2&&(inventory[1].id!=='auditQuestion:follow_up'||inventory[1].kind!=='doorvraag'))
+      fail('report norm needs its own reviewed interview opening: '+line.id);
+    check(line,inventory);
+  }
+  const pointIds=new Set(points.map(point=>point.id));
+  if(!Array.isArray(reuse.interview_questions)||reuse.interview_questions.some(q=>!Array.isArray(q.point_ids)||
+      !q.point_ids.length||q.point_ids.some(id=>!pointIds.has(id))||
+      q.follow_up!==undefined&&typeof q.follow_up!=='string'))fail('invalid report interview links or probe');
+  for(const point of points){
+    const questions=reuse.interview_questions.filter(q=>q.point_ids.includes(point.id));
+    // An absent authored opening needs an explicit negative decision on the
+    // empty position. It cannot pass the form gate as an approved question.
+    const inventory=questions.length?questions.flatMap(q=>[{id:q.id,kind:'interview',text:q.text},
+      ...(typeof q.follow_up==='string'&&q.follow_up.trim()?[{id:q.id+':follow_up',kind:'doorvraag',text:q.follow_up}]:[])]):
+      [{id:'question',kind:'interview',text:''}];
+    check(point,inventory);
+  }
+}
+
 /** The reviewed normative context stays separate from questions and receipts.
  * Changing a norm, actor, exception, link or source invalidates question review. */
 export function frameworkQuestionContext(catalogue, bank) {

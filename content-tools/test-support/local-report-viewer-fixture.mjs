@@ -2,6 +2,7 @@
 import { sourceReviewFixture } from "./local-source-review-fixture.mjs";
 import { refreshSyntheticReviewHashes } from "./local-source-passages-fixture.mjs";
 import { reportViewerFiles } from "../local-report-viewer.mjs";
+import { syntheticReportQuestions } from "./local-report-questions.mjs";
 
 export function reportViewerFixture() {
   const f = sourceReviewFixture("report"), app = f.read("APP-FINAL.json"), line = app.framework.lines[0];
@@ -38,6 +39,7 @@ export function reportViewerFixture() {
     interview_questions: [question], visual_sources: [], status: "HOLD" };
   const locators = [{ point_id: point.id, report_id: report.id, source_hash: report.source_hash, pdf_hash: report.pdf_hash,
     question_ids: [question.id], relations: [{ ...source, ...link }] }];
+  syntheticReportQuestions(app.framework, reuse);
   f.set("APP-FINAL.json", app);
   f.set(reportViewerFiles[0], reuse); f.set(reportViewerFiles[1], projection); f.set(reportViewerFiles[2], { locators });
   const basis = f.read("REVIEW-BASIS.json");
