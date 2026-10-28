@@ -25,6 +25,12 @@ en eventuele termijn in de aangeleverde bron. Bij een verzoek om actuele juridis
 juistheid moet de actuele officiële bron worden gecontroleerd; een bestaande
 extractie is niet vanzelf bewijs van actuele gelding.
 
+Een niveauvariant verandert de invalshoek, niet de bevoegdheden van de respondent.
+Een leidinggevende die verantwoording ontvangt, bepaalt niet vanzelf de taken van
+de ander. Vraag naar de onderbouwde eigen rol. Vul een dubbelzinnige bronverwijzing
+zoals 'zijn taken' niet via 'uw taken' alsnog stellig in; vraag neutraal naar de
+feitelijke werkwijze. Een voorbehoud in het dossier herstelt geen sturende vraagzin.
+
 Kies bewust tussen:
 
 - inrichting: hoe zijn taken, verantwoordelijkheden en voorzieningen georganiseerd?

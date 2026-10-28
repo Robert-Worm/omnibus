@@ -29,6 +29,11 @@ Bevoegdheden zijn geen plichten. Definities/voorwaarden kunnen nodig zijn voor
 de betekenis zonder zelf een selecteerbare norm te worden. Controleer betekenis
 van verwijzingen; repareer een bronintern probleem niet stilzwijgend.
 
+Een ontvanger van verantwoording is niet vanzelf degene die taken of
+bevoegdheden toedeelt. Leg die rollen afzonderlijk vast. Is een verwijzing zoals
+'zijn taken' dubbelzinnig, behoud dan die onzekerheid in de praktische uitwerking
+en vraagoverdracht; kies niet stilzwijgend de actor die het best bij het menu past.
+
 ## Praktische catalogus
 
 Behoud de bestaande doelen/doelstellingen/normen/toetspuntenstructuur. Per punt:
