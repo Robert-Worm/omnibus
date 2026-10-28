@@ -10,7 +10,7 @@ function fixture(t) {
   t.after(() => repository.close());
   const release = repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[]});
   const contract = digest('synthetic code contract');
-  const refs = prepareWebResources(repository, release, {catalogue:{themes:[]}});
+  const refs = prepareWebResources(repository, release, {catalogue:[{path:['items'],value:[]}]});
   const value = {format:'omnibus-runtime-publication',schemaVersion:1,release,contract,
     contentGate:'VERIFIED_APPLICATION_RELEASE',modules:{'lib/example.json':{items:[]}},
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
@@ -38,6 +38,7 @@ test('publication checks exact question decisions in inline and deferred content
     p=>{p.reviews[0].contextHash=digest('other scope');},p=>{p.reviews[0].reviewer='';},
     p=>{p.reviews[0].decision='APPROVE';},p=>{p.questions=[];p.reviews=[];},
     p=>{p.reviews.push({...p.reviews[0]});},
+    p=>{p.format='unknown';},
   ]){
     const capsule=structuredClone(approved);change(capsule);
     const modules={'lib/example.json':deferred?{items:[]}:{questionReview:capsule}};
@@ -47,6 +48,10 @@ test('publication checks exact question decisions in inline and deferred content
   }
   const publication=publishRuntime(repository,{...value,modules:{'lib/example.json':{questionReview:approved}}},{release,contract});
   assert.equal(readRuntimePublication(repository,{release,contract,publication}).modules['lib/example.json'].questionReview.reviews[0].decision,'behouden');
+  const changed=prepareWebResources(repository,release,{catalogue:[{path:['questionReview'],value:{contextHash:digest('late scope change')}}]});
+  assert.throws(()=>publishRuntime(repository,{...value,refs:changed,modules:{'lib/example.json':{questionReview:approved}}},{release,contract}),/question review publication/);
+  const malformed=prepareWebResources(repository,release,{catalogue:[{path:['interviewReviews'],value:{P1:{format:'unknown'}}}]});
+  assert.throws(()=>publishRuntime(repository,{...value,refs:malformed},{release,contract}),/question review publication/);
 });
 
 test('explicit negative question decisions remain withheld evidence and old pinned releases stay readable',t=>{

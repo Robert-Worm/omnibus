@@ -27,6 +27,8 @@ export const runtimeFiles = Object.freeze([
   "lib/admitted-foundation.mjs",
   "lib/question-quality.mjs",
   "lib/question-quality-review.mjs",
+  "lib/catalogue-runtime.mjs",
+  "lib/ordered-catalogue-array.mjs",
   "lib/runtime-contract-identity.mjs",
   "lib/source-text-blocks.mjs",
   "lib/reader-display.mjs",
