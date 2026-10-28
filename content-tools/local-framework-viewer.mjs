@@ -54,6 +54,6 @@ export function projectLocalFrameworkViewer({ catalogue, bank, pages, status, pd
     documents: [{ id: documentId, sourceId: id, packageDocumentId: documentId, title, role: "main", pages,
       pdf_hash: pdfHash, source_sha256: textHash, url: status.official_url }],
     questionPlan: catalogue.questionPlan, legacyRelations: [] });
-  verifyLocalFrameworkQuestions(packet);
+  verifyLocalFrameworkQuestions(packet, catalogue.interviewReviews);
   return packet;
 }

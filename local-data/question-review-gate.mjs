@@ -42,7 +42,7 @@ export function frameworkQuestionContext(catalogue, bank) {
 /** New local framework packages must not silently publish an empty plan.
  * This is a write/admission rule, never a migration of saved user questions.
  * An explicit negative decision is retained and withheld by the shared reader. */
-export function verifyLocalFrameworkQuestions(packet, publishedInterviews = packet.catalogue?.interviewReviews) {
+export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   const {catalogue, bank, id: sourceId} = packet;
   const context = frameworkQuestionContext(catalogue, bank);
   const sourceEdition = packet.context?.edition, sourceHash = packet.documents?.[0]?.pdf_hash;

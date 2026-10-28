@@ -49,6 +49,8 @@ test('new local frameworks require complete reviewed plans and point interviews 
   const publication=publish(correct);
   assert.equal(readRuntimePublication(repository,{release,publication,contract}).modules[moduleId].packages[0].questionPlan.central,
     packet.questionPlan.central);
+  const missingDelivery=structuredClone(correct);delete missingDelivery.interviewReviews;
+  assert.throws(()=>publish(missingDelivery),/interview delivery/);
   const data=structuredClone(correct);data.interviewReviews={};
   const refs=prepareWebResources(repository,release,{questions:[{path:['interviewReviews'],value:{}}]});
   assert.throws(()=>publishRuntime(repository,{...value,modules:{[moduleId]:data},refs,
