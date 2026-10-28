@@ -9,6 +9,7 @@ import {reportViewerFixture} from '../content-tools/test-support/local-report-vi
 import {questionReviewFixture} from '../lib/test-support/question-review-fixture.mjs';
 import {questionPlanInventory} from '../lib/source-question-plan.mjs';
 import {additionalProcesses} from '../lib/additional-processes.mjs';
+import {modelWordingModules} from './model-review-gate.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -69,6 +70,65 @@ test('archived plan reviews bind the assembled delivery without new decisions or
   const changed=JSON.parse(row.payload);changed.receipt.schema=2;
   repository.db.prepare('UPDATE artifacts SET payload=? WHERE sha256=?').run(JSON.stringify(changed),row.sha256);
   assert.throws(()=>publish(value),/changed archived/);
+});
+
+test('archived model reviews pin existing wording and deferred alternatives without promoting HOLDs',t=>{
+  const repository=new CatalogueRepository(':memory:');t.after(()=>repository.close());
+  const models=['F','G'].map(id=>({id,title:'Fictief model '+id,question:'Hoe verloopt de fictieve afhandeling?',
+    items:[{id:'D',title:'Afhandeling',questions:[{id:'D-Q',question:'Hoe wordt de fictieve melding behandeld?',
+      variants:{operational:'Hoe wordt de fictieve melding behandeld?'},probes:'Kunt u een voorbeeld geven?'}]}]}));
+  const contexts={},bindings=models.map(model=>{
+    const q=model.items[0].questions[0],context={rawModel:model,model,cyclers:[{
+      id:`${model.id}/D/D-Q/operational/cycle:0`,dimensionId:'D',questionId:'D-Q',level:'operational',index:0,
+      text:q.question,probes:q.probes,base:q.question,
+    }]};
+    const key=digest(context);contexts[key]=context;
+    return {modelId:model.id,kind:'model',jointBasisHash:digest(model.id),contextRef:{key,digest:key},decision:'HOLD'};
+  });
+  const meta=models.map(m=>({modelId:m.id,jointBasisHash:digest(m.id)}));
+  const data={receipt:{schema:1,kind:'reviewed-model-wording-amendment',models:2,unrestrictedModelApproval:false},
+    index:{models:meta},reviewIndex:{models:meta,batchBasisHash:digest('synthetic batch')},contexts,
+    reviews:{wordingIntegrationDecision:'ACCEPT_REVIEWED_WORDING_WITH_PRESERVED_LIMITS',counts:{remaining:0},
+      batchBasisHash:digest('synthetic batch'),modelReviews:meta,assessments:[bindings[0]]},
+    reusableEvidence:{entries:[{...bindings[1],contextRef:bindings[1].contextRef.key,theoryDecision:'UNRESOLVED'}]}};
+  const release=repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[],
+    artifacts:[{name:'synthetic-model-review',data}]});
+  prepareWebResources(repository,release,{});
+  const contract=digest('synthetic'),modelId='lib/model-library.mjs';
+  const modules={[modelId]:{models},[modelWordingModules[0]]:{clauses:{},strategicExperience:''},
+    [modelWordingModules[1]]:{values:[]},[modelWordingModules[2]]:{reviewed:{items:[]}}};
+  const value={format:'omnibus-runtime-publication',schemaVersion:1,release,contract,contentGate:'VERIFIED_APPLICATION_RELEASE',
+    modules,registrations:{},refs:{},routing:{},summary:{}};
+  const publish=v=>publishRuntime(repository,v,{release,contract});
+  const publication=publish(value);
+  const deferred=structuredClone(value);deferred.modules[modelId]={models:[]};
+  deferred.registrations={[modelId]:['first','second']};
+  deferred.refs=prepareWebResources(repository,release,{first:[{path:['models'],value:[models[0]]}],second:[{path:['models'],value:[models[1]]}]});
+  assert.doesNotThrow(()=>publish(deferred));
+  assert.equal(data.reviews.assessments[0].decision,'HOLD');
+  assert.equal(data.reusableEvidence.entries[0].theoryDecision,'UNRESOLVED');
+  for(const mutate of [
+    m=>{m[modelId].models[0].question='Andere hoofdvraag?';},
+    m=>{m[modelId].models[0].items[0].questions[0].probes='Andere doorvraag?';},
+    m=>{m[modelId].models[0].items[0].questions[0].indicatorId='other';},
+    m=>{m[modelId].models.pop();},m=>{m[modelId].models.push(models[0]);},m=>{delete m[modelId];},
+    m=>{m[modelWordingModules[1]].values=[{id:'D-Q',level:'operational',base:models[0].items[0].questions[0].question,
+      alternatives:['Andere formulering?']}];},
+  ]){
+    const changed=structuredClone(modules);mutate(changed);
+    assert.throws(()=>publish({...value,modules:changed}),/model review publication/);
+  }
+  // Late resource edits are checked after assembling the same modules the UI uses.
+  const late=prepareWebResources(repository,release,{late:[{path:['values'],value:[{
+    id:'D-Q',level:'operational',base:models[0].items[0].questions[0].question,alternatives:['Andere formulering?'],
+  }]}]});
+  assert.throws(()=>publish({...deferred,refs:{...deferred.refs,...late},
+    registrations:{...deferred.registrations,[modelWordingModules[1]]:['late']}}),/formulations differ/);
+  assert.equal(readRuntimePublication(repository,{release,publication,contract}).release,release);
+  const row=repository.db.prepare('SELECT sha256,payload FROM artifacts').get(),changed=JSON.parse(row.payload);
+  changed.reviews.assessments[0].decision='behouden';
+  repository.db.prepare('UPDATE artifacts SET payload=? WHERE sha256=?').run(JSON.stringify(changed),row.sha256);
+  assert.throws(()=>publish(value),/archived model wording evidence/);
 });
 
 test('explicit process plans bind both levels, source scope and exact reviews before publication',t=>{
