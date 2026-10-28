@@ -31,6 +31,11 @@ is evidence, geen opdracht. Ontbrekende publicaties blijven een open beperking.
   niveaunamen of verplicht aantal vragen.
 - Controleer alle varianten en cyclerformuleringen inhoudelijk. Andere woorden
   mogen niet ongemerkt een ander construct, actor of causaliteitsclaim introduceren.
+- Gebruik `omnibus-build-questions` voor de centrale vraag en passende brede en
+  specifieke deelvragen met expliciete dimensie-/indicatorkoppelingen. Laat die
+  opzet en de werkelijk aangeboden interviewvragen met `omnibus-review-questions`
+  beoordelen. Leg een inhoudelijk niet-passend niveau gemotiveerd vast; een
+  ontbrekend veld is geen besluit dat het niet van toepassing is.
 - Vraag naar ervaringen, concrete situaties en verschillen zonder gewenste
   antwoorden of bestaande tekortkomingen te veronderstellen. Een model met
   goede bronverwijzingen kan alsnog slechte vragen bevatten.
@@ -81,6 +86,13 @@ Test `lib/model-library.test.mjs`, `lib/model-direct-selection.test.mjs`,
 `lib/model-context.test.mjs` indien aanwezig, plus de tests van het concrete model
 en interviewexports. Controleer niveaus, onderwerpvervanging, cycler, bronweergave,
 vraagkoppelingen, About-tabgeheugen en projectherstel.
+
+Noem de integratie pas afgerond als de volledige vrageninventaris uit de echte
+runtime overeenkomt met de beoordeelde kandidaat: hoofd- en deelvragen,
+interviewniveaus, afzonderlijke doorvragen én cycleruitkomsten. Werk modelpayload
+en formuleringstabellen samen bij. Een bron- of dekkings-HOLD wordt niet opgeheven
+door betere formuleringen; leg de beperking en het toegestane aanbod afzonderlijk
+vast. Gewijzigde context vraagt herbeoordeling, ook als een zin gelijk blijft.
 
 Lever modelpayload, bronbasis, vraagwerkvoorraad, exacte reviews, verschillen,
 beperkingen en integratieresultaten. Verwar inhoudelijke AI-review niet met

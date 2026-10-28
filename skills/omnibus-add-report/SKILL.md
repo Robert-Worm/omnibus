@@ -127,6 +127,15 @@ Test bronmarkeringen op de exacte broneditie, directe selectie/deselectie,
 vraagkoppelingen, behouden eigen tekst, opslaan/heropenen en alle drie exports.
 Een database-import is aanvullend; technische ingestie is geen inhoudelijke vrijgave.
 
+Integratie is pas afgerond wanneer de echte runtime de complete beoordeelde
+vrageninventaris aanbiedt: passende interviews, afzonderlijke doorvragen en
+niveaus, plus de centrale en brede/specifieke deelvragen voor de relevante
+thema's en processen. Controleer ook de koppelingen en aangeboden
+formuleringsvarianten. Een gemotiveerd, beoordeeld niet-passend onderdeel mag
+ontbreken; een vergeten categorie niet. De schrijfcontrole op aangeleverde
+vraagcapsules vervangt deze volledigheidscontrole nog niet. Meld ontbrekende
+dekking als onafgerond en behoud de bronpassages en eigen projectvragen.
+
 Lever pakketlocatie, bron- en inhoudsversies, echte reviewstatus, open beperkingen,
 uitgevoerde tests en wat nog niet is geïntegreerd. Noem AI-review geen menselijke
 auditgoedkeuring en stop bij ontbrekend betekenisdragend bronmateriaal.

@@ -135,6 +135,15 @@ Relevante bestaande controles in de privé-verwerkingsomgeving (inspecteer vóó
 eigen gecontroleerde mapping en tests; pas geen oude hashes aan als omweg.
 Test naast de nieuwe bron ook CIO als gedeelde-viewerregressie.
 
+Integratie is pas afgerond wanneer ook de beoordeelde vraagopzet en passende
+interviews daadwerkelijk via de viewer en export worden aangeboden. Vergelijk
+de complete brongebonden inventaris met de runtime: centrale vraag, brede en
+specifieke deelvragen, koppelingen, relevante niveaus, doorvragen en aangeboden
+formuleringsvarianten. Leg niet-passende onderdelen gemotiveerd ter review vast;
+ontbrekende velden zijn geen goedgekeurde afwezigheid. De publicatiecontrole op
+aangeleverde capsules vervangt deze volledigheidscontrole nog niet. Geef een
+ontbrekende vraagcategorie als onafgerond door, niet als geslaagde integratie.
+
 Lever exacte bron- en reviewbasis, selectiegrenzen, migratierelaties en resultaten
 van bronmarkering, filtering/selectie, vraagkoppelingen, projectherstel en drie
 exports. Bewaar oude projecten en bronedities; geen automatische inhoudelijke
