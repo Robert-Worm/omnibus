@@ -43,6 +43,7 @@ De interviewleidraad kan ook afzonderlijk beoordeelde doorvragen uit `interviewR
 Afgesproken plaatsing voor bronadapters:
 
 - Rapportregel: `line.questionReview`, `sourceId=line.report_id`, `itemId=line.id`, vraag-ID `auditQuestion` of de expliciete bronvraag-ID.
+- Afzonderlijke rapportinterviews: `interviewReviews[itemId]` in de praktische revisielaag. De gewone rapportregel krijgt haar broneditie/hash uit het actuele rapport, niet uit de claim van de review. Losse punten vergelijken daarnaast het oorspronkelijke vraagsnapshot met de exacte bron; hun complete interviewinventaris kan gereviewde lacunes aanvullen. Een oorspronkelijke rapportdoorvraag heeft de identiteit `<opening-ID>:follow_up` en vereist haar eigen besluit. Nieuwe reviewgegevens blijven buiten bronpunten en opgeslagen bewijssnapshots.
 - Kadervoorstel: `proposal.questionReview`, expliciete bronidentiteit, `itemId=originKey` waar dat stabiel is, vraag-ID `question`, `questionOperational`, `questionManagement` of `questionStrategic`.
 - Andere bronplannen vereisen eerst een expliciete ouder- en vraagidentiteit; gemengde modeltekst krijgt geen verzonnen binding.
 
