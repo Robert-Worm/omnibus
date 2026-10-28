@@ -24,6 +24,13 @@ publicatieroute, na akkoord van de beheerder.
    het voorstel. Beoordeel daarna inhoudelijk elke vraag met `HOLD` of `door`, per bron.
    Lees de bronpassage alleen als de vraag een bronclaim doet of je twijfelt. Een vraag
    kan door de voorcontrole komen en toch slecht zijn.
+   Staat een doorvraag, toetsvraag of onderzoeksvraag uitsluitend op HOLD vanwege
+   `samengesteld`, beoordeel dan of beide delen één beantwoordbaar onderwerp vormen.
+   Leg een positieve uitkomst bij de exacte versie vast met
+   `formResolutions: [{rule: 'samengesteld', reason: '<inhoudelijke reden>'}]` in het
+   reviewbesluit. Behoud de oorspronkelijke vormmelding. Dit geldt niet voor
+   interviewopeningen, andere HOLD-redenen of herschrijven/schrappen. Voeg deze
+   afhandeling nooit automatisch aan oude besluiten toe om publicatie te laten slagen.
 4. Geef per vraag één uitkomst:
    - **behouden**: voldoet aan alle criteria voor zijn soort.
    - **herschrijven**: lever een voorstel dat zelf aan alle criteria voldoet en dezelfde

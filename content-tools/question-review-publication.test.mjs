@@ -29,6 +29,36 @@ function authorReceipts(input, decision = 'behouden', suffix = '1') {
 const read = (input, publication, question = input.questions[0]) => readQuestionReview({
   sourceId: input.sourceId, itemId: input.itemId, sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, question, publication });
 
+test('a compound non-interview HOLD needs an explicit exact substantive resolution',()=>{
+ const input=fixture();input.questions[0]={id:'probe',kind:'doorvraag',text:'Wat is afgehandeld en wat staat nog open?'};
+ authorReceipts(input);
+ assert.equal(prepareQuestionReviewPublication(input).offeredQuestions.length,0);
+ input.reviews[0].formResolutions=[{rule:'samengesteld',reason:'Fictieve review: beide delen beschrijven één status van dezelfde overdracht.'}];
+ const before=structuredClone(input),prepared=prepareQuestionReviewPublication(input);
+ assert.deepEqual(prepared.offeredQuestions,input.questions);
+ assert.equal(read(input,prepared.publication).form.uitkomst,'HOLD','Keep the mechanical finding visible');
+ assert(read(input,prepared.publication).approved);
+ assert.deepEqual(input,before);
+ for(const mutate of [i=>i.questions[0].text+=' ',i=>i.context.scope='Changed scope',i=>i.sourceEdition='other']){
+  const changed=structuredClone(input);mutate(changed);
+  assert.throws(()=>prepareQuestionReviewPublication(changed),/stale or incomplete/);
+ }
+ for(const formResolutions of [[],null,[{rule:'samengesteld',reason:''}],
+  [{rule:'veronderstellend',reason:'No'}],[...input.reviews[0].formResolutions,...input.reviews[0].formResolutions]]){
+  const changed=structuredClone(input);changed.reviews[0].formResolutions=formResolutions;
+  assert.throws(()=>prepareQuestionReviewPublication(changed),/stale or incomplete/);
+ }
+ for(const [kind,text]of [['interview',input.questions[0].text],['doorvraag','Wat zou u doen?'],
+  ['doorvraag','Wat is afgehandeld en wat staat nog open'],['doorvraag','Hoe verloopt de overdracht?'],
+  ['doorvraag','Waarom faalt de overdracht en wat staat nog open?'],['doorvraag','TODO']]){
+  const changed=fixture();changed.questions[0]={id:'probe',kind,text};authorReceipts(changed);
+  changed.reviews[0].formResolutions=structuredClone(input.reviews[0].formResolutions);
+  assert.equal(prepareQuestionReviewPublication(changed).offeredQuestions.length,0,text);
+ }
+ const held=structuredClone(input);held.reviews[0].hold={active:true};
+ assert.equal(prepareQuestionReviewPublication(held).offeredQuestions.length,0);
+});
+
 test('source plans bind complete coverage and individual decisions, without inventing a fallback',()=>{
   const input=fixture();
   input.plan={central:'Hoe verloopt de fictieve overdracht?',subquestions:[
