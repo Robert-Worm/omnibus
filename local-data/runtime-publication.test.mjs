@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {CatalogueRepository, digest} from './repository.mjs';
 import {prepareWebResources} from './web-resources.mjs';
 import {publishRuntime, readRuntimePublication, validateRuntimeModules} from './runtime-publication.mjs';
+import {prepareQuestionReviewPublication} from '../content-tools/question-review-publication.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -15,6 +16,53 @@ function fixture(t) {
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
   return {repository, release, contract, value};
 }
+
+// Explicitly fictional receipts test the contract, not a real content review.
+function syntheticQuestionCapsule(decision='behouden') {
+  const question={id:'opening',kind:'interview',text:'Hoe wordt een fictieve melding verwerkt?'};
+  const input={sourceId:'SYNTHETIC',itemId:'SYNTHETIC:P1',sourceEdition:'test',sourceHash:digest('fictional source'),
+    inventoryComplete:true,item:{id:'P1'},context:{scope:'Fictional test only'},questions:[question],reviews:[]};
+  const prepared=prepareQuestionReviewPublication(input).publication;
+  input.reviews=[{sourceId:input.sourceId,itemId:input.itemId,questionId:question.id,
+    sourceEdition:input.sourceEdition,sourceHash:input.sourceHash,itemHash:prepared.itemHash,
+    contextHash:prepared.contextHash,questionHash:prepared.questions[0].questionHash,
+    decision,reviewId:'synthetic-review',reviewer:'synthetic-reviewer',reviewDate:'2026-10-28',basis:'Fictional contract fixture.'}];
+  return prepareQuestionReviewPublication(input).publication;
+}
+
+test('publication checks exact question decisions in inline and deferred content before inserting', t=>{
+  const {repository,release,contract,value}=fixture(t);
+  const approved=syntheticQuestionCapsule();
+  for(const deferred of [false,true])for(const change of [
+    p=>{p.reviews=[];},p=>{p.questions[0].text='Welke andere melding is bekeken?';},
+    p=>{p.reviews[0].contextHash=digest('other scope');},p=>{p.reviews[0].reviewer='';},
+    p=>{p.reviews[0].decision='APPROVE';},p=>{p.questions=[];p.reviews=[];},
+    p=>{p.reviews.push({...p.reviews[0]});},
+  ]){
+    const capsule=structuredClone(approved);change(capsule);
+    const modules={'lib/example.json':deferred?{items:[]}:{questionReview:capsule}};
+    const refs=deferred?prepareWebResources(repository,release,{catalogue:[{path:['items'],value:[{interviewReview:capsule}]}]}):value.refs;
+    assert.throws(()=>publishRuntime(repository,{...value,modules,refs},{release,contract}),/question review publication/);
+    assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(),undefined);
+  }
+  const publication=publishRuntime(repository,{...value,modules:{'lib/example.json':{questionReview:approved}}},{release,contract});
+  assert.equal(readRuntimePublication(repository,{release,contract,publication}).modules['lib/example.json'].questionReview.reviews[0].decision,'behouden');
+});
+
+test('explicit negative question decisions remain withheld evidence and old pinned releases stay readable',t=>{
+  const {repository,release,contract,value}=fixture(t);
+  for(const decision of ['schrappen','herschrijven','HOLD']){
+    const capsule=syntheticQuestionCapsule(decision),before=structuredClone(capsule);
+    const publication=publishRuntime(repository,{...value,modules:{'lib/example.json':{questionReview:capsule}}},{release,contract});
+    assert.deepEqual(readRuntimePublication(repository,{release,contract,publication}).modules['lib/example.json'].questionReview,before);
+  }
+  // Simulate a previously pinned publication, not a new admission bypass.
+  const old=syntheticQuestionCapsule();old.reviews=[];
+  const payload=JSON.stringify({...value,modules:{'lib/example.json':{questionReview:old}}}),publication=digest(payload);
+  repository.db.prepare('INSERT INTO runtime_publications VALUES(?,?,?)').run(release,publication,payload);
+  repository.db.exec('PRAGMA query_only=ON');
+  assert.deepEqual(readRuntimePublication(repository,{release,contract,publication}).modules['lib/example.json'].questionReview,old);
+});
 
 test('publication is immutable and reading it does not change content or schema', t => {
   const {repository,release,contract,value} = fixture(t);

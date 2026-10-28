@@ -55,6 +55,10 @@ Een plan kan daarnaast `broadSubquestions` leveren, met dezelfde velden en eigen
 
 Een aanwezige capsule mag bij afwezig of verouderd bewijs niet terugvallen op een legacyvoorstel. Zonder capsule blijft de inhoudelijke status onbekend; de bestaande vormcontrole en legacyzichtbaarheid blijven compatibel. Filter of migreer geen eigen vragen, historische onderzoekstekst of opgeslagen bewijssnapshots met deze helper.
 
+Bij het schrijven van een nieuwe runtimepublicatie controleert `publishRuntime` iedere aangeleverde vraagcapsule, zowel inline als in uitgesteld geladen gegevens. Iedere vraag vereist een exact besluit; ontbrekende, verouderde of ongeldige besluiten stoppen de publicatie vóór het opslaan. Expliciete negatieve besluiten blijven bewaard en niet-aanbiedbaar. Een lege inventaris is geen beoordeelde afwezigheid. Oude gepinde publicaties blijven leesbaar. De voorbereider mag ontbrekende besluiten nog wel als werkvoorraad opleveren.
+
+Deze schrijfcontrole bewijst nog niet dat alle vereiste capsules en vraagcategorieën zijn aangeleverd. De bronoverstijgende dekkingscontrole blijft open onder #163: per bron moet ook het ontbreken van centrale vragen, brede/specifieke deelvragen, relevante interviewniveaus en cycleruitkomsten worden vastgesteld. Een technisch geslaagde capsulecontrole mag daarom niet worden beschreven als volledige toelating van nieuwe vraaginhoud.
+
 ## Getoetste grens
 
 De runtimeproef maakt via `scripts/build-local-database.mjs` twee aparte fictieve rapportpublicaties en controleert ze met `checkRuntimeDatabase` en de gewone rapportlevering. Zij toont verwijdering, herschrijven met nieuw bewijs, exacte bronpagina's, behouden historisch bewijs en een ongewijzigde oude database. Dit is geen correctie-import in een bestaande publicatie en geen uitvoering van echte inhoudelijke reviews. De gewone bouwers zijn niet gewijzigd en roepen de helper niet automatisch aan; de bronadapter moet deze expliciete voorbereiding toepassen. App-/exportconsumenten sluiten apart aan.

@@ -1,6 +1,7 @@
 import {digest} from './repository.mjs';
 import {createModelChoicePresentation,createQuestionWorkbenchPresentation} from '../lib/model-presentation.mjs';
 import {isAdmittedFoundation,validateFlatFoundationChain} from '../lib/admitted-foundation.mjs';
+import {verifyPublishedQuestionCapsules} from './question-review-gate.mjs';
 
 const FORMAT = 'omnibus-runtime-publication';
 const MAX_BYTES = 64 * 1024 * 1024;
@@ -93,6 +94,7 @@ export function publishRuntime(repository, value, expected) {
   if (Buffer.byteLength(payload) > MAX_BYTES) fail('size limit');
   verifyResources(repository, value);
   verifyFoundationChains(repository, value);
+  verifyPublishedQuestionCapsules(repository, value);
   repository.db.exec(`CREATE TABLE IF NOT EXISTS runtime_publications(
     release_id TEXT NOT NULL REFERENCES releases(id), hash TEXT NOT NULL,
     payload TEXT NOT NULL CHECK(json_valid(payload)), PRIMARY KEY(release_id,hash))`);
