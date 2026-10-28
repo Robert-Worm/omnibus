@@ -222,6 +222,45 @@ eigen tekst bewaren, heropenen en exporteren. Geen vooraf aangevinkte vragen,
 stil toegevoegde normen of vervanging van eigen projectvragen. Afgekeurde
 voorstellen verdwijnen uit nieuwe keuzes; bewaarde gebruikersinhoud blijft.
 
+### Vragen in de lokale pakketroute
+
+Voor nieuwe lokale wetten/kaders bevat `CATALOGUE.json` ook `questionPlan` en
+`interviewReviews`. Neem ze mee vóór de bron-, kader- en praktische eindreview
+en vóór het bevriezen van de reviewbasis. De bronbestanden blijven ongewijzigd.
+
+- `questionPlan` bevat `central`, `subquestions`, `broadSubquestions` en de
+  exacte `questionReview`. Ieder niveau dekt alle selecteerbare toetspunten via
+  `originKeys` met de vorm `<bron-id>:<punt-id>`; meerdere punten mogen onder
+  één brede vraag vallen. Brede sleutels beginnen met `broad:`.
+- `interviewReviews` heeft per selecteerbaar punt diezelfde sleutel. De capsule
+  gebruikt deze sleutel als `itemId`, een opening met ID `question` en soort
+  `interview`, en eventuele afzonderlijk beoordeelde `doorvraag`-velden. Deze
+  route ondersteunt één opening per punt; lever een benodigde andere
+  respondentvariant als open integratiepunt aan, niet als verborgen extra opening.
+- Gebruik `prepareQuestionPlanPublication` en `prepareQuestionReviewPublication`
+  uit `content-tools/question-review-publication.mjs`. De bronbinding is de
+  bron-ID, `catalogue.context.edition` en de SHA-256 van de oorspronkelijke PDF.
+  De context komt uit `frameworkQuestionContext(catalogue, bank)` in
+  `local-data/question-review-gate.mjs`: catalogus zonder vragen/reviews plus de
+  bronbank. Het plan gebruikt het plan zonder `questionReview` als `item`; een
+  interview gebruikt het volledige toetspunt als `item` en exacte velden
+  `{id, kind, text}` als vrageninventaris.
+- Laat de werkelijke reviewer de resulterende tekst-, item- en contextbindingen
+  beoordelen. Herschrijf geen oude receipts bij gewijzigde tekst, actor,
+  bronpassage of koppeling. De helpers maken geen inhoudelijke goedkeuring.
+  Negatieve besluiten blijven aanwezig en worden niet aangeboden. Een ontbrekend
+  besluit of weggehaald vragenveld geldt niet als beoordeelde afwezigheid.
+
+Ontvangst en de uiteindelijke databasepublicatie controleren dezelfde dekking;
+de laatste controle bekijkt ook uitgestelde gegevens. Oude publicaties en eigen
+projectvragen blijven leesbaar. Een kader met uitsluitend expliciet HOLD- of
+contextpunten biedt geen puntvragen aan. De bronreview blijft daarvoor verplicht.
+
+Deze routecontrole bewijst nog niet dat alle passende doorvragen of niveaus zijn
+uitgewerkt. De inhoudelijke volledigheidsreview blijft verplicht, evenals de
+controle van de feitelijke viewer- en exportuitkomsten. Gebruik nooit de
+fictieve testreceipts uit `test-support` als pakketbewijs.
+
 ### Onafhankelijke eindbeoordeling
 
 Bewaar concept en hersteloverzicht. Bron-, juridisch/kader- en praktische

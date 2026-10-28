@@ -88,6 +88,10 @@ een toetsvraag of overkoepelende onderzoeksvraag is daarvoor geen vervanging.
 Gebruik de ontwerp- en reviewskills hierboven. Leg ontbrekende dekking vast;
 verzin geen vragen om lege velden te vullen.
 
+Lees voor de lokale pakketroute [het aanlevercontract voor vragen](references/framework-method.md#vragen-in-de-lokale-pakketroute) vóór het bevriezen van `CATALOGUE.json`.
+De ontvangstroute bewaart het beoordeelde plan en weigert ontbrekende dekking;
+een eigen toelating of een positieve normreview vervangt de vraagbesluiten niet.
+
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Lever een apart
 `intake.json` rond ongewijzigde kopieën van bron, bronbank, catalogus,
 migratierelaties, context, beperkingen en reviewbasis met werkelijke reviews.
