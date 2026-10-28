@@ -98,6 +98,35 @@ for (const inline of [false, true]) await test(`local model publication preserve
   await assert.rejects(buildLocalDatabase(f.options), /Output already exists/);
 });
 
+await test('grouped model research questions require separate reviews and survive lazy publication',async t=>{
+  const f=await runtimeCase(t,{editModel(model){
+    model.items[0].indicators=[{id:'TEST-I1',title:'Fictieve informatie',definition:'Fictieve indicator.',documents:'',observation:''}];
+    model.items[0].questions[0].indicatorId='TEST-I1';
+    model.researchSubquestions=[{id:'information',title:'Informatie',question:'Hoe wordt informatie gebruikt?',indicatorIds:['TEST-I1']}];
+  }});
+  const original=readFileSync(f.baseline.databasePath);
+  await buildLocalDatabase(f.options);
+  const pins=readDatabaseSettings(join(f.out,'local-build.json')),reader=new CatalogueRepository(pins.database,{readOnly:true});
+  try {
+    const content=readRuntimePublication(reader,{...pins,contract:runtimeContractHash});
+    const library=structuredClone(content.modules[LIBRARY]);
+    for(const key of content.registrations[LIBRARY])applyCatalogueEdits(library,webResource(reader,pins.release,content.refs[key].hash));
+    const restored=structureModelData(library.models.find(m=>m.id===f.packages[0].id));
+    assert.deepEqual(restored.researchSubquestions,f.packages[0].model.researchSubquestions);
+    restored.researchSubquestions[0].question='Mijn eigen deelvraag';
+    assert.equal(structureModelData(JSON.parse(JSON.stringify(restored))).researchSubquestions[0].question,'Mijn eigen deelvraag');
+  }finally{reader.close();}
+  assert.deepEqual(readFileSync(f.baseline.databasePath),original);
+  const p=f.packages[0],target=p.id+'/researchSubquestions/information';
+  const complete=structuredClone(p.reviews);
+  for(const role of ['theory','practical']){
+    p.reviews=structuredClone(complete);
+    p.reviews.find(r=>r.role===role).assessments=p.reviews.find(r=>r.role===role).assessments.filter(a=>a.targetId!==target);
+    save(join(p.folder,'reviews.json'),p.reviews);repinFixture(f);
+    await assert.rejects(checkLocalDatabase(f.options),/every exact target/);
+  }
+});
+
 await test("one-command viewer build works without private authoring modules", async t => {
   const f = await runtimeCase(t);
   const run = spawnSync(process.execPath, ["scripts/build-local-database.mjs", "--plan", f.planPath,

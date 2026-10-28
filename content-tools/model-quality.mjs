@@ -47,6 +47,28 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
     };
 
   addTarget({ id: model.id, kind: "model", title: model.title, text: model.question ?? "" });
+  if (!nonempty(model.question)) issue(errors, "EMPTY_QUESTION", model.id, "Central research question is empty.");
+  // Grouped research questions are authored questions, not mere model metadata.
+  // Review their exact coverage as well as their wording; never infer links from
+  // titles or from the viewer's placeholder indicators for old saved projects.
+  if (model.researchSubquestions !== undefined) {
+    const subs = model.researchSubquestions;
+    const indicators = new Set(model.items.flatMap(item =>
+      Array.isArray(item?.indicators) ? item.indicators.map(i => i?.id) : []).filter(identifier));
+    if (!Array.isArray(subs) || !subs.length || subs.length > 50) {
+      issue(errors, "RESEARCH_SUBQUESTIONS_SHAPE", model.id, "Research subquestions must be a nonempty list of at most 50 questions.");
+    } else for (const sub of subs) {
+      if (!sub || !identifier(sub.id) || !nonempty(sub.question) ||
+          !Array.isArray(sub.indicatorIds) || !sub.indicatorIds.length ||
+          new Set(sub.indicatorIds).size !== sub.indicatorIds.length ||
+          sub.indicatorIds.some(id => !indicators.has(id))) {
+        issue(errors, "RESEARCH_SUBQUESTION", model.id, "Research subquestions need text, stable identities and explicit known indicator links.");
+        continue;
+      }
+      addTarget({ id: `${model.id}/researchSubquestions/${sub.id}`, kind: "research-question",
+        title: sub.title ?? "", text: sub.question, indicatorIds: [...sub.indicatorIds] });
+    }
+  }
   if (!model.items.length) issue(errors, "NO_DIMENSIONS", model.id, "No dimensions to review.");
   for (const item of model.items) {
     if (!item || !identifier(item.id) || !nonempty(item.title)) {

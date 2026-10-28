@@ -51,6 +51,11 @@ waarnemingen, niet onnodig naar identificeerbare personen.
 
 `prepareModelReview` maakt een reviewbasis versie 2 voor model, dimensies,
 de dimensievraag, een ingevulde `researchQuestion` en iedere vraagvariant.
+Elke expliciete `researchSubquestions`-vraag krijgt ook een afzonderlijk target,
+met de exacte vraagtekst en `indicatorIds`. Beoordeel of die indicatoren de brede
+of specifieke deelvraag werkelijk dekken; een algemene modelgoedkeuring volstaat
+niet. Gebruik bestaande, expliciet beschreven indicatoren, geen herstelplaceholder.
+Ontbrekende hoofdvragen of ongeldige deelvraagkoppelingen blokkeren toelating.
 Elke niet-lege regel in `probes` krijgt een eigen target: bij de dimensievraag
 en per variant bij de bijbehorende opening. Beoordeel dus ook of dezelfde
 doorvraag past bij ieder aangeboden respondentniveau. Gebruik één doorvraag
