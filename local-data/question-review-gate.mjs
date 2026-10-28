@@ -1,6 +1,7 @@
 // Write boundary only. Old pinned releases and user projects remain readable.
 import {QUESTION_REVIEW_PUBLICATION_FORMAT} from '../lib/question-quality-review.mjs';
 import {applyCatalogueEdits} from '../lib/catalogue-runtime.mjs';
+import {localModelPublicationReview} from './model-review-gate.mjs';
 import {verifyQuestionCapsule,verifyLocalFrameworkQuestions,verifyLocalReportQuestions} from '../content-tools/question-review-validation.mjs';
 export {verifyQuestionCapsule} from '../content-tools/question-review-validation.mjs';
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
@@ -8,6 +9,7 @@ const fail=message=>{throw Error('Invalid question review publication: '+message
 /** Visit both inline data and deferred data at the actual publication boundary.
  * Resource integrity has already been checked by publishRuntime. */
 export function verifyPublishedQuestionCapsules(repository, value) {
+  const verifyModels=localModelPublicationReview(repository,value);
   const collections=value.modules['lib/application-catalogue.mjs']?.collections;
   const ownOrigins=new Set((collections?.origins??[]).filter(row=>row.kind==='own').map(row=>row.id));
   const ownReports=Object.entries(collections?.sources?.report??{}).filter(([,origin])=>ownOrigins.has(origin)).map(([id])=>id);
@@ -42,12 +44,14 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     });
     const frameworks = id === 'lib/topical-reviewed.json';
     const reports=id===reportModule&&ownReports.length;
-    if(!frameworks&&!reports&&!relevant(initial)&&!edits.some(relevant))continue;
+    const models=id==='lib/model-library.mjs'&&verifyModels;
+    if(!frameworks&&!reports&&!models&&!relevant(initial)&&!edits.some(relevant))continue;
     // Check the actual assembled inventory, not isolated partial edits. A late
     // resource must not change a previously valid receipt or evade this gate.
     const hydrated=structuredClone(initial);
     for(const rows of edits)applyCatalogueEdits(hydrated,structuredClone(rows));
     visit(hydrated);
+    if(models)verifyModels(hydrated);
     if(frameworks)for(const packet of hydrated.packages??[])
       if(packet.family==='local-framework')verifyLocalFrameworkQuestions(packet,hydrated.interviewReviews);
     if(reports)for(const sourceId of ownReports){

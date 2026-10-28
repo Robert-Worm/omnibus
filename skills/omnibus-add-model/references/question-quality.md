@@ -84,3 +84,11 @@ Herstel door de auteur creëert een nieuwe model-/bronbasis en vraagt inhoudelij
 herbevestiging; geen automatisch aanpassen van reviewhashes. Bronbeperking,
 verkeerde vraag en ontbrekende review zijn verschillende statussen. Bestaande
 projectvragen blijven behouden, ook als de catalogus later verbetert.
+
+Bij nieuwe runtimepublicaties controleert de lokale modelroute ook de werkelijk
+geleverde modelpayload tegen het gearchiveerde intakepakket, de bevroren bronnen,
+de volledige reviewbasis en beide reviews. Dit geldt voor direct én later geladen
+gegevens. Ontbrekende bewijzen, afkeuringen of wijzigingen na de review blokkeren
+publicatie; een nieuwe checksum maakt een ontbrekende beoordeling niet geldig.
+Reviewdossiers blijven buiten de browser. Deze controle vervangt de afzonderlijke
+review van externe cyclerformuleringen niet en verandert geen opgeslagen project.

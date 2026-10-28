@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from 'node:crypto';
 import { fixture, admittedFixture } from "./test-support/local-database-fixture.mjs";
 import { runtimeFixture } from "../local-data/test-support/runtime-fixture.mjs";
 import { CatalogueRepository, digest } from "../local-data/repository.mjs";
@@ -159,4 +160,86 @@ await test("shared restoration preserves selected and edited own-model questions
   const roundtrip = structureModelData(JSON.parse(JSON.stringify(restored)));
   assert.deepEqual(roundtrip, restored);
   assert.deepEqual(original, f.packages[0].model);
+});
+
+await test('publication binds inline and deferred local model delivery to archived reviews before insertion', async t => {
+  const f=await runtimeCase(t,{editModel(model){
+    model.items[0].researchQuestion='Welke informatie gebruikt het team?';
+    Object.assign(model.items[0].questions[0],{probes:'Kunt u een voorbeeld geven?',
+      variants:{operational:'Wat ontving u?',management:'Welke informatie koos u?'}});
+  }});
+  const sourceBefore=readFileSync(join(f.packages[0].folder,'source.txt'));
+  await buildLocalDatabase(f.options);
+  const pins=readDatabaseSettings(join(f.out,'local-build.json')), writer=new CatalogueRepository(pins.database);
+  try {
+    const original=readRuntimePublication(writer,{...pins,contract:runtimeContractHash});
+    const key='models:local:'+f.packages[0].id;
+    const edits=webResource(writer,pins.release,original.refs[key].hash);
+    const count=()=>writer.db.prepare('SELECT count(*) AS n FROM runtime_publications').get().n;
+    const baseline=count();
+    assert.equal(publishRuntime(writer,original,{...pins,contract:runtimeContractHash}),pins.publication);
+    for(const [label,edit] of [
+      ['probe',m=>{m.items[0].questions[0].probes='Onbeoordeelde doorvraag';}],
+      ['variant',m=>{m.items[0].questions[0].variants.management='Onbeoordeelde variant';}],
+      ['dimension',m=>{m.items[0].question='Onbeoordeelde dimensievraag';}],
+      ['research',m=>{m.items[0].researchQuestion='Andere onderzoeksvraag';}],
+      ['scope',m=>{m.items[0].definition='Een ander construct';}],
+    ]) for(const inline of [false,true]) {
+      const value=structuredClone(original), changed=structuredClone(edits);
+      edit(changed[0].value[0]);
+      if(inline){
+        value.modules[LIBRARY].models=changed[0].value;
+        value.registrations[LIBRARY]=value.registrations[LIBRARY].filter(k=>k!==key);
+      }else Object.assign(value.refs,prepareWebResources(writer,pins.release,{[key]:changed}));
+      assert.throws(()=>publishRuntime(writer,value,{...pins,contract:runtimeContractHash}),
+        /delivered model differs/,label+' inline='+inline);
+      assert.equal(count(),baseline);
+    }
+    for(const missingModule of [false,true]){
+      const value=structuredClone(original);
+      if(missingModule){delete value.modules[LIBRARY];delete value.registrations[LIBRARY];}
+      else value.registrations[LIBRARY]=value.registrations[LIBRARY].filter(k=>k!==key);
+      assert.throws(()=>publishRuntime(writer,value,{...pins,contract:runtimeContractHash}),/missing.*model/);
+      assert.equal(count(),baseline);
+    }
+    const duplicate=structuredClone(original);
+    duplicate.modules[LIBRARY].models.push(structuredClone(f.packages[0].model));
+    assert.throws(()=>publishRuntime(writer,duplicate,{...pins,contract:runtimeContractHash}),/duplicate delivered model/);
+    // Even absent browser receipts cannot bypass the source-side review dossier.
+    writer.db.exec('SAVEPOINT missing_review');
+    writer.db.prepare('DELETE FROM release_artifacts WHERE release_id=? AND name=?')
+      .run(pins.release,f.packages[0].id+'/files/reviews');
+    assert.throws(()=>publishRuntime(writer,original,{...pins,contract:runtimeContractHash}),/missing or changed archived evidence/);
+    writer.db.exec('ROLLBACK TO missing_review; RELEASE missing_review');
+    // Re-pinning is deliberately limited to fabricated test evidence. A fresh
+    // checksum envelope cannot turn an incomplete/negative review into approval.
+    for(const remove of [false,true]) {
+      const bundle=writer.exportRelease(pins.release), id=f.packages[0].id;
+      const find=name=>bundle.artifacts.find(a=>a.name===id+'/'+name);
+      const decode=name=>JSON.parse(Buffer.from(find(name).data.content,'base64'));
+      const replace=(name,value)=>{
+        const raw=Buffer.from(JSON.stringify(value)), artifact=find(name);
+        artifact.data={...artifact.data,bytes:raw.length,sha256:createHash('sha256').update(raw).digest('hex'),content:raw.toString('base64')};
+      };
+      const reviews=decode('files/reviews'), assessment=reviews[1].assessments.find(a=>a.targetId.includes('/probes/'));
+      assert(assessment);
+      if(remove)reviews[1].assessments=reviews[1].assessments.filter(a=>a!==assessment);
+      else assessment.decision='REVISE';
+      replace('files/reviews',reviews);
+      const intake=decode('intake'), file=intake.files.find(row=>row.id==='reviews');
+      Object.assign(file,{sha256:find('files/reviews').data.sha256,bytes:find('files/reviews').data.bytes});
+      replace('intake',intake);
+      bundle.packages.find(p=>p.id===id).intakeSha256=find('intake').data.sha256;
+      const admission=decode('local-owner-admission');admission.intakeSha256=find('intake').data.sha256;
+      replace('local-owner-admission',admission);
+      const release=writer.importRelease(bundle);
+      const value={...original,release,modules:{[LIBRARY]:{models:[structuredClone(f.packages[0].model)]}},
+        refs:{},registrations:{},routing:{}};
+      assert.throws(()=>publishRuntime(writer,value,{release,contract:runtimeContractHash}),/incomplete or rejected model reviews/);
+      assert.equal(count(),baseline);
+    }
+    assert.equal(count(),baseline);
+    assert.deepEqual(readRuntimePublication(writer,{...pins,contract:runtimeContractHash}),original);
+  } finally {writer.close();}
+  assert.deepEqual(readFileSync(join(f.packages[0].folder,'source.txt')),sourceBefore);
 });
