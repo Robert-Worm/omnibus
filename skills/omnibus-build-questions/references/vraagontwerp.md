@@ -31,6 +31,10 @@ de ander. Vraag naar de onderbouwde eigen rol. Vul een dubbelzinnige bronverwijz
 zoals 'zijn taken' niet via 'uw taken' alsnog stellig in; vraag neutraal naar de
 feitelijke werkwijze. Een voorbehoud in het dossier herstelt geen sturende vraagzin.
 
+Een mandaatbepaling zegt niet vanzelf welke beslisbevoegdheden het mandaat bevat.
+Vraag bij onbekende inhoud naar het gebruik van het verstrekte mandaat; vul die
+inhoud niet via de vraag in. Dit geldt ook voor de basisvraag.
+
 Kies bewust tussen:
 
 - inrichting: hoe zijn taken, verantwoordelijkheden en voorzieningen georganiseerd?
