@@ -173,7 +173,7 @@ export default function ResearchBuilder({
   const modelPlan = useMemo(()=>composerVisible && selectedModelId ? modelQuestionPlan(draft,selectedModelId,{themeIds,framework,models,direction}) : null,
     [composerVisible,selectedModelId,draft,themeIds,framework,models,direction]);
   const selectedSourceId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || "").match(/^source:([^:]+)/)?.[1];
-  const hasBroadQuestions=Boolean(selectedSourceId&&sourceQuestionDetails(selectedSourceId).includes('broad'));
+  const hasBroadQuestions=useMemo(()=>Boolean(selectedSourceId&&sourceQuestionDetails(selectedSourceId).includes('broad')),[selectedSourceId]);
   const sourceDetail=hasBroadQuestions?subquestionDetail:'specific';
   const composerContext=useMemo(()=>({...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail}),[proposalContext,sourceDetail]);
   const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail) : null,
