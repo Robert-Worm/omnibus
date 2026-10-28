@@ -1,6 +1,6 @@
 import { digest } from "./identity.mjs";
 
-export const MODEL_REVIEW_VERSION = 1;
+export const MODEL_REVIEW_VERSION = 2;
 export const REVIEW_ASPECTS = Object.freeze({
   theory: ["construct", "sourceFidelity", "coverage", "interpretationLimits"],
   practical: ["neutrality", "singleFocus", "answerability", "plainLanguage", "levelFit"],
@@ -22,6 +22,19 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
       issue(errors, "DUPLICATE_TARGET", target.id, "Review target is not unique.");
     seen.add(target.id);
     targets.push(target);
+  };
+  // One target per authored line, retaining exact text and its opening/level.
+  // Do not split on punctuation: a probe may contain an example or abbreviation.
+  const addProbes = (text, parentId, context) => {
+    if (text === undefined) return;
+    if (typeof text !== "string") {
+      issue(errors, "PROBES_SHAPE", parentId, "Probes must be text.");
+      return;
+    }
+    text.split(/\r\n|\n|\r/u).forEach((line, index) => {
+      if (line.trim()) addTarget({ id: `${parentId}/probes/${index + 1}`,
+        kind: "probe", parentId, ...context, text: line });
+    });
   };
   if (!model || !identifier(model.id) || !nonempty(model.title) || !Array.isArray(model.items))
     return {
@@ -50,6 +63,17 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
       text: item.definition ?? item.question ?? "",
       indicatorIds: (item.indicators ?? []).map((i) => i?.id ?? null),
     });
+    const openingId = `${model.id}/${item.id}/question`;
+    if (nonempty(item.question)) addTarget({ id: openingId, kind: "question",
+      dimensionId: item.id, level: "dimension", text: item.question });
+    else issue(errors, "EMPTY_QUESTION", openingId, "Dimension question is empty.");
+    addProbes(item.probes, openingId, { dimensionId: item.id, level: "dimension" });
+    if (item.researchQuestion !== undefined) {
+      if (nonempty(item.researchQuestion)) addTarget({ id: `${model.id}/${item.id}/researchQuestion`,
+        kind: "research-question", dimensionId: item.id, text: item.researchQuestion });
+      else if (typeof item.researchQuestion !== "string")
+        issue(errors, "RESEARCH_QUESTION_SHAPE", item.id, "Research question must be text.");
+    }
     const indicatorIds = new Set();
     for (const indicator of item.indicators ?? []) {
       if (!indicator || !identifier(indicator.id) || indicatorIds.has(indicator.id))
@@ -71,7 +95,9 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
         issue(errors, "INDICATOR_LINK", question.id, "Question links to an unknown indicator.");
       if (!nonempty(question.title))
         issue(errors, "QUESTION_TITLE", question.id, "Question title is empty.");
-      const variants = question.variants ?? {};
+      // Match the existing viewer restoration of an omitted variant map. This
+      // does not invent a management/strategic variant or approve applicability.
+      const variants = question.variants ?? { operational: question.question };
       if (typeof variants !== "object" || Array.isArray(variants)) {
         issue(errors, "VARIANTS_SHAPE", question.id, "Variants must be keyed by level.");
         continue;
@@ -96,6 +122,8 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
           purpose: question.purpose ?? "",
           origin: question.origin ?? "UNSPECIFIED",
         });
+        addProbes(question.probes, id, { dimensionId: item.id, questionId: question.id,
+          indicatorId: question.indicatorId ?? null, level });
         const normalized = text
           .normalize("NFC")
           .toLocaleLowerCase("nl")
@@ -175,6 +203,8 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
  * and actual source reading independently; no UI or publication calls live here. */
 export function checkModelReviews(prepared, reviews, { authorIds = [] } = {}) {
   const errors = [];
+  if (prepared.schemaVersion !== MODEL_REVIEW_VERSION)
+    errors.push("Current model review basis required; review newly covered questions and probes.");
   if (prepared.status !== "STRUCTURAL_PASS_REVIEW_REQUIRED" || prepared.errors?.length)
     errors.push("Structural checks must pass.");
   const basis = {

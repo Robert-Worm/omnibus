@@ -19,6 +19,21 @@ const load = path => JSON.parse(readFileSync(path, "utf8"));
 
 import { fixture, admittedFixture, repinFixture } from "./test-support/local-database-fixture.mjs";
 
+await test("local model intake requires separate probe reviews even when all opening reviews approve", async t => {
+  const f = await fixture(t, 1, model => {
+    model.items[0].questions[0].probes = "Kunt u een voorbeeld geven?\nWat gebeurde daarna?";
+  });
+  const p=f.packages[0], sourceBefore=readFileSync(join(p.folder,'source.txt'));
+  const probeIds=new Set(p.basis.targets.filter(target=>target.kind==='probe').map(target=>target.id));
+  assert.equal(probeIds.size,4,'Default and viewer operational fallback both include two probes');
+  assert.equal((await checkLocalDatabase(f.options)).publishable,false);
+  p.reviews[1].assessments=p.reviews[1].assessments.filter(row=>!probeIds.has(row.targetId));
+  save(join(p.folder,'reviews.json'),p.reviews); repinFixture(f);
+  await assert.rejects(checkLocalDatabase(f.options),/every exact target/);
+  assert.deepEqual(readFileSync(join(p.folder,'source.txt')),sourceBefore);
+  assert.equal(existsSync(f.out),false);
+});
+
 await test("pinned local-owner admission survives check and build exactly; it does not publish or change existing data", async t => {
   const f = await admittedFixture(t), before = readdirSync(f.dir, { recursive: true }).sort();
   const sourceBefore = readFileSync(join(f.packages[0].folder, "source.txt"));
@@ -129,7 +144,7 @@ await test("check-only CLI validates the complete plan without changing any file
   const result = JSON.parse(cli.stdout);
   assert.equal(result.status, "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED");
   assert.equal(result.packages, 2); assert.equal(result.sourceTexts, 2);
-  assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 6);
+  assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 10);
   assert.equal(result.planSha256, hash(readFileSync(f.planPath)));
   assert.equal(result.inputBytes, f.packages.reduce((sum, p) => sum + readFileSync(p.intake).length +
     load(p.intake).files.reduce((total, file) => total + file.bytes, 0), 0));
@@ -174,7 +189,7 @@ await test("one command builds two pinned local packages with exact source/revie
   const result = JSON.parse(cli.stdout);
   assert.equal(result.status, "LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED");
   assert.equal(result.packages, 2); assert.equal(result.records, 2); assert.equal(result.documents, 2);
-  assert.equal(result.sourcePages, 2); assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 6);
+  assert.equal(result.sourcePages, 2); assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 10);
   assert.equal(result.sourceArtifacts, 16);
   assert.equal(result.databaseSha256, hash(readFileSync(result.database)));
   assert.deepEqual(load(join(f.out, "local-database-result.json")), result);

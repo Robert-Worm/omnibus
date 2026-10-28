@@ -28,7 +28,8 @@ test('cold trial creates reproducible source-bound drafts but never approval evi
     assert.equal(model.selected, false);
     assert(model.items.every(i => !i.included && i.questions.every(q => !q.included)));
     const precheck = read(draft, 'question-precheck.json');
-    assert.equal(precheck.length, 8);
+    assert.deepEqual(precheck.map(row=>row.id), basis.targets.filter(t=>t.kind!=='dimension').map(t=>t.id));
+    assert.equal(precheck.filter(row=>row.kind==='doorvraag').length, 5);
     assert(precheck.every(row => row.uitkomst === 'door'));
     assert(!readdirSync(draft.folder).some(name => /reviews|admission|intake|sqlite/.test(name)));
   }

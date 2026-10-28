@@ -49,7 +49,20 @@ waarnemingen, niet onnodig naar identificeerbare personen.
 
 ## Reviewbewijs
 
-`prepareModelReview` maakt targets voor model, dimensies en iedere vraagvariant.
+`prepareModelReview` maakt een reviewbasis versie 2 voor model, dimensies,
+de dimensievraag, een ingevulde `researchQuestion` en iedere vraagvariant.
+Elke niet-lege regel in `probes` krijgt een eigen target: bij de dimensievraag
+en per variant bij de bijbehorende opening. Beoordeel dus ook of dezelfde
+doorvraag past bij ieder aangeboden respondentniveau. Gebruik één doorvraag
+per regel; de helper splitst geen zinnen op leestekens.
+
+Bij een ontbrekende variantentabel neemt de reviewbasis dezelfde operationele
+terugval mee als de viewer. Dat is geen goedkeuring van de toepasbaarheid en
+maakt geen andere niveaus aan. Een lege doorvragenlijst vraagt geen opvulling.
+Oude reviews zonder deze dekking volstaan niet voor nieuwe toelating: maak een
+nieuwe basis en laat de nieuwe targets echt beoordelen, zonder oude hashes te
+vervangen. Het lezen van bestaande projecten verandert hierdoor niet.
+
 Aanvullende cycleruitvoer die niet in de payload staat moet apart worden bevroren
 en gereviewd; de checker beweert die niet automatisch te dekken.
 

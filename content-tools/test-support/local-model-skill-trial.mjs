@@ -91,11 +91,9 @@ openbare publicatie. Een lokale proefbeslissing geeft geen echte bronrechten.
   const basis = prepareModelReview(model, {sourceEvidence:[{id:'source', sha256:sha256(readFileSync(join(folder, 'source.txt')))}]});
   assert.equal(basis.status, 'STRUCTURAL_PASS_REVIEW_REQUIRED');
   save(join(folder, 'basis.json'), basis);
-  const rows = [{id:model.id, text:model.question, kind:'onderzoeksvraag'},
-    {id:'OVERDRACHT/question', text:question, kind:'interview'},
-    ...basis.targets.filter(t=>t.kind==='question').map(t=>({id:t.id, text:t.text, kind:'interview'})),
-    {id:'OVERDRACHT/probes', text:model.items[0].probes, kind:'doorvraag'},
-    {id:'OVERDRACHT-Q01/probes', text:model.items[0].questions[0].probes, kind:'doorvraag'}];
+  const kinds = {model:'onderzoeksvraag', 'research-question':'onderzoeksvraag', question:'interview', probe:'doorvraag'};
+  const rows = basis.targets.filter(t=>Object.hasOwn(kinds,t.kind))
+    .map(t=>({id:t.id,text:t.text,kind:kinds[t.kind]}));
   save(join(folder, 'question-precheck.json'), rows.map(row=>({...row, ...voorcontrole(row.text, row.kind)})));
   writeFileSync(join(folder, 'contract.md'), readFileSync(join(root, 'skills/omnibus-add-model/references/question-quality.md')), {flag:'wx'});
   save(join(folder, 'run-input.json'), {synthetic:true, authorIds:['codex-root-156'],
