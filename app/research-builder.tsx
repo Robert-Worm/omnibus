@@ -67,12 +67,11 @@ import {proposalFormulation} from '@/lib/research-question-formulations.mjs';
 import { appendUniqueQuestion, addOwnSubquestions, mappedQuestionSuggestions, setQuestionSubject } from '@/lib/question-writing.mjs';
 import {questionStartChoice,rankedQuestionStarts,existingQuestionStart} from '@/lib/question-start.mjs';
 import {questionMenuChoices,applyQuestionMenu,savedSubquestionKey} from '@/lib/question-menu.mjs';
-import {cioSourceId} from '@/lib/cio-law-data.mjs';
 import { normDrop, applyGroupDrop } from "@/lib/research-flow.mjs";
 import {
   centralProposals, subProposals, adoptSubProposal, proposalReuseId, applyProposalWording,
   modelQuestionPlan, adoptModelQuestionPlan,
-  sourceQuestionPlan, adoptSourceQuestionPlan,
+  sourceQuestionPlan, sourceQuestionDetails, adoptSourceQuestionPlan,
   processQuestionPlan, adoptProcessQuestionPlan,
 } from "@/lib/research-proposals.mjs";
 import type { LibraryModel } from "./model-library";
@@ -174,7 +173,8 @@ export default function ResearchBuilder({
   const modelPlan = useMemo(()=>composerVisible && selectedModelId ? modelQuestionPlan(draft,selectedModelId,{themeIds,framework,models,direction}) : null,
     [composerVisible,selectedModelId,draft,themeIds,framework,models,direction]);
   const selectedSourceId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || "").match(/^source:([^:]+)/)?.[1];
-  const sourceDetail=selectedSourceId===cioSourceId?subquestionDetail:'specific';
+  const hasBroadQuestions=Boolean(selectedSourceId&&sourceQuestionDetails(selectedSourceId).includes('broad'));
+  const sourceDetail=hasBroadQuestions?subquestionDetail:'specific';
   const composerContext=useMemo(()=>({...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail}),[proposalContext,sourceDetail]);
   const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail) : null,
     [composerVisible,modelPlan,selectedSourceId,draft,direction,sourceDetail]);
@@ -391,7 +391,7 @@ export default function ResearchBuilder({
   // accepting still calls prepareCentral afresh and validates the current draft.
   const canPreview=Boolean(firstText.trim()&&composerVisible&&(centralTarget||r.questions.length<200));
   const centralPreview = useMemo(()=>canPreview?prepareCentral():null,[canPreview,prepareCentral]);
-  const canSwitchDetail=!ownCentral&&selectedSourceId===cioSourceId;
+  const canSwitchDetail=!ownCentral&&hasBroadQuestions;
   const allSelectableSubs:SubSuggestion[]=useMemo(()=>centralPreview&&!chosenProposalKey.startsWith('item:')
     ? questionMenuChoices(centralPreview.draft,centralPreview.questionId,composerContext) : [],[centralPreview,chosenProposalKey,composerContext]);
   const selectableSubs=canSwitchDetail?allSelectableSubs.filter(s=>s.detail===subquestionDetail):allSelectableSubs;

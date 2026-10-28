@@ -46,6 +46,8 @@ Voor de bestaande kaderopzet (`central`, `subquestions` met `key`, `text` en `or
 
 Het resultaat `plan` kan in `foundationQuestionPlans[sourceId]` worden geleverd. Ook kaders zonder vlakke catalogusregels krijgen hun plan via de eigen uitgestelde brongroep. De applicatie leest de besluiten met `sourceQuestionPlanPresentation`: expliciet afgekeurde of niet-beoordeelde vragen worden niet aangeboden, een gewijzigde inventaris wordt niet hergebruikt. Een onderzoeksrichting maakt van afgekeurde tekst geen nieuw goedgekeurd voorstel. Opgeslagen eigen vragen en handmatige koppelingen blijven behouden.
 
+Een plan kan daarnaast `broadSubquestions` leveren, met dezelfde velden en eigen sleutels die beginnen met `broad:`. Beide niveaus behoren tot één volledige reviewinventaris. De keuze Breed/Specifiek wordt dan in de bestaande vraagopzet beschikbaar; gekozen vragen uit beide niveaus blijven samen bewaard. Brede vragen en hun koppelingen worden inhoudelijk ontworpen, niet automatisch samengevoegd. Een expliciet geleverd registryplan heeft voorrang op het oorspronkelijke bronplan; een afkeuring mag dat oorspronkelijke plan niet opnieuw activeren.
+
 Een aanwezige capsule mag bij afwezig of verouderd bewijs niet terugvallen op een legacyvoorstel. Zonder capsule blijft de inhoudelijke status onbekend; de bestaande vormcontrole en legacyzichtbaarheid blijven compatibel. Filter of migreer geen eigen vragen, historische onderzoekstekst of opgeslagen bewijssnapshots met deze helper.
 
 ## Getoetste grens

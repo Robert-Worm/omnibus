@@ -78,6 +78,28 @@ test('one shared validator admits exact reviewed text without changing input', (
   assert.deepEqual(input, before);
 });
 
+test('broad and specific questions have separate reviews bound to one complete inventory',()=>{
+ const input=fixture();input.itemId='SYNTHETIC:question-plan';
+ input.plan={central:'Hoe verloopt de fictieve overdracht?',
+  subquestions:[{key:'registration',text:'Hoe wordt de fictieve overdracht geregistreerd?',originKeys:['SYNTHETIC:one']}],
+  broadSubquestions:[{key:'broad:process',text:'Hoe is het fictieve overdrachtsproces ingericht?',originKeys:['SYNTHETIC:one','SYNTHETIC:two']}]};
+ input.questions=questionPlanInventory(input.plan);authorReceipts(input);
+ const prepared=prepareQuestionPlanPublication(input),present=p=>sourceQuestionPlanPresentation(p,input);
+ assert.deepEqual(present(prepared.plan).broadSubquestions,input.plan.broadSubquestions);
+ const negative=structuredClone(prepared.plan);
+ negative.questionReview.reviews.find(r=>r.questionId==='sub:broad:process').decision='HOLD';
+ assert.deepEqual(present(negative).broadSubquestions,[]);
+ assert.deepEqual(present(negative).subquestions,input.plan.subquestions);
+ for(const mutate of [p=>p.broadSubquestions[0].originKeys.pop(),p=>p.broadSubquestions[0].text+=' ',p=>delete p.broadSubquestions]){
+  const changed=structuredClone(prepared.plan);mutate(changed);
+  assert.equal(present(changed).central,'');assert.deepEqual(present(changed).subquestions,[]);
+  assert.equal(present(changed).broadSubquestions?.length||0,0);
+ }
+ for(const mutate of [p=>{p.broadSubquestions='invalid';},p=>{p.broadSubquestions[0].key='registration';},p=>{p.subquestions[0].key='broad:mislabelled';}]){
+  const changed=structuredClone(input.plan);mutate(changed);assert.throws(()=>questionPlanInventory(changed));
+ }
+});
+
 test('negative and missing judgments never become approvals through a successful form check', () => {
   for (const decision of ['schrappen', 'herschrijven', 'HOLD', null]) {
     const input = fixture();
