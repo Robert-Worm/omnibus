@@ -1,0 +1,36 @@
+name: Installatie herhalen bij macOS-wachttijd
+
+# GitHub heeft soms geen macOS-machine vrij: de macOS-taak van "Installatie testen" krijgt dan
+# geen runner en wordt na een kwartier afgebroken, zonder één stap. Dat is geen installatiefout.
+# Deze workflow start dan alleen de afgebroken taken opnieuw, hooguit twee keer. Een echte
+# fout (een taak die wel stappen uitvoerde en faalde) blijft rood en wordt niet herhaald.
+on:
+  workflow_run:
+    workflows: ["Installatie testen"]
+    types: [completed]
+
+permissions:
+  actions: write
+
+jobs:
+  herhalen:
+    if: github.event.workflow_run.conclusion != 'success' && github.event.workflow_run.run_attempt < 3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Alleen herhalen als een taak nooit een machine kreeg
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          jobs=$(gh api "repos/$REPO/actions/runs/$RUN/jobs")
+          echte_fout=$(echo "$jobs" | jq '[.jobs[] | select(.conclusion == "failure" or (.conclusion == "cancelled" and (.steps | length) > 0))] | length')
+          zonder_machine=$(echo "$jobs" | jq '[.jobs[] | select(.conclusion == "cancelled" and (.steps | length) == 0)] | length')
+          echo "Echte fouten: $echte_fout · zonder machine: $zonder_machine"
+          if [ "$echte_fout" -eq 0 ] && [ "$zonder_machine" -gt 0 ]; then
+            gh api -X POST "repos/$REPO/actions/runs/$RUN/rerun-failed-jobs"
+            echo "Opnieuw gestart."
+          else
+            echo "Niets te herhalen."
+          fi
