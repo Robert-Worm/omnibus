@@ -3,6 +3,9 @@
 import {createHash} from 'node:crypto';
 import {canonical,digest} from '../content-tools/identity.mjs';
 import {prepareModelReview,checkModelReviews} from '../content-tools/model-quality.mjs';
+import {createQuestionFormulations} from '../lib/interview-wording.mjs';
+
+export const modelWordingModules=['lib/question-formulations.mjs','lib/interview-practice-formulations.json','lib/cev-active.mjs'];
 
 const fail=message=>{throw Error('Invalid model review publication: '+message);};
 const equal=(a,b,message)=>{if(canonical(a)!==canonical(b))fail(message);};
@@ -86,12 +89,21 @@ export function localModelPublicationReview(repository, value) {
     expected.set(id,model);
   }
   if(!value.modules['lib/model-library.mjs'])fail('missing local model delivery');
-  return library=>{
+  return (library,wording)=>{
     if(!Array.isArray(library.models))fail('missing model list');
+    const {questionFormulations}=createQuestionFormulations(...modelWordingModules.map(key=>wording[key]));
     for(const [id,model] of expected) {
       const delivered=library.models.filter(row=>row?.id===id);
       if(delivered.length!==1)fail('missing or duplicate delivered model: '+id);
       equal(delivered[0],model,'delivered model differs from reviewed source: '+id);
+      for(const item of model.items)for(const question of item.questions) {
+        const variants=question.variants??{operational:question.question};
+        for(const [level,base] of Object.entries(variants)) {
+          const approved=question.formulations?.[level]??[base];
+          const offered=questionFormulations({...question,variants},level);
+          if(offered.some(text=>!approved.includes(text)))fail('unreviewed model formulation output: '+question.id+'/'+level);
+        }
+      }
     }
   };
 }

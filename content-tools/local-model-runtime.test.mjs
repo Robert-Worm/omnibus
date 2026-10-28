@@ -4,7 +4,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { createHash } from 'node:crypto';
-import { fixture, admittedFixture } from "./test-support/local-database-fixture.mjs";
+import { fixture, admittedFixture, repinFixture } from "./test-support/local-database-fixture.mjs";
 import { runtimeFixture } from "../local-data/test-support/runtime-fixture.mjs";
 import { CatalogueRepository, digest } from "../local-data/repository.mjs";
 import { readRuntimePublication, publishRuntime } from "../local-data/runtime-publication.mjs";
@@ -16,6 +16,7 @@ import { readDatabaseSettings } from "../scripts/database-build-options.mjs";
 import { projectModelDelivery } from "../scripts/model-delivery-projection.mjs";
 import { applyCatalogueEdits } from "../lib/catalogue-runtime.mjs";
 import { structureModelData } from "../lib/model-structure.mjs";
+import { createQuestionFormulations } from '../lib/interview-wording.mjs';
 
 const LIBRARY = "lib/model-library.mjs";
 const save = (path, value) => writeFileSync(path, JSON.stringify(value, null, 2));
@@ -242,4 +243,51 @@ await test('publication binds inline and deferred local model delivery to archiv
     assert.deepEqual(readRuntimePublication(writer,{...pins,contract:runtimeContractHash}),original);
   } finally {writer.close();}
   assert.deepEqual(readFileSync(join(f.packages[0].folder,'source.txt')),sourceBefore);
+});
+
+await test('local model publication refuses unreviewed generated and deferred table alternatives',async t=>{
+  for(const table of [false,true])await t.test(table?'late table':'generated wording',async st=>{
+    const f=await runtimeCase(st,{editModel(model){
+      model.items[0].questions[0].question=table?'Mijn openingsvraag?':'Kunt u vertellen hoe het werkt?';
+    },editBase(content,writer){
+      if(!table)return;
+      const key='models:formulation-test';
+      Object.assign(content.refs,prepareWebResources(writer,content.release,{[key]:[
+        {path:['values'],value:[{base:'Mijn openingsvraag?',alternatives:['Een ongecontroleerde andere vraag?']}]}]}));
+      content.registrations['lib/interview-practice-formulations.json']=[key];
+    }});
+    await assert.rejects(buildLocalDatabase(f.options),/unreviewed model formulation output/);
+  });
+});
+
+await test('reviewed explicit alternatives survive publication, lazy delivery, cycling and saved edits',async t=>{
+  const f=await runtimeCase(t,{editModel(model){
+    const q=model.items[0].questions[0];q.question='Kunt u vertellen hoe het werkt?';
+    q.probes='Kunt u een voorbeeld geven?';
+    q.formulations={operational:[q.question,'Hoe verliep uw laatste overdracht?']};
+  }});
+  await buildLocalDatabase(f.options);
+  const pins=readDatabaseSettings(join(f.out,'local-build.json')),reader=new CatalogueRepository(pins.database,{readOnly:true});
+  try {
+    const content=readRuntimePublication(reader,{...pins,contract:runtimeContractHash});
+    const library=structuredClone(content.modules[LIBRARY]);
+    for(const key of content.registrations[LIBRARY])applyCatalogueEdits(library,webResource(reader,pins.release,content.refs[key].hash));
+    const restored=structureModelData(library.models.find(m=>m.id===f.packages[0].id));
+    const q=restored.items[0].questions[0];
+    const api=createQuestionFormulations(content.modules['lib/question-formulations.mjs'],
+      content.modules['lib/interview-practice-formulations.json'],content.modules['lib/cev-active.mjs']);
+    assert.deepEqual(api.questionFormulations(q,'operational'),q.formulations.operational);
+    const selected={...q,included:true,selectedLevels:['operational']};
+    const cycled=api.cycleQuestionFormulation(selected,'operational');
+    const saved=JSON.parse(JSON.stringify({...restored,items:[{...restored.items[0],questions:[cycled]}]}));
+    const reopened=structureModelData(saved).items[0].questions[0];
+    assert.deepEqual(reopened.selectedLevels,['operational']);
+    assert.equal(api.cycleQuestionFormulation(reopened,'operational').question,q.question);
+    reopened.variants.operational='Eigen aangepaste vraag';
+    assert.equal(api.cycleQuestionFormulation(reopened,'operational'),reopened);
+  }finally{reader.close();}
+  // Synthetic repinning reaches the review gate; it never supplies approval.
+  const p=f.packages[0];p.reviews[1].assessments=p.reviews[1].assessments.filter(a=>!a.targetId.includes('/formulations/'));
+  save(join(p.folder,'reviews.json'),p.reviews);repinFixture(f);
+  await assert.rejects(checkLocalDatabase(f.options),/every exact target/);
 });

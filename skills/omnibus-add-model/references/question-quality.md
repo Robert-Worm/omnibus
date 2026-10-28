@@ -63,8 +63,18 @@ Oude reviews zonder deze dekking volstaan niet voor nieuwe toelating: maak een
 nieuwe basis en laat de nieuwe targets echt beoordelen, zonder oude hashes te
 vervangen. Het lezen van bestaande projecten verandert hierdoor niet.
 
-Aanvullende cycleruitvoer die niet in de payload staat moet apart worden bevroren
-en gereviewd; de checker beweert die niet automatisch te dekken.
+Leg alternatieve formuleringen voor nieuwe lokale modellen vast in
+`question.formulations`, per aangeboden niveau. Elke lijst bevat de exacte
+niveauvraag en hooguit drie alternatieven, zonder dubbelingen. Elke aanvullende
+zin en de bijbehorende doorvragen krijgen afzonderlijke reviewtargets. Gebruik
+`formulations: {}` als alleen de oorspronkelijke vragen aangeboden moeten worden;
+verzin geen alternatieven om de knop te vullen.
+
+De publicatiecontrole voert dezelfde formuleringfunctie uit als de viewer, met
+de werkelijk geleverde tabellen. Uitkomsten buiten de beoordeelde inventaris
+blokkeren de lokale modelpublicatie. Expliciete lijsten gebruiken geen externe
+terugval of automatisch gemaakte zinnen. Eigen gewijzigde projectvragen blijven
+staan. Andere, oudere modelroutes vragen nog hun eigen cyclerreview.
 
 Twee onafhankelijke rollen beoordelen dezelfde `basisHash`:
 
@@ -90,5 +100,4 @@ geleverde modelpayload tegen het gearchiveerde intakepakket, de bevroren bronnen
 de volledige reviewbasis en beide reviews. Dit geldt voor direct én later geladen
 gegevens. Ontbrekende bewijzen, afkeuringen of wijzigingen na de review blokkeren
 publicatie; een nieuwe checksum maakt een ontbrekende beoordeling niet geldig.
-Reviewdossiers blijven buiten de browser. Deze controle vervangt de afzonderlijke
-review van externe cyclerformuleringen niet en verandert geen opgeslagen project.
+Reviewdossiers blijven buiten de browser. Bestaande projecten veranderen niet.

@@ -41,6 +41,9 @@ export function runtimeFixture(t, { packages = [], documents = [], artifacts = [
     );
     modules['lib/model-choice-guide.mjs'] = {guides:{},summaries:{}};
     modules['lib/research-models.mjs'] = {ids:[],presentations:{}};
+    modules['lib/question-formulations.mjs'] = {clauses:{},strategicExperience:''};
+    modules['lib/interview-practice-formulations.json'] = {values:[]};
+    modules['lib/cev-active.mjs'] = {reviewed:{items:[]}};
     const value = {
       format: "omnibus-runtime-publication",
       schemaVersion: 1,

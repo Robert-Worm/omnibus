@@ -1,4 +1,5 @@
 import { digest } from "./identity.mjs";
+import { questionFormulationEntries } from "../lib/interview-wording.mjs";
 
 export const MODEL_REVIEW_VERSION = 2;
 export const REVIEW_ASPECTS = Object.freeze({
@@ -101,6 +102,24 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
       if (typeof variants !== "object" || Array.isArray(variants)) {
         issue(errors, "VARIANTS_SHAPE", question.id, "Variants must be keyed by level.");
         continue;
+      }
+      if (Object.hasOwn(question, "formulations")) {
+        try {
+          for (const [level, rows] of Object.entries(questionFormulationEntries(question.formulations))) {
+            if (!nonempty(variants[level]) || !rows.includes(variants[level])) {
+              issue(errors, "FORMULATION_BASE", question.id, "Alternatives must include their exact offered level opening.");
+              continue;
+            }
+            rows.forEach((text, index) => {
+              if (text === variants[level]) return; // Already a separately reviewed opening.
+              const id = `${model.id}/${item.id}/${question.id}/${level}/formulations/${index + 1}`;
+              addTarget({id, kind:"formulation", dimensionId:item.id, questionId:question.id,
+                indicatorId:question.indicatorId ?? null, level, text, base:variants[level]});
+              addProbes(question.probes, id, {dimensionId:item.id, questionId:question.id,
+                indicatorId:question.indicatorId ?? null, level});
+            });
+          }
+        } catch { issue(errors, "FORMULATIONS_SHAPE", question.id, "Invalid explicit interview alternatives."); }
       }
       for (const [level, text] of [["default", question.question], ...Object.entries(variants)]) {
         const id = `${model.id}/${item.id}/${question.id}/${level}`;
