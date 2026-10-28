@@ -4,6 +4,7 @@
 import { digest } from "./identity.mjs";
 import { lawReaderPassages } from "../lib/law-source-reader.mjs";
 import { validateFlatFoundationChain } from "../lib/admitted-foundation.mjs";
+import { verifyLocalFrameworkQuestions } from "../local-data/question-review-gate.mjs";
 
 const need = (ok, message) => { if (!ok) throw Error("Framework viewer: " + message); };
 const text = value => typeof value === "string" && Boolean(value.trim());
@@ -47,10 +48,12 @@ export function projectLocalFrameworkViewer({ catalogue, bank, pages, status, pd
     }
   }
   const documentId = id + "-main", textHash = digest(pages.map(p => p.text).join(""));
-  return structuredClone({ id, family: "local-framework", reviewBasis, catalogue, bank, status,
+  const packet = structuredClone({ id, family: "local-framework", reviewBasis, catalogue, bank, status,
     context: { ...context, documents: [{ id: documentId, role: title }] },
     manifest: { documents: [{ id: documentId, file: "source.pdf", first_package_page: 1, last_package_page: pages.length, pdf_sha256: pdfHash }] },
     documents: [{ id: documentId, sourceId: id, packageDocumentId: documentId, title, role: "main", pages,
       pdf_hash: pdfHash, source_sha256: textHash, url: status.official_url }],
-    questionPlan: { subquestions: [] }, legacyRelations: [] });
+    questionPlan: catalogue.questionPlan, legacyRelations: [] });
+  verifyLocalFrameworkQuestions(packet);
+  return packet;
 }

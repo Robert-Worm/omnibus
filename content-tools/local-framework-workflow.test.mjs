@@ -10,6 +10,8 @@ import { runtimeContractHash } from "../lib/runtime-contract-identity.mjs";
 import { hydratedModule } from "./local-source-runtime.mjs";
 import { serializeProject, parseProjectText } from "../lib/project-codec.mjs";
 import { projectFoundationOverview } from "../scripts/foundation-overview-projection.mjs";
+import {sourceQuestionPlanPresentation} from '../lib/source-question-plan.mjs';
+import {sourceInterviewPresentation,sourceInterviewProbes} from '../lib/source-question-presentation.mjs';
 
 const f = await sourceRuntimeFixture({ after }, "framework"), built = await buildLocalDatabase(f.options);
 const reader = new CatalogueRepository(built.database, { readOnly: true });
@@ -57,7 +59,7 @@ register("data:text/javascript," + encodeURIComponent(`
   return next(url,context);
  }
 `), import.meta.url);
-const { topicalPackage, topicalRows, topicalGroups } = await import("../lib/topical-content.mjs");
+const { topicalPackage, topicalRows, topicalGroups, topicalProposals } = await import("../lib/topical-content.mjs");
 const { topicalRecordSources } = await import("../lib/topical-source-reader.mjs");
 const { chooseTopicalPoints, topicalSelection } = await import("../lib/topical-selection.mjs");
 const { emptyDraft, validateDraft, updateValue } = await import("../lib/framework-model.mjs");
@@ -79,6 +81,15 @@ test("new framework database uses the CIO-shaped viewer, exact source, selection
   let draft = chooseTopicalPoints(emptyDraft(framework), p.id, [point.id], true);
   assert.equal(topicalSelection(draft, p.id).all, true);
   const material = draft.investigation.materials[0];
+  const identity={sourceId:p.id,sourceEdition:p.context.edition,sourceHash:p.documents[0].pdf_hash};
+  const plan=sourceQuestionPlanPresentation(p.questionPlan,identity);
+  assert.equal(plan.central,'Hoe worden meldingen afgehandeld?');
+  assert.equal(plan.broadSubquestions.length,1);assert.equal(plan.subquestions.length,1);
+  assert.deepEqual(plan.broadSubquestions[0].originKeys,[material.originKey]);
+  const proposal=topicalProposals.find(row=>row.originKey===material.originKey);
+  const interviewIdentity={...identity,itemId:material.originKey,questionId:'question'};
+  assert.equal(sourceInterviewPresentation(proposal,interviewIdentity).text,'Hoe is de laatste melding afgehandeld?');
+  assert.deepEqual(sourceInterviewProbes(proposal,interviewIdentity),['Welke gegevens zijn daarbij vastgelegd?']);
   assert.equal(material.controlObjective, p.catalogue.objectives[0].text);
   assert.equal(material.control, p.catalogue.objectives[0].control_measure);
   assert.equal(material.rationale, p.catalogue.goals[0].text);

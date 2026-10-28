@@ -10,6 +10,7 @@ import { CatalogueRepository } from "../../local-data/repository.mjs";
 import { readRuntimePublication, publishRuntime } from "../../local-data/runtime-publication.mjs";
 import { prepareWebResources } from "../../local-data/web-resources.mjs";
 import { runtimeContractHash } from "../../lib/runtime-contract-identity.mjs";
+import { syntheticFrameworkQuestions } from "./local-framework-questions.mjs";
 
 export async function sourceRuntimeFixture(t, kind = "report", configure = () => {}) {
   const f = sourceMethodFixture(kind, f => {
@@ -39,6 +40,11 @@ export async function sourceRuntimeFixture(t, kind = "report", configure = () =>
       }
     }
     configure(f);
+    if (kind === "framework") {
+      const cat = f.read("CATALOGUE.json");
+      syntheticFrameworkQuestions(cat, f.read("RECONCILED-SOURCE.json"), f.paths.get("source/source.pdf").sha256);
+      f.set("CATALOGUE.json", cat);
+    }
   });
   f.set("owner-observation.txt", "Fictieve waarneming voor softwaretests; geen echte vrijgave.");
   const dir = mkdtempSync(join(tmpdir(), "omnibus-local-viewer-")), input = join(dir, "input"); mkdirSync(input);

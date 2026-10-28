@@ -136,6 +136,7 @@ function addFramework(prepared, snapshot) {
   requireRuntime(Array.isArray(data?.packages) && nav?.foundationSummaries, "missing shared framework boundary");
   requireRuntime(!data.packages.some(p => p.id.toLowerCase() === id.toLowerCase()) && !Object.keys(nav.foundationSummaries).some(key=>key.toLowerCase()===id.toLowerCase()), "existing framework cannot be replaced");
   const index = data.packages.length, edits = [];
+  edits.push(...mapEdits(["interviewReviews"], packet.catalogue.interviewReviews ?? {}));
   for (const field of ["criteria", "points", "objectives", "goals", "source_dispositions", "issues"]) {
     edits.push(...arrayEdits(["packages", index, "catalogue", field], packet.catalogue[field])); packet.catalogue[field] = [];
   }
@@ -224,8 +225,11 @@ function replaceFramework(prepared, before, after) {
   for (const field of ["goals", "objectives", "criteria", "points"])
     same(old.catalogue[field].map(row => row.id), next.catalogue[field].map(row => row.id), field + " identity inventory");
   data.packages[index] = structuredClone(next);
+  for (const key of Object.keys(old.catalogue.interviewReviews ?? {})) delete data.interviewReviews[key];
+  Object.assign(data.interviewReviews ??= {}, structuredClone(next.catalogue.interviewReviews ?? {}));
   removeSourceDelivery(prepared, moduleId, ["foundation:" + old.id + ":", "source:" + old.id + ":"]);
   const edits = [], sources = [];
+  edits.push(...mapEdits(["interviewReviews"], next.catalogue.interviewReviews ?? {}));
   for (const field of ["criteria", "points", "objectives", "goals", "source_dispositions", "issues"]) {
     edits.push(...arrayEdits(["packages", index, "catalogue", field], next.catalogue[field])); next.catalogue[field] = [];
   }

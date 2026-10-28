@@ -4,6 +4,7 @@ import {CatalogueRepository, digest} from './repository.mjs';
 import {prepareWebResources} from './web-resources.mjs';
 import {publishRuntime, readRuntimePublication, validateRuntimeModules} from './runtime-publication.mjs';
 import {prepareQuestionReviewPublication} from '../content-tools/question-review-publication.mjs';
+import {syntheticFrameworkQuestions} from '../content-tools/test-support/local-framework-questions.mjs';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -16,6 +17,50 @@ function fixture(t) {
     registrations:{'lib/example.json':['catalogue']},refs,routing:{},summary:{}};
   return {repository, release, contract, value};
 }
+
+test('new local frameworks require complete reviewed plans and point interviews at the final write boundary', t=>{
+  const {repository,release,contract,value}=fixture(t);
+  const catalogue={source_identity:{source_id:'SYNTHETIC'},context:{edition:'synthetic-1'},
+    points:[{id:'P1',selection_status:'SELECTABLE',text:'Een fictieve melding krijgt een behandelaar.'}]};
+  const bank={records:[]}, sourceHash=digest('fictional source');
+  syntheticFrameworkQuestions(catalogue,bank,sourceHash);
+  const packet={id:'SYNTHETIC',family:'local-framework',catalogue,bank,context:catalogue.context,
+    documents:[{pdf_hash:sourceHash}],questionPlan:catalogue.questionPlan};
+  const moduleId='lib/topical-reviewed.json';
+  const publish=data=>publishRuntime(repository,{...value,modules:{[moduleId]:data},registrations:{}},{release,contract});
+  const correct={packages:[packet],interviewReviews:catalogue.interviewReviews};
+  for(const change of [
+    p=>{delete p.questionPlan;delete p.catalogue.questionPlan;},
+    p=>{delete p.questionPlan.questionReview;},
+    p=>{p.questionPlan.broadSubquestions=[];},
+    p=>{p.questionPlan.subquestions=[];},
+    p=>{p.questionPlan.broadSubquestions[0].originKeys=['SYNTHETIC:unknown'];},
+    p=>{p.catalogue.points.push({id:'P2',selection_status:'SELECTABLE'});},
+    p=>{delete p.catalogue.interviewReviews;},
+    p=>{delete p.catalogue.interviewReviews['SYNTHETIC:P1'];},
+    p=>{p.catalogue.points[0].text='Een andere verplichting.';},
+    p=>{p.documents[0].pdf_hash=digest('different source');},
+    p=>{p.catalogue.interviewReviews['SYNTHETIC:P1'].questions[1].text='Wat is veranderd?';},
+  ]){
+    const data=structuredClone(correct);change(data.packages[0]);
+    assert.throws(()=>publish(data),/question review publication/);
+    assert.equal(repository.db.prepare("SELECT name FROM sqlite_master WHERE name='runtime_publications'").get(),undefined);
+  }
+  const publication=publish(correct);
+  assert.equal(readRuntimePublication(repository,{release,publication,contract}).modules[moduleId].packages[0].questionPlan.central,
+    packet.questionPlan.central);
+  const data=structuredClone(correct);data.interviewReviews={};
+  const refs=prepareWebResources(repository,release,{questions:[{path:['interviewReviews'],value:{}}]});
+  assert.throws(()=>publishRuntime(repository,{...value,modules:{[moduleId]:data},refs,
+    registrations:{[moduleId]:['questions']}},{release,contract}),/interview delivery/);
+  // An older pinned publication remains readable, including its absent plan.
+  const legacy=structuredClone({...value,modules:{[moduleId]:correct},registrations:{}});
+  delete legacy.modules[moduleId].packages[0].questionPlan;
+  const payload=JSON.stringify(legacy), legacyId=digest(payload);
+  repository.db.prepare('INSERT INTO runtime_publications VALUES(?,?,?)').run(release,legacyId,payload);
+  assert.equal(readRuntimePublication(repository,{release,publication:legacyId,contract}).modules[moduleId].packages[0].questionPlan,undefined);
+  assert.equal(repository.db.prepare('SELECT count(*) AS n FROM runtime_publications').get().n,2);
+});
 
 // Explicitly fictional receipts test the contract, not a real content review.
 function syntheticQuestionCapsule(decision='behouden') {
