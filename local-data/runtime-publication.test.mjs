@@ -67,7 +67,7 @@ test('thematic publication binds reviewed text and mappings after deferred assem
   for(const [moduleId,field,sourceId] of [
     ['lib/theme-workspaces.mjs','presets','theme:T'],['lib/research-flow.mjs','groups','theme-groups'],
     ['app/reviewed-reports.json','researchPresets','theme:T'],['app/reviewed-reports.json','researchGroups','theme-groups'],
-    ['app/report-additions.json','researchPresets','theme:T'],
+      ['app/report-additions.json','researchPresets','theme:T'],['app/report-additions.json','researchGroups','theme-groups'],
   ]){
     const row={key:'test',themeId:'T',text:'Hoe verloopt de fictieve afhandeling?',ids:['one','two'],groups:['g']};
     row.questionReview=questionReviewFixture({sourceId,itemId:row.key,item:structuredClone(row),

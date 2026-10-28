@@ -59,7 +59,7 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     const presets=id==='lib/theme-workspaces.mjs'?hydrated.presets:
       ['app/reviewed-reports.json','app/report-additions.json'].includes(id)?hydrated.researchPresets:[];
     const groups=id==='lib/research-flow.mjs'?hydrated.groups:
-      id==='app/reviewed-reports.json'?hydrated.researchGroups:[];
+      ['app/reviewed-reports.json','app/report-additions.json'].includes(id)?hydrated.researchGroups:[];
     for(const row of presets??[])verifyMappedResearchQuestion(row,'theme:'+row.themeId);
     for(const row of groups??[])verifyMappedResearchQuestion(row,'theme-groups');
     if(models||wording)modelInputs[id]=hydrated;
