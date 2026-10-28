@@ -22,6 +22,55 @@ function fixture(t) {
   return {repository, release, contract, value};
 }
 
+test('archived plan reviews bind the assembled delivery without new decisions or loss of earlier resources',t=>{
+  const repository=new CatalogueRepository(':memory:');t.after(()=>repository.close());
+  const makePlan=(sourceId,decision='behouden')=>{
+    const plan={central:'Hoe verloopt de fictieve afhandeling?',subquestions:[
+      {key:'one',text:'Hoe wordt een fictieve melding geregistreerd?',originKeys:[sourceId+':one']}],
+      broadSubquestions:[{key:'broad:all',text:'Hoe wordt de fictieve afhandeling ingericht?',originKeys:[sourceId+':one']}]};
+    const questions=questionPlanInventory(plan);
+    plan.questionReview={...questionReviewFixture({sourceId,itemId:sourceId+':question-plan',item:structuredClone(plan),
+      questions,decisions:{central:decision}}),planInventory:questions};
+    return plan;
+  };
+  const plans={F:makePlan('F'),G:makePlan('G','HOLD')};
+  const artifacts=[{name:'synthetic-single-review',data:{receipt:{schema:1,kind:'reviewed-question-plan-amendment',sourceId:'F'},plan:plans.F}},
+    {name:'synthetic-plan-reviews',data:{receipt:{schema:1,kind:'reviewed-question-plan-amendment',sourceIds:['G']},plans:{G:plans.G}}}];
+  const release=repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[],artifacts});
+  const contract=digest('synthetic'),moduleId='lib/foundations/registry.mjs';
+  const refs=prepareWebResources(repository,release,{
+    first:[{path:['foundationQuestionPlans'],value:{F:plans.F}}],
+    second:[{path:['foundationQuestionPlans'],value:{G:plans.G}}],
+  });
+  const value={format:'omnibus-runtime-publication',schemaVersion:1,release,contract,contentGate:'VERIFIED_APPLICATION_RELEASE',
+    modules:{[moduleId]:{foundationQuestionPlans:{}}},registrations:{[moduleId]:['first','second']},refs,routing:{},summary:{}};
+  const publish=v=>publishRuntime(repository,v,{release,contract});
+  const publication=publish(value);
+  assert.equal(readRuntimePublication(repository,{release,publication,contract}).refs.first.hash,refs.first.hash);
+  assert.equal(plans.G.questionReview.reviews[0].decision,'HOLD','A negative archived decision is not promoted');
+  for(const mutate of [
+    p=>{p.F.central='Hoe wordt iets anders onderzocht?';},p=>{p.F.subquestions[0].originKeys=['F:other'];},
+    p=>{delete p.F.questionReview;},p=>{p.F.questionReview.reviews[0].basis='Changed reviewer reasoning';},
+    p=>{delete p.G;},p=>{p.F=makePlan('F','HOLD');},
+  ])for(const deferred of [false,true]){
+    const changed=structuredClone(plans);mutate(changed);
+    const extra=prepareWebResources(repository,release,{last:[{path:['foundationQuestionPlans'],value:changed}]});
+    const bad={...value,modules:{[moduleId]:{foundationQuestionPlans:{}}},
+      registrations:deferred?{[moduleId]:['last']}:{},refs:deferred?extra:{}};
+    if(!deferred)bad.modules[moduleId].foundationQuestionPlans=changed;
+    assert.throws(()=>publish(bad),/question review publication/);
+  }
+  assert.throws(()=>publish({...value,modules:{},registrations:{},refs:{}}),/archived review/);
+  const late=prepareWebResources(repository,release,{last:[{path:['foundationQuestionPlans'],value:{F:makePlan('F','HOLD')}}]});
+  assert.throws(()=>publish({...value,refs:{...refs,...late},registrations:{[moduleId]:['first','second','last']}}),/archived review/);
+  // Historic reading remains independent of the new-write gate.
+  assert.equal(readRuntimePublication(repository,{release,publication,contract}).release,release);
+  const row=repository.db.prepare('SELECT sha256,payload FROM artifacts LIMIT 1').get();
+  const changed=JSON.parse(row.payload);changed.receipt.schema=2;
+  repository.db.prepare('UPDATE artifacts SET payload=? WHERE sha256=?').run(JSON.stringify(changed),row.sha256);
+  assert.throws(()=>publish(value),/changed archived/);
+});
+
 test('explicit process plans bind both levels, source scope and exact reviews before publication',t=>{
  const {repository,release,contract,value}=fixture(t),moduleId='lib/process-catalogue.mjs';
  for(const additional of [false,true]){
