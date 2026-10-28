@@ -53,8 +53,10 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 - Houd verplichting, verbod, bevoegdheid, toestemming, definitie, reikwijdte,
   uitzondering, ingang en toelichting uit elkaar. Behoud normadressaat en
   taakdrager; een respondent of begunstigde is niet automatisch normadressaat.
-- Vul bij iedere selecteerbare norm doel, risico, beheersdoelstelling en
-  beheersmaatregel inhoudelijk in. Een letterlijke bronformulering is niet nodig:
+- Lever bij iedere selecteerbare norm de complete keten: doel, risico,
+  beheersdoelstelling, beheersmaatregel, begrijpelijke brongetrouwe norm,
+  toetspunten en de toepasselijke opzet-/bestaanstoetsen met passend bewijs.
+  Een letterlijke bronformulering voor de afgeleide velden is niet nodig:
   leid de gewenste beheerssituatie en een passende interventie af uit het
   brongebonden risico. Label eigen uitwerkingen als `ANALYST_PROPOSAL` en bewaar
   de herleiding; maak daarvan geen nieuwe bronplicht. Volg de beslisregels voor
@@ -73,7 +75,7 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 Controleer ook de route van normselectie naar **Bouw je kader → Bekijk mijn
 vraagopzet**. Vraagvoorstellen zijn redactionele onderzoeksinstrumenten, niet
 uitsluitend gebruikersinhoud. Laat `omnibus-build-questions` een passende
-centrale vraag en samenhangende deelvragen met expliciete toetspuntkoppelingen
+centrale vraag en standaard brede én specifieke deelvragen met expliciete toetspuntkoppelingen
 maken en laat die met `omnibus-review-questions` beoordelen. Neem de goedgekeurde
 opzet op in dezelfde data-aanlevering; genereer geen losse vraag per norm om een
 veld te vullen. Ontbreekt een verdedigbaar voorstel, vermeld de inhoudelijke

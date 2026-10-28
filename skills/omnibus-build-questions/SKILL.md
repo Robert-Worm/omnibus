@@ -70,7 +70,10 @@ onderzoekskaart; vul geen fictieve organisatie, periode of toepasselijkheid in.
 2. Verdeel deze in inhoudelijke deelvragen die samen helpen de centrale vraag te
    beantwoorden. Baseer de indeling op relevante werkzaamheden, verplichtingen
    of constructen; niet automatisch op hoofdstuknummers of aantallen toetspunten.
-3. Maak brede én specifieke voorstellen alleen waar dit zinvol of gevraagd is.
+3. Lever standaard een centrale vraag met brede én specifieke deelvragen voor
+   iedere wet, ieder kader en ieder samenhangend thema/proces/team. Beoordeel bij
+   een afzonderlijk rapport of een eigen overkoepelend plan zinvol is; werk in
+   elk geval de gevolgen voor de betrokken thema- en procesplannen uit.
    Breed betekent een samenhangend groter onderwerp, niet een vage vraag.
    Specifiek betekent een smaller onderwerp, niet meer jargon.
 4. Leg per vraag expliciete koppelingen vast en motiveer die. Gebruik alleen
@@ -87,12 +90,18 @@ Een centrale vraag, deelvraag en interviewvraag hebben verschillende functies.
 Kopieer niet dezelfde normzin naar alle drie niveaus. Produceer geen verplicht
 aantal vragen per norm; rechtvaardig het aantal met de inhoud.
 
-Werk waar zinvol twee volwaardige niveaus uit: bijvoorbeeld drie of vier brede
-deelvragen voor een groot deel van het kader, naast meer specifieke vragen.
+Werk twee volwaardige niveaus uit: bijvoorbeeld drie of vier brede deelvragen
+voor een groot deel van het kader of proces, naast meer specifieke vragen.
 Breed is niet automatisch zwak: beoordeel samenhang en beantwoordbaarheid, niet
 alleen het aantal aspecten of gekoppelde normen. Beide niveaus krijgen eigen
 stabiele vraag-ID's en expliciete, gereviewde koppelingen. Wisselen van menu
 behoudt de gekozen vragen; overlap tussen niveaus telt als unieke toetspunten.
+
+Dit is een standaardonderdeel van de aanlevering, geen optionele extra opdracht.
+Als de bronbasis of omvang geen zinvol onderscheid draagt, leg de beperking
+expliciet voor aan de review. Maak geen cosmetische varianten om beide menu's te
+vullen en claim geen complete vraagopzet zolang een benodigd niveau ontbreekt.
+Een nieuwe skillregel vult bestaande catalogusinhoud niet automatisch aan.
 
 Controleer bij een kader zonder vraagvoorstellen of die opzet werkelijk nog
 ontbreekt, of onderweg verloren gaat in de bronadapter of het laden van de

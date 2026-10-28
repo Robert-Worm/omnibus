@@ -27,6 +27,12 @@ Minimaal vastleggen:
   reden van de relatie, gedekte invalshoek, ontbrekende dekking en overlap;
 - per vraag/variant een reviewbesluit, argumentatie en resterende beperkingen.
 
+Vermeld voor wetten, kaders en thema's/processen/teams expliciet of de centrale
+vraag en beide deelvraagniveaus aanwezig en beoordeeld zijn. Een rapportaanlevering
+vermeldt welke overkoepelende plannen geraakt worden, met hun bestaande versie,
+de voorgestelde aanvulling en de dekking vóór en na die aanvulling. Ontbrekende
+bronbasis of een niet-passende tweedeling blijft een zichtbaar reviewpunt.
+
 Gebruik `DRAFT`, `REVISE`, `HOLD` of `READY_FOR_REVIEW` voor ontwerpstatus.
 Een zelfbeoordeling is geen onafhankelijke acceptatie. Leg ontvangen acceptatie
 apart vast met reviewer en exacte pakketversie; wijzig geen eerdere bronreviews.

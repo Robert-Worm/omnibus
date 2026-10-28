@@ -47,6 +47,19 @@ Een rapport kan aanleiding geven om naar dossiervorming te kijken. Het bewijst
 niet dat een nieuwe organisatie dezelfde tekortkoming heeft. Leg de overgang
 van historische bevinding naar een beargumenteerd onderzoeksvoorstel apart vast.
 
+Ontwerp de overkoepelende centrale vraag en beide niveaus deelvragen op de
+gezamenlijke, actieve inhoud van het thema/proces/team, ook als die uit meerdere
+rapporten komt. Een rapporttitel, gedeeld label of verzameling rapporthoofdvragen
+is geen inhoudelijke vraagopzet. Leg per koppeling de exacte bron en het toetspunt
+vast; vergelijkbare punten uit verschillende rapporten zijn niet automatisch
+uitwisselbaar. Houd historische context en toepasselijkheidsgrenzen herkenbaar.
+
+Controleer bij een toegevoegd rapport welke bestaande thematische/procesvragen
+nog dekken, welke een gerichte aanvulling vragen en welke nieuwe lacunes ontstaan.
+Lever alleen de geraakte planwijzigingen aan; maak geen duplicaatplan per rapport
+en vervang geen eigen projectvragen. Bij splitsen of hernoemen van een thema
+worden de plan-ID's en koppelingen expliciet overgedragen en opnieuw beoordeeld.
+
 Voorbeeld: 'Hoe wordt de opvolging van reviewbevindingen georganiseerd?' is een
 onderzoeksvraag. 'Waarom volgen jullie bevindingen onvoldoende op?' veronderstelt
 een gebrek. Een neutralere interviewvraag: 'Wat gebeurt er nadat uw team een
@@ -67,6 +80,13 @@ geval en omstandigheden. 'Voelt u zich veilig en gesteund en handelt uw manager
 integer?' combineert meerdere begrippen en is niet één bruikbare hoofdvraag.
 
 ## Brede en specifieke vragen
+
+Beide niveaus zijn standaard voor wetten, kaders en samenhangende thema's,
+processen en teams. Ze delen hetzelfde afgebakende onderzoeksdoel. Beoordeel de
+dekking per niveau afzonderlijk: een gat in Breed wordt niet verborgen door een
+toevallig passende vraag in Specifiek. Bij een klein brongebied kan het onderscheid
+inhoudelijk beperkt zijn; motiveer dat in de review in plaats van extra vragen
+te verzinnen. Drie of vier brede vragen is een bruikbaar voorbeeld, geen quota.
 
 Een brede vraag over het autorisatieproces kan toekenning, wijziging en intrekking
 omvatten. Specifieke vragen kunnen elk onderdeel onderzoeken. Leg de verschillende

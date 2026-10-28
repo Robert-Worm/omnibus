@@ -54,6 +54,16 @@ finding EXPLICIT, risk INFERRED, voorgestelde doel/maatregel/norm/vraag/toets
 PROPOSED en owner NOT_ESTABLISHED. Dit zijn verschillende rollen, niet acht
 claims die letterlijk in het rapport moeten staan. Verzin geen huidige eigenaar.
 
+Controleer de hele keten per selecteerbaar punt, niet alleen de aanwezigheid van
+een risico. Het doel beschrijft het beoogde resultaat, de beheersdoelstelling de
+gewenste toestand die het risico begrenst, en de maatregel een passende concrete
+interventie. Die uitwerkingen mogen uit het risico worden afgeleid; bewaar de
+redenering en de voorstelstatus. Norm, toetspunt en toetsactie moeten vervolgens
+hetzelfde onderwerp en dezelfde grenzen behouden. Geen lege vereiste velden,
+placeholders of kopieën van één zin in meerdere functies. Als een verdedigbare
+uitwerking niet mogelijk is, blijft het punt op herstel/HOLD. Deze volledigheid
+voegt geen extra toetsfasen, documenten of verplichtingen toe.
+
 Behoud oorspronkelijke criteria ook als er geen tekortkoming bij is gerapporteerd.
 Onderbouw per punt welke passage welke bewering ondersteunt; een generieke
 bronnenlijst volstaat niet. Niet ieder bronrecord hoeft een selecteerbaar punt

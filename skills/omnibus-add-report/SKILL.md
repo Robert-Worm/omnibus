@@ -52,6 +52,12 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
 - Begin praktische authoring pas na een stabiele bronbank. Geen vaste aantallen
   normen, bevindingen of vragen. Bronbevinding, historische bronmaatstaf, eigen
   normvoorstel en toetsuitwerking houden ieder hun eigen status.
+- Lever voor iedere selecteerbare bouwsteen de complete keten: doel, risico,
+  beheersdoelstelling, beheersmaatregel, norm, toetspunten en de toepasselijke
+  opzet-/bestaanstoetsen met passend bewijs. Leid ontbrekende praktische velden
+  onderbouwd af uit de bron en het risico en markeer ze als eigen voorstel.
+  Lege velden of opvultekst zijn geen geaccepteerde eindinhoud; onvoldoende
+  onderbouwing vraagt herstel/HOLD. Behoud de afgesproken beperkte werkinginstructie.
 - Laat voorwaarden, populatie, peildatum, tegenbewijs, managementreactie en
   bronbeperkingen meereizen naar zelfstandig gebruikte toetspunten en exports.
 - Pas nooit frozen sources, eerste inzendingen of goedkeuringshashes achteraf aan
@@ -59,6 +65,16 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
   versie en herbeoordeling van alle geraakte relaties.
 
 ## Overdraagbare aanlevering
+
+Laat `omnibus-build-questions` ook de overkoepelende vraagopzet van de betrokken
+thema's, processen en teams beoordelen en waar nodig aanvullen: een centrale
+vraag met brede én specifieke deelvragen, gekoppeld aan de gezamenlijke actieve
+bronbasis. Een rapport krijgt daarnaast een eigen plan als dat inhoudelijk
+zinvol is. Laat formuleringen en koppelingen beoordelen met
+`omnibus-review-questions`. Lever de geraakte plannen als apart versiegebonden
+vraagartefact mee; wijzig daarvoor geen bevroren rapportcontract of reviewbewijs.
+Een nieuw rapport is geen reden om bestaande plannen of eigen projectvragen
+blind te vervangen. Zie de route voor thema's/processen in de vragenskill.
 
 Lees `docs/beheer/pakket-controleren.md` als de checkout die bevat. Maak bij overdracht een
 apart `intake.json` rond kopieën van het bestaande rapportpakket; wijzig geen
