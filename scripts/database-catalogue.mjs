@@ -135,8 +135,11 @@ export const validateCioEditorialTrace=trace=>validateEditorialTrace(trace,cioEd
         const summary=flatLawSummary({id,...registry.importedFoundationMetadata[id]},data.importedFoundationItems);
         if(summary)navigation.foundationSummaries[id]=summary;
         move(registryPath,data,['importedFoundationItems'],'foundation:'+id+':registry');
-        if(registry.foundationQuestionPlans[id])add(registryPath,'foundation:'+id+':registry',{path:['foundationQuestionPlans'],value:{[id]:registry.foundationQuestionPlans[id]}});
       }
+      // Dedicated viewers may have no flat registry items (for example WWKE).
+      // Their authored plans still travel with the source's on-demand group.
+      for(const [id,plan] of Object.entries(registry.foundationQuestionPlans))
+        add(registryPath,'foundation:'+id+':registry',{path:['foundationQuestionPlans'],value:{[id]:plan}});
       for (const path of ['app/trial-corpus.json','app/reviewed-reports.json','app/report-additions.json']) {
         const data = read(path);
         for (const [index, c] of data.corpus.entries()) {

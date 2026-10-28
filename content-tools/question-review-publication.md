@@ -42,6 +42,10 @@ Afgesproken plaatsing voor bronadapters:
 - Kadervoorstel: `proposal.questionReview`, expliciete bronidentiteit, `itemId=originKey` waar dat stabiel is, vraag-ID `question`, `questionOperational`, `questionManagement` of `questionStrategic`.
 - Andere bronplannen vereisen eerst een expliciete ouder- en vraagidentiteit; gemengde modeltekst krijgt geen verzonnen binding.
 
+Voor de bestaande kaderopzet (`central`, `subquestions` met `key`, `text` en `originKeys`) gebruikt de bronadapter `prepareQuestionPlanPublication`. De ouderidentiteit is `<sourceId>:question-plan`, de vraagidentiteiten zijn `central` en `sub:<key>`. Het complete plan gaat als `plan` mee; de overige bron-, item-, context- en reviewvelden blijven verplicht. De helper ontwerpt of beoordeelt geen vragen. Een gewijzigde koppeling vraagt net als een gewijzigde tekst nieuw reviewbewijs. Projectgebonden `ids` horen niet in een bronplan.
+
+Het resultaat `plan` kan in `foundationQuestionPlans[sourceId]` worden geleverd. Ook kaders zonder vlakke catalogusregels krijgen hun plan via de eigen uitgestelde brongroep. De applicatie leest de besluiten met `sourceQuestionPlanPresentation`: expliciet afgekeurde of niet-beoordeelde vragen worden niet aangeboden, een gewijzigde inventaris wordt niet hergebruikt. Een onderzoeksrichting maakt van afgekeurde tekst geen nieuw goedgekeurd voorstel. Opgeslagen eigen vragen en handmatige koppelingen blijven behouden.
+
 Een aanwezige capsule mag bij afwezig of verouderd bewijs niet terugvallen op een legacyvoorstel. Zonder capsule blijft de inhoudelijke status onbekend; de bestaande vormcontrole en legacyzichtbaarheid blijven compatibel. Filter of migreer geen eigen vragen, historische onderzoekstekst of opgeslagen bewijssnapshots met deze helper.
 
 ## Getoetste grens

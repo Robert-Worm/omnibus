@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { prepareQuestionReviewPublication } from './question-review-publication.mjs';
+import { prepareQuestionReviewPublication, prepareQuestionPlanPublication } from './question-review-publication.mjs';
+import {questionPlanInventory,sourceQuestionPlanPresentation} from '../lib/source-question-plan.mjs';
 import { readQuestionReview } from '../lib/question-quality-review.mjs';
 import { SLECHTE_VRAGEN } from '../lib/question-quality-fixtures.mjs';
 import { structureModelData } from '../lib/model-structure.mjs';
@@ -27,6 +28,43 @@ function authorReceipts(input, decision = 'behouden', suffix = '1') {
 }
 const read = (input, publication, question = input.questions[0]) => readQuestionReview({
   sourceId: input.sourceId, itemId: input.itemId, sourceEdition: input.sourceEdition, sourceHash: input.sourceHash, question, publication });
+
+test('source plans bind complete coverage and individual decisions, without inventing a fallback',()=>{
+  const input=fixture();
+  input.plan={central:'Hoe verloopt de fictieve overdracht?',subquestions:[
+    {key:'registration',text:'Hoe wordt de fictieve overdracht geregistreerd?',originKeys:['SYNTHETIC:one','SYNTHETIC:two']},
+    {key:'reception',text:'Hoe wordt de fictieve ontvangst vastgelegd?',originKeys:['SYNTHETIC:three']},
+  ]};
+  input.itemId='SYNTHETIC:question-plan';
+  input.questions=questionPlanInventory(input.plan);authorReceipts(input);
+  const before=structuredClone(input),prepared=prepareQuestionPlanPublication(input);
+  assert.deepEqual(input,before);
+  const present=plan=>sourceQuestionPlanPresentation(plan,input);
+  assert.deepEqual(present(prepared.plan).subquestions,input.plan.subquestions);
+  assert.equal(present(prepared.plan).central,input.plan.central);
+  for(const decision of ['schrappen','herschrijven','HOLD',null]){
+    const edited=structuredClone(prepared.plan);
+    if(decision)edited.questionReview.reviews[1].decision=decision;
+    else edited.questionReview.reviews.splice(1,1);
+    assert.deepEqual(present(edited).subquestions,[input.plan.subquestions[1]]);
+    assert.equal(present(edited).central,input.plan.central);
+  }
+  for(const mutate of [p=>p.subquestions[0].originKeys.reverse(),
+    p=>p.subquestions[0].originKeys.push('SYNTHETIC:four'),p=>p.subquestions[0].text+=' ',
+    p=>p.subquestions.pop(),p=>{p.questionReview=null;},p=>{p.questionReview={};}]){
+    const edited=structuredClone(prepared.plan);mutate(edited);
+    assert.equal(present(edited).central,'');assert.deepEqual(present(edited).subquestions,[]);
+  }
+  assert.equal(sourceQuestionPlanPresentation(prepared.plan,{...input,sourceEdition:'another'}).central,'');
+  const changed=structuredClone(input);changed.plan.subquestions[0].originKeys.reverse();
+  assert.throws(()=>prepareQuestionPlanPublication(changed),/stale or incomplete/);
+  for(const mutate of [p=>p.subquestions.push({...p.subquestions[0]}),p=>{p.subquestions[0].key='';},
+    p=>{p.subquestions[0].originKeys=[];},p=>{p.subquestions[0].ids=['unreviewed-project-id'];},p=>p.subquestions[0].originKeys.push('SYNTHETIC:one')]){
+    const edited=structuredClone(input.plan);mutate(edited);assert.throws(()=>questionPlanInventory(edited));
+  }
+  const legacy={central:'Legacy central?',subquestions:[{text:'Legacy detail?',originKeys:[]}]};
+  assert.equal(present(legacy),legacy,'Legacy positional identities stay with the existing caller');
+});
 
 test('one shared validator admits exact reviewed text without changing input', () => {
   const input = fixture(), before = structuredClone(input), out = prepareQuestionReviewPublication(input);

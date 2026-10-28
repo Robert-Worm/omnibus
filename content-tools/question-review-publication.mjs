@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { assertJsonData } from './runtime-author-data.mjs';
 import { questionReviewIds, questionReviewIssues, readQuestionReview,
   QUESTION_REVIEW_PUBLICATION_FORMAT } from '../lib/question-quality-review.mjs';
+import {questionPlanInventory} from '../lib/source-question-plan.mjs';
 
 const sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const need = (ok, detail) => { if (!ok) throw Error('Question publication: ' + detail); };
@@ -46,4 +47,14 @@ export function prepareQuestionReviewPublication(input) {
   const offered = new Set(states.filter(state => state.approved).map(state => state.questionId));
   return { publication, offeredQuestions: structuredClone(questions.filter(question => offered.has(question.id))),
     withheld: states.filter(state => !state.approved) };
+}
+
+/** Source-specific authoring supplies the exact plan, source/context and real
+ * decisions. This helper never authors questions or approves their coverage. */
+export function prepareQuestionPlanPublication({plan, ...input}) {
+  assertJsonData(plan);
+  const questions=questionPlanInventory(plan);
+  const prepared=prepareQuestionReviewPublication({...input,
+    itemId:input.sourceId+':question-plan',questions});
+  return {...prepared,plan:{...structuredClone(plan),questionReview:{...prepared.publication,planInventory:questions}}};
 }
