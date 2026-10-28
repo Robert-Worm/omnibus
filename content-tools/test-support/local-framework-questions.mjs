@@ -1,7 +1,7 @@
 // Fabricated questions and receipts for software fixtures only. Never use this
 // helper for a source package or as evidence of real reviewer approval.
 import {prepareQuestionReviewPublication, prepareQuestionPlanPublication} from '../question-review-publication.mjs';
-import {frameworkQuestionContext} from '../../local-data/question-review-gate.mjs';
+import {frameworkQuestionContext} from '../question-review-validation.mjs';
 
 export function syntheticFrameworkQuestions(catalogue, bank, sourceHash) {
   const sourceId = catalogue.source_identity.source_id, sourceEdition = catalogue.context.edition;

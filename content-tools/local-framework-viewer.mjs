@@ -4,7 +4,7 @@
 import { digest } from "./identity.mjs";
 import { lawReaderPassages } from "../lib/law-source-reader.mjs";
 import { validateFlatFoundationChain } from "../lib/admitted-foundation.mjs";
-import { verifyLocalFrameworkQuestions } from "../local-data/question-review-gate.mjs";
+import { verifyLocalFrameworkQuestions } from "./question-review-validation.mjs";
 
 const need = (ok, message) => { if (!ok) throw Error("Framework viewer: " + message); };
 const text = value => typeof value === "string" && Boolean(value.trim());

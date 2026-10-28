@@ -241,7 +241,7 @@ en vóór het bevriezen van de reviewbasis. De bronbestanden blijven ongewijzigd
   uit `content-tools/question-review-publication.mjs`. De bronbinding is de
   bron-ID, `catalogue.context.edition` en de SHA-256 van de oorspronkelijke PDF.
   De context komt uit `frameworkQuestionContext(catalogue, bank)` in
-  `local-data/question-review-gate.mjs`: catalogus zonder vragen/reviews plus de
+  `content-tools/question-review-validation.mjs`: catalogus zonder vragen/reviews plus de
   bronbank. Het plan gebruikt het plan zonder `questionReview` als `item`; een
   interview gebruikt het volledige toetspunt als `item` en exacte velden
   `{id, kind, text}` als vrageninventaris.

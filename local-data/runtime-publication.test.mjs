@@ -36,6 +36,7 @@ test('new local frameworks require complete reviewed plans and point interviews 
     p=>{p.questionPlan.subquestions=[];},
     p=>{p.questionPlan.broadSubquestions[0].originKeys=['SYNTHETIC:unknown'];},
     p=>{p.catalogue.points.push({id:'P2',selection_status:'SELECTABLE'});},
+    p=>{p.catalogue.points[0].selection_status='HOLD';},
     p=>{delete p.catalogue.interviewReviews;},
     p=>{delete p.catalogue.interviewReviews['SYNTHETIC:P1'];},
     p=>{p.catalogue.points[0].text='Een andere verplichting.';},
