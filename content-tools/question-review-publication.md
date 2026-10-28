@@ -36,6 +36,8 @@ De laatste twee argumenten zijn optionele extra controles op bekende huidige bro
 
 De reader retourneert `{status,approved,form,reasons,reviewId}`. `approved` vereist een passend `behouden` en `form.uitkomst === 'door'`. De vormuitkomst blijft afzonderlijk zichtbaar. Mogelijke statussen zijn `approved`, `unknown`, `stale`, `invalid`, `HOLD`, `herschrijven` en `schrappen`.
 
+De interviewleidraad kan ook afzonderlijk beoordeelde doorvragen uit `interviewReview` tonen. Dit gebeurt alleen bij een goedgekeurde opening in een inventaris met één respondentniveau, eventueel met een identieke algemene opening. Bij meerdere openingsvarianten wordt geen koppeling geraden. Iedere doorvraag vereist haar eigen positieve besluit. Ontbrekend of afgekeurd bewijs, een ander niveau, eigen vraagtekst of een historische bronversie krijgt geen nieuwe brongebonden doorvragen toegevoegd. De toetsinstructie blijft afzonderlijk herkenbaar; opgeslagen projecten krijgen geen reviewgegevens toegevoegd.
+
 Afgesproken plaatsing voor bronadapters:
 
 - Rapportregel: `line.questionReview`, `sourceId=line.report_id`, `itemId=line.id`, vraag-ID `auditQuestion` of de expliciete bronvraag-ID.
