@@ -196,6 +196,11 @@ deelvragen en koppelingen achter zitten. Scheid verplichtingen van entiteiten,
 overheidstaken en het gebruik van bevoegdheden. Een gekozen norm bevestigt
 geen toepasselijkheid; facultatieve bevoegdheden worden geen uitvoeringsplicht.
 
+Bied waar passend zowel brede als specifieke deelvragen. Drie of vier brede
+vragen mogen samen een groot deel van het kader onderzoeken; splits niet louter
+omdat een vraag meerdere samenhangende taken omvat. Controleer de dekking van
+ieder niveau afzonderlijk, plus combineren, wisselen en bewaren van beide niveaus.
+
 Bewaar de vraagopzet in de brondata met stabiele vraag-ID's en exacte
 toetspunt-ID's. Laat formulering én koppelingen beoordelen; leg ontbrekende
 dekking en besluiten tot herschrijven, schrappen of HOLD vast. Controleer dat

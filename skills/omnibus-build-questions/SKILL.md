@@ -87,6 +87,13 @@ Een centrale vraag, deelvraag en interviewvraag hebben verschillende functies.
 Kopieer niet dezelfde normzin naar alle drie niveaus. Produceer geen verplicht
 aantal vragen per norm; rechtvaardig het aantal met de inhoud.
 
+Werk waar zinvol twee volwaardige niveaus uit: bijvoorbeeld drie of vier brede
+deelvragen voor een groot deel van het kader, naast meer specifieke vragen.
+Breed is niet automatisch zwak: beoordeel samenhang en beantwoordbaarheid, niet
+alleen het aantal aspecten of gekoppelde normen. Beide niveaus krijgen eigen
+stabiele vraag-ID's en expliciete, gereviewde koppelingen. Wisselen van menu
+behoudt de gekozen vragen; overlap tussen niveaus telt als unieke toetspunten.
+
 Controleer bij een kader zonder vraagvoorstellen of die opzet werkelijk nog
 ontbreekt, of onderweg verloren gaat in de bronadapter of het laden van de
 gegevens. Vul lege normgebonden interviewvragen niet met een algemene hoofdvraag.

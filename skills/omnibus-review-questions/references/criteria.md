@@ -48,7 +48,13 @@ wordt gebruikt, moet ook aan de criteria voor een interviewvraag voldoen.
 | **Beantwoordbaar** met de bronnen en methoden die het onderzoek heeft | ‘Hoe wordt bij {{onderwerp}} omgegaan met de zichtbare fysieke dienstomgeving en de daarover beschikbare afnemerssignalen?’ (SQ-RQ01) | Afgeleid: ‘Wat vinden alle burgers van de dienstverlening?’ in een onderzoek zonder burgerenquête |
 | **Neutraal**: de gewenste uitkomst schemert niet door | ‘Hoe reageert de organisatie op zorgvuldig en onzorgvuldig gedrag?’ (SC008) | Afgeleid: ‘Waarom reageert de organisatie niet op onzorgvuldig gedrag?’ |
 | **Alleen bekende invulplekken** (`technisch`): `{{onderwerp}}` mag, andere niet | ‘… bij {{onderwerp}} …’ | ‘Hoe wordt ${topic} bestuurd?’ |
-| **Deelvragen dekken samen de centrale vraag**, zonder overlap | Vijf deelvragen, één per brongebied (SERVQUAL) | Een deelvraag die de centrale vraag herhaalt |
+| **Deelvragen dekken samen de centrale vraag**, zonder onbedoelde dubbeling | Drie of vier brede vragen per samenhangend brongebied, of gerichtere specifieke vragen | Een deelvraag die alleen de centrale vraag herhaalt |
+
+Breed is niet automatisch zwak. Beoordeel of de gekoppelde taken één zinvol,
+beantwoordbaar onderzoeksgebied vormen. Brede en specifieke varianten mogen
+naast elkaar bestaan en gekozen worden; hun normdekking mag overlappen, mits
+de telling uniek is en ontbrekende dekking zichtbaar blijft. Een brede vraag
+hoeft geen interviewvraag te zijn die één respondent direct kan beantwoorden.
 
 ## 4. Operationalisatie
 
