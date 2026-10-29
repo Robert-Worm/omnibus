@@ -54,6 +54,10 @@ export function prepareQuestionReviewPublication(input) {
 export function prepareQuestionPlanPublication({plan, ...input}) {
   assertJsonData(plan);
   const questions=questionPlanInventory(plan);
+  // New source plans must carry both authored levels. Keep this at preparation,
+  // not in the reader: old publications and users' saved questions stay usable.
+  need(plan.central.trim() && plan.subquestions.length && plan.broadSubquestions?.length,
+    'central, broad and specific questions required for a new source plan');
   const prepared=prepareQuestionReviewPublication({...input,
     itemId:input.sourceId+':question-plan',questions});
   return {...prepared,plan:{...structuredClone(plan),questionReview:{...prepared.publication,planInventory:questions}}};

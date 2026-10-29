@@ -64,7 +64,8 @@ test('source plans bind complete coverage and individual decisions, without inve
   input.plan={central:'Hoe verloopt de fictieve overdracht?',subquestions:[
     {key:'registration',text:'Hoe wordt de fictieve overdracht geregistreerd?',originKeys:['SYNTHETIC:one','SYNTHETIC:two']},
     {key:'reception',text:'Hoe wordt de fictieve ontvangst vastgelegd?',originKeys:['SYNTHETIC:three']},
-  ]};
+  ],broadSubquestions:[{key:'broad:transfer',text:'Hoe is de fictieve overdracht van registratie tot ontvangst ingericht?',
+    originKeys:['SYNTHETIC:one','SYNTHETIC:two','SYNTHETIC:three']}]};
   input.itemId='SYNTHETIC:question-plan';
   input.questions=questionPlanInventory(input.plan);authorReceipts(input);
   const before=structuredClone(input),prepared=prepareQuestionPlanPublication(input);
@@ -129,6 +130,27 @@ test('broad and specific questions have separate reviews bound to one complete i
  for(const mutate of [p=>{p.broadSubquestions='invalid';},p=>{p.broadSubquestions[0].key='registration';},p=>{p.subquestions[0].key='broad:mislabelled';}]){
   const changed=structuredClone(input.plan);mutate(changed);assert.throws(()=>questionPlanInventory(changed));
  }
+});
+
+test('new source plans require both levels while previously reviewed specific-only plans remain readable',()=>{
+ const input=fixture();input.itemId='SYNTHETIC:question-plan';
+ input.plan={central:'Hoe verloopt de fictieve overdracht?',
+  subquestions:[{key:'registration',text:'Hoe wordt de fictieve overdracht geregistreerd?',originKeys:['SYNTHETIC:one']}]};
+ input.questions=questionPlanInventory(input.plan);authorReceipts(input);
+ // Reconstruct a historical capsule with its exact original inventory. This
+ // compatibility proof is not permission to prepare another incomplete plan.
+ const legacy=prepareQuestionReviewPublication(input).publication;
+ const oldPlan={...input.plan,questionReview:{...legacy,planInventory:input.questions}};
+ assert.equal(sourceQuestionPlanPresentation(oldPlan,input).central,input.plan.central);
+ assert.deepEqual(sourceQuestionPlanPresentation(oldPlan,input).subquestions,input.plan.subquestions);
+ const complete={...input.plan,broadSubquestions:[{key:'broad:transfer',text:'Hoe is de fictieve overdracht ingericht?',originKeys:['SYNTHETIC:one']}]};
+ for(const plan of [input.plan,{...complete,central:' '},{...complete,subquestions:[]},{...complete,broadSubquestions:[]}]) {
+  const candidate={...input,plan,reviews:[]},before=structuredClone(candidate);
+  assert.throws(()=>prepareQuestionPlanPublication(candidate),/central, broad and specific/);
+  assert.deepEqual(candidate,before,'No invented questions, mapping or approval');
+ }
+ assert.equal(prepareQuestionPlanPublication({...input,plan:complete,reviews:[]}).withheld.length,3,
+  'Complete structure still needs the real review decisions');
 });
 
 test('negative and missing judgments never become approvals through a successful form check', () => {
