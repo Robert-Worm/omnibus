@@ -8,7 +8,8 @@ RUN node scripts/package-mcp.mjs --out /mcp-package
 
 FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20
 ENV NODE_ENV=production
-COPY --from=build --chown=root:root --chmod=a-w /mcp-package /app/mcp
+COPY --from=build --chown=root:root /mcp-package /app/mcp
+RUN chmod -R a-w /app/mcp
 WORKDIR /app/mcp
 USER 1000:1000
 EXPOSE 8080
