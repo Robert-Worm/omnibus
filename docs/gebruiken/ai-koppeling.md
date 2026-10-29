@@ -37,6 +37,8 @@ Volg [installeren](installeren.md).
 npm run build:agent -- --settings local-data/runtime/local-build.json
 ```
 
+Gebruik het instellingenbestand van de collectie waarmee je ook de website bouwt. Staat dat elders, vervang dan het pad hierboven. Een geslaagde build toont `release` en `publication`: bewaar die twee controlegetallen voor de leesproef in stap 4.
+
 ### 3. Voeg Omnibus toe in je AI-assistent
 
 Doe dit bij de MCP-instellingen van je assistent:
@@ -79,7 +81,7 @@ Het [configuratievoorbeeld](../../agent-tools/codex-connection.example.toml) voo
 
 **Claude Desktop:**
 
-1. Kies in het menu van Claude **Settings → Developer → Edit Config**. Dat opent `claude_desktop_config.json`.
+1. Kies in het menu van Claude **Settings → Developer → Edit Config**. Dit kan de map met `claude_desktop_config.json` openen; open dan dat bestand in een teksteditor. Gebruik de locatie die Claude aanwijst, want die kan per installatie verschillen.
 2. Voeg Omnibus toe onder `mcpServers`, met je eigen volledige paden. Behoud bestaande servers. In JSON schrijf je Windows-paden met `/` of dubbele `\\`, bijvoorbeeld `C:/Program Files/nodejs/node.exe`.
 
    ```json
@@ -90,7 +92,7 @@ Het [configuratievoorbeeld](../../agent-tools/codex-connection.example.toml) voo
    }
    ```
 
-3. Sluit Claude Desktop helemaal af en open het opnieuw.
+3. Sluit Claude Desktop helemaal af via **File → Exit** (op macOS **Quit Claude**) en open het opnieuw. Alleen het venster sluiten kan Claude op de achtergrond laten draaien.
 
 **Gelukt als:** de [leesproef hieronder](#4-controleer-de-verbinding) slaagt. Ontbreekt Omnibus, controleer dan de paden en de komma's in het configuratiebestand.
 
@@ -113,6 +115,8 @@ Met `--scope user` werkt Omnibus in elke map waarin je Claude Code start; zonder
 Vraag je assistent: *“Gebruik Omnibus: haal eerst `get_workflow_guide` op en daarna `list_sources`. Geef de collectie-identiteit en het aantal bronnen terug. Maak of bewaar nog geen project.”*
 
 **Gelukt als:** beide hulpmiddelen echt zijn uitgevoerd en de collectie overeenkomt met jouw lokale Omnibus. Alleen een servernaam of lijst met hulpmiddelen is niet genoeg. Werkt een aanroep niet, controleer dan de Node-versie, beide paden en stap 2; herstart daarna de verbinding. Voor deze leesproef hoef je niets op te slaan of te publiceren.
+
+Vergelijk zowel `release` als `publication` met de uitvoer van stap 2. De bronnenlijst bevat ook modellen, thema's en processen; het aantal broningangen is dus niet hetzelfde als het aantal rapporten of kaders. Komen de controlegetallen niet overeen, controleer dan of de assistent nog naar een oudere Omnibus-map verwijst. Pas die koppeling aan en herstart haar vóór de volgende proef.
 
 Begin daarna met een opdracht als: *"Gebruik Omnibus om voor dit onderwerp een onderzoeksopzet te maken. Bespreek eerst de afbakening, lees de bronbeperkingen en vraag mijn akkoord voordat je iets opslaat."*
 
