@@ -5,7 +5,7 @@ import {join, resolve, relative, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {request} from 'node:http';
 import {once} from 'node:events';
-import {spawn} from 'node:child_process';
+import childProcess, {spawn} from 'node:child_process';
 import {DatabaseSync} from 'node:sqlite';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
@@ -177,6 +177,56 @@ test('optional ingress enforces original authority and fetch metadata before for
     const response = await post(url, '', {}, method);
     assert.equal(response.status, 405); assert.equal(response.headers.allow, 'POST');
   }
+});
+
+void test('hosting health probe is exact, data-free and does not relax MCP access', async t => {
+  const f = fixture(t), {url, server} = await start(t, f, f.online, undefined, true);
+  const health = new URL('/health', url), internal = {host: url.host, origin: undefined};
+  const fork = t.mock.method(childProcess, 'fork');
+  const response = await post(health, '', internal, 'GET');
+  assert.equal(response.status, 200);
+  assert.equal(response.text, '{"status":"ok"}');
+  assert.equal(response.headers['cache-control'], 'no-store');
+  assert.equal(response.headers['cross-origin-resource-policy'], 'same-origin');
+  assert.equal(response.headers['set-cookie'], undefined);
+  for (const method of ['POST', 'OPTIONS', 'DELETE', 'HEAD']) {
+    const denied = await post(health, '', internal, method);
+    assert.equal(denied.status, 405); assert.equal(denied.headers.allow, 'GET');
+  }
+  for (const headers of [{'content-length': '2'}, {'transfer-encoding': 'chunked'}])
+    assert.equal((await post(health, '{}', {...internal, ...headers}, 'GET')).status, 400);
+  for (const path of ['/health/', '/health?tool=list_sources', '/%68ealth', '/health/mcp'])
+    assert.equal((await post(new URL(path, url), '', {}, 'GET')).status, 404);
+  assert.equal((await post(url, call('list_sources'), internal)).status, 403);
+  assert.equal(fork.mock.callCount(), 0, 'health and refusals never spawn a database reader');
+  assert.equal(payload(await post(url, call('list_sources'))).sources[0].holdItems, 1);
+  assert.equal(fork.mock.callCount(), 1, 'permitted MCP reads still use the isolated reader');
+  const direct = await start(t, f);
+  assert.equal((await post(new URL('/health', direct.url), '', {}, 'GET')).status, 404);
+  // Reopen only the ingress after shutdown closed its internal listener.
+  // A reachable ingress without that listener must not report healthy.
+  await new Promise(resolve => server.close(resolve));
+  server.listen(Number(url.port), '127.0.0.1'); await once(server, 'listening');
+  const unavailable = await post(health, '', internal, 'GET');
+  assert.equal(unavailable.status, 503);
+  assert.equal(unavailable.text, '{"status":"unavailable"}');
+});
+
+void test('health and MCP request budgets are independently bounded', async t => {
+  t.mock.method(performance, 'now', () => 1000);
+  const f = fixture(t), {url} = await start(t, f, f.online, {requestBurst: 2}, true);
+  const health = new URL('/health', url), internal = {host: url.host, origin: undefined};
+  assert.equal((await post(url)).status, 200);
+  assert.equal((await post(url)).status, 200);
+  assert.equal((await post(url)).status, 429);
+  assert.equal((await post(health, '', internal, 'GET')).status, 200);
+  assert.equal((await post(health, '', internal, 'GET')).status, 200);
+  const limited = await post(health, '', internal, 'GET');
+  assert.equal(limited.status, 429); assert.equal(limited.headers['retry-after'], '1');
+  const other = await start(t, f, f.online, {requestBurst: 2}, true);
+  for (let i = 0; i < 2; i++) assert.equal((await post(new URL('/health', other.url), '', internal, 'GET')).status, 200);
+  assert.equal((await post(new URL('/health', other.url), '', internal, 'GET')).status, 429);
+  assert.equal((await post(other.url)).status, 200, 'health traffic does not consume the read budget');
 });
 
 test('ingress keeps body, response and global request budgets bounded across both hops', async t => {

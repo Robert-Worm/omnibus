@@ -102,6 +102,9 @@ await test('isolated MCP package includes dependencies and child worker, preserv
       check();
     });
     const host = new URL(online.publicOrigin).host;
+    const health = await proxyFetch(new URL('/health', address), {method: 'GET', headers: {Host: new URL(address).host}});
+    assert.equal(health.status, 200);
+    assert.equal(await health.text(), '{"status":"ok"}');
     await client.connect(new StreamableHTTPClientTransport(new URL(address), {
       requestInit: {headers: {Host: host, Origin: online.publicOrigin}}, fetch: proxyFetch}));
     assert.deepEqual((await client.listTools()).tools.map(tool => tool.name),

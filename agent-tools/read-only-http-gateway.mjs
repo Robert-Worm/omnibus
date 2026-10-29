@@ -14,6 +14,7 @@ export async function createReadOnlyHttpGateway({service, online: configuration,
   catch (error) { backend.close(); throw error; }
   const port = backend.address().port;
   const budget = createRequestRateLimit({capacity: limits.requestBurst, refillPerSecond: limits.requestsPerSecond});
+  const healthBudget = createRequestRateLimit({capacity: limits.requestBurst, refillPerSecond: limits.requestsPerSecond});
   let active = 0;
   const server = createServer({maxHeaderSize: limits.headerBytes, headersTimeout: limits.connectionMs,
     requestTimeout: limits.connectionMs, keepAliveTimeout: 1}, (req, res) => {
@@ -24,9 +25,20 @@ export async function createReadOnlyHttpGateway({service, online: configuration,
       res.writeHead(status, {'content-type': 'application/json', 'content-length': bytes.length,
         'cache-control': 'no-store', connection: 'close', 'x-content-type-options': 'nosniff',
         'cross-origin-resource-policy': 'same-origin', ...(status === 429 ? {'retry-after': '1'} : {}),
-        ...(status === 405 ? {allow: 'POST'} : {})});
+        ...(status === 405 ? {allow: req.url === '/health' ? 'GET' : 'POST'} : {})});
       res.end(bytes);
     };
+    // Hosting probes use an internal Host and no Origin. This exact route only
+    // reports listener liveness: no database read, forwarding or source identity.
+    // A separate bounded budget keeps probes from spending the MCP read budget.
+    if (req.url === '/health') {
+      if (!healthBudget.take().allowed) return send(429);
+      if (req.method !== 'GET') return send(405);
+      if (req.headers['transfer-encoding'] !== undefined ||
+          ![undefined, '0'].includes(req.headers['content-length'])) return send(400);
+      return send(backend.listening ? 200 : 503,
+        Buffer.from(backend.listening ? '{"status":"ok"}' : '{"status":"unavailable"}'));
+    }
     if (!acceptsReadOnlyOnlineHeaders(req, online)) return send(403);
     if (!budget.take().allowed) return send(429);
     if (req.url !== '/mcp') return send(404);
