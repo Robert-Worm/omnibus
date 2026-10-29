@@ -93,7 +93,8 @@ test('source plans bind complete coverage and individual decisions, without inve
     const edited=structuredClone(input.plan);mutate(edited);assert.throws(()=>questionPlanInventory(edited));
   }
   const legacy={central:'Legacy central?',subquestions:[{text:'Legacy detail?',originKeys:[]}]};
-  assert.equal(present(legacy),legacy,'Legacy positional identities stay with the existing caller');
+  assert.deepEqual(present(legacy),{...legacy,central:'',subquestions:[]},'Legacy absence cannot approve new proposals');
+  assert.equal(legacy.central,'Legacy central?','The source and historical linking inventory remain untouched');
 });
 
 test('one shared validator admits exact reviewed text without changing input', () => {
