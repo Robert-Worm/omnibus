@@ -20,8 +20,8 @@ WORKDIR /bron
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY . .
-ARG DATABASE_URL=https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-29/omnibus-database-2026-10-29.zip
-ARG DATABASE_SHA256=d6db80d6a1506c64fa1b9ba821ecb065bf21689e927d84e071f62888d8d3d953
+ARG DATABASE_URL=https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-29-correctie/omnibus-database-2026-10-29-wwke.zip
+ARG DATABASE_SHA256=2b339914d0fc2936c3329f380dea28453f1c934fa2e2648d7f3a74c7694492cc
 ARG OMNIBUS_CODE_REVISION
 # Sliplane supplies this public build identifier; never use a runtime override.
 ARG SLIPLANE_COMMIT_HASH

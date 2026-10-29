@@ -27,7 +27,7 @@ Applicatieversie [0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.
 
 Open de [proefversie online](https://omnibus.sliplane.app). Je hoeft niets te installeren. Je werk blijft in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen.
 
-De proefversie draait de nieuwste code met de [database van 29 oktober 2026](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-10-29). Werk je met vertrouwelijke stukken? Lees dan eerst [wat lokaal blijft](lokale-privacy.md).
+De proefversie draait de nieuwste code met de [database van 29 oktober 2026 met de WWKE-aanvulling](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-10-29-correctie). Werk je met vertrouwelijke stukken? Lees dan eerst [wat lokaal blijft](lokale-privacy.md).
 
 **Gelukt als:** je het startscherm van Omnibus ziet. Laadt de pagina niet? Probeer het over een paar minuten opnieuw, of [vraag om hulp](https://github.com/Robert-Worm/omnibus/discussions/new?category=hulp).
 
