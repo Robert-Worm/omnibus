@@ -200,6 +200,33 @@ Deze ingang levert **geen TLS**. De hostingproxy moet HTTPS afdwingen en het bov
 
 De synthetische proeven in `read-only-http-online.test.mjs` lopen mee via `read-only-http.test.mjs` in `npm test`. Ze bewijzen lokale startup, protocol, weigering van lokale collecties en de veranderde toegangsgrens. Voor hosting blijven bewijs van TLS/proxyrouting en headerbehoud, afscherming van de interne poort, alleen-lezen openbare build, OS/native-geheugen-/procesquota, totale capaciteit en herstel, en de gekozen echte cloudclient nodig. Deze wijziging activeert geen publieke MCP-route of hostingdienst en geeft geen hostinggoedkeuring. Sluit #149 niet op basis van deze lokale proeven alleen.
 
+## Afzonderlijk hostingpakket voor de leesroute
+
+Maak een klein codepakket met de bestaande Node- en Vite-installatie:
+
+```text
+node scripts/package-mcp.mjs --out work/mcp-runtime
+```
+
+De uitvoermap moet nieuw zijn. Het pakket bevat de HTTP-ingang, de afzonderlijke leesprocessen en hun benodigde onderdelen uit `package-lock.json`. Op de doelcomputer is alleen Node 24.21 nodig; geen installatie van extra npm-onderdelen. `mcp-package.json` bevat controlegetallen en versies. Licenties van meegeleverde onderdelen staan in `THIRD-PARTY-NOTICES.txt`.
+
+Er gaat geen database, lokale configuratie, website of onderzoeksproject mee. De bestaande webstart en STDIO-koppeling blijven ongewijzigd. Dit pakket bouwt zelf geen agentdatabase en neemt geen vrijgavebesluit.
+
+Voor containerhosting is er een afzonderlijk bouwbestand:
+
+```text
+docker build -f hosting/mcp/Dockerfile -t omnibus-mcp-read-only .
+```
+
+Dit bouwbestand wordt niet gebruikt door de bestaande website. Het haalt geen database op en maakt geen publieke verbinding. Bij starten zijn twee afzonderlijke, alleen-lezen koppelingen nodig:
+
+- `/data`: de beoordeelde agentbuild, met `catalogue.sqlite` en `omnibus-release.json`. De oorspronkelijke database zonder de afgeleide zoekindex is niet voldoende.
+- `/config/online.json`: de expliciete online configuratie hierboven. Het databasecontrolegetal geldt voor de volledige **agentdatabase**, inclusief zoekindex.
+
+Zonder deze bestanden, bij verkeerde controlegetallen of bij een lokale reviewcollectie weigert de ingang te starten. De image draait als gebruiker zonder beheerrechten. De host moet ook een alleen-lezen bestandssysteem, proces- en geheugengrenzen en de beschreven HTTPS-proxy instellen. De V8-geheugengrens in het startcommando vervangt de geheugengrens van de container niet.
+
+De pakketproef gebruikt uitsluitend fictieve gegevens buiten de checkout. Zij controleert de vier leestools, bronidentiteit, HOLD, bronpassages, weigering van schrijfacties en verkeerde headers, en starten met ontbrekende of verkeerde instellingen. Dit bewijst de afzonderlijke Node-runtime; het is geen bewijs van een draaiende container of publieke aansluiting. Die acceptatie blijft onderdeel van [#149](https://github.com/Robert-Worm/omnibus/issues/149).
+
 ## Verder lezen
 
 [AI-koppeling voor gebruikers](../docs/gebruiken/ai-koppeling.md) · [Architectuur](../docs/bijdragen/architectuur.md)
