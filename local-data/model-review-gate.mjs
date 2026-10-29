@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {canonical,digest} from '../content-tools/identity.mjs';
 import {prepareModelReview,checkModelReviews} from '../content-tools/model-quality.mjs';
 import {createQuestionFormulations} from '../lib/interview-wording.mjs';
+import {modelResearchInventory} from '../content-tools/model-research-inventory.mjs';
 
 export const modelWordingModules=['lib/question-formulations.mjs','lib/interview-practice-formulations.json','lib/cev-active.mjs'];
 
@@ -52,7 +53,35 @@ function archivedModelWordingReview(repository,release,manifest) {
           context.rawModel?.id!==id||context.model?.id!==id||!Array.isArray(context.cyclers))
         fail('changed archived model context: '+id);
       equal(context.rawModel,context.model,'archived model requires a different presentation adapter');
-      const pinned={model:context.rawModel,cycles:context.cyclers};
+      const research=context.research?.targets;
+      if(!Array.isArray(research)||!research.length||new Set(research.map(q=>q.targetId)).size!==research.length)
+        fail('missing or ambiguous archived model research route: '+id);
+      const decisions=[...(reviews.assessments??[]),...(reusableEvidence?.entries??[])]
+        .filter(entry=>entry.modelId===id&&entry.kind==='research');
+      equal(decisions.map(entry=>entry.targetId).sort(),research.map(q=>q.targetId).sort(),
+        'missing or ambiguous archived research decisions: '+id);
+      for(const target of research){
+        const decision=decisions.find(entry=>entry.targetId===target.targetId),ref=decision.contextRef;
+        const key=typeof ref==='string'?ref:ref?.key,researchContext=contexts?.[key];
+        if(!researchContext||digest(researchContext)!==key||typeof ref==='object'&&ref.digest!==key||
+            decision.jointBasisHash!==meta.jointBasisHash)
+          fail('changed archived research context: '+target.targetId);
+        equal(decision.exactTarget,target,'changed archived research target');
+        equal(researchContext.target,target,'research context target differs');
+        if(Object.hasOwn(decision,'decision')){
+          if(decision.decision!=='behouden'||decision.textSha256!==sha(Buffer.from(target.text)))
+            fail('unapproved archived research question: '+target.targetId);
+        }else{
+          // Unchanged units reuse both original role reviews, not a batch PASS.
+          const prior=decision.priorEvidence;
+          if(decision.status!=='UNCHANGED_UNIT_EXISTING_ROLE_REVIEWS_REUSABLE'||
+              decision.originalContextHash!==key||decision.candidateContextHash!==key||
+              !Array.isArray(prior)||prior.length<2||prior.some(({assessment:a})=>
+                !a||a.targetId!==target.targetId||a.decision!=='behouden'||a.original!==target.text))
+            fail('unapproved reused research question: '+target.targetId);
+        }
+      }
+      const pinned={model:context.rawModel,cycles:context.cyclers,research};
       if(expected.has(id))equal(expected.get(id),pinned,'ambiguous archived model wording: '+id);
       expected.set(id,pinned);
     }
@@ -60,7 +89,7 @@ function archivedModelWordingReview(repository,release,manifest) {
   return (library,wording)=>{
     if(!Array.isArray(library?.models))fail('missing archived model delivery');
     const {questionFormulations}=createQuestionFormulations(...modelWordingModules.map(key=>wording[key]));
-    for(const [id,{model,cycles}]of expected){
+    for(const [id,{model,cycles,research}]of expected){
       const delivered=library.models.filter(row=>row?.id===id);
       if(delivered.length!==1)fail('missing or duplicate archived model: '+id);
       equal(delivered[0],model,'delivered model differs from archived review: '+id);
@@ -73,6 +102,8 @@ function archivedModelWordingReview(repository,release,manifest) {
             probes:question.probes??'',base:question.variants[level],
           }));
       equal(actual,cycles,'delivered model formulations differ from archived review: '+id);
+      equal(modelResearchInventory(delivered[0]),research,
+        'offered model research route differs from archived review: '+id);
     }
   };
 }

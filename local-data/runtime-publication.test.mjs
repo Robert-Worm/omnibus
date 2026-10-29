@@ -10,6 +10,8 @@ import {questionReviewFixture} from '../lib/test-support/question-review-fixture
 import {questionPlanInventory} from '../lib/source-question-plan.mjs';
 import {additionalProcesses} from '../lib/additional-processes.mjs';
 import {modelWordingModules} from './model-review-gate.mjs';
+import {modelResearchInventory} from '../content-tools/model-research-inventory.mjs';
+import {createHash} from 'node:crypto';
 
 function fixture(t) {
   const repository = new CatalogueRepository(':memory:');
@@ -77,11 +79,23 @@ test('archived model reviews pin existing wording and deferred alternatives with
   const models=['F','G'].map(id=>({id,title:'Fictief model '+id,question:'Hoe verloopt de fictieve afhandeling?',
     items:[{id:'D',title:'Afhandeling',questions:[{id:'D-Q',question:'Hoe wordt de fictieve melding behandeld?',
       variants:{operational:'Hoe wordt de fictieve melding behandeld?'},probes:'Kunt u een voorbeeld geven?'}]}]}));
-  const contexts={},bindings=models.map(model=>{
+  const contexts={},researchBindings=[],bindings=models.map(model=>{
     const q=model.items[0].questions[0],context={rawModel:model,model,cyclers:[{
       id:`${model.id}/D/D-Q/operational/cycle:0`,dimensionId:'D',questionId:'D-Q',level:'operational',index:0,
       text:q.question,probes:q.probes,base:q.question,
-    }]};
+    }],research:{targets:modelResearchInventory(model)}};
+    for(const target of context.research.targets){
+      const researchContext={global:{id:model.id},target},key=digest(researchContext);
+      contexts[key]=researchContext;
+      const binding={modelId:model.id,kind:'research',jointBasisHash:digest(model.id),
+        targetId:target.targetId,exactTarget:target,contextRef:{key,digest:key}};
+      researchBindings.push(model.id==='F'?{...binding,decision:'behouden',
+        textSha256:createHash('sha256').update(target.text).digest('hex')}:
+        {...binding,contextRef:key,status:'UNCHANGED_UNIT_EXISTING_ROLE_REVIEWS_REUSABLE',
+          originalContextHash:key,candidateContextHash:key,
+          priorEvidence:['theory','practical'].map(role=>({assessment:{role,targetId:target.targetId,
+            original:target.text,decision:'behouden'}}))});
+    }
     const key=digest(context);contexts[key]=context;
     return {modelId:model.id,kind:'model',jointBasisHash:digest(model.id),contextRef:{key,digest:key},decision:'HOLD'};
   });
@@ -89,8 +103,9 @@ test('archived model reviews pin existing wording and deferred alternatives with
   const data={receipt:{schema:1,kind:'reviewed-model-wording-amendment',models:2,unrestrictedModelApproval:false},
     index:{models:meta},reviewIndex:{models:meta,batchBasisHash:digest('synthetic batch')},contexts,
     reviews:{wordingIntegrationDecision:'ACCEPT_REVIEWED_WORDING_WITH_PRESERVED_LIMITS',counts:{remaining:0},
-      batchBasisHash:digest('synthetic batch'),modelReviews:meta,assessments:[bindings[0]]},
-    reusableEvidence:{entries:[{...bindings[1],contextRef:bindings[1].contextRef.key,theoryDecision:'UNRESOLVED'}]}};
+      batchBasisHash:digest('synthetic batch'),modelReviews:meta,assessments:[bindings[0],...researchBindings.filter(b=>b.modelId==='F')]},
+    reusableEvidence:{entries:[{...bindings[1],contextRef:bindings[1].contextRef.key,theoryDecision:'UNRESOLVED'},
+      ...researchBindings.filter(b=>b.modelId==='G')]}};
   const release=repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[],
     artifacts:[{name:'synthetic-model-review',data}]});
   prepareWebResources(repository,release,{});
@@ -125,6 +140,35 @@ test('archived model reviews pin existing wording and deferred alternatives with
   assert.throws(()=>publish({...deferred,refs:{...deferred.refs,...late},
     registrations:{...deferred.registrations,[modelWordingModules[1]]:['late']}}),/formulations differ/);
   assert.equal(readRuntimePublication(repository,{release,publication,contract}).release,release);
+  // Properly pinned archives still need individual positive route decisions.
+  // Matching bytes or a model-level decision cannot approve a research variant.
+  for(const mutate of [
+    d=>{d.reviews.assessments[1].decision='HOLD';},
+    d=>{d.reviews.assessments[1].textSha256=digest('wrong text');},
+    d=>{d.reviews.assessments.splice(1,1);},
+    d=>{d.reviews.assessments.push(d.reviews.assessments[1]);},
+    d=>{d.reusableEvidence.entries[1].priorEvidence[0].assessment.decision='herschrijven';},
+    d=>{d.reusableEvidence.entries[1].priorEvidence.pop();},
+    d=>{d.reusableEvidence.entries[1].candidateContextHash=digest('different context');},
+    d=>{d.reviews.assessments[1].exactTarget.text='Andere vraag?';},
+  ]){
+    const changed=structuredClone(data);mutate(changed);
+    const other=repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[],
+      artifacts:[{name:'synthetic-model-review',data:changed}]});
+    prepareWebResources(repository,other,{});
+    assert.throws(()=>publishRuntime(repository,{...value,release:other},{release:other,contract}),/model review publication/);
+  }
+  // Model bytes can match while an adapter branch produces different questions.
+  const drift=structuredClone(data),ref=drift.reviews.assessments[0].contextRef;
+  const context=drift.contexts[ref.key];context.model.kind='kaptein';context.rawModel.kind='kaptein';
+  const contextKey=digest(context);delete drift.contexts[ref.key];drift.contexts[contextKey]=context;
+  drift.reviews.assessments[0].contextRef={key:contextKey,digest:contextKey};
+  const driftRelease=repository.importRelease({manifest:{baselineVersion:'synthetic'},packages:[],documents:[],
+    artifacts:[{name:'synthetic-model-review',data:drift}]});
+  prepareWebResources(repository,driftRelease,{});
+  const driftModules=structuredClone(modules);driftModules[modelId].models[0].kind='kaptein';
+  assert.throws(()=>publishRuntime(repository,{...value,release:driftRelease,modules:driftModules},
+    {release:driftRelease,contract}),/offered model research route differs/);
   const row=repository.db.prepare('SELECT sha256,payload FROM artifacts').get(),changed=JSON.parse(row.payload);
   changed.reviews.assessments[0].decision='behouden';
   repository.db.prepare('UPDATE artifacts SET payload=? WHERE sha256=?').run(JSON.stringify(changed),row.sha256);
