@@ -52,6 +52,10 @@ Een AI-review is een hulpmiddel, geen menselijke goedkeuring. Twijfels blijven z
 
 **Vraagcontrole.** Elke vraag in een pakket gaat door [`omnibus-review-questions`](../../skills/omnibus-review-questions/README.md). Die begint met de vaste voorcontrole (`npm run check:questions`). Een vraag met de uitkomst schrappen gaat niet mee; een herschreven vraag gaat opnieuw door de controle. Zet de telling per uitkomst als reactie bij de claim van de bijdrager, zonder vraagteksten uit niet-openbare bronnen.
 
+Een geslaagde voorcontrole is geen inhoudelijke goedkeuring. Nieuwe voorstellen uit de catalogus moeten bij hun exacte tekst, bronversie en vraagsoort een vastgelegd positief reviewbesluit hebben. Ontbreekt dat bewijs, dan biedt de applicatie de vraag niet aan, ook niet via de export. Een goedgekeurde interviewvraag geeft geen goedkeuring aan een andere toetsvraag. Eigen vragen en historische projectteksten blijven behouden; de oorspronkelijke brongegevens worden niet herschreven.
+
+Ook de algemene onderzoeksvragen en de voorbeelden onder **Inspiratie nodig?** hebben een vastgelegde tekstbeoordeling. Een nieuwe formulering vraagt een nieuwe beoordeling. Deze schrijfvoorbeelden zijn geen brongebonden dekking: de onderzoeker vult onderwerp, periode en overige afbakeningen zelf in.
+
 Bij een selecteerbare kadernorm horen een ingevuld doel, risico, beheersdoelstelling en beheersmaatregel. Staat een onderdeel niet letterlijk in de bron, werk het dan brongebonden uit vanuit het risico en benoem het als analytisch voorstel. Beoordeel ook deze afleidingen; alleen goedgekeurde normtekst is niet voldoende. Onvoldoende onderbouwing vraagt herstel vóór toelating, niet een leeg veld of standaardtekst. De flat-kaderpublisher controleert deze volledigheid bij nieuwe publicaties; bestaande publicaties blijven leesbaar.
 
 ### 2. Controleer of het past
