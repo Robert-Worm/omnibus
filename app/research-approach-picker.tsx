@@ -46,7 +46,7 @@ export default function ResearchApproachPicker({direction,topic,value,disabled,o
       {preview ? <><strong>Voorstel voor jouw centrale vraag</strong><p>{preview.text}</p>
         <Button disabled={disabled} onClick={()=>onUse(preview.text,chosenSubject)}>Gebruik dit voorstel</Button>
         <small>Dit vult het vraagveld in. Je kunt de tekst aanpassen voordat je de vraag opneemt.</small></>
-        : <p>Vul het onderwerp in om een passend vraagvoorstel te bekijken.</p>}
+        : <p>{chosenSubject.trim() ? 'Voor deze combinatie en dit onderwerp is geen passend vraagvoorstel beschikbaar. Je kunt zelf een vraag formuleren.' : 'Vul het onderwerp in om een passend vraagvoorstel te bekijken.'}</p>}
       {selected.lens==='causal' && <p className="research-approach-note">{causalApproachNote}</p>}
     </div>}
   </section>;
