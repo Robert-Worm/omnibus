@@ -25,14 +25,25 @@ export function readOnlyOnlineConfig(value) {
 }
 
 export function acceptsReadOnlyRequest(req, online) {
-  const duplicate = name => req.rawHeaders.filter((_, i) => i % 2 === 0 && req.rawHeaders[i].toLowerCase() === name).length > 1;
   if (req.socket.localAddress !== '127.0.0.1' || req.socket.remoteAddress !== '127.0.0.1' ||
-      duplicate('host') || duplicate('origin')) return false;
+      duplicateHeader(req, 'host') || duplicateHeader(req, 'origin')) return false;
   const {host, origin} = req.headers;
   if (!online) return [`127.0.0.1:${req.socket.localPort}`, `localhost:${req.socket.localPort}`].includes(host) &&
     (origin === undefined || origin === `http://${host}`) &&
     !['cross-site', 'same-site'].includes(req.headers['sec-fetch-site']);
-  if (host !== new URL(online.publicOrigin).host || duplicate('sec-fetch-site') ||
+  return acceptsReadOnlyOnlineHeaders(req, online);
+}
+
+function duplicateHeader(req, name) {
+  return req.rawHeaders.filter((_, i) => i % 2 === 0 && req.rawHeaders[i].toLowerCase() === name).length > 1;
+}
+
+// Shared by the optional ingress and the loopback reader. Header acceptance
+// alone never replaces the reader's real socket or public collection checks.
+export function acceptsReadOnlyOnlineHeaders(req, online) {
+  const {host, origin} = req.headers;
+  if (duplicateHeader(req, 'host') || duplicateHeader(req, 'origin') ||
+      host !== new URL(online.publicOrigin).host || duplicateHeader(req, 'sec-fetch-site') ||
       ![undefined, 'none', 'same-origin'].includes(req.headers['sec-fetch-site'])) return false;
   if (origin !== undefined) return origin === online.publicOrigin;
   return online.missingOrigin === 'server-client' && !Object.keys(req.headers).some(key => key.startsWith('sec-fetch-'));

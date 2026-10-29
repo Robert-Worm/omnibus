@@ -190,7 +190,15 @@ Het reverseproxycontract is bewust beperkt:
 
 De bestaande bovengrenzen gelden in beide modi: 16 KiB body, 8 KiB headers, 256 KiB antwoord, 4 gelijktijdige verzoeken/leesprocessen, 16 verbindingen, 60 verzoeken burst en 1 verzoek per seconde aanvulling. De absolute verbindings- en leestijd is 5 seconden. Geen leeswachtrij; gestopte processen blijven meetellen tot ze zijn opgeruimd. V8 old space blijft 128 MiB per leesproces. Dit is **geen OS/native-geheugenquota**. Het opnieuw controleren van de database en publicatie valt binnen dezelfde leestijd; een te grote of trage build wordt geweigerd, de grenzen worden niet automatisch verruimd.
 
-De synthetische proeven in `read-only-http-online.test.mjs` lopen mee via `read-only-http.test.mjs` in `npm test`. Ze bewijzen lokale startup, protocol, weigering van lokale collecties en de veranderde toegangsgrens. Voor hosting blijven bewijs van TLS/proxyrouting en headerbehoud, afscherming van de interne poort, alleen-lezen openbare build, OS/native-geheugen-/procesquota, totale capaciteit en herstel, en de gekozen echte cloudclient nodig. Er is geen publieke route, deployment, service, tunnel of hostinggoedkeuring toegevoegd. Sluit #149 niet op basis van deze lokale proeven alleen.
+### HTTP-ingang achter de hostingproxy
+
+Voor hosting waarbij de TLS-proxy buiten de container staat, is er een afzonderlijke, optionele ingang. Voeg `--gateway-host 127.0.0.1` toe aan dezelfde opdracht mét `--online-config` om die lokaal te testen. Alleen `--gateway-host 0.0.0.0` maakt deze ingang bereikbaar op het containernetwerk. `--port` bepaalt de ingangspoort. Er is geen wijziging aan de normale startopdracht van de website en geen automatische inschakeling via omgevingsvariabelen.
+
+De ingang maakt zelf een interne reader op een vrije loopbackpoort. Een bezoeker kan geen ander doeladres opgeven. Beide kanten behouden de bovenstaande grenzen en controleren Host, Origin en browsermetadata. Verzoeken en antwoorden worden begrensd voordat ze worden doorgestuurd; er zijn geen retries of wachtrijen. Een verbroken verbinding stopt ook het interne verzoek. Alleen de vier leestoepassingen blijven beschikbaar, met dezelfde collectie- en broncontroles.
+
+Deze ingang levert **geen TLS**. De hostingproxy moet HTTPS afdwingen en het bovenstaande header- en padcontract behouden. Publiceer alleen die proxy; scherm de HTTP-ingang af van rechtstreekse internettoegang en houd de interne reader in dezelfde container. Ook deze opstelling vereist de afzonderlijk beoordeelde openbare collectie, een alleen-lezen volume en OS-quota. De lokale proef start geen hostingdienst en bevestigt geen online clientondersteuning.
+
+De synthetische proeven in `read-only-http-online.test.mjs` lopen mee via `read-only-http.test.mjs` in `npm test`. Ze bewijzen lokale startup, protocol, weigering van lokale collecties en de veranderde toegangsgrens. Voor hosting blijven bewijs van TLS/proxyrouting en headerbehoud, afscherming van de interne poort, alleen-lezen openbare build, OS/native-geheugen-/procesquota, totale capaciteit en herstel, en de gekozen echte cloudclient nodig. Deze wijziging activeert geen publieke MCP-route of hostingdienst en geeft geen hostinggoedkeuring. Sluit #149 niet op basis van deze lokale proeven alleen.
 
 ## Verder lezen
 

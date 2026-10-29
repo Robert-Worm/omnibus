@@ -17,6 +17,7 @@ import {createIndex, insertEntry, sha256} from './index-store.mjs';
 import {readOnlyOnlineConfig, acceptsReadOnlyRequest} from './read-only-http-config.mjs';
 import {openIsolatedReadOnlyService} from './read-only-http-service.mjs';
 import {createReadOnlyHttpServer, readOnlyHttpLimits} from './read-only-http.mjs';
+import {createReadOnlyHttpGateway} from './read-only-http-gateway.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const scratch = resolve(root, 'work/read-only-http-online');
@@ -70,9 +71,9 @@ function fixture(t, releaseFields = {}) {
   return {build, database, manifestPath, online, release, publication};
 }
 
-async function start(t, f, online = f.online, limits) {
+async function start(t, f, online = f.online, limits, gateway = false) {
   const service = await openIsolatedReadOnlyService({buildDirectory: f.build, publicRuntime: online.publicRuntime});
-  const server = createReadOnlyHttpServer({service, online, limits});
+  const server = gateway ? await createReadOnlyHttpGateway({service, online, limits}) : createReadOnlyHttpServer({service, online, limits});
   t.after(async () => {
     const closed = new Promise(resolve => server.close(resolve));
     server.closeAllConnections(); await closed; await service.close();
@@ -119,8 +120,8 @@ test('online opt-in is exact and requires an isolated reader verified against th
     publicRuntime: {...f.online.publicRuntime, databaseSha256: 'f'.repeat(64)}}}), /niet gecontroleerd/);
 });
 
-test('configured proxy path preserves SDK protocol, exactly four tools, HOLD, hashes and source sections', async t => {
-  const f = fixture(t), {url} = await start(t, f);
+async function checkProxyProtocol(t, gateway) {
+  const f = fixture(t), {url} = await start(t, f, f.online, undefined, gateway);
   const client = new Client({name: 'synthetic-proxy-contract', version: '1.0.0'});
   // Native fetch derives Host from the loopback URL. Use its SDK-supported
   // fetch adapter to send the synthetic ingress authority over node:http,
@@ -151,6 +152,54 @@ test('configured proxy path preserves SDK protocol, exactly four tools, HOLD, ha
     for (const path of ['/mcp/', '/mcp?project=1', '/api/v1/content', '/files', '/mcp%2f'])
       assert.equal((await post(new URL(path, url))).status, 404);
   } finally { await client.close(); }
+}
+
+test('configured proxy path preserves SDK protocol, exactly four tools, HOLD, hashes and source sections', async t => {
+  for (const gateway of [false, true])
+    await t.test(gateway ? 'through HTTP ingress' : 'direct loopback', t => checkProxyProtocol(t, gateway));
+});
+
+test('optional ingress enforces original authority and fetch metadata before forwarding', async t => {
+  const f = fixture(t);
+  await assert.rejects(createReadOnlyHttpGateway({service: {}}), /configuratie/);
+  await assert.rejects(createReadOnlyHttpGateway({service: {}, online: f.online}), /niet gecontroleerd/);
+  const {url} = await start(t, f, {...f.online, missingOrigin: 'server-client'}, undefined, true);
+  assert.equal((await post(url, rpc(), {origin: undefined})).status, 200);
+  for (const headers of [{host: url.host}, {host: [host, 'attacker.invalid']}, {origin: [publicOrigin, 'null']},
+    {origin: 'https://attacker.invalid', 'x-forwarded-origin': publicOrigin},
+    {host: 'attacker.invalid', 'x-forwarded-host': host}, {'sec-fetch-site': 'cross-site'},
+    {'sec-fetch-site': ['same-origin', 'cross-site']},
+    {origin: undefined, 'sec-fetch-mode': 'cors'}, {origin: undefined, 'sec-fetch-custom': 'browser'}])
+    assert.equal((await post(url, rpc(), headers)).status, 403);
+  assert.equal((await post(url, rpc(), {connection: 'origin'})).status, 400);
+  assert.equal((await post(url, rpc(), {'x-forwarded-for': '127.0.0.1'})).status, 200);
+  for (const method of ['GET', 'OPTIONS', 'DELETE']) {
+    const response = await post(url, '', {}, method);
+    assert.equal(response.status, 405); assert.equal(response.headers.allow, 'POST');
+  }
+});
+
+test('ingress keeps body, response and global request budgets bounded across both hops', async t => {
+  const f = fixture(t), {url} = await start(t, f, f.online, {requestBurst: 4, responseBytes: 1024}, true);
+  assert.equal((await post(url, ' '.repeat(readOnlyHttpLimits.bodyBytes + 1))).status, 413);
+  assert.equal((await post(url, '[{}]')).status, 400);
+  assert.equal((await post(url, rpc('tools/list'))).status, 413);
+  assert.equal((await post(url, rpc())).status, 200);
+  assert.equal((await post(url, rpc(), {'x-forwarded-for': '192.0.2.8'})).status, 429);
+});
+
+test('ingress deadline releases a slow upload slot without buffering or queueing another request', async t => {
+  const f = fixture(t), {url, server} = await start(t, f, f.online, {concurrentRequests: 1, connectionMs: 800}, true);
+  const admitted = once(server, 'request');
+  const slow = request(url, {method: 'POST', agent: false, headers: {host, origin: publicOrigin,
+    'content-type': 'application/json', 'content-length': 100}});
+  const stopped = new Promise(resolve => slow.once('error', resolve));
+  t.after(() => slow.destroy());
+  slow.write('{');
+  await admitted;
+  assert.equal((await post(url)).status, 429);
+  await stopped;
+  assert.equal((await post(url)).status, 200);
 });
 
 test('proxy Host/Origin and actual loopback peer remain mandatory; forwarded headers cannot repair failures', async t => {
@@ -228,20 +277,25 @@ test('proxy mode shares the bounded transport and one budget regardless of forwa
   assert.equal((await post(url, rpc(), {'x-forwarded-for': '192.0.2.1'})).status, 429);
 });
 
-test('standalone startup is explicit, loopback-only, pinned and safely fails invalid online configuration', async t => {
+test('standalone startup keeps loopback default, requires explicit ingress and safely fails invalid configuration', async t => {
   const f = fixture(t), config = join(f.build, 'online.json');
   const online = {...f.online, missingOrigin: 'server-client'};
   fs.writeFileSync(config, JSON.stringify(online));
   const args = [join(root, 'agent-tools/start-read-only-http.mjs'), '--build-directory', f.build];
-  const child = spawn(process.execPath, [...args, '--online-config', config], {windowsHide: true});
-  const exited = once(child, 'exit');
-  try {
-    const [output] = await once(child.stdout, 'data');
-    const address = output.toString().match(/http:\/\/127\.0\.0\.1:\d+\/mcp/);
-    assert(address);
-    assert.equal(payload(await post(new URL(address[0]), call('list_sources'), {origin: undefined})).release, f.release);
-  } finally { child.kill(); await exited; }
+  for (const gatewayArgs of [[], ['--gateway-host', '127.0.0.1']]) {
+    const child = spawn(process.execPath, [...args, '--online-config', config, ...gatewayArgs], {windowsHide: true});
+    const exited = once(child, 'exit');
+    try {
+      const [output] = await once(child.stdout, 'data');
+      const address = output.toString().match(/http:\/\/127\.0\.0\.1:\d+\/mcp/);
+      assert(address);
+      assert.equal(payload(await post(new URL(address[0]), call('list_sources'), {origin: undefined})).release, f.release);
+    } finally { child.kill(); await exited; }
+  }
+  const occupied = await start(t, f);
   for (const extra of [['--online-config', config, '--online-config', config], ['--host', '0.0.0.0'],
+    ['--gateway-host', '0.0.0.0'], ['--online-config', config, '--gateway-host', '192.0.2.1'],
+    ['--online-config', config, '--gateway-host', '127.0.0.1', '--port', occupied.url.port],
     ['--online-config', join(f.build, canary)]]) {
     const failed = spawn(process.execPath, [...args, ...extra], {windowsHide: true});
     let output = ''; failed.stdout.on('data', data => { output += data; }); failed.stderr.on('data', data => { output += data; });

@@ -19,7 +19,7 @@ const envelope = z.strictObject({jsonrpc: z.literal('2.0'),
   method: z.string().min(1).max(80), params: z.record(z.string(), z.unknown()).optional()});
 const methods = new Set(['initialize', 'ping', 'tools/list', 'tools/call', 'notifications/initialized']);
 
-function boundedLimits(overrides) {
+export function boundedLimits(overrides) {
   const limits = {...readOnlyHttpLimits, ...overrides};
   for (const [key, value] of Object.entries(limits)) {
     if (!(key in readOnlyHttpLimits) || !Number.isSafeInteger(value) || value < 1 || value > readOnlyHttpLimits[key])
@@ -68,7 +68,7 @@ function untilAbort(promise, signal) {
   });
 }
 
-function readBody(req, limit, signal) {
+export function readBody(req, limit, signal) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
@@ -170,6 +170,11 @@ export function createReadOnlyHttpServer({service, limits: overrides = {}, onlin
       finally { try { await mcp?.close(); } finally { active--; } }
     })().catch(() => res.destroy());
   });
+  boundReadOnlyConnections(server, limits);
+  return server;
+}
+
+export function boundReadOnlyConnections(server, limits) {
   server.maxConnections = limits.connections;
   server.maxRequestsPerSocket = 1;
   server.on('connection', socket => {
@@ -182,5 +187,6 @@ export function createReadOnlyHttpServer({service, limits: overrides = {}, onlin
   server.on('clientError', (_error, socket) => socket.destroy());
   server.on('checkContinue', (_req, res) => { res.writeHead(417, {'connection': 'close'}); res.end(); });
   server.on('checkExpectation', (_req, res) => { res.writeHead(417, {'connection': 'close'}); res.end(); });
-  return server;
+  server.on('connect', (_req, socket) => socket.destroy());
+  server.on('upgrade', (_req, socket) => socket.destroy());
 }
