@@ -49,13 +49,20 @@ waarnemingen, niet onnodig naar identificeerbare personen.
 
 ## Reviewbewijs
 
-`prepareModelReview` maakt een reviewbasis versie 2 voor model, dimensies,
+`prepareModelReview` maakt een reviewbasis versie 3 voor model, dimensies,
 de dimensievraag, een ingevulde `researchQuestion` en iedere vraagvariant.
 Elke expliciete `researchSubquestions`-vraag krijgt ook een afzonderlijk target,
 met de exacte vraagtekst en `indicatorIds`. Beoordeel of die indicatoren de brede
 of specifieke deelvraag werkelijk dekken; een algemene modelgoedkeuring volstaat
 niet. Gebruik bestaande, expliciet beschreven indicatoren, geen herstelplaceholder.
 Ontbrekende hoofdvragen of ongeldige deelvraagkoppelingen blokkeren toelating.
+Dezelfde basis bevat daarnaast elk daadwerkelijk aangeboden hoofd-/deelvraagvoorstel
+en elke cyclerpositie als `research-route`, met `parentId`, `index` en waar van
+toepassing `indicatorIds` en `materialIds`. Deze inventaris gebruikt dezelfde
+vraagopbouw als de viewer, ook voor gegenereerde terugvalvragen. Beide reviewers
+beoordelen elke positie en de gekoppelde dekking; opgeslagen dimensiecontext is
+niet automatisch een goedgekeurde deelvraag. Onderwerpvervanging controleer je
+ook met een proces, een organisatieonderdeel en concreet gedrag.
 Elke niet-lege regel in `probes` krijgt een eigen target: bij de dimensievraag
 en per variant bij de bijbehorende opening. Beoordeel dus ook of dezelfde
 doorvraag past bij ieder aangeboden respondentniveau. Gebruik één doorvraag
@@ -64,9 +71,11 @@ per regel; de helper splitst geen zinnen op leestekens.
 Bij een ontbrekende variantentabel neemt de reviewbasis dezelfde operationele
 terugval mee als de viewer. Dat is geen goedkeuring van de toepasbaarheid en
 maakt geen andere niveaus aan. Een lege doorvragenlijst vraagt geen opvulling.
-Oude reviews zonder deze dekking volstaan niet voor nieuwe toelating: maak een
-nieuwe basis en laat de nieuwe targets echt beoordelen, zonder oude hashes te
-vervangen. Het lezen van bestaande projecten verandert hierdoor niet.
+Oude reviews zonder deze dekking volstaan niet voor nieuwe toelating of een
+nieuwe publicatie van het modelpakket: maak een nieuwe basis en laat de nieuwe
+targets echt beoordelen, zonder oude hashes te vervangen. Bestaande gepinde
+publicaties en eigen projectvragen blijven leesbaar; deze controle schrijft ze
+niet opnieuw.
 
 Leg alternatieve formuleringen voor nieuwe lokale modellen vast in
 `question.formulations`, per aangeboden niveau. Elke lijst bevat de exacte

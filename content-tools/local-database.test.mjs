@@ -11,6 +11,7 @@ import { CatalogueRepository } from "../local-data/repository.mjs";
 import { checkRuntimeDatabase } from "../scripts/check-runtime-database.mjs";
 import { verifyReleaseContent } from "../local-data/release-integrity.mjs";
 import { publishRuntime } from "../local-data/runtime-publication.mjs";
+import { digest } from './identity.mjs';
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -18,6 +19,29 @@ const save = (path, value) => writeFileSync(path, JSON.stringify(value, null, 2)
 const load = path => JSON.parse(readFileSync(path, "utf8"));
 
 import { fixture, admittedFixture, repinFixture } from "./test-support/local-database-fixture.mjs";
+
+await test('local model admission requires every derived research variant, not only authored field approvals',async t=>{
+  for(const failure of ['missing variant','negative variant','old basis'])await t.test(failure,async st=>{
+    const f=await fixture(st),p=f.packages[0],sourceBefore=readFileSync(join(p.folder,'source.txt'));
+    const routeIds=new Set(p.basis.targets.filter(q=>q.kind==='research-route').map(q=>q.id));
+    assert(routeIds.size>1);
+    assert.equal((await checkLocalDatabase(f.options)).publishable,false);
+    if(failure==='old basis'){
+      p.basis.schemaVersion=2;p.basis.targets=p.basis.targets.filter(q=>!routeIds.has(q.id));
+      p.basis.basisHash=digest({schemaVersion:2,modelHash:p.basis.modelHash,sourceEvidence:p.basis.sourceEvidence,targets:p.basis.targets});
+      for(const review of p.reviews){review.basisHash=p.basis.basisHash;review.assessments=review.assessments.filter(a=>!routeIds.has(a.targetId));}
+      save(join(p.folder,'basis.json'),p.basis);
+    }else{
+      const assessment=p.reviews[1].assessments.find(a=>routeIds.has(a.targetId));
+      if(failure==='missing variant')p.reviews[1].assessments=p.reviews[1].assessments.filter(a=>a!==assessment);
+      else assessment.decision='UNRESOLVED';
+    }
+    save(join(p.folder,'reviews.json'),p.reviews);repinFixture(f);
+    await assert.rejects(buildLocalDatabase(f.options),failure==='old basis'?/Review basis differs/:/every exact target|missing substantive decision/);
+    assert.equal(existsSync(f.out),false);
+    assert.deepEqual(readFileSync(join(p.folder,'source.txt')),sourceBefore);
+  });
+});
 
 await test("local model intake requires separate probe reviews even when all opening reviews approve", async t => {
   const f = await fixture(t, 1, model => {
@@ -144,7 +168,7 @@ await test("check-only CLI validates the complete plan without changing any file
   const result = JSON.parse(cli.stdout);
   assert.equal(result.status, "LOCAL_PACKAGES_CHECKED_REVIEW_REQUIRED");
   assert.equal(result.packages, 2); assert.equal(result.sourceTexts, 2);
-  assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 10);
+  assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 14); // Includes two offered research questions per model.
   assert.equal(result.planSha256, hash(readFileSync(f.planPath)));
   assert.equal(result.inputBytes, f.packages.reduce((sum, p) => sum + readFileSync(p.intake).length +
     load(p.intake).files.reduce((total, file) => total + file.bytes, 0), 0));
@@ -189,7 +213,7 @@ await test("one command builds two pinned local packages with exact source/revie
   const result = JSON.parse(cli.stdout);
   assert.equal(result.status, "LOCAL_CATALOGUE_CREATED_REVIEW_REQUIRED");
   assert.equal(result.packages, 2); assert.equal(result.records, 2); assert.equal(result.documents, 2);
-  assert.equal(result.sourcePages, 2); assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 10);
+  assert.equal(result.sourcePages, 2); assert.equal(result.inputFiles, 12); assert.equal(result.reviewTargets, 14);
   assert.equal(result.sourceArtifacts, 16);
   assert.equal(result.databaseSha256, hash(readFileSync(result.database)));
   assert.deepEqual(load(join(f.out, "local-database-result.json")), result);

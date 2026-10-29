@@ -22,7 +22,9 @@ ontstaan bij de echte reviews en bij `npm run content:prepare`.
 ```
 
 - `reviewbasis.json` is de volledige uitkomst van `prepareModelReview` uit
-  `content-tools/model-quality.mjs`, voor dit model en deze bron.
+  `content-tools/model-quality.mjs`, voor dit model en deze bron. Versie 3 bevat
+  ook alle aangeboden hoofd-/deelvraagvarianten en hun koppelingen; alleen
+  beoordelingen van opgeslagen vragen volstaan niet.
 - `reviews.json` is de lijst met de twee echte reviews, theorie en praktijk, gebonden aan die
   basis. Twee verschillende reviewers, allebei anders dan de auteur.
 - Is de bron een pdf, neem dan de pdf op met rol `source` en de tekst apart met rol `source-text`.

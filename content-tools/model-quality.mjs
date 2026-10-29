@@ -1,7 +1,8 @@
 import { digest } from "./identity.mjs";
 import { questionFormulationEntries } from "../lib/interview-wording.mjs";
+import { modelResearchInventory } from "./model-research-inventory.mjs";
 
-export const MODEL_REVIEW_VERSION = 2;
+export const MODEL_REVIEW_VERSION = 3;
 export const REVIEW_ASPECTS = Object.freeze({
   theory: ["construct", "sourceFidelity", "coverage", "interpretationLimits"],
   practical: ["neutrality", "singleFocus", "answerability", "plainLanguage", "levelFit"],
@@ -224,6 +225,22 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
       model.id,
       "Freeze and inspect the actual model publications before semantic acceptance.",
     );
+  // Review the same derived route the viewer offers, not only stored fields.
+  // Versioned identities retain each cycler and its explicit selection coverage.
+  if (!errors.length) {
+    try {
+      const offered = modelResearchInventory(model);
+      if (!offered.length) throw Error('Missing research route');
+      for (const q of offered) {
+        if (!nonempty(q.text)) throw Error('Empty research route question');
+        addTarget({id:q.targetId,kind:'research-route',parentId:q.id,index:q.index,text:q.text,
+          ...(q.indicatorIds ? {indicatorIds:[...q.indicatorIds]} : {}),
+          ...(q.materialIds ? {materialIds:[...q.materialIds]} : {})});
+      }
+    } catch {
+      issue(errors, 'RESEARCH_ROUTE', model.id, 'Offered research questions and coverage could not be inventoried.');
+    }
+  }
   const basis = {
     schemaVersion: MODEL_REVIEW_VERSION,
     modelHash: digest(model),
@@ -245,7 +262,7 @@ export function prepareModelReview(model, { sourceEvidence = [] } = {}) {
 export function checkModelReviews(prepared, reviews, { authorIds = [] } = {}) {
   const errors = [];
   if (prepared.schemaVersion !== MODEL_REVIEW_VERSION)
-    errors.push("Current model review basis required; review newly covered questions and probes.");
+    errors.push("Current model review basis required; review newly covered questions, probes and research routes.");
   if (prepared.status !== "STRUCTURAL_PASS_REVIEW_REQUIRED" || prepared.errors?.length)
     errors.push("Structural checks must pass.");
   const basis = {

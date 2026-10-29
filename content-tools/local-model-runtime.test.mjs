@@ -243,7 +243,7 @@ await test('publication binds inline and deferred local model delivery to archiv
     writer.db.exec('ROLLBACK TO missing_review; RELEASE missing_review');
     // Re-pinning is deliberately limited to fabricated test evidence. A fresh
     // checksum envelope cannot turn an incomplete/negative review into approval.
-    for(const remove of [false,true]) {
+    for(const targetPart of ['/probes/','/research-cycle:'])for(const remove of [false,true]) {
       const bundle=writer.exportRelease(pins.release), id=f.packages[0].id;
       const find=name=>bundle.artifacts.find(a=>a.name===id+'/'+name);
       const decode=name=>JSON.parse(Buffer.from(find(name).data.content,'base64'));
@@ -251,7 +251,7 @@ await test('publication binds inline and deferred local model delivery to archiv
         const raw=Buffer.from(JSON.stringify(value)), artifact=find(name);
         artifact.data={...artifact.data,bytes:raw.length,sha256:createHash('sha256').update(raw).digest('hex'),content:raw.toString('base64')};
       };
-      const reviews=decode('files/reviews'), assessment=reviews[1].assessments.find(a=>a.targetId.includes('/probes/'));
+      const reviews=decode('files/reviews'), assessment=reviews[1].assessments.find(a=>a.targetId.includes(targetPart));
       assert(assessment);
       if(remove)reviews[1].assessments=reviews[1].assessments.filter(a=>a!==assessment);
       else assessment.decision='REVISE';

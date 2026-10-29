@@ -51,6 +51,9 @@ reviews; ontbrekende vereisten betekenen een concept, geen afgeronde toelating.
 Gebruik `content-tools/model-quality.mjs` voor structurele checks en een
 versiegebonden werkvoorraad. `prepareModelReview(model, {sourceEvidence})`
 verwacht de daadwerkelijke modelpayload en `{id, sha256}` per bevroren bron.
+De reviewbasis bevat ook de werkelijk aangeboden hoofd-/deelvragen en alle
+formuleervarianten met hun dekking (`research-route`). Beoordeel die afzonderlijk;
+goedkeuring van alleen opgeslagen modelvelden is niet voldoende.
 Bereken hashes uit werkelijk aanwezige bytes; een opgegeven hash bewijst geen
 lezing. De bestaande catalogus is in de privé-verwerkingsomgeving inventariseerbaar met `npm run quality:models`.
 Waarschuwingen zijn aandachtspunten, geen automatische inhoudelijke afkeuring.

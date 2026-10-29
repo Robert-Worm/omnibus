@@ -91,7 +91,7 @@ openbare publicatie. Een lokale proefbeslissing geeft geen echte bronrechten.
   const basis = prepareModelReview(model, {sourceEvidence:[{id:'source', sha256:sha256(readFileSync(join(folder, 'source.txt')))}]});
   assert.equal(basis.status, 'STRUCTURAL_PASS_REVIEW_REQUIRED');
   save(join(folder, 'basis.json'), basis);
-  const kinds = {model:'onderzoeksvraag', 'research-question':'onderzoeksvraag', question:'interview', formulation:'interview', probe:'doorvraag'};
+  const kinds = {model:'onderzoeksvraag', 'research-question':'onderzoeksvraag', 'research-route':'onderzoeksvraag', question:'interview', formulation:'interview', probe:'doorvraag'};
   const rows = basis.targets.filter(t=>Object.hasOwn(kinds,t.kind))
     .map(t=>({id:t.id,text:t.text,kind:kinds[t.kind]}));
   save(join(folder, 'question-precheck.json'), rows.map(row=>({...row, ...voorcontrole(row.text, row.kind)})));
