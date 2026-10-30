@@ -2,11 +2,11 @@ import {useState} from 'react';
 import {databaseSourcesEnabled} from '@/lib/application-mode.mjs';
 import Glossary from './glossary';
 import {PRODUCT_VERSION} from '@/lib/product-release.mjs';
-import {contactAddress, contactRoutes} from '@/lib/product-contact.mjs';
+import {contactAddress, contactRoutes, repositoryUrl} from '@/lib/product-contact.mjs';
 import {copyText} from '@/lib/copy-text.mjs';
 import {openMailto} from '@/lib/mail-handoff.mjs';
 import {Popover, PopoverTrigger, PopoverContent, PopoverDescription} from '@/components/ui/popover';
-import {ArrowUpRight, BookOpen, Check, ChevronDown, ClipboardList, Compass, Copy, Download, FileText, Globe, Info, Layers, LockKeyhole, Mail, Target, UserRound, MessageSquareWarning, X} from 'lucide-react';
+import {ArrowUpRight, BookOpen, Check, ChevronDown, ClipboardList, Code, Compass, Copy, Download, FileText, Globe, Info, Layers, LockKeyhole, Mail, Target, UserRound, MessageSquareWarning, X} from 'lucide-react';
 
 // Een mailto-koppeling opent niets wanneer er geen e-mailprogramma aan het
 // mailto-schema is gekoppeld; de klik doet dan stil niets. Er is geen manier om
@@ -70,6 +70,7 @@ export default function ProductFooter() {
         <a className="product-footer-wordmark" href="#begin">Omnibus</a>
         <p>Begin bij een onderzoeksbehoefte of verken je onderwerp. Kies toetspunten en modelvragen, verbind ze aan je onderzoeksvragen en exporteer je referentiekader.</p>
         <p className="product-footer-attribution">Een onafhankelijk, niet-commercieel initiatief van <strong>Robert Worm</strong>. Geen officiële uiting van de rijksoverheid of van de uitgevers van de gebruikte kaders.</p>
+        <a className="product-footer-repository" href={repositoryUrl} target="_blank" rel="noopener noreferrer"><Code aria-hidden="true"/><span>Broncode op GitHub <ArrowUpRight className="footer-external" aria-hidden="true"/></span></a>
         <span className="product-footer-version">Versie {PRODUCT_VERSION}</span>
       </section>
       <nav className="product-footer-column" aria-label="Bronnen verkennen">
@@ -106,6 +107,7 @@ export default function ProductFooter() {
         <p>Omnibus is een persoonlijk, niet-commercieel initiatief van <strong>Robert Worm</strong>, ook de maker van Rijksmap. De toepassing wordt verder ontwikkeld en getest.</p>
         <p>Het doel: auditors helpen om vanuit een onderzoeksbehoefte of signalen bruikbare normen en interviewvragen te kiezen, met zicht op de oorspronkelijke bronnen.</p>
         <a className="footer-contact-item" href="https://www.linkedin.com/in/robertworm/" target="_blank" rel="noopener noreferrer"><UserRound aria-hidden="true"/><span>Robert Worm op LinkedIn</span><ArrowUpRight aria-hidden="true"/></a>
+        <a className="footer-contact-item" href={repositoryUrl} target="_blank" rel="noopener noreferrer"><Code aria-hidden="true"/><span>Broncode op GitHub</span><ArrowUpRight aria-hidden="true"/></a>
         <ContactActions/>
       </details>
       </section>

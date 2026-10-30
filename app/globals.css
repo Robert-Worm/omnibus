@@ -325,6 +325,7 @@ a:focus-visible {
 .product-footer p { margin: .7rem 0; }
 .product-footer .product-footer-attribution { margin-top: 1rem; font-size: .8125rem; }
 .product-footer-attribution strong { font-weight: 600; }
+.product-footer .product-footer-repository { display: flex; align-items: flex-start; gap: .5rem; margin-top: .8rem; font-size: .875rem; line-height: 1.5; }
 .product-footer-version { display: block; margin-top: .8rem; font-size: .75rem; color: #627991; }
 .product-footer .product-footer-column h2 {
   margin: 0 0 .8rem; font-size: .75rem; font-weight: 600; letter-spacing: .09em;

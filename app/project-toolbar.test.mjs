@@ -25,7 +25,14 @@ test('Omnibus branding keeps one header wordmark and the version in the footer',
   assert.match(footer, /niet automatisch in de online database opgeslagen/);
   assert.match(footer, /Sliplane/);
   assert.match(footer, /herstelkopieën en oude projectgegevens niet/);
-  assert.match(read('../database.html'), /<title>Omnibus<\/title>/);
+  const page = read('../database.html');
+  assert.match(page, /<title>Omnibus<\/title>/);
+  assert.match(page, /<meta name="description" content="[^"]*referentiekader[^"]*toetsingskader[^"]*">/);
+  assert.match(page, /<meta property="og:title" content="Omnibus/);
+  assert.doesNotMatch(page, /<script(?![^>]*src="\/offline\.tsx")/);
+  assert.equal((footer.match(/href=\{repositoryUrl\} target="_blank" rel="noopener noreferrer"/g) || []).length, 2);
+  assert.match(footer, /Broncode op GitHub/);
+  assert.match(read('../lib/product-contact.mjs'), /repositoryUrl = 'https:\/\/github\.com\/Robert-Worm\/omnibus'/);
 });
 
 test('project controls keep lifecycle and native keyboard order', () => {
