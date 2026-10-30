@@ -22,10 +22,10 @@ export const catalogueRequestLimits=Object.freeze({activeResponses:32,connection
 // With a webRoot, all data reads are bound to its verified publication. Without
 // a webRoot this is the standalone local catalogue tooling API (all releases).
 // There is no option or request parameter to disable the web publication scope.
-export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,listenHost='127.0.0.1',sliplaneGateway}={}){
+export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,listenHost='127.0.0.1',sliplaneGateway,formerOrigin}={}){
  const hosting=startupCheck('start-options',()=>{
   if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid catalogue port');
-  return createHostingPolicy({publicOrigin,listenHost,webRoot});
+  return createHostingPolicy({publicOrigin,listenHost,webRoot,formerOrigin});
  });
  // A rejected forwarded address falls back to the gateway budget; log only its shape, at most once a minute.
  let lastFallbackLog=-Infinity;
@@ -120,6 +120,12 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    if(name==='origin')origins++;
   }
   if(hosts!==1||origins>1){res.setHeader('Connection','close');return reply(400,{error:'Invalid request headers'});}
+  // The former public address sends page visits on to the current one, path included.
+  if(hosting.formerAuthority&&req.headers.host===hosting.formerAuthority&&(req.method==='GET'||req.method==='HEAD')){
+   const path=typeof req.url==='string'&&req.url.startsWith('/')&&!req.url.startsWith('//')&&req.url.length<=2048?req.url:'/';
+   res.removeHeader('Content-Type');
+   res.writeHead(308,{Location:new URL(path,hosting.publicOrigin).href,'Content-Length':'0'});res.end();return;
+  }
   if(req.headers.host!==expected)return reply(403,{error:'Host not allowed'});
   if(req.headers.origin!==undefined&&req.headers.origin!==expectedOrigin)
    return reply(403,{error:'Origin not allowed'});

@@ -31,6 +31,17 @@ test('Sliplane gateway trust is an explicit validated public start setting', () 
   assert.throws(() => validatePreviewStartOptions({databasePath:'local.sqlite',sliplaneGateway:'10.1.0.0/24'}));
 });
 
+test('a former public address is an explicit validated public start setting', () => {
+  const env = {OMNIBUS_FORMER_ORIGIN:'https://omnibus-oud.example.invalid'};
+  assert.equal(parsePreviewArgs([...pinArgs, ...hostArgs, ...webArgs], {env}).formerOrigin, env.OMNIBUS_FORMER_ORIGIN);
+  assert.equal(parsePreviewArgs([...pinArgs, ...hostArgs], {packaged:true, env}).formerOrigin, env.OMNIBUS_FORMER_ORIGIN);
+  assert.equal(parsePreviewArgs([...pinArgs, ...hostArgs, ...webArgs], {env:{OMNIBUS_FORMER_ORIGIN:''}}).formerOrigin, undefined);
+  assert.throws(() => parsePreviewArgs(pinArgs, {env}));
+  for (const value of [publicOrigin, 'http://oud.example.invalid', 'oud.example.invalid', 'https://oud.example.invalid/'])
+    assert.throws(() => parsePreviewArgs([...pinArgs, ...hostArgs, ...webArgs], {env:{OMNIBUS_FORMER_ORIGIN:value}}), value);
+  assert.throws(() => validatePreviewStartOptions({databasePath:'local.sqlite',formerOrigin:env.OMNIBUS_FORMER_ORIGIN}));
+});
+
 function replace(args, flag, value) {
   const result = [...args];
   result[result.indexOf(flag) + 1] = value;

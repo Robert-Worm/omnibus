@@ -34,6 +34,10 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 | Gezondheidscontrole | Vastgelegd pad `/api/v1/health`: alleen bereikbaarheid; zie hieronder |
 | Automatisch uitrollen | Aan: elke push naar `main` bouwt en rolt opnieuw uit (ongeveer een halve minuut) |
 
+### Overstappen naar een nieuw adres
+
+Krijgt de app een nieuw openbaar adres, bijvoorbeeld een eigen domein? Zet `PUBLIC_ORIGIN` op het nieuwe adres en `OMNIBUS_FORMER_ORIGIN` op het oude, bijvoorbeeld `https://omnibus.sliplane.app`. Bezoeken van pagina's op het oude adres (`GET` en `HEAD`) krijgen dan een doorverwijzing `308` naar hetzelfde pad op het nieuwe adres. Al het andere verkeer op het oude adres wordt geweigerd, zoals bij elk onbekend adres. Het oude adres moet `https` zijn en mag niet gelijk zijn aan het nieuwe. Laat de variabele leeg of weg als je geen oud adres hebt.
+
 ### Verzoeken per bezoeker begrenzen
 
 Stel bij Sliplane `OMNIBUS_SLIPLANE_GATEWAY` in op de gatewayreeks van **jouw serverregio**, bijvoorbeeld `10.1.0.0/24` voor Falkenstein. Controleer de regio en waarde in de [officiële proxydocumentatie](https://docs.sliplane.io/services/reverse-proxy/). Zonder deze instelling deelt verkeer via dezelfde proxy één verzoekenbudget.

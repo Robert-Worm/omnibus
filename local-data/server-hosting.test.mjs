@@ -395,3 +395,25 @@ test('local HTTP, localhost HTTPS and IP origins never enable HSTS through forge
  const response=await request(local,{headers:{Host:new URL(local.url).host,'X-Forwarded-Proto':'https'}});
  assert.equal(response.status,200);assert.equal(response.headers['strict-transport-security'],undefined);
 });
+
+test('a former public address only redirects page visits to the current origin',async t=>{
+ const former='https://omnibus-oud.example.invalid',formerHost='omnibus-oud.example.invalid';
+ assert.equal(createHostingPolicy({publicOrigin,webRoot:'synthetic',formerOrigin:former}).formerAuthority,formerHost);
+ for(const formerOrigin of [publicOrigin,'http://localhost:8080','https://oud.example.invalid/pad','oud.example.invalid',''])
+  assert.throws(()=>createHostingPolicy({publicOrigin,webRoot:'synthetic',formerOrigin}),formerOrigin);
+ assert.throws(()=>createHostingPolicy({formerOrigin:former}));
+ const f=fixture(t),app=await f.start({formerOrigin:former});
+ for(const [path,location] of [['/','/'],['/database.html?x=1','/database.html?x=1'],['/api/v1/version','/api/v1/version'],['//elders.example/','/']]){
+  for(const method of ['GET','HEAD']){
+   const moved=await request(app,{path,method,headers:{Host:formerHost}});
+   assert.equal(moved.status,308,path);assert.equal(moved.headers.location,publicOrigin+location,path);
+   assert.equal(moved.body.length,0);cors(moved);
+  }
+ }
+ const refused=await request(app,{method:'POST',headers:{Host:formerHost}});
+ assert.equal(refused.status,403);assert.equal(JSON.parse(refused.body).error,'Host not allowed');
+ const current=await request(app);
+ assert.equal(current.status,200);
+ const other=await request(app,{headers:{Host:'ander.example.invalid'}});
+ assert.equal(other.status,403);
+});
