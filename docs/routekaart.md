@@ -25,7 +25,7 @@ flowchart TD
 | --- | --- | --- |
 | [🌐 A · Online versie](#pad-a--online-versie) | ✅ Klaar | [#140](https://github.com/Robert-Worm/omnibus/issues/140); snelheid apart in [#84](https://github.com/Robert-Worm/omnibus/issues/84) |
 | [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | ✅ Klaar | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
-| [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
+| [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | ✅ Klaar | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
 | [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
 | [🔍 E · Kwaliteit en efficiëntie](#pad-e--kwaliteit-en-efficiëntie-met-ai) | 🔄 Bezig | [#158](https://github.com/Robert-Worm/omnibus/issues/158) · [#165](https://github.com/Robert-Worm/omnibus/issues/165) · [#169](https://github.com/Robert-Worm/omnibus/issues/169) · [#181](https://github.com/Robert-Worm/omnibus/issues/181) · [#195](https://github.com/Robert-Worm/omnibus/issues/195) |
 
@@ -73,17 +73,20 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 
 ## Pad C · Eigen databases bouwen
 
-**Doel:** met de skills je eigen documenten verwerken en ze in een eigen database gebruiken, naast de openbare. Er verlaat niets je computer of netwerk. Epic [#152](https://github.com/Robert-Worm/omnibus/issues/152).
+**Doel:** met de skills je eigen documenten verwerken en ze in een eigen database gebruiken, naast de openbare. De lokale route verstuurt geen eigen inhoud. Deel je documenten met cloud-AI, dan verlaten ze wel je computer. Epic [#152](https://github.com/Robert-Worm/omnibus/issues/152).
 
 | Stap | Status |
 | --- | --- |
 | Een eigen document omzetten naar bouwstenen met een AI-skill · [Eigen documenten](gebruiken/eigen-documenten.md) | ✅ Klaar |
 | Een eigen database maken via de [beheerroute](beheer/database-publiceren.md) | ✅ Klaar |
-| Een verwerkt eigen document lokaal laden · [#153](https://github.com/Robert-Worm/omnibus/issues/153) | ⬜ Gepland |
-| Een eigen database bouwen met één opdracht · [#154](https://github.com/Robert-Worm/omnibus/issues/154) | ⬜ Gepland |
-| Meerdere databases naast elkaar · [#155](https://github.com/Robert-Worm/omnibus/issues/155) | ⬜ Gepland |
-| Skill die begeleidt van eigen pdf tot eigen database · [#156](https://github.com/Robert-Worm/omnibus/issues/156) | ⬜ Gepland |
-| [Lokale privacyproef](gebruiken/lokale-privacy.md): pakketverwerking en browserroute getest; eigen runtimepublicatie nog niet · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | 🔄 Bezig |
+| Een verwerkt eigen document lokaal laden · [#153](https://github.com/Robert-Worm/omnibus/issues/153) | ✅ Klaar |
+| Een eigen database bouwen met één opdracht · [#154](https://github.com/Robert-Worm/omnibus/issues/154) | ✅ Klaar |
+| Openbare en eigen collecties kiezen in één lokale publicatie · [#155](https://github.com/Robert-Worm/omnibus/issues/155) | ✅ Klaar |
+| Skill die begeleidt van eigen pdf tot eigen database · [#156](https://github.com/Robert-Worm/omnibus/issues/156) | ✅ Klaar |
+| [Lokale privacyproef](gebruiken/lokale-privacy.md), inclusief eigen fictieve rapporten en kaders · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | ✅ Klaar |
+
+De bestaande proeven dekken databasebouw, gedeelde viewers, selectie, vraagkoppeling,
+projectherstel en lokaal netwerkgedrag met fictieve inhoud. De begeleidende skillproef van #156 is op beheerderbesluit afgerond bij de vereiste eigenaarstoestemming. Die toestemming blijft nodig bij echte eigen pakketten; zij wordt niet door de AI ingevuld. De afzonderlijke bijdragersproef in [#225](https://github.com/Robert-Worm/omnibus/issues/225) blijft open en wordt met deze afronding niet als geslaagd aangemerkt.
 
 ## Pad D · Samen bijdragen
 
