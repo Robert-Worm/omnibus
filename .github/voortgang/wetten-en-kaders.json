@@ -256,14 +256,105 @@
     {
       "id": "norea",
       "titel": "Handreikingen van NOREA",
-      "rechten": "Auteursrecht van NOREA. Opgenomen met volledige tekst, bronvermelding en een link naar de uitgave. Omnibus is niet-commercieel en informeert auditors over de normen van hun beroepsgroep (besluit B-022).",
+      "rechten": "De beheerder bevestigt op 30 oktober 2026 toestemming voor verwerking van NOREA-handreikingen in Omnibus (B-022; epic #254). De rechten blijven bij NOREA. Behoud bronvermelding, uitgave en officiële link. De privébevestiging wordt niet gepubliceerd. Deze toestemming geldt niet automatisch voor materiaal van andere rechthebbenden. Open betekent toegestaan op de werklijst, nog niet inhoudelijk beoordeeld of in de database.",
       "bronnen": [
         {
-          "id": "NOREA",
-          "titel": "NOREA-handreikingen (onder andere DORA in Control, Privacy Control Framework, DigiD-assessment)",
-          "link": "https://www.norea.nl/",
+          "id": "NOREA-DORA",
+          "titel": "NOREA DORA in Control (update 2025, Framework 3.2)",
+          "link": "https://www.norea.nl/dora",
           "relevantie": "midden",
-          "waarom": "Nederlandse handreikingen voor IT-audit; met volledige tekst en bronvermelding (B-022)"
+          "waarom": "Eerste NOREA-pakket. Digitale weerbaarheid; financiële reikwijdte behouden. Studierapport en Excel samen verwerken"
+        },
+        {
+          "id": "NOREA-PCF",
+          "titel": "NOREA Privacy Control Framework 3.0 (juli 2025)",
+          "link": "https://www.norea.nl/uploads/bfile/6ffdfb84-7449-4106-b109-fc5f6ba0636a",
+          "relevantie": "hoog",
+          "waarom": "Tweede NOREA-pakket. Privacybeheersing; handreiking en wettelijke verplichtingen onderscheiden"
+        },
+        {
+          "id": "NOREA-DIGID",
+          "titel": "NOREA DigiD-assessments 2026 (versie 1.0)",
+          "link": "https://www.norea.nl/organisatie/werkgroepen/werkgroep-digid-assessments",
+          "relevantie": "hoog",
+          "waarom": "Derde NOREA-pakket. Veilige toegang tot overheidsdiensten; rollen en toepassingsperiode onderscheiden"
+        },
+        {
+          "id": "NOREA-CBW",
+          "titel": "NOREA CBW/NIS2 Control Framework",
+          "link": "https://www.norea.nl/uploads/bfile/a5ccfff5-55e9-41b5-a5d3-145f99c452dc",
+          "relevantie": "hoog",
+          "waarom": "Cyberbeheersing; editie en wettelijke toepasselijkheid bij intake vaststellen"
+        },
+        {
+          "id": "NOREA-CSA",
+          "titel": "NOREA Cyber Security Assessment en Inherente Cyber Risicoanalyse",
+          "link": "https://www.norea.nl/uploads/bfile/e863236b-8e4e-4632-ad63-b62c0ac33bc3",
+          "relevantie": "hoog",
+          "waarom": "Cyberrisico's en beheersing; bijbehorende vragenlijst samen verwerken, editie controleren"
+        },
+        {
+          "id": "NOREA-ENSIA",
+          "titel": "NOREA ENSIA (versie 6.0, update 2025)",
+          "link": "https://www.norea.nl/uploads/bfile/064b64b9-fae6-4c2b-929d-3cccb4541faa",
+          "relevantie": "hoog",
+          "waarom": "Gemeentelijke verantwoording over informatieveiligheid; samenhang met DigiD en Suwi behouden"
+        },
+        {
+          "id": "NOREA-SUWI",
+          "titel": "NOREA Suwi gemeenten 2026 (versie 1.0)",
+          "link": "https://www.norea.nl/uploads/bfile/f74a7447-6c84-46e4-8e0c-b94a4798f637",
+          "relevantie": "hoog",
+          "waarom": "Gemeentelijke gegevensuitwisseling; specifieke rollen en afbakening binnen ENSIA bewaren"
+        },
+        {
+          "id": "NOREA-GEVS",
+          "titel": "NOREA Verantwoordingsrichtlijn GeVS voor RE's",
+          "link": "https://www.norea.nl/uploads/bfile/0e5eb13c-b93f-427d-9209-cee5c4315f9b",
+          "relevantie": "hoog",
+          "waarom": "Verantwoording over gegevensuitwisseling; bronlijst noemt 2025 én 2024 bij dezelfde link: editie eerst vaststellen"
+        },
+        {
+          "id": "NOREA-WPG",
+          "titel": "NOREA Privacy audit Wpg voor boa's (3 september 2024)",
+          "link": "https://www.norea.nl/uploads/bfile/2ea115a8-bb2f-4451-903b-5b0f62d3f9b0",
+          "relevantie": "hoog",
+          "waarom": "Privacy bij buitengewoon opsporingsambtenaren; actuele FAQ en bijlagen aan dezelfde bron koppelen"
+        },
+        {
+          "id": "NOREA-DPIA",
+          "titel": "NOREA Data Protection Impact Assessment (versie 2.0)",
+          "link": "https://www.norea.nl/uploads/bfile/2a7746e6-f5ee-4426-b12c-ba9217608275",
+          "relevantie": "hoog",
+          "waarom": "Beoordeling van privacyrisico's; het invulraamwerk is een bijlage, geen apart kader"
+        },
+        {
+          "id": "NOREA-DEVOPS",
+          "titel": "NOREA DevOps in control (22 januari 2026)",
+          "link": "https://www.norea.nl/uploads/bfile/14b7aa29-bd9a-4e00-b3ef-23e7258ed9cf",
+          "relevantie": "midden",
+          "waarom": "Beheersing van softwareontwikkeling; bronlijst hergebruikt een oude link: editie bij intake vaststellen"
+        },
+        {
+          "id": "NOREA-RANSOM",
+          "titel": "NOREA Ransomware in Control (10 mei 2023)",
+          "link": "https://www.norea.nl/uploads/bfile/4a629796-5601-4dad-ae56-3699f3ad4106",
+          "relevantie": "midden",
+          "waarom": "Preventie en herstel bij gijzelsoftware; actualiteit en overlap met andere cyberkaders beoordelen"
+        },
+        {
+          "id": "NOREA-SOCMF",
+          "titel": "NOREA Maturity Framework voor Security Operation Centers",
+          "link": "https://www.norea.nl/uploads/bfile/113d08d0-f4b3-4370-a3af-40fa1a823077",
+          "relevantie": "midden",
+          "waarom": "Volwassenheid van beveiligingsbewaking; handreiking en bijlage als één bronpakket behandelen"
+        },
+        {
+          "id": "NOREA-AI",
+          "titel": "NOREA Guiding Principles Trustworthy AI Investigations (versie 1.1, december 2021)",
+          "link": "https://www.norea.nl/uploads/bfile/a344c98a-e334-4cf8-87c4-1b45da3d9bc1",
+          "relevantie": "midden",
+          "waarom": "Onderzoek naar betrouwbare AI; actualiteit beoordelen en niet gelijkstellen aan latere wetgeving"
         }
       ]
     },
