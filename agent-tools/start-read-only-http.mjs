@@ -11,9 +11,11 @@ import {createReadOnlyHttpGateway} from './read-only-http-gateway.mjs';
 let service;
 try {
   const {values, tokens} = parseArgs({tokens: true, options: {'build-directory': {type: 'string'},
-    port: {type: 'string', default: '0'}, 'online-config': {type: 'string'}, 'gateway-host': {type: 'string'}}});
+    port: {type: 'string', default: '0'}, 'online-config': {type: 'string'}, 'gateway-host': {type: 'string'},
+    'read-concurrency': {type: 'string', default: '4'}}});
   if (new Set(tokens.map(token => token.name)).size !== tokens.length) throw Error('Dubbele startoptie.');
   const port = Number(values.port);
+  if (!/^[1-4]$/.test(values['read-concurrency'])) throw Error('Ongeldige leesgrens.');
   if (!values['build-directory'] || !/^\d+$/.test(values.port) || !Number.isInteger(port) || port < 0 || port > 65535)
     throw Error('Ongeldige startopties.');
   let online;
@@ -23,7 +25,8 @@ try {
   }
   const gatewayHost = values['gateway-host'];
   if (gatewayHost !== undefined && (!online || !['127.0.0.1', '0.0.0.0'].includes(gatewayHost))) throw Error('Ongeldige gateway.');
-  service = await openIsolatedReadOnlyService({buildDirectory: values['build-directory'], publicRuntime: online?.publicRuntime});
+  service = await openIsolatedReadOnlyService({buildDirectory: values['build-directory'], publicRuntime: online?.publicRuntime,
+    concurrentReads: Number(values['read-concurrency'])});
   const server = gatewayHost === undefined ? createReadOnlyHttpServer({service, online}) :
     await createReadOnlyHttpGateway({service, online});
   server.once('close', () => service.close());

@@ -12,19 +12,25 @@ export const publicReadIdentity = service => publicReaders.get(service);
 // timer on the SQLite thread, the parent can kill synchronous native work.
 // The heap limit is not an OS/native-memory quota. Never use this as a public
 // hosting boundary. Only capped JSON crosses back into the HTTP process.
-export async function openIsolatedReadOnlyService({buildDirectory, publicRuntime}) {
+export async function openIsolatedReadOnlyService({buildDirectory, publicRuntime,
+  concurrentReads = readOnlyWorkLimits.concurrentReads}) {
+  if (!Number.isSafeInteger(concurrentReads) || concurrentReads < 1 || concurrentReads > readOnlyWorkLimits.concurrentReads)
+    throw Error('Ongeldige leesgrens.');
   const pins = publicRuntime === undefined ? undefined : publicRuntimePins(publicRuntime);
+  // Preserve an explicitly disabled JIT in disposable readers, without copying
+  // arbitrary startup flags, loaders or NODE_OPTIONS into those processes.
+  const runtimeFlags = process.execArgv.includes('--jitless') ? ['--jitless'] : [];
   const running = new Set();
   let closed = false, identity;
   function run(method, args, {signal, responseBytes = readOnlyWorkLimits.responseBytes} = {}) {
-    if (closed || signal?.aborted || running.size >= readOnlyWorkLimits.concurrentReads ||
+    if (closed || signal?.aborted || running.size >= concurrentReads ||
         !Number.isSafeInteger(responseBytes) || responseBytes < 1024 || responseBytes > readOnlyWorkLimits.responseBytes)
       return Promise.reject(unavailable());
     return new Promise((resolve, reject) => {
       const child = childProcess.fork(new URL('./read-only-http-child.mjs', import.meta.url), [], {
         windowsHide: true, stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
         env: {...process.env, NODE_OPTIONS: ''},
-        execArgv: [`--max-old-space-size=${readOnlyWorkLimits.oldSpaceMiB}`],
+        execArgv: [`--max-old-space-size=${readOnlyWorkLimits.oldSpaceMiB}`, ...runtimeFlags],
       });
       let text, failed = false;
       const stop = () => {

@@ -90,7 +90,7 @@ await test('isolated MCP package includes dependencies and child worker, preserv
   await assert.rejects(packageMcp(out), /EEXIST/);
   const data = join(scratch, 'data'), online = fixture(data), config = join(scratch, 'online.json');
   writeFileSync(config, JSON.stringify(online));
-  const args = ['--build-directory', data, '--online-config', config, '--gateway-host', '127.0.0.1'];
+  const args = ['--build-directory', data, '--online-config', config, '--gateway-host', '127.0.0.1', '--read-concurrency', '1'];
   const run = launch(out, args);
   const client = new Client({name: 'synthetic-package-acceptance', version: '1.0.0'});
   try {

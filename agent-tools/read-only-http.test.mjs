@@ -28,7 +28,7 @@ const readTools = ['get_workflow_guide', 'list_sources', 'search_building_blocks
 const rpc = (method = 'ping', params, id = 1) => ({jsonrpc: '2.0', id, method, ...(params && {params})});
 const call = (name, args = {}) => rpc('tools/call', {name, arguments: args});
 
-async function fixture(t, {limits, override, corrupt = false, populate} = {}) {
+async function fixture(t, {limits, override, corrupt = false, populate, concurrentReads} = {}) {
   fs.mkdirSync(scratch, {recursive: true});
   const directory = fs.mkdtempSync(join(scratch, 'fixture-')), build = join(directory, 'build');
   fs.mkdirSync(build);
@@ -49,7 +49,7 @@ async function fixture(t, {limits, override, corrupt = false, populate} = {}) {
   // HTTP must work without workflow.mjs or an output directory.
   const before = sha256(fs.readFileSync(database));
   const service = openReadOnlyAgentService({buildDirectory: build});
-  const reader = await openIsolatedReadOnlyService({buildDirectory: build});
+  const reader = await openIsolatedReadOnlyService({buildDirectory: build, concurrentReads});
   const server = createReadOnlyHttpServer({service: {...reader, ...override}, limits});
   t.after(async () => {
     const closed = new Promise(resolve => server.close(resolve));
@@ -313,7 +313,8 @@ test('HTTP reader requires no workflow and STDIO still exposes its six original 
 });
 
 test('standalone start fails safely and rejects a public bind option', async () => {
-  for (const args of [[], ['--host', '0.0.0.0'], ['--build-directory', secret]]) {
+  for (const args of [[], ['--host', '0.0.0.0'], ['--build-directory', secret],
+    ...['0', '5', '1.5', '01', '-1'].map(value => ['--build-directory', secret, '--read-concurrency', value])]) {
     const child = spawn(process.execPath, [join(root, 'agent-tools/start-read-only-http.mjs'), ...args], {windowsHide: true});
     let output = ''; child.stdout.on('data', data => { output += data; }); child.stderr.on('data', data => { output += data; });
     assert.equal((await once(child, 'exit'))[0], 1); assert(!output.includes(secret));
@@ -362,6 +363,35 @@ function reaped(child) {
   assert(child.exitCode !== null || child.signalCode !== null, 'leesproces is beëindigd');
   assert.throws(() => process.kill(child.pid, 0), {code: 'ESRCH'}, 'geen achtergebleven leesproces');
 }
+
+test('a lower read limit refuses overlapping work without a queue and recovers after cancellation', async t => {
+  for (const concurrentReads of [0, 5, 1.5, '1', null, NaN])
+    await assert.rejects(openIsolatedReadOnlyService({buildDirectory: secret, concurrentReads}), /Ongeldige leesgrens/);
+  const {reader} = await fixture(t, {populate: slowCollection, concurrentReads: 1});
+  const reads = watchReads(t), abort = new AbortController();
+  const pending = assert.rejects(reader.search(slowSearch, {signal: abort.signal}), /Leesverzoek niet uitgevoerd/);
+  await assert.rejects(reader.guide(), /Leesverzoek niet uitgevoerd/);
+  assert.equal(reads.length, 1, 'the refused read does not start another process');
+  abort.abort();
+  await assert.rejects(reader.guide(), /Leesverzoek niet uitgevoerd/);
+  await pending; reaped(reads[0]);
+  assert.equal((await reader.guide()).release, release);
+});
+
+test('read processes preserve explicit jitless mode without copying unrelated startup flags', async t => {
+  const previous = process.execArgv;
+  process.execArgv = ['--jitless', '--inspect=0', '--import=untrusted-loader'];
+  t.after(() => { process.execArgv = previous; });
+  const fork = childProcess.fork;
+  const observed = t.mock.method(childProcess, 'fork', (...args) => {
+    assert.deepEqual(args[2].execArgv, [`--max-old-space-size=${readOnlyWorkLimits.oldSpaceMiB}`, '--jitless']);
+    assert.equal(args[2].env.NODE_OPTIONS, '');
+    return fork(...args);
+  });
+  const {reader} = await fixture(t, {concurrentReads: 1});
+  assert.equal((await reader.guide()).release, release);
+  assert.equal(observed.mock.callCount(), 2);
+});
 
 test('native collection work hits service and HTTP deadlines while HTTP stays responsive', {timeout: 20000}, async t => {
   const {reader, url} = await fixture(t, {populate: slowCollection});
