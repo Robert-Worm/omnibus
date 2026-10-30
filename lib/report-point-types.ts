@@ -28,6 +28,7 @@ export type ReportPoint = {
   practical_revision?: string;
   review_status?: string;
   generic_variant?: {title: string; text: string; phases: Record<string, ReportPhase>};
+  generic_control?: string;
 };
 export type ReportBlock = {
   id: string;
