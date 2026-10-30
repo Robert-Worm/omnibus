@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://omnibus.sliplane.app"><strong>Probeer online</strong></a> &nbsp;·&nbsp;
+  <a href="https://omnibus.rijksmap.nl"><strong>Probeer online</strong></a> &nbsp;·&nbsp;
   <a href="docs/gebruiken/installeren.md"><strong>Installeren</strong></a> &nbsp;·&nbsp;
   <a href="docs/bijdragen/README.md"><strong>Meedoen</strong></a>
 </p>
@@ -46,7 +46,7 @@ Alle pagina's staan in de [wegwijzer](docs/README.md). Een vraag? Kijk bij de [v
 
 Omnibus helps auditors and researchers build a *reference framework* (in Dutch: *referentiekader*): the set of norms and test points used to assess an organisation. Instead of starting from a blank page, you pick norms from earlier audit reports of the Dutch government's Audit Service (Auditdienst Rijk), from laws and from established frameworks, link them to your research questions and export the result to Excel. Every norm keeps a link to its original source.
 
-Omnibus is free for non-commercial use and runs in your browser; projects stay on your own computer. The content and documentation are in Dutch. [Try it online](https://omnibus.sliplane.app), watch the [25-second tour](#zo-werkt-het), or run it yourself with Docker (see [Aan de slag](#aan-de-slag)). Questions are welcome in [Discussions](https://github.com/Robert-Worm/omnibus/discussions), in English too.
+Omnibus is free for non-commercial use and runs in your browser; projects stay on your own computer. The content and documentation are in Dutch. [Try it online](https://omnibus.rijksmap.nl), watch the [25-second tour](#zo-werkt-het), or run it yourself with Docker (see [Aan de slag](#aan-de-slag)). Questions are welcome in [Discussions](https://github.com/Robert-Worm/omnibus/discussions), in English too.
 
 </details>
 
@@ -74,7 +74,7 @@ Omnibus is free for non-commercial use and runs in your browser; projects stay o
 3. **Bouw je kader.** Schrijf je onderzoeksvragen en koppel de gekozen normen eraan.
 4. **Exporteer.** Kies een werkvorm (normtoetsing, risico-controlmatrix of interviewleidraad) en download het Excel-bestand.
 
-Wil je het meteen proberen? Open de [proefversie online](https://omnibus.sliplane.app). Je werk blijft daar in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen. Of bekijk eerst het resultaat: download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
+Wil je het meteen proberen? Open de [proefversie online](https://omnibus.rijksmap.nl). Je werk blijft daar in je eigen browser; de server bewaart niets van je onderzoek. Gebruik **Bewaar project** om het mee te nemen. Of bekijk eerst het resultaat: download het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip) (0,5 MB): een fictief onderzoek naar de CIO-functie bij een ministerie, met de drie Excel-werkvormen en een projectbestand.
 
 Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-met-omnibus.md).
 
@@ -93,7 +93,7 @@ Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er pr
 <a id="aan-de-slag"></a>
 ## Aan de slag
 
-**Geen terminalervaring?** Gebruik de [proefversie online](https://omnibus.sliplane.app), of lees eerst [nog nooit een terminal gebruikt?](docs/gebruiken/installeren.md#nog-nooit-een-terminal-gebruikt).
+**Geen terminalervaring?** Gebruik de [proefversie online](https://omnibus.rijksmap.nl), of lees eerst [nog nooit een terminal gebruikt?](docs/gebruiken/installeren.md#nog-nooit-een-terminal-gebruikt).
 
 **Met Docker** (start eerst Docker Desktop) zijn twee opdrachten genoeg; open daarna `http://localhost:8080`:
 
@@ -118,7 +118,7 @@ Vanaf de huidige versie, lokaal en online, lopen vijf paden. Het zwaartepunt lig
 
 | Pad | Doel |
 | --- | --- |
-| 🌐 [Online versie](docs/routekaart.md#pad-a--online-versie) | Omnibus gebruiken zonder installatie. Een proefversie staat op [omnibus.sliplane.app](https://omnibus.sliplane.app) |
+| 🌐 [Online versie](docs/routekaart.md#pad-a--online-versie) | Omnibus gebruiken zonder installatie. Een proefversie staat op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl) |
 | 🤖 [AI aan de database](docs/routekaart.md#pad-b--ai-rechtstreeks-aan-de-database) | Je AI-assistent laten zoeken en een opzet laten voorbereiden |
 | 🗂️ [Eigen databases](docs/routekaart.md#pad-c--eigen-databases-bouwen) | Eigen documenten en een eigen database naast de openbare |
 | 🤝 [Samen bijdragen](docs/routekaart.md#pad-d--samen-bijdragen) | De openbare database samen uitbreiden |

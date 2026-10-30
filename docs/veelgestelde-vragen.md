@@ -26,11 +26,11 @@ Nee. Een norm kiezen zegt niet dat hij geldt, of dat de organisatie eraan voldoe
 
 ### Wat heb ik nodig om Omnibus te gebruiken?
 
-Niets, als je de [proefversie online](https://omnibus.sliplane.app) gebruikt. Zelf installeren: Git en Node.js 24.21; `node scripts/installeer.mjs` haalt de database zelf op. Met Docker heb je alleen Docker nodig. Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
+Niets, als je de [proefversie online](https://omnibus.rijksmap.nl) gebruikt. Zelf installeren: Git en Node.js 24.21; `node scripts/installeer.mjs` haalt de database zelf op. Met Docker heb je alleen Docker nodig. Na de installatie heb je geen internet en geen account nodig. Zie [installeren](gebruiken/installeren.md). Krijg je een foutmelding? Kijk bij [problemen bij installeren en starten](gebruiken/problemen-oplossen.md).
 
 ### Kan ik Omnibus gebruiken zonder iets te installeren?
 
-Ja, er staat een [proefversie online](https://omnibus.sliplane.app). Je werk blijft ook daar in je eigen browser.
+Ja, er staat een [proefversie online](https://omnibus.rijksmap.nl). Je werk blijft ook daar in je eigen browser.
 
 ### Werkt het op Windows, macOS en Linux?
 

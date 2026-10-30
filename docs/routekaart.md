@@ -31,7 +31,7 @@ flowchart TD
 
 ## Het vertrekpunt: wat er nu is
 
-- Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md), of probeer de [proefversie online](https://omnibus.sliplane.app).
+- Een werkende applicatie op je eigen computer, met de vier stappen van onderzoeksrichting tot Excel-export. Zie [installeren](gebruiken/installeren.md), of probeer de [proefversie online](https://omnibus.rijksmap.nl).
 - Een openbare [database](https://github.com/Robert-Worm/omnibus/releases/latest) met <!--n:rapporten-->27<!--/n--> rapporten, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen.
 - Acht [AI-skills](../skills/README.md) om bronnen te verwerken en te controleren, en om een eigen database te bouwen.
 
@@ -44,7 +44,7 @@ flowchart TD
 | Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ Klaar |
 | Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ Klaar |
 | Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar |
-| Proefversie online op [omnibus.sliplane.app](https://omnibus.sliplane.app), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
+| Proefversie online op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
 | Snelheid online aantoonbaar · [#84](https://github.com/Robert-Worm/omnibus/issues/84) | 🔄 Bezig |
 | [Logboek van de online versie bekijken](beheer/storingen-en-herstel.md#het-logboek-van-de-online-versie) · [#141](https://github.com/Robert-Worm/omnibus/issues/141) | ✅ Klaar |
 | [Online terug naar de vorige werkende versie](beheer/storingen-en-herstel.md#online-terug-naar-de-vorige-werkende-versie), geoefend door opnieuw te bouwen · [#142](https://github.com/Robert-Worm/omnibus/issues/142) | ✅ Klaar |

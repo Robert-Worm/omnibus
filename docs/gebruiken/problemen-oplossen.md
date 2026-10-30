@@ -124,7 +124,7 @@ ETIMEDOUT
 ```
 
 - **Oorzaak:** Docker kan het internet niet bereiken, vaak door een proxy of firewall van je werkplek.
-- **Herstellen:** probeer het op een ander netwerk. Lukt dat niet, vraag je IT-afdeling om de proxy in Docker Desktop in te stellen, of gebruik de [online versie](https://omnibus.sliplane.app).
+- **Herstellen:** probeer het op een ander netwerk. Lukt dat niet, vraag je IT-afdeling om de proxy in Docker Desktop in te stellen, of gebruik de [online versie](https://omnibus.rijksmap.nl).
 
 ### Mijn project is weg
 

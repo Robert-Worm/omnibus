@@ -1,6 +1,6 @@
 # Online zetten in een container (`hosting/container/`)
 
-> **In het kort:** één Dockerfile die Omnibus met de openbare database bouwt als één image. Zo draait de online versie als één app bij een containerhost, zonder aparte databasedienst of schijf. Gekozen host: Sliplane (vaste prijs, verkeer inbegrepen). Draait sinds 21 oktober 2026 op [omnibus.sliplane.app](https://omnibus.sliplane.app).
+> **In het kort:** één Dockerfile die Omnibus met de openbare database bouwt als één image. Zo draait de online versie als één app bij een containerhost, zonder aparte databasedienst of schijf. Gekozen host: Sliplane (vaste prijs, verkeer inbegrepen). Draait sinds 21 oktober 2026; sinds 30 oktober op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl). Het oude adres omnibus.sliplane.app stuurt door.
 
 ## Hoe werkt het?
 
@@ -28,7 +28,7 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 | --- | --- |
 | Bron | `https://github.com/Robert-Worm/omnibus`, tak `main` |
 | Bouwen | Dockerfile `hosting/container/Dockerfile`, context `.` |
-| Omgevingsvariabele | `PUBLIC_ORIGIN` = het openbare adres van de app, bijvoorbeeld `https://omnibus.sliplane.app` (zonder `/` aan het eind) |
+| Omgevingsvariabele | `PUBLIC_ORIGIN` = het openbare adres van de app, bijvoorbeeld `https://omnibus.rijksmap.nl` (zonder `/` aan het eind) |
 | Poort | `PORT`; standaard 8080 |
 | Geheugen | De server gebruikt rond 200 MB bij normaal gebruik |
 | Gezondheidscontrole | Vastgelegd pad `/api/v1/health`: alleen bereikbaarheid; zie hieronder |
@@ -67,7 +67,7 @@ Pas `DATABASE_URL` en `DATABASE_SHA256` aan in de Dockerfile én in `scripts/dat
 Vergelijk met de **precies verwachte build**, niet met een build voor een andere database of de lokale AI-koppeling:
 
 ```text
-node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root runtime-build
+node scripts/check-web-version.mjs --url https://omnibus.rijksmap.nl --web-root runtime-build
 ```
 
 `MATCH` betekent dat de webbestanden en database-identiteiten overeenkomen. `MISMATCH` of een ontbrekend versieantwoord is geen geslaagde uitrol, ook niet bij een groene gezondheidscontrole. De controle verandert niets aan de host of database. Controleer bij een afwijking de build- en startlogs van de host; een GitHub-status alleen bewijst niet waarom een uitrol achterblijft.

@@ -8,7 +8,7 @@
 
 | Stap | Lees | Wat je daarna kunt |
 | --- | --- | --- |
-| 1 | [Proefversie online](https://omnibus.sliplane.app) of [Omnibus installeren](installeren.md) | Je werkt met Omnibus, online of op je eigen computer |
+| 1 | [Proefversie online](https://omnibus.rijksmap.nl) of [Omnibus installeren](installeren.md) | Je werkt met Omnibus, online of op je eigen computer |
 | 2 | [Werken met Omnibus](werken-met-omnibus.md) | Je maakt een referentiekader in vier stappen en exporteert het naar Excel |
 | 3 | [Veelgestelde vragen](../veelgestelde-vragen.md) | Je weet wat je bewaart, wat de normen betekenen en waar je hulp vindt |
 
@@ -27,7 +27,7 @@ Wil je eerst zien wat Omnibus oplevert? Download het [voorbeeld](https://github.
 
 ## Volgende stap
 
-Begin met de [proefversie online](https://omnibus.sliplane.app), of [installeer Omnibus](installeren.md) op je computer.
+Begin met de [proefversie online](https://omnibus.rijksmap.nl), of [installeer Omnibus](installeren.md) op je computer.
 
 ---
 

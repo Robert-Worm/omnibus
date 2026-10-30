@@ -8,7 +8,7 @@
 #   en open http://localhost:8080
 #
 # Online: geef PUBLIC_ORIGIN mee met het openbare https-adres, bijvoorbeeld
-#   docker run -p 8080:8080 -e PUBLIC_ORIGIN=https://omnibus.sliplane.app omnibus
+#   docker run -p 8080:8080 -e PUBLIC_ORIGIN=https://omnibus.rijksmap.nl omnibus
 #
 # Een nieuwe database? Pas DATABASE_URL en DATABASE_SHA256 hieronder aan (of geef ze
 # mee als build-argument) en bouw opnieuw.

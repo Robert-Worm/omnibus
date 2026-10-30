@@ -126,7 +126,7 @@ De startmeldingen van het runtimepakket, de lokale preview en de lokale catalogu
 | `listener` | Of de luisterpoort op het ingestelde adres beschikbaar is |
 | `startup` | Een niet nader ingedeelde startfout; controleer de hele combinatie |
 
-Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https://omnibus.sliplane.app/api/v1/version`. `code.revision` is de commit die online staat. Zelf intypen of `curl` werkt. Klik je vanaf een andere site op een link naar `/api/…`, dan krijg je *Cross-site request not allowed*; dat is de beveiliging, geen storing.
+Welke versie draait er? Vraag `/api/v1/version` op, bijvoorbeeld met `curl https://omnibus.rijksmap.nl/api/v1/version`. `code.revision` is de commit die online staat. Zelf intypen of `curl` werkt. Klik je vanaf een andere site op een link naar `/api/…`, dan krijg je *Cross-site request not allowed*; dat is de beveiliging, geen storing.
 
 ## Online terug naar de vorige werkende versie
 
@@ -161,7 +161,7 @@ Vergelijk de bovenste `Digest` met de pin en controleer de Node-versie in de pla
 
    ```text
    npm run build:runtime -- --settings <herstelinstellingen.json> --out <nieuwe-controlemap>
-   node scripts/check-web-version.mjs --url https://omnibus.sliplane.app --web-root <nieuwe-controlemap>
+   node scripts/check-web-version.mjs --url https://omnibus.rijksmap.nl --web-root <nieuwe-controlemap>
    ```
 
 *Gelukt als:* je `MATCH` ziet en `code.revision` de **nieuwe revert-commit** is, niet de oude commit waarvan de inhoud terugkomt. Controleer ook `/api/v1/ready` en open een bron. Alleen een geslaagde gezondheidscontrole bewijst niet dat de juiste combinatie draait.

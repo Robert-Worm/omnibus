@@ -2,6 +2,12 @@
 
 De belangrijkste wijzigingen, nieuwste eerst.
 
+## 30 oktober 2026 · een eigen adres
+
+- **Nieuw adres:** de proefversie online staat op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl). Links naar omnibus.sliplane.app sturen door naar dezelfde pagina op het nieuwe adres.
+- **Beter te vinden:** onderaan elke pagina staat een link naar de broncode op GitHub, en de pagina heeft een beschrijving voor zoekmachines en gedeelde links.
+- **Database 29 oktober:** gereviewde interviewuitwerkingen bij alle bronnen en brede deelvragen bij de WWKE.
+
 ## 24 oktober 2026 · liever geen vraag dan een slechte vraag
 
 - **Geen bedachte interviewvragen meer:** heeft een toetspunt geen eigen vraag, dan maakt Omnibus er geen standaardvraag meer bij. Op die plek staat een korte uitleg. Eigen vragen in bestaande projecten blijven staan.

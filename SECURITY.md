@@ -39,7 +39,7 @@ Een melding beoordelen betekent: kijken of Omnibus het kwetsbare deel echt gebru
 
 Bijvoorbeeld in de bronweergave, het openen van projectbestanden, de Excel-export, de lokale server, de AI-koppeling, de publicatiehulpmiddelen of de gebruikte bibliotheken.
 
-Omnibus draait lokaal en als [proefversie online](https://omnibus.sliplane.app), in openbare alleen-lezen modus. De AI-koppeling is niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
+Omnibus draait lokaal en als [proefversie online](https://omnibus.rijksmap.nl), in openbare alleen-lezen modus. De AI-koppeling is niet bedoeld als openbare dienst. Een geheim adres of CORS-instelling is geen toegangsbeveiliging.
 
 ## Verder lezen
 

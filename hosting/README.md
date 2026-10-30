@@ -1,10 +1,10 @@
 # Hosting (`hosting/`)
 
-> **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.sliplane.app](https://omnibus.sliplane.app). De andere mappen beschrijven een uitgebreidere route met de database op een aparte schijf; die is nodig zodra er een niet-openbare database online moet.
+> **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl). De andere mappen beschrijven een uitgebreidere route met de database op een aparte schijf; die is nodig zodra er een niet-openbare database online moet.
 
 ## Zo draait de proefversie nu
 
-De proefversie draait via [`container/`](container/README.md): één Dockerfile met de openbare database erin, voor één app bij een containerhost (Sliplane). Je vindt hem op [omnibus.sliplane.app](https://omnibus.sliplane.app).
+De proefversie draait via [`container/`](container/README.md): één Dockerfile met de openbare database erin, voor één app bij een containerhost (Sliplane). Je vindt hem op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl).
 
 Begin hier als je de online versie wilt bijwerken of herstellen.
 
