@@ -8,7 +8,7 @@
 
 ## Zo staat het ervoor
 
-Database van 2026-10-29. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.
+Database van 2026-10-30. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.
 
 **Volgende database:** bij 5 ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt. Nu liggen er 0 bronnen klaar.
 
