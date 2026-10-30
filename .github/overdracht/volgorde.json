@@ -2,7 +2,8 @@
   "uitleg": "Vaste volgorde per assistent: makkelijkst af te ronden eerst. Het issue Overdracht toont alleen wat nu op te pakken is (klaar of bezig), in rondes van vijf. Opus houdt deze lijst bij; de beheerder bepaalt de keuzes.",
   "Opus 5.5": [
     57,
-    10
+    10,
+    259
   ],
   "ChatGPT Astra": [
     148,
@@ -12,6 +13,7 @@
     149,
     162,
     210,
-    225
+    225,
+    262
   ]
 }
