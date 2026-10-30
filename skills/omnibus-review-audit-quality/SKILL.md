@@ -38,7 +38,9 @@ Beoordeel niet of de onderzochte organisatie zelf aan de norm voldoet.
 ## Bron eerst, dan de volledige keten
 
 1. Bevries de daadwerkelijk beoordeelde inhoud: bron-ID, editie/peildatum,
-   inhouds- en bronhashes, norm-/punt-ID's, alle velden en relevante varianten.
+   inhouds- en bronhashes met hun object (PDF, uitgelezen tekst of paginapayload),
+   norm-/punt-ID's, alle velden en relevante varianten. Een opgeslagen
+   `source_sha256` is niet vanzelf een PDF-hash; volg de herkomstregistratie.
    Voor een losse oefentekst volstaan de exacte invoer en het bericht/casus-ID;
    claim geen bestands-, app- of bronhash die niet daadwerkelijk is berekend.
    Controleer bij een live opdracht of app en databasis overeenkomen.
