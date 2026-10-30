@@ -152,8 +152,8 @@ Gerichte lessen uit de vervolgreviews:
   overname van het advies. Bestaande kennis kan volstaan; aanvullende expertise
   blijft voorwaardelijk. Een eenvoudige, al heldere rolafspraak mag ongewijzigd
   blijven; extra toetsstappen zijn niet vanzelf een kwaliteitsverbetering.
-- Beschrijf bij een operationeel doel het risico voor het proces, niet alleen
-  dat de auditor iets niet kan beoordelen. Een geparkeerde betaling kan bijvoorbeeld
+- Beschrijf wat door een tekort mis kan gaan voor het doel, niet alleen het
+  gebrek aan inzicht, afstemming of rolverdeling. Een geparkeerde betaling kan bijvoorbeeld
   blijven liggen als vervolgstap of beslisser onduidelijk is. Houd dit een eigen
   risicoafleiding; ontbrekend onderzoeksinzicht bewijst geen fout in de uitvoering.
 - Trek voorwaarden door naar het verwachte bewijs en de toets. Vraag bij een
