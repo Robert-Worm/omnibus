@@ -64,8 +64,9 @@ niet een claim dat de bron die vier velden letterlijk bevat. Context-only
 definities en afbakeningen worden niet kunstmatig tot normen gemaakt.
 
 1. Lees norm, bronpassage en toepassingscontext. Gebruik het relevante risico
-   uit de bron of een gemotiveerde risicoafleiding; kopieer niet automatisch een
-   historisch rapportprobleem naar iedere onderzochte organisatie.
+   uit de bron of een gemotiveerde risicoafleiding: benoem wat voor het doel mis
+   kan gaan, niet alleen de ontbrekende taak, informatie of afstemming. Kopieer
+   geen historisch rapportprobleem naar iedere onderzochte organisatie.
 2. Formuleer het **doel** als het beoogde resultaat. Formuleer de
    **beheersdoelstelling** als de gewenste toestand die de oorzaak of het gevolg
    van dat risico begrenst. Die mag worden gegenereerd op basis van het risico,
