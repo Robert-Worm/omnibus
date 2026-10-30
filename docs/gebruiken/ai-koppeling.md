@@ -13,6 +13,19 @@
 
 Wat de assistent **niet** kan: de database aanpassen, bestanden lezen buiten Omnibus, of iets uploaden.
 
+## Welke routes zijn beproefd?
+
+De ontwikkel- en proeffase van [de AI-koppeling](https://github.com/Robert-Worm/omnibus/issues/144) is afgerond. De lokale koppeling is beschikbaar; er is **geen permanent beschikbare online MCP-dienst**.
+
+| Route | Vastgelegd bewijs |
+| --- | --- |
+| Codex lokaal | Een verse client volgde de handleiding en voerde leesopdrachten uit. |
+| Claude Desktop lokaal | Na begeleide inrichting heeft de beheerder de leesproef bevestigd. |
+| Claude via HTTPS | De vier leesfuncties werkten in een tijdelijke proef met fictieve gegevens. De proefdienst en connector zijn daarna uitgezet. |
+| ChatGPT | De handleiding onderscheidt lokale en online omgevingen. Niet elke ChatGPT-client is afzonderlijk beproefd. |
+
+De volledige collectie is daarnaast lokaal alleen-lezen getest. Dat is geen capaciteitsbewijs voor gelijktijdig gebruik op de gedeelde webserver. Een onafhankelijke installatieproef van iedere handleiding is niet volledig uitgevoerd. De beheerder heeft op 30 oktober 2026 deze fase op basis van het beschikbare bewijs aanvaard. Verdere clientproeven en beoordeling van gedeelde hosting horen bij een later besluit over ingebruikname. De gevonden handleidingproblemen zijn verwerkt; de [proefverslagen](https://github.com/Robert-Worm/omnibus/issues/148) beschrijven de reikwijdte.
+
 ## Hoe werkt het?
 
 ```mermaid
@@ -108,7 +121,7 @@ Met `--scope user` werkt Omnibus in elke map waarin je Claude Code start; zonder
 **ChatGPT:**
 
 - **Desktop met lokale MCP-instellingen:** open **Settings → MCP servers → Add server**, kies STDIO en vul de twee paden uit de tabel in. Bewaar en kies **Restart**. Deze route deelt de configuratie met Codex op dezelfde computer; voeg Omnibus niet nogmaals toe als het er al staat. Controleer daarna met `/mcp` en de leesproef hieronder. Zie de [officiële uitleg per omgeving](https://learn.chatgpt.com/docs/extend/mcp).
-- **Web of een omgeving zonder lokale MCP-instellingen:** deze lokale opdracht is daar niet beschikbaar. De Omnibus-route via een online server staat nog open in [#149](https://github.com/Robert-Worm/omnibus/issues/149). Zet de lokale koppeling niet zelf open op internet.
+- **Web of een omgeving zonder lokale MCP-instellingen:** deze lokale opdracht is daar niet beschikbaar. De online leesroute is tijdelijk beproefd in [#149](https://github.com/Robert-Worm/omnibus/issues/149), maar staat uit. Er is nog geen permanent MCP-adres om hier in te vullen. Zet de lokale koppeling niet zelf open op internet.
 
 ### 4. Controleer de verbinding
 

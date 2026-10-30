@@ -24,7 +24,7 @@ flowchart TD
 | Pad | Status | Epic |
 | --- | --- | --- |
 | [🌐 A · Online versie](#pad-a--online-versie) | ✅ Klaar | [#140](https://github.com/Robert-Worm/omnibus/issues/140); snelheid apart in [#84](https://github.com/Robert-Worm/omnibus/issues/84) |
-| [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | 🔄 Bezig | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
+| [🤖 B · AI-koppeling](#pad-b--ai-rechtstreeks-aan-de-database) | ✅ Klaar | [#144](https://github.com/Robert-Worm/omnibus/issues/144) |
 | [🗂️ C · Eigen database](#pad-c--eigen-databases-bouwen) | 🔄 Bezig | [#152](https://github.com/Robert-Worm/omnibus/issues/152) |
 | [🤝 D · Samen bijdragen](#pad-d--samen-bijdragen) | 🔄 Bezig | [#175](https://github.com/Robert-Worm/omnibus/issues/175) · [#178](https://github.com/Robert-Worm/omnibus/issues/178) |
 | [🔍 E · Kwaliteit en efficiëntie](#pad-e--kwaliteit-en-efficiëntie-met-ai) | 🔄 Bezig | [#158](https://github.com/Robert-Worm/omnibus/issues/158) · [#165](https://github.com/Robert-Worm/omnibus/issues/165) · [#169](https://github.com/Robert-Worm/omnibus/issues/169) · [#181](https://github.com/Robert-Worm/omnibus/issues/181) · [#195](https://github.com/Robert-Worm/omnibus/issues/195) |
@@ -61,11 +61,13 @@ flowchart TD
 | --- | --- |
 | Lokale koppeling: zoeken, bronnen lezen, opzet voorstellen, Excel maken · [AI-koppeling](gebruiken/ai-koppeling.md) | ✅ Klaar |
 | [Vastleggen wat de koppeling kan, met tests](../agent-tools/README.md#de-zes-hulpmiddelen) · [#145](https://github.com/Robert-Worm/omnibus/issues/145) | ✅ Klaar |
-| Zoeken en lezen in alle soorten bronnen · [#146](https://github.com/Robert-Worm/omnibus/issues/146) | ⬜ Gepland |
+| Zoeken en lezen in alle soorten bronnen · [#146](https://github.com/Robert-Worm/omnibus/issues/146) | ✅ Klaar |
 | Nieuwe AI-vraagvoorstellen door de gedeelde voorcontrole; inhoudelijke review blijft nodig · [#147](https://github.com/Robert-Worm/omnibus/issues/147) | ✅ Klaar |
-| Handleiding per AI-app, getest door een AI-agent · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ⬜ Gepland |
-| Koppeling via de online versie, alleen lezen · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ⬜ Gepland |
-| Tien vaste testvragen voor de koppeling: vragen klaar, AI-run nog niet · [#186](https://github.com/Robert-Worm/omnibus/issues/186) | 🔄 Bezig |
+| Handleidingen en vastgelegde clientproeven · [#148](https://github.com/Robert-Worm/omnibus/issues/148) | ✅ Klaar |
+| Online leesroute, tijdelijk beproefd · [#149](https://github.com/Robert-Worm/omnibus/issues/149) | ✅ Klaar |
+| Tien vaste testvragen voor de koppeling · [#186](https://github.com/Robert-Worm/omnibus/issues/186) | ✅ Klaar |
+
+De beheerder heeft op 30 oktober 2026 de huidige AI-koppelingfase aanvaard op basis van de uitgevoerde proeven. De [handleiding](gebruiken/ai-koppeling.md#welke-routes-zijn-beproefd) onderscheidt bewezen routes van niet uitgevoerde clientproeven. Permanent online inschakelen is een afzonderlijk besluit: de volledige collectie is nog niet op de gedeelde hosting naast gewone interactieve gebruikers beproefd. Hiervoor worden nu geen nieuwe diensten of betaalde middelen gestart.
 
 Een koppeling met de Rijksmap kan pas als die als database en applicatie even sterk is als Omnibus. De eisen staan in [#151](https://github.com/Robert-Worm/omnibus/issues/151); tot die vervuld zijn, staat de koppeling niet op de routekaart ([B-020](beheer/besluiten.md#b-020)).
 
