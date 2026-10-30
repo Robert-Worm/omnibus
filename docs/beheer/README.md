@@ -47,6 +47,7 @@ flowchart TD
 | [Pakket controleren](pakket-controleren.md) | Een ingeleverd pakket technisch controleren |
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
 | [Reviewwijzigingen](reviewwijzigingen.md) | Alleen geraakte bouwstenen opnieuw beoordelen, zonder broncontroles over te slaan |
+| [Kwaliteitsbeoordeling](kwaliteitsbeoordeling.md) | Scores per bron, toegepaste verbeteringen en de werkwijze voor een volgende database |
 | [Zekerheidscontrole](../claim-certainty.md) | Mogelijke overdrijving en getalproblemen signaleren voor inhoudelijke review |
 | [Samenwerking tussen de AI-assistenten](samenwerking-ai.md) | Hoe Opus 5.5 en ChatGPT Astra werk aan elkaar doorgeven |
 | [Skills meten](skill-meting.md) | Tijd, tokens en kwaliteit van een skill meten op een vaste testset |

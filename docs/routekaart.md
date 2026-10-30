@@ -118,7 +118,7 @@ projectherstel en lokaal netwerkgedrag met fictieve inhoud. De begeleidende skil
 | De applicatie toont alleen goedgekeurde vragen; bedachte vragen zijn al weg · [#163](https://github.com/Robert-Worm/omnibus/issues/163) | 🔄 Bezig |
 | Nieuwe pakketten op [vraagkwaliteit controleren](beheer/inhoud-toevoegen.md) · [#164](https://github.com/Robert-Worm/omnibus/issues/164) | ✅ Klaar |
 | Bronpassages automatisch nalopen met `npm run check:passages` · [#167](https://github.com/Robert-Worm/omnibus/issues/167) | ✅ Klaar |
-| Kwaliteit van de hele database nalopen, en verbeteren via de gewone release · [#166](https://github.com/Robert-Worm/omnibus/issues/166) · [#168](https://github.com/Robert-Worm/omnibus/issues/168) | ⬜ Gepland |
+| [Kwaliteitsbeoordeling van de collectie](beheer/kwaliteitsbeoordeling.md): afgerond, correcties lokaal toegepast; online publicatie blijft apart · [#166](https://github.com/Robert-Worm/omnibus/issues/166) · [#168](https://github.com/Robert-Worm/omnibus/issues/168) | ✅ Klaar |
 | [Meten wat een skill kost en oplevert](beheer/skill-meting.md): testset en nulmeting van de leeskosten klaar, eerste gemeten runs nog niet · [#170](https://github.com/Robert-Worm/omnibus/issues/170) | 🔄 Bezig |
 | [Leren van bestaande skillverzamelingen](beheer/skill-lessen.md) · [#171](https://github.com/Robert-Worm/omnibus/issues/171) | ✅ Klaar |
 | Leanere instructies, en rapporten in een reeks verwerken · [#172](https://github.com/Robert-Worm/omnibus/issues/172) · [#173](https://github.com/Robert-Worm/omnibus/issues/173) | ⬜ Gepland |
