@@ -1,7 +1,44 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { baselineRegistryCounts } from "./baseline-registry-counts.mjs";
+import { checkReportSelection } from "../skills/omnibus-add-report/scripts/check-selection.mjs";
+import { mkdtemp, writeFile, readFile, readdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 const count = text => baselineRegistryCounts(Buffer.from(text));
+
+test("early selection check uses pinned full registry, refuses active reports and writes no evidence", async t => {
+  const dir = await mkdtemp(join(tmpdir(), "omnibus-selection-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const path = join(dir, "registry.json");
+  const bytes = Buffer.from(JSON.stringify({ corpus: ["FIRST", "LAST"].map(id => ({ framework: { report: { id }, lines: [] } })) }));
+  const hash = createHash("sha256").update(bytes).digest("hex");
+  await writeFile(path, bytes);
+  const result = await checkReportSelection(path, hash, "NEW");
+  assert.equal(result.status, "REPORT_NOT_ACTIVE_NOT_APPROVED");
+  assert.deepEqual(result.counts, { reports: 2, lines: 0 });
+  assert.equal(result.publishable, false);
+  assert.equal(result.reviewValidated, false);
+  assert.equal(result.contentValidated, false);
+  await assert.rejects(checkReportSelection(path, hash, "LAST"), /already active/);
+  await assert.rejects(checkReportSelection(path, "0".repeat(64), "NEW"), /SHA-256 mismatch/);
+  await assert.rejects(checkReportSelection(path, "", "NEW"), /independently supplied/);
+  for (const id of ["", " LAST", "LAST "]) await assert.rejects(checkReportSelection(path, hash, id), /Exact report identity/);
+  const script = resolve("skills/omnibus-add-report/scripts/check-selection.mjs");
+  const args = [script, "--registry", path, "--expect-sha256", hash, "--report"];
+  const ok = spawnSync(process.execPath, [...args, "NEW"], { encoding: "utf8", cwd: dir });
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.equal(JSON.parse(ok.stdout).status, result.status);
+  const denied = spawnSync(process.execPath, [...args, "LAST"], { encoding: "utf8", cwd: dir });
+  assert.equal(denied.status, 1);
+  assert.equal(JSON.parse(denied.stderr).status, "HOLD");
+  const incomplete = spawnSync(process.execPath, [script, "--registry", path], { encoding: "utf8", cwd: dir });
+  assert.equal(incomplete.status, 1);
+  assert.deepEqual(await readFile(path), bytes);
+  assert.deepEqual(await readdir(dir), ["registry.json"]);
+});
 
 test("selection counts require unique actual report identities and reject an already active candidate", () => {
   const check = corpus => baselineRegistryCounts(Buffer.from(JSON.stringify({ corpus })), "NEW");

@@ -34,6 +34,28 @@ Een bestaande doelmap wordt geweigerd. Bewaar bij een onderbreking de gedeelteli
 uitvoer voor onderzoek; gebruik een nieuwe pakketmap voor een herhaling. Er wordt
 geen bronkeuze, lezing, review of vrijgave aangemaakt.
 
+## Eerst de bronkeuze controleren
+
+Controleer vóór PDF-verwerking en bronlezingen of de gekozen rapport-ID al in
+het actuele register staat. Gebruik de door de eigenaar aangeleverde momentopname
+en de apart ontvangen registerhash uit de gecontroleerde baseline-aanlevering.
+Voer vanuit de voorbereide, beoordeelde skillmap uit:
+
+```text
+node scripts/check-selection.mjs --registry <reviewed-reports.json> --expect-sha256 <registerhash> --report <rapport-id>
+```
+
+**Gelukt als:** `REPORT_NOT_ACTIVE_NOT_APPROVED` verschijnt. Dit betekent alleen
+dat deze exacte ID niet in het gecontroleerde register staat. Controleer zelf
+ook titel en broneditie op dubbele bronnen. Het hulpmiddel leest alleen en
+maakt geen fasebewijs, selectie, goedkeuring of databasewijziging.
+
+Bij `HOLD` begint geen extractie. Een al actief rapport hoort bij een correctie
+of een afzonderlijke analyseproef, niet bij deze nieuwe-rapportroute. Verwijder
+geen bestaande bron en kies geen andere ID om de controle te omzeilen.
+De latere `freeze-baseline` blijft verplicht en herhaalt de registercontrole;
+deze vroege controle vervangt geen bevriezing, bronlezing of review.
+
 ## Invoer voorbereiden
 
 Vraag de eigenaar om exacte, actuele momentopnamen van het rapportregister,

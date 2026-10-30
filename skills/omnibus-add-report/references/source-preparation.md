@@ -8,6 +8,9 @@ achteraf van nieuwe bewijzen te voorzien.
 
 ## Benodigd
 
+Controleer eerst [de bronkeuze](selection-baseline.md#eerst-de-bronkeuze-controleren).
+Een nieuwe-rapportroute begint niet met een bron die al actief is.
+
 - Een lokale, leesbare PDF waarvan de coördinator de juiste editie heeft vastgesteld
   en de SHA-256 buiten het pakket heeft bewaard.
 - Python 3.9 of nieuwer met de [geteste pypdf-versie](../scripts/requirements-source.txt)

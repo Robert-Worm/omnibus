@@ -61,7 +61,7 @@ De bijdrager levert ook de onderstaande rollen aan. Controleer de echte bewijsba
 | `contract` | Het [meegeleverde `OUTPUT-CONTRACT.md`](../../skills/omnibus-add-report/references/report-kit/OUTPUT-CONTRACT.md) uit de rapportkit |
 | `source` | De PDF via de link in `bron.json`; controleer de hash die erin staat |
 | `review-basis`, `review` | De vastgelegde reviewbasis en werkelijk uitgevoerde onafhankelijke reviews, zie [reviewwijzigingen](reviewwijzigingen.md) |
-| `receipt` | `receipt.json` uit de rapportkit; hoe je dat maakt, staat in de kit zelf |
+| `receipt` | Het echte eindontvangstbewijs: bij de zelfstandige rapportskill `stage-receipts/final.json`, volgens [de ontvangstinstructie](../../skills/omnibus-add-report/references/final-receipt.md). Bij een historisch kitpakket blijft het oorspronkelijke `receipt.json` behouden. |
 
 Ontbreekt een verplichte rol, dan weigert `content:prepare` het plan met `Missing file roles`. Voor een kader of model staan de verplichte rollen [hieronder](#welke-rollen-zijn-verplicht).
 
