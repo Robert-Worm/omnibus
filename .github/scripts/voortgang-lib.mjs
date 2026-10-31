@@ -107,7 +107,9 @@ export function werkTellingenBij(tekst, t, repoUrl) {
 
 // ---------- de voortgang ----------
 export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, proposalRevision, now = () => Date.now(), download = null }) {
-  const { verwerkt, kaders, modellen, dubbelingen = { beoordeeld: [] } } = data;
+  const { verwerkt, kaders, modellen, dubbelingen = { beoordeeld: [] }, geschiktheid = [] } = data;
+  // Of een rapport geschikt is voor Omnibus (B-032): geschikt, twijfel of niet. Zonder oordeel: onbeoordeeld.
+  const geschiktById = new Map(geschiktheid.map((g) => [g.id, g]));
   let voorstellen = structuredClone(data.voorstellen === undefined ? [] : data.voorstellen);
   if (!Array.isArray(voorstellen)) throw new Error("Voorstelmetadata ontbreekt of is ongeldig.");
   const rapporten = [...data.rapporten];
@@ -509,6 +511,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       const origineel = dubbelVan.get(r.id);
       return {
         ...r, ...s, vast, omnibus: verwerkt.rapporten[r.id] || "", rijksmap: bronUrl(r.id),
+        geschikt: geschiktById.get(r.id)?.oordeel || "onbeoordeeld", geschikt_reden: geschiktById.get(r.id)?.reden || "",
         dubbel_van: origineel ? rijksmapUrl(origineel) : "", origineel,
         claimen: vast === "open" ? claimLink(r.titel, r.voorstel ? r.id : rijksmapUrl(r.id)) : "",
       };
@@ -517,7 +520,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     // De CSV hangt niet af van claims, zodat hij niet bij elke claim opnieuw in Git komt.
     const csvRows = rows.filter((r) => !r.voorstel).map((r) => ({ ...r, status: r.vast }));
     bestanden["docs/bijdragen/werklijst-rapporten.csv"] = csvText(csvRows,
-      ["status", "titel", "datum", "auteur", "ministerie", "onderdeel", "bron", "aanbevolen", "rijksmap", "claimen", "dubbel_van", "omnibus", "id"]);
+      ["status", "titel", "datum", "auteur", "ministerie", "onderdeel", "bron", "aanbevolen", "geschikt", "geschikt_reden", "rijksmap", "claimen", "dubbel_van", "omnibus", "id"]);
 
     const count = (list, st) => list.filter((r) => r.status === st).length;
     const nietBeschikbaar = (list) => count(list, "niet openbaar") + count(list, "mogelijk dubbel") + count(list, "toestemming nodig") + count(list, "wacht op akkoord");
@@ -722,7 +725,8 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
     ].join("\n");
 
     // Eén rij per rapport, overal gelijk: titel, datum en auteur, status en claimknop.
-    const rapportRij = (r) => `| [${afbreekbaar(esc(short(r.titel, 90)))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(short(r.auteur || "auteur onbekend", 40))} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`;
+    const twijfelTeken = (r) => r.geschikt === "twijfel" ? " · ❔ twijfel" : "";
+    const rapportRij = (r) => `| [${afbreekbaar(esc(short(r.titel, 90)))}](${r.rijksmap})<br>${datumCel(r.datum)} · ${esc(short(r.auteur || "auteur onbekend", 40))}${twijfelTeken(r)} | ${statusLabel[r.status]} | ${actie(r, r.titel, r.claimen)} |`;
 
     // Aanbevolen rapporten als leesbare pagina, per ministerie
     const perMin = new Map();
@@ -804,6 +808,8 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         return { deel, periode: nieuw === oud ? nieuw : `${oud}–${nieuw}` };
       });
     };
+    // Alleen open rapporten zakken weg; wat geclaimd of verwerkt is, blijft gewoon zichtbaar.
+    const nietGeschikt = (r) => r.geschikt === "niet" && r.status === "open";
     const lijstPagina = (pad, titel, uitleg, list) => {
       bestanden[pad] = [
         `# ${titel}`,
@@ -821,12 +827,27 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         "",
         "## Rapporten",
         "",
-        "Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur.",
+        `Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur.${list.some((r) => r.geschikt === "twijfel") ? " ❔ betekent: op de titel niet te zeggen of het rapport normen of toetsbare bevindingen bevat." : ""}`,
         "",
         "| Bron | Status | Actie |",
         "| --- | --- | --- |",
-        ...list.map(rapportRij),
+        ...list.filter((r) => !nietGeschikt(r)).map(rapportRij),
         "",
+        ...(list.some(nietGeschikt) ? [
+          "## Waarschijnlijk niet geschikt",
+          "",
+          `${nl(list.filter(nietGeschikt).length)} open rapporten zijn op de titel beoordeeld als niet geschikt voor Omnibus, zoals ramingen, prognoses en verkenningen zonder oordeel over de uitvoering. Ze blijven claimbaar. Denk je dat een rapport toch geschikt is? Zeg het in je claim of in [Discussions](${repoUrl}/discussions).`,
+          "",
+          "<details>",
+          `<summary>Toon de ${nl(list.filter(nietGeschikt).length)} rapporten</summary>`,
+          "",
+          "| Bron | Status | Actie |",
+          "| --- | --- | --- |",
+          ...list.filter(nietGeschikt).map(rapportRij),
+          "",
+          "</details>",
+          "",
+        ] : []),
         "## Volgende stap",
         "",
         "Na het claimen volg je [een bron verwerken](../bron-verwerken.md).",
@@ -871,6 +892,10 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       "",
       stand(rows),
       "",
+      ...(rows.some((r) => r.geschikt !== "onbeoordeeld") ? [
+        `**Geschikt voor Omnibus:** elk rapport is op de titel beoordeeld ([B-032](../../beheer/besluiten.md#b-032)): ${nl(rows.filter((r) => r.geschikt === "geschikt").length)} geschikt, ${nl(rows.filter((r) => r.geschikt === "twijfel").length)} twijfel en ${nl(rows.filter((r) => r.geschikt === "niet").length)} waarschijnlijk niet geschikt. Niet geschikte open rapporten staan op elke pagina onderaan, ingeklapt. In [werklijst-rapporten.csv](../werklijst-rapporten.csv) kun je filteren op de kolom *geschikt*.`,
+        "",
+      ] : []),
       "| Soort bron | Open | Totaal |",
       "| --- | ---: | ---: |",
       ...overzicht.map((o) => `| [${o.naam}](#${anker(o.naam)}) | ${nl(count(o.list, "open"))} | ${nl(o.list.length)} |`),

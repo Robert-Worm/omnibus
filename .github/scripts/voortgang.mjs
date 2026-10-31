@@ -30,6 +30,7 @@ const data = {
   modellen: json("modellen.json"),
   dubbelingen: json("dubbelingen.json"),
   voorstellen: json("voorgestelde-rapporten.json"),
+  geschiktheid: existsSync(join(dataDir, "geschiktheid.csv")) ? readCsv(readFileSync(join(dataDir, "geschiktheid.csv"), "utf8")) : [],
 };
 
 async function gh(path, options = {}) {

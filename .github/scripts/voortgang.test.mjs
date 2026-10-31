@@ -555,6 +555,36 @@ test("alle rapporten staan in bladerbare werklijsten, met auteur en dezelfde cla
   assert.match(bestanden["docs/bijdragen/werklijst-rapporten.csv"].split("\n")[0], /auteur/);
 });
 
+test("geschiktheid: twijfel krijgt een teken, niet geschikt zakt ingeklapt weg en blijft claimbaar (#233)", async () => {
+  const g = nepGitHub();
+  const metOordeel = { ...data(), geschiktheid: [
+    { id: "2025-monitor-a", oordeel: "niet", reden: "Monitor zonder oordeel" },
+    { id: "2025-monitor-b", oordeel: "twijfel", reden: "Op de titel onduidelijk" },
+    { id: "2026-open-rapport", oordeel: "geschikt", reden: "Onderzoek met bevindingen" },
+  ] };
+  const v = maakVoortgang({ data: metOordeel, repo: "x/y", gh: g.gh, now: g.nu });
+  await v.ensureLabels();
+  const { bestanden } = v.build(await v.loadClaims());
+  const nza = Object.entries(bestanden).find(([p, t]) => p.startsWith("docs/bijdragen/werklijst/") && t.includes("2025-monitor-a"))[1];
+  const [hoofd, onder] = nza.split("## Waarschijnlijk niet geschikt");
+  assert.ok(onder, "een aparte sectie voor niet geschikt");
+  assert.match(onder, /<details>[\s\S]*2025-monitor-a[\s\S]*\[Claimen\][\s\S]*<\/details>/);
+  assert.doesNotMatch(hoofd, /2025-monitor-a/);
+  assert.match(hoofd, /2025-monitor-b[^\n]*❔ twijfel/);
+  const csv = bestanden["docs/bijdragen/werklijst-rapporten.csv"];
+  assert.match(csv.split("\n")[0], /aanbevolen,geschikt,geschikt_reden,/);
+  assert.match(csv, /Monitor zonder oordeel/);
+  assert.match(csv, /,onbeoordeeld,,/);
+  assert.match(bestanden["docs/bijdragen/werklijst/README.md"], /1 geschikt, 1 twijfel en 1 waarschijnlijk niet geschikt/);
+});
+
+test("zonder oordelen blijven de werklijsten zoals ze waren", async () => {
+  const v = await draai(nepGitHub());
+  const { bestanden } = v.build(await v.loadClaims());
+  const alles = Object.entries(bestanden).filter(([p]) => p.startsWith("docs/bijdragen/werklijst/")).map(([, t]) => t).join("\n");
+  assert.doesNotMatch(alles, /Waarschijnlijk niet geschikt|❔|Geschikt voor Omnibus/);
+});
+
 // Alleen synthetische voorstellen; gh accepteert uitsluitend repository-API-paden.
 const voorstelBody = (extra = {}) => Object.entries({
   url: 'https://example.org/openbaar.pdf', titel: 'Onderzoek naar veilig gegevensbeheer',
