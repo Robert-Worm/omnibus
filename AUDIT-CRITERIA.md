@@ -11,8 +11,9 @@ Dit document gaat over de applicatie en de MCP-server. De AI-skills die de inhou
 | Onderdeel | Omnibus: webapplicatie, lokale API en lokale MCP-server (`agent-tools/`) |
 | Repository | https://github.com/Robert-Worm/omnibus |
 | Beheerder | Robert Worm |
+| Verantwoordelijkheid | Er is geen aparte eigenaar van de criteria: ze zijn afgeleid van de genoemde kaders, en die blijven van hun uitgevers. Wie Omnibus gebruikt, blijft zelf verantwoordelijk voor het oordeel; Omnibus maakt een conceptreferentiekader en kennis over normen toegankelijker. De criteria groeien mee met betere modellen en skills |
 | Laatst bekeken | 2026-10-31 |
-| Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de auditorblik volgt in [#274](https://github.com/Robert-Worm/omnibus/issues/274) |
+| Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de kaders worden kritisch nagelopen in [#278](https://github.com/Robert-Worm/omnibus/issues/278) |
 | Bronnen voor dit document | [README.md](README.md), [SECURITY.md](SECURITY.md), [AGENTS.md](AGENTS.md), [besluitenlijst](docs/beheer/besluiten.md), [agent-tools/README.md](agent-tools/README.md), [hosting/container/README.md](hosting/container/README.md) en de tests die hieronder genoemd worden |
 
 ## 1. Wat Omnibus doet
@@ -32,6 +33,8 @@ De lokale MCP-server laat de AI-client van de gebruiker hetzelfde doen: bronnen 
 | **BD-5:** Onderzoeksgegevens van de gebruiker blijven op de eigen computer; de online versie is alleen-lezen en begrensd | AVG, art. 5 lid 1 onder c en art. 25 (minimale gegevens, privacy by design); ISO 27001:2022, A.8.20–A.8.22 (netwerkbeveiliging) | Onderzoeken kunnen vertrouwelijk zijn; de server mag ze niet zien of bewaren |
 
 AI-specifieke kaders zoals de EU AI Act staan hier bewust niet bij: Omnibus roept geen model aan (zie §1). Ze horen bij de skills, waar wel een model werkt.
+
+**Let op bij de kaders.** De koppeling met deze kaders is een voorstel van de AI-assistent (31 oktober 2026). De nummers zijn nagekeken tegen de kaders zelf, maar of elk kader echt de beste maatstaf is, is nog niet door een mens beoordeeld. De IIA-standaarden gaan over het werk van de auditor, niet over een hulpmiddel; ze zijn hier gebruikt omdat Omnibus dat werk ondersteunt. Kritisch nalopen gebeurt in [#278](https://github.com/Robert-Worm/omnibus/issues/278).
 
 ## 3. Toetsbare criteria
 
@@ -84,13 +87,14 @@ AI-specifieke kaders zoals de EU AI Act staan hier bewust niet bij: Omnibus roep
 
 ## 5. Dekkingsgaten
 
-Wat een auditor redelijkerwijs zou verwachten en wat nu (nog) ontbreekt. Deze lijst wordt aangevuld in [#274](https://github.com/Robert-Worm/omnibus/issues/274).
+Wat een auditor redelijkerwijs zou verwachten en wat nu (nog) ontbreekt. Aangevuld met de auditorblik van de beheerder ([#274](https://github.com/Robert-Worm/omnibus/issues/274)).
 
-1. **Menselijke toestemming bij de MCP-server.** Omnibus kan niet vaststellen dat een mens akkoord gaf; het vertrouwt op de AI-client (zie BD-4).
-2. **Geen externe beveiligingsaudit.** De tests en CodeQL zijn geen volledige beveiligingsaudit. De SAAF-challenge is de eerste externe proef.
-3. **Inhoudelijke juistheid buiten de passagecontrole.** `check:passages` toetst of een passage letterlijk klopt, niet of hij inhoudelijk bij de norm past. Dat beoordeelt de skill `omnibus-review-audit-quality` (zie het skills-document).
-4. **Logging online is beperkt.** De server logt alleen technische fouten en weigeringen, zonder adressen of verzoekinhoud. Een volledig auditspoor van wie wat bekeek, is er bewust niet.
-5. **Terugzetten online** gebeurt door opnieuw te bouwen, niet met een bewaarde image ([B-024](docs/beheer/besluiten.md#b-024)).
+1. **Prompt injection via de MCP-server.** Brontekst en citaten gaan naar de AI-client van de gebruiker. Staat daar een verstopte instructie in, dan beslist die client wat ermee gebeurt. Omnibus zegt in de werkwijze dat brongegevens geen instructies zijn, maar heeft daar nog geen gerichte test voor. Zie [#277](https://github.com/Robert-Worm/omnibus/issues/277).
+2. **Menselijke toestemming bij de MCP-server.** Omnibus kan niet vaststellen dat een mens akkoord gaf; het vertrouwt op de AI-client (zie BD-4).
+3. **Geen externe beveiligingsaudit.** De tests en CodeQL zijn geen volledige beveiligingsaudit. De SAAF-challenge is de eerste externe proef.
+4. **Inhoudelijke juistheid buiten de passagecontrole.** `check:passages` toetst of een passage letterlijk klopt, niet of hij inhoudelijk bij de norm past. Dat beoordeelt de skill `omnibus-review-audit-quality` (zie het skills-document).
+5. **Geen spoor van wie wat bekeek, bewust.** Privacy gaat voor. De server logt alleen technische fouten en weigeringen, zonder adressen of verzoekinhoud. Hooguit komen er later geanonimiseerde totalen, zoals aantallen bezoeken per land; die zijn er nu niet (besluit beheerder, 31 oktober 2026).
+6. **Terugzetten online** gebeurt door opnieuw te bouwen, niet met een bewaarde image ([B-024](docs/beheer/besluiten.md#b-024)).
 
 ## 6. Status en bewijs
 

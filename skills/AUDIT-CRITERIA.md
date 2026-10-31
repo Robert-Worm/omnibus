@@ -11,8 +11,9 @@ De applicatie en de MCP-server hebben een eigen document: [AUDIT-CRITERIA.md](..
 | Onderdeel | De acht skills in `skills/` (zie [het overzicht](README.md)) |
 | Repository | https://github.com/Robert-Worm/omnibus |
 | Beheerder | Robert Worm |
+| Verantwoordelijkheid | Er is geen aparte eigenaar van de criteria: ze zijn afgeleid van de genoemde kaders, en die blijven van hun uitgevers. Wie Omnibus gebruikt, blijft zelf verantwoordelijk voor het oordeel; Omnibus maakt een conceptreferentiekader en kennis over normen toegankelijker. De criteria groeien mee met betere modellen en skills |
 | Laatst bekeken | 2026-10-31 |
-| Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de auditorblik volgt in [#274](https://github.com/Robert-Worm/omnibus/issues/274) |
+| Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de kaders worden kritisch nagelopen in [#278](https://github.com/Robert-Worm/omnibus/issues/278) |
 | Bronnen voor dit document | De `SKILL.md` van elke skill, [skills/README.md](README.md), [besluitenlijst](../docs/beheer/besluiten.md), `scripts/skill-regels.mjs` en `scripts/skill-meting.mjs` |
 
 ## 1. Wat de skills doen
@@ -30,6 +31,8 @@ Een skill is een map met instructies die een AI-assistent stap voor stap volgt. 
 | **BS-5:** Een skill wordt alleen zuiniger als de kwaliteit aantoonbaar niet daalt | COBIT 2019, BAI03 (oplossingen bouwen en testen) | Minder werk mag niet ten koste gaan van de kwaliteit ([B-018](../docs/beheer/besluiten.md#b-018)) |
 
 De EU AI Act noemen we als richtlijn: of de skills onder de verordening vallen, is niet beoordeeld. Omnibus gebruikt hem als maatstaf voor transparantie en menselijk toezicht.
+
+**Let op bij de kaders.** De koppeling met deze kaders is een voorstel van de AI-assistent (31 oktober 2026). De nummers zijn nagekeken tegen de kaders zelf, maar of elk kader echt de beste maatstaf is, is nog niet door een mens beoordeeld. De IIA-standaarden gaan over het werk van de auditor, niet over een hulpmiddel; ze zijn hier gebruikt omdat Omnibus dat werk ondersteunt. Kritisch nalopen gebeurt in [#278](https://github.com/Robert-Worm/omnibus/issues/278).
 
 ## 3. Toetsbare criteria
 
@@ -75,9 +78,9 @@ De EU AI Act noemen we als richtlijn: of de skills onder de verordening vallen, 
 
 ## 5. Dekkingsgaten
 
-Deze lijst wordt aangevuld in [#274](https://github.com/Robert-Worm/omnibus/issues/274).
+Aangevuld met de auditorblik van de beheerder ([#274](https://github.com/Robert-Worm/omnibus/issues/274)).
 
-1. **Geen test op gerichte instructies in een bron** (BS-2). Een proef met een brondocument vol instructies ontbreekt.
+1. **Geen test op gerichte instructies in een bron** (BS-2). Een proef met een brondocument vol instructies ontbreekt. Dit krijgt voorrang, omdat deelnemers aan de SAAF-challenge het zeker proberen: [#277](https://github.com/Robert-Worm/omnibus/issues/277).
 2. **Afhankelijk van de AI-assistent.** Een skill is een instructie; de naleving hangt af van het model en de omgeving van de bijdrager. Omnibus kan niet afdwingen dat de onafhankelijkheid uit BS-3 echt wordt gevolgd.
 3. **Geen vaste meting per skill.** De meting uit BS-5 bestaat; niet elke skill heeft al een nulmeting met kwaliteitsoordeel.
 4. **De EU AI Act is niet juridisch beoordeeld** voor deze toepassing; hij dient hier als richtlijn.
