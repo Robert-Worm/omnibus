@@ -1,7 +1,6 @@
 {
   "uitleg": "Vaste volgorde per assistent: makkelijkst af te ronden eerst. Het issue Overdracht toont alleen wat nu op te pakken is (klaar of bezig), in rondes van vijf. Opus houdt deze lijst bij; de beheerder bepaalt de keuzes.",
   "Opus 5.5": [
-    273,
     57,
     10
   ],
@@ -12,6 +11,7 @@
     261,
     279,
     280,
+    273,
     148,
     184,
     93,
@@ -19,7 +19,6 @@
     149,
     162,
     210,
-    225,
-    273
+    225
   ]
 }
