@@ -101,25 +101,38 @@ Wat een auditor redelijkerwijs zou verwachten en wat nu (nog) ontbreekt. Aangevu
 
 ## 6. Status en bewijs
 
-Eerste koppeling aan bestaande tests. In [#273](https://github.com/Robert-Worm/omnibus/issues/273) wordt elk criterium nagelopen; tot dan staat ☐ voor *nog te bevestigen*.
+Werkwijze ([#273](https://github.com/Robert-Worm/omnibus/issues/273), naar het voorbeeld van SAAF *Audit-criteria*): elk criterium wordt echt uitgevoerd, een mislukking wordt gemeld, en een mens beslist of de controle het criterium dekt.
 
-| Criterium | Bewijs (bestaand) | Bevestigd |
-| --- | --- | --- |
-| CO-1 #1 | `scripts/check-passages.mjs`; uitkomst bij elke databaserelease | ☐ |
-| CO-1 #2 | `agent-tools/read-tools.test.mjs`: *een gewijzigde bouwsteen faalt op de integriteitscontrole* | ☐ |
-| CO-1 #3 | `local-data/server-publication.test.mjs` | ☐ |
-| CO-2 #1–#3 | `local-data/server-publication.test.mjs`, `local-data/server-version.test.mjs` | ☐ |
-| CO-2 #4 | `scripts/fetch-release-database.test.mjs`, `npm run data:check-runtime` | ☐ |
-| CO-3 #1 | `agent-tools/read-tools.test.mjs` (HOLD leesbaar), `agent-tools/local-protocol.test.mjs` (HOLD geweigerd) | ☐ |
-| CO-3 #2 | `agent-tools/local-protocol.test.mjs` (uitgesloten WWKE-sectoren) | ☐ |
-| CO-3 #3 | `agent-tools/input-contract.test.mjs` | ☐ |
-| CO-4 #1–#3 | `agent-tools/input-contract.test.mjs`, `agent-tools/output-safety.test.mjs` | ☐ |
-| CO-4 #4, #5 | `agent-tools/read-only-http.test.mjs` | ☐ |
-| CO-5 #1, #4 | `local-data/local-privacy.test.mjs` | ☐ |
-| CO-5 #2 | `local-data/server-security.test.mjs`, `local-data/server-hosting.test.mjs` | ☐ |
-| CO-5 #3 | `local-data/request-rate-limit.test.mjs` | ☐ |
+- ☑ betekent: de controle is op 31 oktober 2026 uitgevoerd en geslaagd.
+- ◐ betekent: geslaagd, maar de controle dekt het criterium maar deels.
+- ☐ betekent: nog niet uitgevoerd.
 
-Alle genoemde tests draaien in `npm test` en op GitHub bij elke wijziging. De MCP-protocolproef (`npm run test:agent:protocol`) slaagde op 31 oktober 2026 met 11 van 11 controles op de database van 30 oktober.
+Of elke test het criterium echt dekt, is nog niet door een mens beoordeeld.
+
+| Criterium | Controle | Geslaagd als | Uitkomst |
+| --- | --- | --- | --- |
+| CO-1 #1 | `npm run check:passages` op de database van 30 oktober | Elke passage staat letterlijk op de opgeslagen plek | ☑ 6.462 passages, 0 afwijkingen |
+| CO-1 #2 | `agent-tools/read-tools.test.mjs` | Een gewijzigde bouwsteen faalt op de integriteitscontrole | ☑ |
+| CO-1 #3 | `local-data/server-publication.test.mjs` | Gewijzigde bytes en beschadigde bronnen worden geweigerd, ook na de start | ☑ |
+| CO-2 #1, #2 | `local-data/server-publication.test.mjs` | Starten zonder of met afwijkende pinnen en lezen uit een andere release worden geweigerd | ☑ |
+| CO-2 #3 | `local-data/server-version.test.mjs` | `/api/v1/version` toont revisie, release en publicatie, zonder paden | ☑ |
+| CO-2 #4 | `scripts/fetch-release-database.test.mjs`; handmatige controle bij elke release | Afwijkende controlegetallen en paden worden geweigerd | ☑ |
+| CO-3 #1 | `agent-tools/read-tools.test.mjs` en `npm run test:agent:protocol` | HOLD is leesbaar en niet selecteerbaar | ☑ |
+| CO-3 #2 | `npm run test:agent:protocol` | Uitgesloten WWKE-sectoren zijn niet selecteerbaar | ◐ Dekt de sectoren; dat selectie nergens een oordeel vastlegt, toetst geen test apart |
+| CO-3 #3 | `agent-tools/input-contract.test.mjs` | Een afgewezen vraag krijgt uitleg; bestaande vragen blijven leesbaar | ☑ |
+| CO-4 #1 | `agent-tools/input-contract.test.mjs` | Schrijven zonder `consent: true` wordt geweigerd | ☑ |
+| CO-4 #2 | `agent-tools/output-safety.test.mjs` | Symlinks, hardlinks en bestaande bestanden worden niet beschreven of overschreven | ☑ |
+| CO-4 #3 | `agent-tools/input-contract.test.mjs` en `agent-tools/output-safety.test.mjs` | Te grote of ongeldige invoer faalt vóór er een bestand ontstaat | ☑ |
+| CO-4 #4 | `agent-tools/read-only-http.test.mjs` | Precies vier leesfuncties; schrijven heeft geen route | ☑ |
+| CO-4 #5 | `agent-tools/read-only-http.test.mjs` en `local-data/server-security.test.mjs` | Fouten geven geen paden, databasevragen of invoer prijs | ☑ |
+| CO-5 #1 | `local-data/server-security.test.mjs` | De server weigert schrijfverzoeken, dus kan hij geen projecten bewaren | ◐ Indirect bewijs; dat de browser niets stuurt, toetst de frontend niet apart |
+| CO-5 #2 | `local-data/server-security.test.mjs` en `local-data/server-hosting.test.mjs` | Vreemde `Host` of `Origin` wordt geweigerd | ☑ |
+| CO-5 #3 | `local-data/request-rate-limit.test.mjs` | Eén bezoeker wordt begrensd; anderen niet | ☑ |
+| CO-5 #4 | `local-data/local-privacy.test.mjs` | Uitgaande verbindingen falen vóór er netwerkverkeer is | ☑ |
+
+Alle tests behalve de MCP-protocolproef draaien in `npm test` en op GitHub bij elke wijziging. De protocolproef (`npm run test:agent:protocol`) vraagt een verse agentbuild met de actuele database. Met een verouderde build faalden op 31 oktober 3 van de 11 controles; na `npm run build:agent` met de database van 30 oktober slaagden alle 11.
+
+*Beperking, eerlijk benoemd:* omdat de protocolproef niet in `npm test` zit, kan een fout daarin onopgemerkt blijven tot iemand hem draait.
 
 ## 7. Observability
 
