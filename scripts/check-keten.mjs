@@ -78,7 +78,7 @@ export function rapport(uitkomsten, { catalogus = "" } = {}) {
   if (!fout.length) r.push("Geen meldingen.", "");
   else {
     r.push("| Bouwsteen | Risico | Bewijsaanwijzing | Aannametaal |", "| --- | --- | --- | --- |");
-    for (const u of fout) r.push(`| ${u.key.replace(/\|/g, "\\|")} | ${u.risico ? "ja" : "**nee**"} | ${u.bewijs ? "ja" : "**nee**"} | ${u.aannametaal.map((a) => `${a.woord} (${a.veld})`).join(", ") || "–"} |`);
+    for (const u of fout) r.push(`| ${u.key.replace(/[\\|]/g, "\\$&")} | ${u.risico ? "ja" : "**nee**"} | ${u.bewijs ? "ja" : "**nee**"} | ${u.aannametaal.map((a) => `${a.woord} (${a.veld})`).join(", ") || "–"} |`);
     r.push("");
   }
   return r.join("\n");

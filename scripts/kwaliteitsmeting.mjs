@@ -87,7 +87,7 @@ Hoe een nieuwe database tot stand komt, staat in [database publiceren](database-
 
 /** Vervangt het blok <!--badge:kwaliteit-->…<!--/badge--> in de README. */
 export function badge(readme, passages) {
-  const pct = procent(passages.totaal - passages.afwijkend, passages.totaal).replace(",", ".").replace("%", "%25");
+  const pct = encodeURIComponent(procent(passages.totaal - passages.afwijkend, passages.totaal).replaceAll(",", "."));
   const blok = `<!--badge:kwaliteit-->\n  <a href="${PAGINA}"><img alt="Bronpassages letterlijk juist: ${procent(passages.totaal - passages.afwijkend, passages.totaal)}" src="https://img.shields.io/badge/bronpassages-${pct}%20letterlijk-01689b?style=flat-square&labelColor=15233b"></a>\n  <!--/badge-->`;
   if (readme.includes("<!--badge:kwaliteit-->")) return readme.replace(/<!--badge:kwaliteit-->[\s\S]*?<!--\/badge-->/, blok);
   return readme.replace(/(<!--badge:database-->[\s\S]*?<!--\/badge-->)/, `$1\n  ${blok}`);

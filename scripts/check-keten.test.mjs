@@ -43,4 +43,5 @@ test("het rapport noemt totalen en alleen sleutels, geen brontekst", () => {
   assert.match(r, /Bouwstenen: 2\. Met risico en bewijsaanwijzing: 1\. Zonder risico: 1\. Zonder bewijsaanwijzing: 1\. Met aannametaal: 0\./);
   assert.match(r, /\| B\\\|P2 \| \*\*nee\*\* \| \*\*nee\*\* \| – \|/);
   assert.doesNotMatch(r, /Geheime brontekst/);
+  assert.match(rapport([beoordeel(item({ risk: "" }, { key: "A\\|B" }))]), /\| A\\\\\\\|B \|/);
 });
