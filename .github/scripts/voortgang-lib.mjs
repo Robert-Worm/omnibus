@@ -827,7 +827,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         "",
         "## Rapporten",
         "",
-        `Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur.${list.some((r) => r.geschikt === "twijfel") ? " ❔ betekent: op de titel niet te zeggen of het rapport normen of toetsbare bevindingen bevat." : ""}`,
+        `Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur.${list.some((r) => r.geschikt === "twijfel") ? " ❔ betekent: uit titel en samenvatting niet te zeggen of het rapport risico's voor beheersing of uitvoering laat zien." : ""}`,
         "",
         "| Bron | Status | Actie |",
         "| --- | --- | --- |",
@@ -836,7 +836,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
         ...(list.some(nietGeschikt) ? [
           "## Waarschijnlijk niet geschikt",
           "",
-          `${nl(list.filter(nietGeschikt).length)} open rapporten zijn op de titel beoordeeld als niet geschikt voor Omnibus, zoals ramingen, prognoses en verkenningen zonder oordeel over de uitvoering. Ze blijven claimbaar. Denk je dat een rapport toch geschikt is? Zeg het in je claim of in [Discussions](${repoUrl}/discussions).`,
+          `${nl(list.filter(nietGeschikt).length)} open rapporten zijn op titel en samenvatting beoordeeld als niet geschikt voor Omnibus: ze laten weinig risico's zien voor beheersing of uitvoering, zoals ramingen, prognoses en verkenningen zonder oordeel over de uitvoering. Ze blijven claimbaar. Denk je dat een rapport toch geschikt is? Zeg het in je claim of in [Discussions](${repoUrl}/discussions).`,
           "",
           "<details>",
           `<summary>Toon de ${nl(list.filter(nietGeschikt).length)} rapporten</summary>`,
@@ -893,7 +893,7 @@ const anker = (kop) => [...kop.trim().toLowerCase()].filter((c) => /[\p{L}\p{N}\
       stand(rows),
       "",
       ...(rows.some((r) => r.geschikt !== "onbeoordeeld") ? [
-        `**Geschikt voor Omnibus:** elk rapport is op de titel beoordeeld ([B-032](../../beheer/besluiten.md#b-032)): ${nl(rows.filter((r) => r.geschikt === "geschikt").length)} geschikt, ${nl(rows.filter((r) => r.geschikt === "twijfel").length)} twijfel en ${nl(rows.filter((r) => r.geschikt === "niet").length)} waarschijnlijk niet geschikt. Niet geschikte open rapporten staan op elke pagina onderaan, ingeklapt. In [werklijst-rapporten.csv](../werklijst-rapporten.csv) kun je filteren op de kolom *geschikt*.`,
+        `**Geschikt voor Omnibus:** elk rapport is op titel, samenvatting en risico's beoordeeld ([B-032](../../beheer/besluiten.md#b-032)): ${nl(rows.filter((r) => r.geschikt === "geschikt").length)} geschikt, ${nl(rows.filter((r) => r.geschikt === "twijfel").length)} twijfel en ${nl(rows.filter((r) => r.geschikt === "niet").length)} waarschijnlijk niet geschikt. Niet geschikte open rapporten staan op elke pagina onderaan, ingeklapt. In [werklijst-rapporten.csv](../werklijst-rapporten.csv) kun je filteren op de kolom *geschikt*.`,
         "",
       ] : []),
       "| Soort bron | Open | Totaal |",
