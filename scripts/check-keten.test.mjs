@@ -10,6 +10,7 @@ test("aannametaal: gissingen wel, onderwerp en grenzen niet", () => {
   assert.deepEqual(aannametaal("Volg een melding van een vermoeden van fraude."), []);
   assert.deepEqual(aannametaal("Een toelating wordt niet verondersteld."), []);
   assert.deepEqual(aannametaal("Naar verwachting ligt dit vast."), ["naar verwachting"]);
+  assert.deepEqual(aannametaal("Dit gebeurt meestal, typisch per kwartaal."), ["meestal", "typisch"]);
   assert.deepEqual(aannametaal("onwaarschijnlijkheid is geen los woord"), []);
 });
 

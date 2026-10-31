@@ -64,7 +64,7 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
   Lege velden, N.v.t. en generieke opvultekst zijn geen geaccepteerde eindinhoud.
   Kan geen verdedigbare keten worden gemaakt, houd de norm op HOLD voor herstel.
 - Formuleer eigen normen en toetsen zonder gissing: geen *waarschijnlijk*,
-  *naar verwachting*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
+  *naar verwachting*, *meestal*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
   onbekend of HOLD. Noem in een toetspunt alleen een functionaris die de norm
   noemt. `npm run check:keten` meldt aannametaal en een ontbrekend
   risico of bewijs in de agentcatalogus.

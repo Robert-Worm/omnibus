@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 // Woorden die een gissing uitdrukken. 'Vermoeden' (bij fraude of incidenten) en 'niet
 // verondersteld' (een uitdrukkelijke grens) zijn onderwerp, geen gissing, en tellen niet.
-const AANNAME = /(?<![\p{L}])(waarschijnlijk|vermoedelijk|naar verwachting|wellicht|misschien|denkelijk|kennelijk|blijkbaar|lijkt|lijken|zou(?:den)? kunnen|ervan uitgaande|(?:we|wij) gaan ervan uit|naar alle waarschijnlijkheid)(?![\p{L}])/giu;
+const AANNAME = /(?<![\p{L}])(waarschijnlijk|vermoedelijk|naar verwachting|wellicht|misschien|denkelijk|kennelijk|blijkbaar|typisch|meestal|doorgaans|lijkt|lijken|zou(?:den)? kunnen|ervan uitgaande|(?:we|wij) gaan ervan uit|naar alle waarschijnlijkheid)(?![\p{L}])/giu;
 const NORMVELDEN = ["body", "auditNorm"];
 const TOETSVELDEN = ["procedure", "testDesign", "testExistence", "testOperation", "documents"];
 const tekst = (v) => typeof v === "string" && v.trim().length > 0;
