@@ -253,6 +253,47 @@ try {
       assert.match(explanation,/herstelkopie/i);assert.match(privacy,/sitegegevens/i);
     } finally {await context.close();}
   });
+
+  // #277: een projectbestand van iemand anders kan HTML, script of extreem lange tekst
+  // bevatten. Die tekst moet overal als tekst verschijnen en mag niets uitvoeren.
+  await scenario('hostile project text stays text and runs nothing',async()=>{
+    const kwaad=['<img src="x-kwaad" onerror="window.__kwaad=1">','<script>window.__kwaad=2</script>',
+      '"><svg onload="window.__kwaad=3">','javascript:window.__kwaad=4','{{constructor.constructor("window.__kwaad=5")()}}','=HYPERLINK("https://example.invalid")'];
+    const project=structuredClone(fixture),id=project.draft.included[0];
+    project.draft.title='Kwaadaardige proef '+kwaad[0];
+    project.draft.overrides[id]={...project.draft.overrides[id],objective:'Doel '+kwaad.join(' ')};
+    project.draft.notes[id]=('Notitie '+kwaad.join(' ')+' ').repeat(20);
+    project.draft.research.questions[0].text='Hoe '+kwaad[2]+' werkt dit?';
+    const {context,page}=await fresh();
+    let dialogs=0;page.on('dialog',()=>dialogs++);
+    try {
+      await saved(page);await upload(page,project);await saved(page);
+      const restored=await read(page);
+      assert.equal(restored.draft.title,project.draft.title);
+      assert.equal(restored.draft.notes[id],project.draft.notes[id]);
+      const seen=[];
+      for(const hash of ['start','mijn-kader','kaderexport']) {
+        await go(page,hash);await page.waitForTimeout(500);
+        const check=await page.evaluate(()=>({ran:window.__kwaad,
+          injected:document.querySelectorAll('img[src="x-kwaad"],svg[onload],script:not([src]):not([type])').length,
+          handlers:[...document.querySelectorAll('*')].filter(e=>[...e.attributes].some(a=>/^on/i.test(a.name)&&/kwaad/.test(a.value))).length,
+          links:[...document.querySelectorAll('a[href^="javascript:"]')].length,text:document.body.innerText}));
+        assert.equal(check.ran,undefined,'Script uit projecttekst is uitgevoerd op #'+hash);
+        assert.equal(check.injected+check.handlers+check.links,0,'Projecttekst werd HTML op #'+hash);
+        seen.push(...[project.draft.title,'Doel '+kwaad.join(' '),project.draft.research.questions[0].text].filter(t=>check.text.includes(t)));
+      }
+      assert(seen.includes(project.draft.title),'De projecttitel moet letterlijk zichtbaar zijn');
+      // Te lange tekst (boven de grens van 20.000 tekens per notitie) wordt geweigerd;
+      // het huidige project blijft dan ongewijzigd.
+      const before=await raw(page),lang=structuredClone(project);
+      lang.draft.notes[id]=(kwaad[0]+' ').repeat(500);
+      await upload(page,lang);
+      await page.getByText(/Je huidige onderzoek is behouden\./).first().waitFor();
+      await saved(page);assert.equal(await raw(page),before);
+      assert.equal(await page.evaluate(()=>window.__kwaad),undefined);
+      assert.equal(dialogs,0,'Projecttekst opende een dialoog');
+    } finally {await context.close();}
+  });
 } finally {
   writeFileSync(join(out,'result.json'),JSON.stringify({url:target.href,browser:browser.version(),results,errors},null,2));
   await host.close();
