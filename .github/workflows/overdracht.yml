@@ -20,9 +20,9 @@ permissions:
   issues: write
   actions: read
 
-concurrency:
-  group: overdracht
-  cancel-in-progress: true
+# Geen concurrency-groep: een geannuleerde run kleurt de commit op main rood, terwijl er
+# niets mis is. Elke run leest de actuele stand en schrijft alleen de tekst van het issue;
+# een latere run of de dagelijkse run zet een eventueel achterhaalde tekst recht.
 
 jobs:
   overdracht:
