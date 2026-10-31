@@ -11,7 +11,7 @@ Dit document gaat over de applicatie en de MCP-server. De AI-skills die de inhou
 | Onderdeel | Omnibus: webapplicatie, lokale API en lokale MCP-server (`agent-tools/`) |
 | Repository | https://github.com/Robert-Worm/omnibus |
 | Beheerder | Robert Worm |
-| Verantwoordelijkheid | Er is geen aparte eigenaar van de criteria: ze zijn afgeleid van de genoemde kaders, en die blijven van hun uitgevers. Wie Omnibus gebruikt, blijft zelf verantwoordelijk voor het oordeel; Omnibus maakt een conceptreferentiekader en kennis over normen toegankelijker. De criteria groeien mee met betere modellen en skills |
+| Verantwoordelijkheid | Geen aparte eigenaar: de criteria zijn afgeleid van kaders die van hun uitgevers blijven. De gebruiker blijft verantwoordelijk voor het oordeel. De criteria groeien mee met betere modellen en skills |
 | Laatst bekeken | 2026-10-31 |
 | Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de kaders worden kritisch nagelopen in [#278](https://github.com/Robert-Worm/omnibus/issues/278) |
 | Bronnen voor dit document | [README.md](README.md), [SECURITY.md](SECURITY.md), [AGENTS.md](AGENTS.md), [besluitenlijst](docs/beheer/besluiten.md), [agent-tools/README.md](agent-tools/README.md), [hosting/container/README.md](hosting/container/README.md) en de tests die hieronder genoemd worden |

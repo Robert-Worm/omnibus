@@ -11,7 +11,7 @@ De applicatie en de MCP-server hebben een eigen document: [AUDIT-CRITERIA.md](..
 | Onderdeel | De acht skills in `skills/` (zie [het overzicht](README.md)) |
 | Repository | https://github.com/Robert-Worm/omnibus |
 | Beheerder | Robert Worm |
-| Verantwoordelijkheid | Er is geen aparte eigenaar van de criteria: ze zijn afgeleid van de genoemde kaders, en die blijven van hun uitgevers. Wie Omnibus gebruikt, blijft zelf verantwoordelijk voor het oordeel; Omnibus maakt een conceptreferentiekader en kennis over normen toegankelijker. De criteria groeien mee met betere modellen en skills |
+| Verantwoordelijkheid | Geen aparte eigenaar: de criteria zijn afgeleid van kaders die van hun uitgevers blijven. De gebruiker blijft verantwoordelijk voor het oordeel. De criteria groeien mee met betere modellen en skills |
 | Laatst bekeken | 2026-10-31 |
 | Status | Concept. Het bewijs per criterium wordt nog nagelopen in [#273](https://github.com/Robert-Worm/omnibus/issues/273), de kaders worden kritisch nagelopen in [#278](https://github.com/Robert-Worm/omnibus/issues/278) |
 | Bronnen voor dit document | De `SKILL.md` van elke skill, [skills/README.md](README.md), [besluitenlijst](../docs/beheer/besluiten.md), `scripts/skill-regels.mjs` en `scripts/skill-meting.mjs` |
