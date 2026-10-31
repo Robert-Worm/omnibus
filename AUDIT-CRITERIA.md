@@ -144,6 +144,12 @@ Wat Omnibus vastlegt, en wat bewust niet:
 - **Bewust niet:** wie wat bekeek, zocht of exporteerde. Projecten, vragen en notities blijven in de browser. Privacy gaat voor; hooguit komen er later geanonimiseerde totalen.
 - **Ontbreekt:** waarschuwingen bij storingen en een vaste bewaartermijn van de serverlogs van de host.
 
+Getoetst aan de tien observability-vragen van SAAF (31 oktober 2026). Doel, gebruikers, werkstroom, beheersmaatregelen en faalwijzen staan in dit document en de README's. Drie vragen zijn nog niet beantwoord:
+
+- **Signalen:** er is geen automatische waarschuwing bij een storing of afwijkend gedrag.
+- **Succesmaatstaven:** er zijn geen vastgelegde maatstaven voor techniek, audit of gebruik.
+- **Auditbewijs na maanden:** de database-zips, controlegetallen en releasenotities blijven bij de releases staan. Serverlogs blijven niet bewaard, bewust.
+
 ---
 
 [↑ Omnibus](README.md) · [Wegwijzer](docs/README.md) · [Begrippen](docs/begrippen.md) · [Routekaart](docs/routekaart.md)

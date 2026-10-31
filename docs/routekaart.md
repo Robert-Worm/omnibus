@@ -85,8 +85,7 @@ Een koppeling met de Rijksmap kan pas als die als database en applicatie even st
 | Skill die begeleidt van eigen pdf tot eigen database · [#156](https://github.com/Robert-Worm/omnibus/issues/156) | ✅ Klaar |
 | [Lokale privacyproef](gebruiken/lokale-privacy.md), inclusief eigen fictieve rapporten en kaders · [#157](https://github.com/Robert-Worm/omnibus/issues/157) | ✅ Klaar |
 
-De bestaande proeven dekken databasebouw, gedeelde viewers, selectie, vraagkoppeling,
-projectherstel en lokaal netwerkgedrag met fictieve inhoud. De begeleidende skillproef van #156 is op beheerderbesluit afgerond bij de vereiste eigenaarstoestemming. Die toestemming blijft nodig bij echte eigen pakketten; zij wordt niet door de AI ingevuld. De afzonderlijke bijdragersproef in [#225](https://github.com/Robert-Worm/omnibus/issues/225) blijft open en wordt met deze afronding niet als geslaagd aangemerkt.
+De bestaande proeven dekken databasebouw, gedeelde viewers, selectie, vraagkoppeling, projectherstel en lokaal netwerkgedrag met fictieve inhoud. De begeleidende skillproef van #156 is op beheerderbesluit afgerond bij de vereiste eigenaarstoestemming. Die toestemming blijft nodig bij echte eigen pakketten; zij wordt niet door de AI ingevuld. De afzonderlijke bijdragersproef in [#225](https://github.com/Robert-Worm/omnibus/issues/225) blijft open en wordt met deze afronding niet als geslaagd aangemerkt.
 
 ## Pad D · Samen bijdragen
 

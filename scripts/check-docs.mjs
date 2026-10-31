@@ -51,7 +51,7 @@ export function paginatypeMeldingen(ruw) {
 
 /** Welke pagina's eindigen met de vaste voetregel: alles voor lezers, niet de instructies voor AI-assistenten. */
 export const heeftVoetregel = (rel) =>
-  rel !== "README.md" && rel !== "AGENTS.md" && rel !== "CHANGELOG.md" && !rel.startsWith(".github/") &&
+  rel !== "README.md" && rel !== "AGENTS.md" && rel !== "CHANGELOG.md" && !rel.startsWith(".github/") && !rel.startsWith(".claude/") &&
   !/^skills\/[^/]+\/(SKILL\.md|references\/)/.test(rel) && !rel.startsWith("work/") && !rel.startsWith("local-data/runtime");
 
 /** De vaste voetregel: [↑ ouder] · Wegwijzer · Begrippen · Routekaart, met paden vanaf de pagina zelf. */

@@ -86,7 +86,7 @@ Meer uitleg met schermafbeeldingen: [werken met Omnibus](docs/gebruiken/werken-m
 Omnibus bestaat uit twee delen. Online en met Docker krijg je ze samen; bij een eigen installatie haalt de installatieopdracht de database op.
 
 - **De applicatie:** de code van Omnibus. Draait lokaal in je browser. Staat in deze repository, met vaste versies, zoals [versie 0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0).
-- **De database:** de inhoud, met <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. Staat als zip van 10 MB bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).
+- **De database:** de inhoud, met <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. Staat als zip van ongeveer 20 MB bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).
 
 Daarnaast zijn er twee onderdelen voor AI-assistenten:
 
