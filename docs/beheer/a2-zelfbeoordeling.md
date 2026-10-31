@@ -51,25 +51,26 @@ Samen: 5 ☑, 10 ◐, 4 ☐ en 1 niet van toepassing. De criteria passen niet al
 
 ## Wat we ervan leren
 
-1. **Volledigheid meten.** Er is geen meting van hoeveel normen een skill vindt. Een vaste testbron met gemarkeerde normatieve zinnen zou dat aantonen. Dit sluit aan op de bestaande skillmeting ([B-018](besluiten.md#b-018)).
-2. **Vormcontrole voor normen.** Vragen hebben `check:questions`, normen en toetspunten nog niet. Dezelfde regels zijn bruikbaar: samengestelde eisen, vage termen zonder maat en aannametaal.
-3. **Betrouwbaarheid zichtbaar maken.** De reviewscore per bouwsteen bestaat, maar de gebruiker ziet hem niet in de viewer of de export.
-4. **Wat al sterk is:** brontraceerbaarheid (CO-2) en geen eigen oordeel over organisaties (AC-5.4). Dat zijn precies de punten die een auditor het eerst controleert.
+1. **Wat al sterk is:** brontraceerbaarheid (CO-2) en geen eigen oordeel over organisaties (AC-5.4). Dat zijn precies de punten die een auditor het eerst controleert.
+2. **Volledigheid en betrouwbaarheid** regelt Omnibus in het proces, met blinde lezingen en reviews, niet met een meting of score per norm. Dat is een bewuste keuze (zie hieronder).
+3. **Over te nemen:** aannametaal melden, en in de database meten wat de skills al eisen.
 
-## Advies bij de vier criteria waar Omnibus niet aan voldoet
+## Besluit bij de vier criteria waar Omnibus niet aan voldoet
 
-| Criterium | Wat het betekent | Past het bij Omnibus? | Advies |
-| --- | --- | --- | --- |
-| AC-1.1 Volledigheid | Vindt de skill alle eisen in een bron? Getoetst met een bron waarin een mens vooraf alle eisen heeft gemarkeerd | Ja. Volledigheid is een eigen uitgangspunt ([B-025](besluiten.md#b-025)); een gemiste norm geeft een onvolledig referentiekader | **Overnemen.** Eén korte vaste testbron, bijvoorbeeld een hoofdstuk uit een wet, met gemarkeerde eisen. Meten bij elke wijziging van een skill |
-| AC-3.3 Geen aannametaal | Een norm zegt niet *waarschijnlijk*, *naar verwachting* of *vermoedelijk*; dat zijn gissingen, geen eisen | Ja | **Overnemen.** Goedkoop: dezelfde soort regel als in `check:questions`, nu voor normen en toetspunten. Alleen melden |
-| AC-4.1 Vaste vorm van een norm | Elke norm volgt *wie – doet wat – waarmee – onder welke voorwaarde* | Deels. Wetstekst en citaten blijven letterlijk en mogen niet worden omgeschreven. Eigen toetspunten kunnen wel die vorm volgen | **Alleen voor eigen toetspunten**, als waarschuwing en niet als harde eis. Nooit voor brontekst |
-| AC-5.3 Kleur naar betrouwbaarheid in Excel | De export kleurt elke norm groen, geel of rood naar de zekerheid | Nog niet. Er is geen betrouwbaarheid voor elke bouwsteen; een kleur zonder onderbouwing zou schijnzekerheid geven | **Parkeren.** Eerst de bestaande reviewscore tonen waar die er is; kleur pas als elke bouwsteen een onderbouwde score heeft |
+De beheerder besliste op 31 oktober 2026 ([B-029](besluiten.md#b-029)):
 
-Bij de tien deels-oordelen staat de regel er meestal wel, maar als instructie in een skill en niet gemeten in de database. Een snelle winst is een controle op de database die per bouwsteen nagaat of risico en bewijsaanwijzing gevuld zijn (AC-4.3 en AC-4.4). Die maakt twee deels-oordelen meetbaar.
+| Criterium | Besluit | Waarom |
+| --- | --- | --- |
+| AC-1.1 Volledigheid meten | Niet apart meten | Twee blinde lezingen, reviews en bronverwijzingen dekken volledigheid al af. Een meting vraagt een mens die elke testbron markeert; dat schaalt niet |
+| AC-3.3 Geen aannametaal | **Overnemen** | Duidelijk beter en goedkoop: een les in de skills en een melding in de vormcontrole |
+| AC-4.1 Vaste vorm van een norm | Alleen bij toetspunten, waar het kan | Brontekst wordt nooit herschreven. Een toetspunt noemt wie wat doet als de norm die functionaris noemt; anders niet |
+| AC-5.3 Kleur naar betrouwbaarheid | Niet doen | Wat niet goed genoeg is, komt niet door de review. Een score of kleur per norm geeft schijnzekerheid |
+
+Bij de tien deels-oordelen meten we in de database wat de skills al eisen, bijvoorbeeld of risico en bewijsaanwijzing per bouwsteen gevuld zijn (AC-4.3 en AC-4.4). Bestaande kaders worden daarvoor niet opnieuw gelezen.
 
 ## Volgende stap
 
-De oordelen bevestigen of bijstellen, en de leerpunten 1 tot en met 3 als stories oppakken. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
+De overgenomen punten uitwerken. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
 
 ---
 
