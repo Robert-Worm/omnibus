@@ -69,7 +69,7 @@ Deze verordeningen gaan over het toezicht op kritieke ICT-dienstverleners. Ze zi
 | --- | --- | --- |
 | [Implementatiewet digitale operationele weerbaarheid](https://www.eerstekamer.nl/wetsvoorstel/36482_implementatiewet_digitale) (Kamerstuk 36482) | Wijzigt de Wet op het financieel toezicht om richtlijn 2022/2556 om te zetten. Aangenomen in juni 2024 | Nagaan of de wijzigingen eigen toetsbare normen bevatten of alleen bevoegdheden regelen |
 | DNB *Good Practice Informatiebeveiliging* | Volgens DNB vanaf 17 januari 2025 voor DORA-instellingen vervangen door DORA; er komt geen nieuwe versie ([DNB, 11 juli 2024](https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/dora-het-toezicht-van-dnb-per-17-januari-2025/)) | Alleen als verwijzing (B-025) |
-| TIBER-NL en het ART-raamwerk van DNB | Raamwerken voor red-teamtests. DNB houdt er bij de planning van TLPT rekening mee | Alleen als verwijzing; vaststellen bij het structuurontwerp |
+| TIBER-NL en het ART-raamwerk van DNB | Raamwerken voor red-teamtests. DNB houdt er bij de planning van TLPT rekening mee | Alleen als verwijzing ([B-031](../beheer/besluiten.md#b-031)) |
 
 ## NOREA als landkaart
 
