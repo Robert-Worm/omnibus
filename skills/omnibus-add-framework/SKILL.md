@@ -63,6 +63,11 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
   [een complete beheersketen](references/framework-method.md#complete-beheersketen).
   Lege velden, N.v.t. en generieke opvultekst zijn geen geaccepteerde eindinhoud.
   Kan geen verdedigbare keten worden gemaakt, houd de norm op HOLD voor herstel.
+- Formuleer eigen normen en toetsen zonder gissing: geen *waarschijnlijk*,
+  *naar verwachting*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
+  onbekend of HOLD. Noem in een toetspunt alleen een functionaris die de norm
+  noemt. `npm run check:keten` meldt aannametaal en een ontbrekend
+  risico of bewijs in de agentcatalogus.
 - Laat bron-, juridisch/kader- en praktisch perspectief onafhankelijk de exacte
   eindbasis beoordelen; geen auteur-selfapproval of opgefriste reviewhashes.
   Technische structuurcontrole vervangt deze beoordelingen niet.

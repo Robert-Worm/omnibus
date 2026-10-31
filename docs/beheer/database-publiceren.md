@@ -79,14 +79,17 @@ Controleer daarna de inhoud van de nieuwe database zelf:
 ```text
 npm run check:passages -- --database work/publication-01/catalogue.sqlite
 npm run check:questions -- --database work/publication-01/catalogue.sqlite
+npm run build:agent -- --settings work/publication-01/local-build.json
+npm run check:keten -- --catalogue agent-build/<map uit agent-build/current.json>/catalogue.sqlite
 ```
 
 | Controle | Wat hij nagaat | Bij een melding |
 | --- | --- | --- |
 | Bronpassages | Staat elke bronpassage letterlijk in de bron, op de opgeslagen positie? | Een HOLD verklaar of herstel je vóór de release; verschuif nooit zelf een markering |
 | Vragen | Heeft een vraag een vormfout? | Zie [vraagcontrole](inhoud-toevoegen.md#1-beoordeel-de-inhoud) |
+| Keten | Heeft elke selecteerbare bouwsteen een risico en een bewijsaanwijzing? Bevat een eigen norm of toets aannametaal? | Een bouwsteen zonder risico of bewijs herstel je vóór de release. Aannametaal beoordeel je; brontekst pas je nooit aan |
 
-**Gelukt als:** je `MATCH` ziet en de bronpassages geen HOLD hebben.
+**Gelukt als:** je `MATCH` ziet, de bronpassages geen HOLD hebben en elke bouwsteen een risico en bewijsaanwijzing heeft. Na de release meet GitHub hetzelfde op [kwaliteitsmeting](kwaliteitsmeting.md).
 
 ### 5. Test in een aparte build
 

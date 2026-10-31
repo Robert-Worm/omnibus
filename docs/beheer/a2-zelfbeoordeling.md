@@ -34,26 +34,26 @@ De tool zelf is niet gedraaid. Die vraagt Python, een Claude Code-login en de gh
 | CO-3 Hallucinatieweerstand | – | – |
 | AC-3.1 Onbekende gegevens worden als onbekend gemarkeerd | ◐ | HOLD en `PENDING_REVIEW`; geen vaste markering per veld |
 | AC-3.2 Bij elk onbekend veld een verduidelijkingsvraag | ◐ | Reviews eindigen met *Nog te controleren*; niet per veld |
-| AC-3.3 Geen aannametaal in normen | ☐ | Geen controle op aannametaal in normen |
+| AC-3.3 Geen aannametaal in normen | ☑ | `check:keten` meldt gissingen in eigen normen en toetsen: 0 van 1.017 bouwstenen op de database van 30 oktober. De les staat in de skills |
 | AC-3.4 Geen verwijzing naar kaders die niet in de bron staan | ◐ | Herkomst per laag (B-026) is besloten; niet getest |
 | CO-4 Toetsbaarheid | – | – |
-| AC-4.1 Normen in de vorm actor, actie, object en voorwaarde | ☐ | Geen vaste vorm of controle |
+| AC-4.1 Normen in de vorm actor, actie, object en voorwaarde | ☐ | Geen vaste vorm of controle; bewust niet (B-029). De skills noemen een functionaris alleen als de norm dat doet |
 | AC-4.2 Vage termen zonder maat worden gemeld | ◐ | `check:questions` doet dit voor vragen, niet voor normen |
-| AC-4.3 Elke norm heeft een aanwijzing voor bewijs | ◐ | De skills eisen opzet- en bestaanstoetsen met bewijs; niet gemeten in de database |
-| AC-4.4 Elke norm noemt het risico | ◐ | De skills eisen de complete keten met risico; niet gemeten in de database |
+| AC-4.3 Elke norm heeft een aanwijzing voor bewijs | ☑ | `check:keten`: 1.017 van 1.017 selecteerbare bouwstenen uit rapporten, wetten en kaders |
+| AC-4.4 Elke norm noemt het risico | ☑ | `check:keten`: 1.017 van 1.017 |
 | CO-5 Bewust van risico in de uitvoer | – | – |
 | AC-5.1 Elke norm heeft een betrouwbaarheid (hoog, midden, laag) | ◐ | De review geeft een score van 1 tot 10 (OAK-1.0); die staat niet per norm in de export |
 | AC-5.2 Hoog alleen bij volledige velden en een duidelijke bron | – | Volgt uit AC-5.1 |
 | AC-5.3 De Excel kleurt naar betrouwbaarheid | ☐ | Niet aanwezig |
 | AC-5.4 Geen eigen risico-oordeel zonder onderbouwing | ☑ | Omnibus beoordeelt geen organisaties; de review beoordeelt de bouwsteen |
 
-Samen: 5 ☑, 10 ◐, 4 ☐ en 1 niet van toepassing. De criteria passen niet allemaal op Omnibus. Ze zijn gemaakt voor een agent die alleen normen haalt, terwijl Omnibus normen, toetspunten, vragen en een export levert.
+Samen: 8 ☑, 8 ◐, 3 ☐ en 1 niet van toepassing (na [#283](https://github.com/Robert-Worm/omnibus/issues/283); de eerste ronde gaf 5 ☑, 10 ◐ en 4 ☐). De metingen staan ook op [kwaliteitsmeting](kwaliteitsmeting.md). De criteria passen niet allemaal op Omnibus. Ze zijn gemaakt voor een agent die alleen normen haalt, terwijl Omnibus normen, toetspunten, vragen en een export levert.
 
 ## Wat we ervan leren
 
 1. **Wat al sterk is:** brontraceerbaarheid (CO-2) en geen eigen oordeel over organisaties (AC-5.4). Dat zijn precies de punten die een auditor het eerst controleert.
 2. **Volledigheid en betrouwbaarheid** regelt Omnibus in het proces, met blinde lezingen en reviews, niet met een meting of score per norm. Dat is een bewuste keuze (zie hieronder).
-3. **Over te nemen:** aannametaal melden, en in de database meten wat de skills al eisen.
+3. **Overgenomen:** aannametaal melden, en in de database meten wat de skills al eisen ([#283](https://github.com/Robert-Worm/omnibus/issues/283)).
 
 ## Besluit bij de vier criteria waar Omnibus niet aan voldoet
 
@@ -70,7 +70,7 @@ Bij de tien deels-oordelen meten we in de database wat de skills al eisen, bijvo
 
 ## Volgende stap
 
-De overgenomen punten uitwerken. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
+Een mens bevestigt de oordelen, eventueel door Agent-Auditor zelf te draaien. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
 
 ---
 

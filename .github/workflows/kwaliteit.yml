@@ -1,13 +1,13 @@
 name: Kwaliteitsmeting
 
-# Meet de inhoudskwaliteit van de openbare database (B-028): bronpassages die letterlijk
-# kloppen en vragen zonder vormfout. Draait als de code naar een nieuwe database wijst,
-# en elke maand als extra controle. Werkt docs/beheer/kwaliteitsmeting.md en de badge
+# Meet de inhoudskwaliteit van de openbare database (B-028, B-029): bronpassages die
+# letterlijk kloppen, vragen zonder vormfout en bouwstenen met risico en bewijsaanwijzing.
+# Draait als de code naar een nieuwe database wijst, en elke maand als extra controle. Werkt docs/beheer/kwaliteitsmeting.md en de badge
 # in README.md bij. Zie scripts/kwaliteitsmeting.mjs.
 on:
   push:
     branches: [main]
-    paths: ['scripts/database-release.mjs', 'scripts/kwaliteitsmeting.mjs', '.github/workflows/kwaliteit.yml']
+    paths: ['scripts/database-release.mjs', 'scripts/kwaliteitsmeting.mjs', 'scripts/check-keten.mjs', '.github/workflows/kwaliteit.yml']
   schedule:
     - cron: '41 5 3 * *'
   workflow_dispatch:
@@ -22,7 +22,7 @@ concurrency:
 jobs:
   meten:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,10 +31,12 @@ jobs:
         with:
           node-version: '24.21.0'
           package-manager-cache: false
+      - name: Afhankelijkheden voor de agentcatalogus
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Tests van de meting
-        run: node --test scripts/kwaliteitsmeting.test.mjs
+        run: node --test scripts/kwaliteitsmeting.test.mjs scripts/check-keten.test.mjs
       - name: Database ophalen en meten
-        run: node scripts/kwaliteitsmeting.mjs
+        run: node scripts/kwaliteitsmeting.mjs --met-keten
       - name: Wijzigingen opslaan
         run: |
           git config user.name "github-actions[bot]"

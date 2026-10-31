@@ -61,6 +61,11 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
   onderbouwd af uit de bron en het risico en markeer ze als eigen voorstel.
   Lege velden of opvultekst zijn geen geaccepteerde eindinhoud; onvoldoende
   onderbouwing vraagt herstel/HOLD. Behoud de afgesproken beperkte werkinginstructie.
+- Formuleer eigen normen en toetsen zonder gissing: geen *waarschijnlijk*,
+  *naar verwachting*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
+  onbekend of HOLD. Noem in een toetspunt alleen een functionaris die de norm
+  noemt. `npm run check:keten` meldt aannametaal en een ontbrekend
+  risico of bewijs in de agentcatalogus.
 - Laat voorwaarden, populatie, peildatum, tegenbewijs, managementreactie en
   bronbeperkingen meereizen naar zelfstandig gebruikte toetspunten en exports.
 - Pas nooit frozen sources, eerste inzendingen of goedkeuringshashes achteraf aan

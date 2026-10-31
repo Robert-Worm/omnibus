@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { badge, leesPassages, leesVragen, pagina, regel } from "./kwaliteitsmeting.mjs";
+import { badge, leesKeten, leesPassages, leesVragen, pagina, regel } from "./kwaliteitsmeting.mjs";
 
 const passagesRapport = "# Bronpassages: controle\n\nDatabase: x. Passages: 6462. HOLD: 0.\n";
 const vragenRapport = "# Vraagkwaliteit\n\nDatabase: x. Vragen: 1650. Bronnen met vragen: 42.\n\n| Uitkomst | Aantal |\n| --- | ---: |\n| schrappen | 0 |\n| herschrijven | 1 |\n| HOLD | 152 |\n| door | 1497 |\n";
@@ -15,7 +15,11 @@ test("de totalen komen uit de bestaande rapporten", () => {
 });
 
 test("een regel toont aantallen en percentages, naar beneden afgerond", () => {
-  assert.equal(regel(meting), "| 2026-10-31 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 |");
+  assert.equal(regel(meting), "| 2026-10-31 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 | – | – |");
+  const keten = leesKeten("Catalogus: x. Bouwstenen: 1017. Met risico en bewijsaanwijzing: 1014. Zonder risico: 2. Zonder bewijsaanwijzing: 3. Met aannametaal: 1.");
+  assert.deepEqual(keten, { totaal: 1017, compleet: 1014, zonderRisico: 2, zonderBewijs: 3, aannametaal: 1 });
+  assert.match(regel({ ...meting, keten }), /\| 1\.014 van 1\.017 \| 1 \|$/);
+  assert.throws(() => leesKeten("iets"), /niet herkend/);
 });
 
 test("de pagina houdt andere releases bij en vervangt dezelfde release", () => {
