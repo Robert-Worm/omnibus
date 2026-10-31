@@ -104,6 +104,8 @@ Open bij [Sliplane](https://docs.sliplane.io/services/logging/) de dienst van Om
 
 Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 regels van de laatste 7 dagen.
 
+Daarnaast controleert GitHub elk kwartier of de online versie gezond is (`.github/workflows/gezondheid.yml`). Na drie mislukte pogingen komt er een issue met het label `storing`, en GitHub mailt je. Dat issue sluit vanzelf zodra de site weer gezond is. Handmatig controleren: `node .github/scripts/gezondheid.mjs`.
+
 | Regel in de runtime-log | Betekenis | Wat je doet |
 | --- | --- | --- |
 | `Omnibus packaged read-only web runtime: https://…` | De server is gestart | Niets |

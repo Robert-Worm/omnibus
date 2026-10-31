@@ -142,12 +142,13 @@ Wat Omnibus vastlegt, en wat bewust niet:
 - **Wel:** technische fouten en weigeringen van de server, met een vaste melding en een verzoek-ID, maar zonder adres, verzoekinhoud of brontekst. Bij een onbruikbaar bezoekersadres één regel `visitor_address_fallback` met alleen de vorm van de header, hooguit eens per minuut. Bij het starten de controle die mislukte, zonder paden.
 - **Wel:** bij een databaserelease worden `check:passages` en `check:questions` gedraaid en de controlegetallen vastgelegd ([database publiceren](docs/beheer/database-publiceren.md)).
 - **Bewust niet:** wie wat bekeek, zocht of exporteerde. Projecten, vragen en notities blijven in de browser. Privacy gaat voor; hooguit komen er later geanonimiseerde totalen.
-- **Ontbreekt:** waarschuwingen bij storingen en een vaste bewaartermijn van de serverlogs van de host.
+- **Wel:** elk kwartier een gezondheidscontrole van de online versie vanuit GitHub. Na drie mislukte pogingen komt er een issue met het label `storing`; dat sluit vanzelf bij herstel ([B-028](docs/beheer/besluiten.md#b-028)).
+- **Ontbreekt:** een vaste bewaartermijn van de serverlogs van de host.
 
 Getoetst aan de tien observability-vragen van SAAF (31 oktober 2026). Doel, gebruikers, werkstroom, beheersmaatregelen en faalwijzen staan in dit document en de README's. Drie vragen zijn nog niet beantwoord:
 
-- **Signalen:** er is geen automatische waarschuwing bij een storing of afwijkend gedrag.
-- **Succesmaatstaven:** er zijn geen vastgelegde maatstaven voor techniek, audit of gebruik.
+- **Signalen:** een storing van de online versie geeft een issue (zie hierboven). Voor afwijkend gedrag binnen een werkende site is er nog geen signaal.
+- **Succesmaatstaven:** vastgesteld in [B-028](docs/beheer/besluiten.md#b-028): kwaliteit van de inhoud (passages zonder afwijking, interviewvragen zonder vormfout) en bezoektotalen als die er zijn. Het zichtbaar maken op GitHub volgt in [#282](https://github.com/Robert-Worm/omnibus/issues/282).
 - **Auditbewijs na maanden:** de database-zips, controlegetallen en releasenotities blijven bij de releases staan. Serverlogs blijven niet bewaard, bewust.
 
 ---
