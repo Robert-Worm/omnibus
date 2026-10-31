@@ -65,13 +65,34 @@ export function normaliseer(tekst) {
     .replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim().toLowerCase();
 }
 
-/** Zoekt elk citaat letterlijk op in het genoemde bestand. */
+/** Deel van de woorddrietallen uit het citaat dat ook in de tekst staat (0 tot 1). */
+export function overlap(citaat, tekst) {
+  const drie = (t) => { const w = t.split(" "); return w.length < 3 ? [t] : w.slice(2).map((_, i) => w.slice(i, i + 3).join(" ")); };
+  const c = drie(citaat), t = new Set(drie(tekst));
+  return c.length ? c.filter((x) => t.has(x)).length / c.length : 0;
+}
+
+/**
+ * Zoekt elk citaat op in het bestand dat het model noemt. Uitkomst per citaat:
+ * 'letterlijk' (ook over commentaarregels heen), 'bijna' (kleine afwijking of licht ingekort:
+ * een melding, geen afkeur), 'ander bestand' (staat wel in de bundel, maar elders) of 'niet'.
+ * Een samenvatting telt als 'niet': de bedoeling is een letterlijk citaat.
+ */
 export function controleerBewijs(bewijs, inhoud) {
+  const genormaliseerd = Object.fromEntries(Object.entries(inhoud).map(([p, t]) => [p, normaliseer(t)]));
   return (bewijs ?? []).map((b) => {
-    const bron = inhoud[b?.bestand];
-    const citaat = normaliseer(b?.citaat);
-    const gevonden = Boolean(bron && citaat && normaliseer(bron).includes(citaat));
-    return { ...b, gevonden, notitie: !bron ? "bestand niet in de bundel" : gevonden ? null : "citaat niet letterlijk gevonden" };
+    const bron = genormaliseerd[b?.bestand], citaat = normaliseer(b?.citaat);
+    let uitkomst = "niet", notitie = null;
+    if (!citaat) notitie = "geen citaat";
+    else if (bron === undefined) notitie = "bestand niet in de bundel";
+    else if (bron.includes(citaat)) uitkomst = "letterlijk";
+    else if (overlap(citaat, bron) >= 0.8) { uitkomst = "bijna"; notitie = "kleine afwijking of ingekort; controleer of het geen samenvatting is"; }
+    if (uitkomst === "niet" && citaat) {
+      const elders = Object.keys(genormaliseerd).find((p) => p !== b?.bestand && genormaliseerd[p].includes(citaat));
+      if (elders) { uitkomst = "ander bestand"; notitie = `staat in ${elders}`; }
+      else if (bron !== undefined) notitie = "niet gevonden; mogelijk samengevat of verzonnen";
+    }
+    return { ...b, uitkomst, gevonden: uitkomst === "letterlijk" || uitkomst === "bijna", notitie };
   });
 }
 
@@ -121,7 +142,7 @@ export function rapport(uitkomsten, { commit = "", model = "" } = {}) {
     "# Omnibus-auditor: uitkomst", "",
     `Commit: ${commit || "onbekend"}. Model: ${model || "standaard"}. Criteria: ${uitkomsten.length}.`,
     `Uitkomst: ${Object.entries(tel).map(([k, n]) => `${OORDELEN[k]} ${k} ${n}`).join(" · ")}.`,
-    `Citaten letterlijk gevonden: ${citaten.filter((c) => c.gevonden).length} van ${citaten.length}.`, "",
+    `Citaten: ${["letterlijk", "bijna", "ander bestand", "niet"].map((u) => `${u} ${citaten.filter((c) => c.uitkomst === u).length}`).join(" · ")} (van ${citaten.length}). Alleen letterlijk en bijna tellen als bewijs; bijna is een melding.`, "",
     "| Criterium | Oordeel | Onderbouwing | Citaten gevonden |", "| --- | --- | --- | --- |",
     ...uitkomsten.map((u) => `| ${u.code} | ${OORDELEN[u.oordeel]} ${u.oordeel} | ${u.onderbouwing.replace(/[\\|]/g, "\\$&").replace(/\s+/g, " ")} | ${u.bewijs.filter((b) => b.gevonden).length} van ${u.bewijs.length} |`),
     "",

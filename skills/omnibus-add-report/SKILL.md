@@ -64,8 +64,9 @@ blijven intact. Hieronder staat de volledige route voor nieuwe extractie/admissi
 - Formuleer eigen normen en toetsen zonder gissing: geen *waarschijnlijk*,
   *naar verwachting*, *meestal*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
   onbekend of HOLD. Noem in een toetspunt alleen een functionaris die de norm
-  noemt. `npm run check:keten` meldt aannametaal en een ontbrekend
-  risico of bewijs in de agentcatalogus.
+  noemt. Verwijs je naar een ander kader, noem dan het artikel of onderdeel,
+  of waarom. `npm run check:keten` meldt een gat in de keten, een bouwsteen
+  zonder bronpassage, aannametaal en een algemene externe verwijzing.
 - Laat voorwaarden, populatie, peildatum, tegenbewijs, managementreactie en
   bronbeperkingen meereizen naar zelfstandig gebruikte toetspunten en exports.
 - Pas nooit frozen sources, eerste inzendingen of goedkeuringshashes achteraf aan

@@ -15,10 +15,10 @@ test("de totalen komen uit de bestaande rapporten", () => {
 });
 
 test("een regel toont aantallen en percentages, naar beneden afgerond", () => {
-  assert.equal(regel(meting), "| 2026-10-31 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 | – | – |");
-  const keten = leesKeten("Catalogus: x. Bouwstenen: 1017. Met risico en bewijsaanwijzing: 1014. Zonder risico: 2. Zonder bewijsaanwijzing: 3. Met aannametaal: 1.");
-  assert.deepEqual(keten, { totaal: 1017, compleet: 1014, zonderRisico: 2, zonderBewijs: 3, aannametaal: 1 });
-  assert.match(regel({ ...meting, keten }), /\| 1\.014 van 1\.017 \| 1 \|$/);
+  assert.equal(regel(meting), "| 2026-10-31 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 | – | – | – |");
+  const keten = leesKeten("Catalogus: x. Bouwstenen: 1017. Met complete keten: 1014. Zonder bronpassage: 1. Met gat in de keten: 3. Met aannametaal: 1. Met algemene externe verwijzing: 2.");
+  assert.deepEqual(keten, { totaal: 1017, compleet: 1014, zonderPassage: 1, metGat: 3, aannametaal: 1, verwijzingen: 2 });
+  assert.match(regel({ ...meting, keten }), /\| 1\.014 van 1\.017 \| 1 \| 2 \|$/);
   assert.throws(() => leesKeten("iets"), /niet herkend/);
 });
 

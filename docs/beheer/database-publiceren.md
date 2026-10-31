@@ -87,9 +87,9 @@ npm run check:keten -- --catalogue agent-build/<map uit agent-build/current.json
 | --- | --- | --- |
 | Bronpassages | Staat elke bronpassage letterlijk in de bron, op de opgeslagen positie? | Een HOLD verklaar of herstel je vóór de release; verschuif nooit zelf een markering |
 | Vragen | Heeft een vraag een vormfout? | Zie [vraagcontrole](inhoud-toevoegen.md#1-beoordeel-de-inhoud) |
-| Keten | Heeft elke selecteerbare bouwsteen een risico en een bewijsaanwijzing? Bevat een eigen norm of toets aannametaal? | Een bouwsteen zonder risico of bewijs herstel je vóór de release. Aannametaal beoordeel je; brontekst pas je nooit aan |
+| Keten | Heeft elke selecteerbare bouwsteen een bronpassage en de hele keten: norm, doel, risico, beheersdoelstelling, beheersmaatregel, toets en bewijsaanwijzing? Bevat eigen tekst aannametaal of een algemene verwijzing naar een ander kader? | Een gat in de keten of een bouwsteen zonder bronpassage herstel je vóór de release. Aannametaal en externe verwijzingen beoordeel je; brontekst pas je nooit aan |
 
-**Gelukt als:** je `MATCH` ziet, de bronpassages geen HOLD hebben en elke bouwsteen een risico en bewijsaanwijzing heeft. Na de release meet GitHub hetzelfde op [kwaliteitsmeting](kwaliteitsmeting.md).
+**Gelukt als:** je `MATCH` ziet, de bronpassages geen HOLD hebben en elke bouwsteen een bronpassage en een complete keten heeft. Na de release meet GitHub hetzelfde op [kwaliteitsmeting](kwaliteitsmeting.md).
 
 ### 5. Test in een aparte build
 

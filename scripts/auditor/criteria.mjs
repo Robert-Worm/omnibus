@@ -22,7 +22,7 @@ export const DOELSTELLINGEN = [
     criteria: [
       { code: "OC-2.1", tekst: "Elke selecteerbare bouwsteen verwijst naar één of meer bronpassages met document, pagina en exacte positie (begin en eind) en het letterlijke citaat." },
       { code: "OC-2.2", tekst: "Een controle stelt machinaal vast dat elk citaat letterlijk op de opgeslagen positie staat; een afwijking wordt HOLD.", meting: "check:passages" },
-      { code: "OC-2.3", tekst: "Zonder traceerbare bronpassage komt er geen selecteerbare bouwsteen: het punt blijft HOLD of context." },
+      { code: "OC-2.3", tekst: "Elke selecteerbare bouwsteen heeft minstens één bronpassage; bij een rapport is dat vaak de passage over het risico. Zonder passage blijft het punt HOLD of context. Een controle meet dit in de database.", meting: "check:keten" },
       { code: "OC-2.4", tekst: "Brontekst wordt nooit herschreven of genormaliseerd. Eigen uitwerkingen (afgeleid doel, risico, toetsen) zijn gelabeld als eigen voorstel met een herleiding, zonder er een nieuwe bronplicht van te maken." },
     ],
   },
@@ -33,7 +33,7 @@ export const DOELSTELLINGEN = [
       { code: "OC-3.1", tekst: "Ontbrekende informatie wordt niet aangevuld uit eigen kennis: het veld blijft leeg met reden, of het punt wordt HOLD." },
       { code: "OC-3.2", tekst: "Open punten worden zichtbaar gemaakt voor een mens, bijvoorbeeld in 'Nog te controleren' van de review of in een HOLD-reden." },
       { code: "OC-3.3", tekst: "Eigen normen en toetsen bevatten geen aannametaal zoals 'waarschijnlijk', 'naar verwachting', 'meestal' of 'zou kunnen'. Een controle meldt dit.", meting: "check:keten" },
-      { code: "OC-3.4", tekst: "Elk onderdeel toont zijn herkomst per laag (wet, uitwerking, richtsnoer, praktijk) en een kader of norm wordt alleen als eis genoemd als de bron die noemt; een expliciete grens ('geen ISO-beoordeling geclaimd') is toegestaan." },
+      { code: "OC-3.4", tekst: "Elk onderdeel toont zijn herkomst per laag (wet, uitwerking, richtsnoer, praktijk). Verwijzen naar een ander kader mag, maar dan specifiek: welk artikel of onderdeel, of waarom. Een algemene verwijzing zoals 'conform ISO' wordt gemeld.", meting: "check:keten" },
       { code: "OC-3.5", tekst: "De skills en de MCP-route behandelen brontekst als gegevens, nooit als opdracht." },
     ],
   },
@@ -41,8 +41,8 @@ export const DOELSTELLINGEN = [
     id: "OD-4", titel: "Toetsbaarheid",
     doel: "Elke bouwsteen is bruikbaar voor een auditor: met risico, toets en bewijs, zonder de bron te verbreden.",
     criteria: [
-      { code: "OC-4.1", tekst: "Elke selecteerbare bouwsteen heeft de complete keten: doel, risico, beheersdoelstelling, beheersmaatregel, norm, toetspunten en de toepasselijke opzet- en bestaanstoetsen. Lege velden of opvultekst zijn geen eindinhoud." },
-      { code: "OC-4.2", tekst: "Een controle meet in de database dat elke selecteerbare bouwsteen een risico en een bewijsaanwijzing heeft.", meting: "check:keten" },
+      { code: "OC-4.1", tekst: "Elke selecteerbare bouwsteen heeft de complete keten: bronpassage, norm, doel, risico, beheersdoelstelling, beheersmaatregel, toets en bewijsaanwijzing. Lege velden of opvultekst zijn geen eindinhoud. Een controle meet dit in de database.", meting: "check:keten" },
+      { code: "OC-4.2", tekst: "De ketencontrole draait mee in de releasestappen en in de kwaliteitsmeting, en een gat in de keten of een bouwsteen zonder bronpassage houdt de release tegen.", meting: "check:keten" },
       { code: "OC-4.3", tekst: "Een toetspunt noemt een functionaris alleen als de norm die functionaris noemt; normadressaat en taakdrager worden niet verward." },
       { code: "OC-4.4", tekst: "Een vage term in de bron (zoals 'passend' of 'tijdig') wordt niet zelf ingevuld met een maat; de toets noemt de bewijsgrens of de beperking." },
     ],

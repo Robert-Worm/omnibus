@@ -37,21 +37,21 @@ const getal = (n) => n.toLocaleString("nl-NL");
 
 /** Haalt de totalen uit het rapport van check-keten. */
 export function leesKeten(tekst) {
-  const m = tekst.match(/Bouwstenen: (\d+)\. Met risico en bewijsaanwijzing: (\d+)\. Zonder risico: (\d+)\. Zonder bewijsaanwijzing: (\d+)\. Met aannametaal: (\d+)\./);
+  const m = tekst.match(/Bouwstenen: (\d+)\. Met complete keten: (\d+)\. Zonder bronpassage: (\d+)\. Met gat in de keten: (\d+)\. Met aannametaal: (\d+)\. Met algemene externe verwijzing: (\d+)\./);
   if (!m) throw new Error("Rapport van check-keten niet herkend.");
-  const [totaal, compleet, zonderRisico, zonderBewijs, aannametaal] = m.slice(1).map(Number);
-  return { totaal, compleet, zonderRisico, zonderBewijs, aannametaal };
+  const [totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen] = m.slice(1).map(Number);
+  return { totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen };
 }
 
 /** Eén regel voor de geschiedenis. */
 export function regel({ datum, release, passages, vragen, keten }) {
   const compleet = keten ? `${getal(keten.compleet)} van ${getal(keten.totaal)}` : "–";
-  return `| ${datum} | \`${release.slice(0, 8)}\` | ${getal(passages.totaal - passages.afwijkend)} van ${getal(passages.totaal)} (${procent(passages.totaal - passages.afwijkend, passages.totaal)}) | ${getal(vragen.door)} van ${getal(vragen.totaal)} (${procent(vragen.door, vragen.totaal)}) | ${getal(vragen.HOLD)} | ${getal(vragen.herschrijven + vragen.schrappen)} | ${compleet} | ${keten ? getal(keten.aannametaal) : "–"} |`;
+  return `| ${datum} | \`${release.slice(0, 8)}\` | ${getal(passages.totaal - passages.afwijkend)} van ${getal(passages.totaal)} (${procent(passages.totaal - passages.afwijkend, passages.totaal)}) | ${getal(vragen.door)} van ${getal(vragen.totaal)} (${procent(vragen.door, vragen.totaal)}) | ${getal(vragen.HOLD)} | ${getal(vragen.herschrijven + vragen.schrappen)} | ${compleet} | ${keten ? getal(keten.aannametaal) : "–"} | ${keten ? getal(keten.verwijzingen) : "–"} |`;
 }
 
 /** Bouwt de pagina; bestaande geschiedenisregels van andere releases blijven staan. */
 export function pagina(meting, vorige = "") {
-  const kop = "| Gemeten | Release | Bronpassages letterlijk juist | Vragen zonder vormfout | Vragen op HOLD | Te herschrijven of te schrappen | Bouwstenen met risico en bewijsaanwijzing | Bouwstenen met aannametaal |";
+  const kop = "| Gemeten | Release | Bronpassages letterlijk juist | Vragen zonder vormfout | Vragen op HOLD | Te herschrijven of te schrappen | Bouwstenen met complete keten | Bouwstenen met aannametaal | Bouwstenen met algemene externe verwijzing |";
   const oud = vorige.split("\n").filter((r) => /^\| \d{4}-\d{2}-\d{2} \| `/.test(r) && !r.includes(`\`${meting.release.slice(0, 8)}\``));
   const rijen = [regel(meting), ...oud].slice(0, 24);
   return `# Kwaliteitsmeting van de database
@@ -64,15 +64,16 @@ export function pagina(meting, vorige = "") {
 
 - **Bronpassages letterlijk juist:** elke passage staat letterlijk op de opgeslagen plek in de bron (\`check:passages\`).
 - **Vragen zonder vormfout:** onderzoeks- en interviewvragen zonder vormfout, zoals twee vragen in één zin of een gesloten vraag (\`check:questions\`). Een vraag met een vormfout staat op HOLD en wordt niet automatisch aangepast; de inhoudelijke beoordeling doet de skill \`omnibus-review-questions\`.
-- **Bouwstenen met risico en bewijsaanwijzing:** elke selecteerbare bouwsteen uit een rapport, wet of kader noemt het risico en een aanwijzing voor bewijs in de opzet- of bestaanstoets (\`scripts/check-keten.mjs\`). Modelvragen tellen niet mee.
+- **Bouwstenen met complete keten:** elke selecteerbare bouwsteen uit een rapport, wet of kader heeft een bronpassage, norm, doel, risico, beheersdoelstelling, beheersmaatregel, toets en een aanwijzing voor bewijs (\`scripts/check-keten.mjs\`). Bij een rapport is de bronpassage vaak de passage over het risico. Modelvragen tellen niet mee.
 - **Bouwstenen met aannametaal:** eigen geformuleerde normen en toetsen met een gissing, zoals *waarschijnlijk* of *naar verwachting*. Dit is een melding om te beoordelen. Letterlijke brontekst telt niet mee, want die wordt nooit herschreven ([B-029](besluiten.md#b-029)).
+- **Bouwstenen met algemene externe verwijzing:** eigen tekst noemt een ander kader, zoals ISO of de AVG, zonder te zeggen welk artikel of onderdeel bedoeld is, terwijl de bron dat kader niet noemt. Verwijzen mag; zeg dan welk deel, of waarom. Dit is een melding om te beoordelen.
 
 De meting gebruikt de database die bij de huidige code hoort, met een gecontroleerd controlegetal. De pagina bevat geen brontekst.
 
 ## Uitkomst per database
 
 ${kop}
-| --- | --- | --- | --- | ---: | ---: | --- | ---: |
+| --- | --- | --- | --- | ---: | ---: | --- | ---: | ---: |
 ${rijen.join("\n")}
 
 ## Volgende stap

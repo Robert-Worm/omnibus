@@ -66,8 +66,9 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 - Formuleer eigen normen en toetsen zonder gissing: geen *waarschijnlijk*,
   *naar verwachting*, *meestal*, *lijkt* of *zou kunnen*. Wat de bron niet zegt, is
   onbekend of HOLD. Noem in een toetspunt alleen een functionaris die de norm
-  noemt. `npm run check:keten` meldt aannametaal en een ontbrekend
-  risico of bewijs in de agentcatalogus.
+  noemt. Verwijs je naar een ander kader, noem dan het artikel of onderdeel,
+  of waarom. `npm run check:keten` meldt een gat in de keten, een bouwsteen
+  zonder bronpassage, aannametaal en een algemene externe verwijzing.
 - Laat bron-, juridisch/kader- en praktisch perspectief onafhankelijk de exacte
   eindbasis beoordelen; geen auteur-selfapproval of opgefriste reviewhashes.
   Technische structuurcontrole vervangt deze beoordelingen niet.

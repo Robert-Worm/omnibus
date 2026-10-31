@@ -1,9 +1,9 @@
 name: Kwaliteitsmeting
 
 # Meet de inhoudskwaliteit van de openbare database (B-028, B-029): bronpassages die
-# letterlijk kloppen, vragen zonder vormfout en bouwstenen met risico en bewijsaanwijzing.
-# Draait als de code naar een nieuwe database wijst, en elke maand als extra controle. Werkt docs/beheer/kwaliteitsmeting.md en de badge
-# in README.md bij. Zie scripts/kwaliteitsmeting.mjs.
+# letterlijk kloppen, vragen zonder vormfout en bouwstenen met een complete keten.
+# Draait als de code naar een nieuwe database wijst, en elke maand als extra controle.
+# Werkt docs/beheer/kwaliteitsmeting.md en de badge in README.md bij. Zie scripts/kwaliteitsmeting.mjs.
 on:
   push:
     branches: [main]

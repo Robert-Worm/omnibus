@@ -34,18 +34,32 @@ Commit `2be24f0`, model `claude-sonnet-5-5`. Doelstelling OD-5 is opnieuw gedraa
 | OD-5 Risicobewust | 1 | 3 | De MCP-route weigert HOLD; voor de webapplicatie zag de auditor alleen de instructie |
 | **Samen** | **4** | **17** | Geen ☐ |
 
-◐ betekent hier bijna steeds hetzelfde: het staat goed in de skills, maar er draait geen controle die het meet. Dat is eerlijk, en het wijst de weg. Waar een controle te maken is, kan ◐ ☑ worden. Twee voor de hand liggende zijn:
+◐ betekent hier bijna steeds hetzelfde: het staat goed in de skills, maar er draait geen controle die het meet. Niet alles hoeft ☑ te worden. Of de lezingen echt blind waren (OC-1.1), meet je niet in de opzet.
 
-1. **Elke selecteerbare bouwsteen heeft minstens één bronpassage** (OC-2.3), gemeten in de database.
-2. **De hele keten is gevuld**, niet alleen risico en bewijs (OC-4.1): ook doel, beheersdoelstelling en beheersmaatregel.
+## Bijgewerkt na de eerste ronde
 
-Niet alles hoeft ☑ te worden. Of de lezingen echt blind waren (OC-1.1), meet je niet in de opzet.
+De beheerder besliste op 31 oktober 2026 wat er met de uitkomst gebeurt. Een nieuwe volledige ronde is daarvoor niet nodig.
+
+**Bronpassage en complete keten worden gemeten.** `check:keten` controleert nu per selecteerbare bouwsteen de hele keten: bronpassage, norm, doel, risico, beheersdoelstelling, beheersmaatregel, toets en bewijsaanwijzing. Bij een rapport is de bronpassage vaak de passage over het risico. Een gat in de keten of een bouwsteen zonder bronpassage houdt de release tegen. Op de database van 30 oktober: 1.017 van 1.017 compleet. Zo worden OC-2.3 en OC-4.1 een meting in plaats van alleen een instructie.
+
+**Verwijzen naar een ander kader mag, maar specifiek.** Een kader mag naar een ander kader verwijzen. "Conform ISO" zegt alleen weinig: noem welk artikel of onderdeel, of waarom je verwijst. `check:keten` meldt een algemene verwijzing in eigen tekst als de bron dat kader zelf niet noemt. Het is een melding, geen afkeur. Op de database van 30 oktober zijn dat 2 bouwstenen uit het CIO-besluit met "geen rechtstreeks bewijs van AVG-naleving". Daar staat wel waarom de AVG genoemd wordt, maar niet welk deel. De les staat in de skills `omnibus-add-report` en `omnibus-add-framework`.
+
+**Citaten worden in vier soorten ingedeeld.** Het citaat moet bij het juiste bestand staan.
+
+| Uitkomst | Wanneer | Telt als bewijs? |
+| --- | --- | --- |
+| Letterlijk | Staat zo in het genoemde bestand, ook als het model regels code-commentaar samenvoegde | Ja |
+| Bijna | Kleine afwijking of licht ingekort: minstens 80% van de woorddrietallen klopt | Ja, met een melding om te kijken of het geen samenvatting is |
+| Ander bestand | Staat letterlijk in een ander bestand dan het model noemde | Nee |
+| Niet | Niet te vinden; mogelijk samengevat of verzonnen | Nee |
+
+Een samenvatting is niet de bedoeling. Het model wordt daarom gevraagd één aaneengesloten stuk over te nemen.
 
 ## Twee vragen uit de eerste ronde
 
-**Waarom stonden sommige citaten niet letterlijk in het bestand?** Agent-Auditor zoekt een citaat letter voor letter op, alleen met witruimte gelijkgetrokken. Het model voegde soms twee regels code-commentaar samen tot één zin. De tekens `//` aan het begin van elke regel kloppen dan niet meer, ook al staat de zin er wel. Een paar keer vatte het model echt samen. De eigen auditor haalt commentaartekens weg voor het zoeken, en vraagt het model om één aaneengesloten stuk over te nemen. In deze ronde vond de auditor 46 van de 47 citaten terug. Het ene dat niet klopte, *Geen Unicode-normalisatie*, staat wel in de repository, maar in de kadermethode en niet in de rapportmethode die het model noemde. Precies daarvoor is de controle er: een citaat telt alleen in het bestand dat het model zelf aanwijst.
+**Waarom stonden sommige citaten niet letterlijk in het bestand?** Agent-Auditor zoekt een citaat letter voor letter op, alleen met witruimte gelijkgetrokken. Het model voegde soms twee regels code-commentaar samen tot één zin. De tekens `//` aan het begin van elke regel kloppen dan niet meer, ook al staat de zin er wel. Een paar keer vatte het model echt samen. In de eigen ronde vond de auditor 46 van de 47 citaten terug. Het ene dat niet klopte, *Geen Unicode-normalisatie*, staat in de kadermethode en niet in de rapportmethode die het model noemde. Dat heet nu *ander bestand*.
 
-**Is "geen controle op kaders die niet in de bron staan" een echt gat?** Het criterium bedoelt een norm die zegt "conform ISO 27001" terwijl de bron ISO niet noemt. Dan lijkt het alsof de bron dat eist. De database van 30 oktober is daarop doorzocht. ISO en AVG komen 10 keer voor in eigen toetsteksten zonder dat de norm ze noemt; BIO alleen waar de bron BIO noemt. Elke keer is het een uitdrukkelijke grens, zoals "geen volledige ISO 50001-beoordeling geclaimd" of "geen rechtstreeks bewijs van AVG-naleving". Dat is juist goed. In de praktijk is er dus geen gat. Het criterium staat als OC-3.4 in de eigen auditor, met die uitzondering erbij.
+**Is "geen controle op kaders die niet in de bron staan" een echt gat?** De database van 30 oktober is daarop doorzocht. ISO en AVG komen 10 keer voor in eigen toetsteksten zonder dat de norm ze noemt. Elke keer is het een grens, zoals "geen volledige ISO 50001-beoordeling geclaimd". Verkeerde eisen zijn er dus niet; wel kan het specifieker. Zie hierboven.
 
 ## De auditor draaien
 
@@ -60,7 +74,7 @@ Het rapport en de ruwe uitkomst komen in een nieuwe map onder `work/`, buiten Gi
 
 ## Volgende stap
 
-De beheerder kiest welke ◐ een controle krijgen. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279).
+Een volgende ronde draaien als de skills of controles flink veranderen. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279).
 
 ---
 

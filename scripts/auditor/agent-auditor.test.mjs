@@ -15,16 +15,22 @@ test("alle bestanden van de bundel bestaan", () => {
   assert.deepEqual(bundel(BESTANDEN).ontbreekt, []);
 });
 
-test("een citaat uit meerdere commentaarregels telt als letterlijk", () => {
-  const inhoud = { "a.mjs": "// Controleert of elke passage\n// letterlijk in de bron staat.\nconst x = 1;" };
-  const [goed, fout, weg] = controleerBewijs([
-    { bestand: "a.mjs", citaat: "Controleert of elke passage letterlijk in de bron staat." },
-    { bestand: "a.mjs", citaat: "Controleert elke passage." },
-    { bestand: "b.mjs", citaat: "x" },
+test("citaten: letterlijk over commentaarregels heen, bijna, ander bestand of niet", () => {
+  const inhoud = {
+    "a.mjs": "// Controleert of elke passage in de database\n// letterlijk in de bron staat, op de opgeslagen positie.\nconst x = 1;",
+    "b.md": "Geen Unicode-normalisatie of OCR-herstel.",
+  };
+  const uit = controleerBewijs([
+    { bestand: "a.mjs", citaat: "Controleert of elke passage in de database letterlijk in de bron staat" },
+    { bestand: "a.mjs", citaat: "Controleert of elke passage in de database letterlijk in de bron staat, op de juiste positie." },
+    { bestand: "a.mjs", citaat: "Geen Unicode-normalisatie" },
+    { bestand: "a.mjs", citaat: "Het script controleert alle citaten." },
+    { bestand: "c.md", citaat: "zzz qqq" },
   ], inhoud);
-  assert.equal(goed.gevonden, true);
-  assert.equal(fout.gevonden, false);
-  assert.equal(weg.notitie, "bestand niet in de bundel");
+  assert.deepEqual(uit.map((u) => u.uitkomst), ["letterlijk", "bijna", "ander bestand", "niet", "niet"]);
+  assert.deepEqual(uit.map((u) => u.gevonden), [true, true, false, false, false]);
+  assert.equal(uit[2].notitie, "staat in b.md");
+  assert.equal(uit[4].notitie, "bestand niet in de bundel");
   assert.equal(normaliseer("- Lever “de keten”"), 'lever "de keten"');
 });
 
