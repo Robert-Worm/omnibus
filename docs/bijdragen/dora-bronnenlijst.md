@@ -37,6 +37,12 @@ Alle links gaan naar de Nederlandse tekst op [EUR-Lex](https://eur-lex.europa.eu
 | Derde partijen | [Gedelegeerde verordening (EU) 2025/532](https://eur-lex.europa.eu/legal-content/NL/TXT/?uri=CELEX%3A32025R0532) | Uitbesteding (onderaanneming) van die ICT-diensten | art. 30, lid 5 |
 | Derde partijen | [Uitvoeringsverordening (EU) 2024/2956](https://eur-lex.europa.eu/legal-content/NL/TXT/?uri=CELEX%3A32024R2956) | Sjablonen voor het informatieregister | art. 28, lid 9 |
 
+### Actualiteit (gecontroleerd op 31 oktober 2026)
+
+- **DORA zelf** is sinds de publicatie niet gewijzigd; EUR-Lex toont geen wijzigingsbesluiten.
+- **2024/1774** kreeg een rectificatie van artikel 22, een verkeerde artikelverwijzing ([CMS](https://cms.law/en/int/regulatory-news/ec-dora-corrigendum)). Gebruik bij het opnemen de gerectificeerde tekst en controleer of de Nederlandse versie ook is gerectificeerd.
+- **In de maak:** het voorstel *Digital Omnibus* (COM(2025) 837) wil één meldpunt voor incidenten, ook voor meldingen onder DORA-artikel 19. Het wijzigt DORA niet zelf en is nog niet aangenomen; de Raad nam op 21 oktober 2026 een standpunt in ([Kontorbund](https://kontorbund.com/notes/eu-digital-omnibus.html)). Volgen tot het is aangenomen.
+
 ## Niveau 2: subkader voor toezichthouders
 
 Deze verordeningen gaan over het toezicht op kritieke ICT-dienstverleners. Ze zijn gericht aan de ESA's en nationale toezichthouders, niet aan de financiële entiteit. Ze komen in een apart subkader ([#269](https://github.com/Robert-Worm/omnibus/issues/269)).
@@ -71,7 +77,7 @@ Het NOREA-werkblad en de gids *DORA in Control* (versie 3.2) verwijzen naar deze
 
 ## Wat er nog moet gebeuren
 
-1. Per bron de datum van inwerkingtreding en een eventuele geconsolideerde versie op EUR-Lex vastleggen. Dat gebeurt bij het opnemen.
+1. Per bron de datum van inwerkingtreding, rectificaties en een eventuele geconsolideerde versie op EUR-Lex vastleggen. Dat gebeurt bij het opnemen.
 2. Het artikel in *Werkt uit* controleren tegen de aanhef van elke verordening.
 3. De ESA-richtsnoeren bevestigen (zie *Nog te bevestigen*).
 
