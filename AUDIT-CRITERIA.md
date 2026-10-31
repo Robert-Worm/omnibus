@@ -135,7 +135,9 @@ Of elke test het criterium echt dekt, is nog niet door een mens beoordeeld.
 
 Alle tests behalve de MCP-protocolproef draaien in `npm test` en op GitHub bij elke wijziging. De protocolproef (`npm run test:agent:protocol`) vraagt een verse agentbuild met de actuele database. Met een verouderde build faalden op 31 oktober 3 van de 11 controles; na `npm run build:agent` met de database van 30 oktober slaagden alle 11.
 
-Een eerste handmatige beoordeling tegen de twintig vaste criteria van SAAF Agent-Auditor staat in de [A2-zelfbeoordeling](docs/beheer/a2-zelfbeoordeling.md).
+Een eerste handmatige beoordeling tegen de twintig vaste criteria van SAAF Agent-Auditor staat in de [A2-zelfbeoordeling](docs/beheer/a2-zelfbeoordeling.md). De eigen auditor staat op [Omnibus-auditor](docs/beheer/agent-auditor.md).
+
+Een project van iemand anders openen is apart getoetst: de browsertoets *hostile project text* in `scripts/review-storage-recovery.mjs` opent een project met HTML, script en een formule. De tekst blijft tekst en er draait niets. Die toets vraagt een testbuild en een browser en zit daarom niet in `npm test` ([prompt injection](docs/beheer/prompt-injection.md)).
 
 *Beperking, eerlijk benoemd:* omdat de protocolproef niet in `npm test` zit, kan een fout daarin onopgemerkt blijven tot iemand hem draait.
 

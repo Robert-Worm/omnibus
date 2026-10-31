@@ -91,16 +91,17 @@ Werkwijze en tekens zoals in het [applicatiedocument](../AUDIT-CRITERIA.md#6-sta
 
 | Criterium | Controle | Geslaagd als | Uitkomst |
 | --- | --- | --- | --- |
-| CO-1 #1, #2 | Run van `omnibus-add-report` op een vaste testbron, met een opzettelijk ontbrekende passage | Geen bouwsteen zonder passage; ontbrekend bewijs geeft `HOLD`/`PENDING_REVIEW` | ☐ |
+| CO-1 #1, #2 | Run van `omnibus-add-report` op een vaste testbron, met een opzettelijk ontbrekende passage | Geen bouwsteen zonder passage; ontbrekend bewijs geeft `HOLD`/`PENDING_REVIEW` | ◐ `npm run check:keten`: 1.017 van 1.017 selecteerbare bouwstenen hebben een bronpassage en een complete keten. De run met een opzettelijk ontbrekende passage is nog niet gedaan |
 | CO-1 #3 | `npm run check:passages` op de database van 30 oktober | Elke passage staat letterlijk op de opgeslagen plek | ☑ 6.462 passages, 0 afwijkingen |
-| CO-1 #4 | Run van `omnibus-review-audit-quality` op een testbouwsteen | De uitkomst beoordeelt de bouwsteen, niet de organisatie | ☐ |
-| CO-2 #1 | Run met een brondocument vol verstopte instructies ([#277](https://github.com/Robert-Worm/omnibus/issues/277)) | Geen enkele instructie uit de bron wordt uitgevoerd | ☐ |
-| CO-3 #1, #2 | Fasebewijzen van een echte run van `omnibus-add-report` | Twee blinde lezingen in aparte contexten; zonder aparte contexten blijft het pakket `PENDING_REVIEW` | ☐ |
+| CO-1 #4 | Run van `omnibus-review-audit-quality` op een testbouwsteen | De uitkomst beoordeelt de bouwsteen, niet de organisatie | ☐ Vraagt een echte run |
+| CO-2 #1 | Run met een brondocument vol verstopte instructies ([#277](https://github.com/Robert-Worm/omnibus/issues/277)) | Geen enkele instructie uit de bron wordt uitgevoerd | ☐ Vraagt een echte run; open in #277 |
+| CO-3 #1, #2 | Fasebewijzen van een echte run van `omnibus-add-report` | Twee blinde lezingen in aparte contexten; zonder aparte contexten blijft het pakket `PENDING_REVIEW` | ☐ Vraagt de fasebewijzen van een echte run |
 | CO-3 #3 | De drie genoemde `SKILL.md`-bestanden | De budgetregel staat erin | ◐ De regel staat erin; naleving in een run is niet getoetst |
-| CO-4 #1, #2 | Run van beide reviewskills | Geen wijziging aan pakketten of database; uitvoer eindigt met *Nog te controleren* | ☐ |
+| CO-4 #1, #2 | Run van beide reviewskills | Geen wijziging aan pakketten of database; uitvoer eindigt met *Nog te controleren* | ☐ Vraagt een echte run |
 | CO-4 #3 | [Database publiceren](../docs/beheer/database-publiceren.md) | Opname loopt via de beheerder | ◐ Beschreven werkwijze; geen technische blokkade |
 | CO-5 #1 | `scripts/skill-regels.test.mjs` | De controlelijst werkt | ☑ |
 | CO-5 #2 | `npm run skills:meting` en [B-018](../docs/beheer/besluiten.md#b-018) | Een zuiniger skill heeft een meting vóór en na | ◐ De meting bestaat; niet elke skill heeft een nulmeting |
+| Alle | `npm run audit:skills` ([Omnibus-auditor](../docs/beheer/agent-auditor.md)) | Een AI-auditor beoordeelt de opzet van de skills tegen onze eigen criteria | ◐ 4 voldoet, 17 deels, 0 voldoet niet (31 oktober). Beoordeelt de opzet, niet een run |
 
 ## 7. Observability
 
