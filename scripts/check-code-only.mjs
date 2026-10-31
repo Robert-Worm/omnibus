@@ -18,7 +18,7 @@ const rules=[
   ['credential-url', /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|https?):\/\/[^\s/:"'<>]+:[^\s/@"'<>]+@/i],
 ];
 const checkPath=file=>{if(withheld.has(file)||blocked.test(file)||(file.endsWith('.json')&&!jsonConfigs.has(file)))throw Error('Excluded path in Git: '+file);};
-// Reviewed literals: three negative-test URLs from the wave-5 handovers and one documented header.
+// Reviewed literals: synthetic negative-test URLs and one documented header.
 // Match the exact immutable Git blob AND path, mask only that literal, and scan
 // everything else. No test-directory, domain or whole-file secret exemption.
 // Current fixtures construct these synthetic URLs; history is not rewritten.
@@ -26,6 +26,9 @@ const reviewedFixtures=new Map([
   ['947df70b01dc2d5384c43e6ee21291e5c1b6eb82', ['local-data/server-hosting.test.mjs','https://user:'+'secret@omnibus.example.invalid']],
   ['47c7a17a9c2a0bf39777f94cccfd0e605fa5ab81', ['scripts/start-hosting-options.test.mjs','https://user:'+'password@omnibus.example.invalid']],
   ['118105eac02a192d730ec8090eac7e34f659723b', ['local-data/hosting-release-contract.test.mjs','https://user:'+'secret@${publicHost}']],
+  // Original #234 handover: rejection fixture, already split in the integrated
+  // test. Local history scans also include the unchanged handover branch.
+  ['4d3ce643cd12b24fbc6a0288b19226bf3c09bbd2', ['.github/scripts/rapportvoorstel-lib.test.mjs','https://naam:'+'wachtwoord@example.org/r']],
   // Documentation, not a key: the first version of the harden-agent-repo skill named the
   // header line it tells reviewers to search for (#276). Later versions avoid the literal.
   ['27c8b48a1b9461ae7b35d9474c2874a3a87532e4', ['.claude/skills/harden-agent-repo/SKILL.md','-----BEGIN '+'PRIVATE KEY-----','private-key']],
