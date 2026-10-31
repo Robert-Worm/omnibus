@@ -20,7 +20,7 @@
 
 ## Rapporten
 
-Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur. ❔ betekent: op de titel niet te zeggen of het rapport normen of toetsbare bevindingen bevat.
+Nieuwste eerst. Zoek met Ctrl+F op een woord uit de titel, een jaartal of een auteur. ❔ betekent: uit titel en samenvatting niet te zeggen of het rapport risico's voor beheersing of uitvoering laat zien.
 
 | Bron | Status | Actie |
 | --- | --- | --- |
