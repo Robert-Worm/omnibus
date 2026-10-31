@@ -8,6 +8,8 @@
 
 **Stand:** 27 in de database · 0 in bewerking of ingeleverd · 9.008 open.
 
+**Geschikt voor Omnibus:** elk rapport is op de titel beoordeeld ([B-032](../../beheer/besluiten.md#b-032)): 4.554 geschikt, 2.588 twijfel en 1.974 waarschijnlijk niet geschikt. Niet geschikte open rapporten staan op elke pagina onderaan, ingeklapt. In [werklijst-rapporten.csv](../werklijst-rapporten.csv) kun je filteren op de kolom *geschikt*.
+
 | Soort bron | Open | Totaal |
 | --- | ---: | ---: |
 | [Auditdienst Rijk](#auditdienst-rijk) | 1.322 | 1.417 |
