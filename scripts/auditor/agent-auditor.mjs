@@ -91,7 +91,10 @@ function vraagClaude(tekst, model = "sonnet") {
   if (r.error) throw new Error(`Claude Code niet gevonden of mislukt: ${r.error.message}`);
   const uit = JSON.parse(r.stdout || "{}");
   if (uit.is_error || !uit.result) throw new Error(`Claude Code gaf geen antwoord: ${String(uit.result ?? r.stderr).slice(0, 300)}`);
-  return { tekst: uit.result, model: Object.keys(uit.modelUsage ?? {})[0] ?? model ?? "standaard" };
+  // Claude Code doet bij grote invoer een kleine controle met een licht model ernaast;
+  // het oordeel komt van het gevraagde model.
+  const hoofd = Object.keys(uit.modelUsage ?? {}).find((k) => k.includes(model)) ?? Object.keys(uit.modelUsage ?? {})[0];
+  return { tekst: uit.result, model: hoofd ?? model ?? "standaard", gebruik: uit.modelUsage };
 }
 
 /** Beoordeelt één doelstelling; bij een onleesbaar antwoord één nieuwe poging. */

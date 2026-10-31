@@ -103,11 +103,11 @@ Samen: 3 pass, 14 fail, 2 onbekend en 1 niet van toepassing. De tool is veel str
 2. Vage termen in normen worden niet gemeld (AC-4.2).
 3. De lijst met aannamewoorden miste *typisch* en *meestal*. Die zijn toegevoegd; de database van 30 oktober geeft nog steeds 0 meldingen.
 
-Of de eerste twee de moeite waard zijn, beslist de beheerder. Bij het besluit [B-029](besluiten.md#b-029) blijven score en kleur per norm buiten beschouwing.
+De beheerder besloot op 31 oktober 2026 dat deze criteria niet leidend zijn: de uitgangspunten van Omnibus zijn dat wel. Omnibus heeft daarom een [eigen auditor](agent-auditor.md) met eigen criteria. Daar staat ook waarom het eerste gat in de praktijk geen gat is. Bij het besluit [B-029](besluiten.md#b-029) blijven score en kleur per norm buiten beschouwing.
 
 ## Volgende stap
 
-De beheerder beslist over de twee gaten hierboven. Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
+Verder met de [Omnibus-auditor](agent-auditor.md). Zie [#279](https://github.com/Robert-Worm/omnibus/issues/279) en [epic #276](https://github.com/Robert-Worm/omnibus/issues/276).
 
 ---
 

@@ -69,5 +69,5 @@ export const BESTANDEN = [
   "skills/omnibus-review-audit-quality/SKILL.md", "skills/omnibus-review-audit-quality/references/rubric.md",
   "skills/omnibus-review-questions/SKILL.md",
   "scripts/check-passages.mjs", "scripts/check-keten.mjs", "scripts/scan-questions.mjs", "lib/question-quality.mjs",
-  "lib/framework-model.mjs", "docs/beheer/besluiten.md", "docs/beheer/kwaliteitsmeting.md", "docs/beheer/prompt-injection.md",
+  "lib/framework-model.mjs", "agent-tools/service.mjs", "docs/beheer/besluiten.md", "docs/beheer/kwaliteitsmeting.md", "docs/beheer/prompt-injection.md",
 ];
