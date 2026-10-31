@@ -150,7 +150,7 @@ Wat Omnibus vastlegt, en wat bewust niet:
 Getoetst aan de tien observability-vragen van SAAF (31 oktober 2026). Doel, gebruikers, werkstroom, beheersmaatregelen en faalwijzen staan in dit document en de README's. Drie vragen zijn nog niet beantwoord:
 
 - **Signalen:** een storing van de online versie geeft een issue (zie hierboven). Voor afwijkend gedrag binnen een werkende site is er nog geen signaal.
-- **Succesmaatstaven:** vastgesteld in [B-028](docs/beheer/besluiten.md#b-028): kwaliteit van de inhoud (passages zonder afwijking, interviewvragen zonder vormfout) en bezoektotalen als die er zijn. Het zichtbaar maken op GitHub volgt in [#282](https://github.com/Robert-Worm/omnibus/issues/282).
+- **Succesmaatstaven:** vastgesteld in [B-028](docs/beheer/besluiten.md#b-028): kwaliteit van de inhoud: passages zonder afwijking en interviewvragen zonder vormfout. Het zichtbaar maken op GitHub volgt in [#282](https://github.com/Robert-Worm/omnibus/issues/282).
 - **Auditbewijs na maanden:** de database-zips, controlegetallen en releasenotities blijven bij de releases staan. Serverlogs blijven niet bewaard, bewust.
 
 ---
