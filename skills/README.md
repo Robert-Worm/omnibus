@@ -65,6 +65,7 @@ Gebruik je een andere AI-assistent? Geef hem de hele map van de skill (niet alle
 
 - **Controleer altijd zelf.** Een skill markeert twijfels als HOLD. Een AI-review is geen menselijke goedkeuring.
 - **Rechten en vertrouwelijkheid.** Stuur alleen documenten naar je AI-dienst die je mag delen.
+- **Waaraan een skill moet voldoen** staat in de [auditcriteria voor de skills](AUDIT-CRITERIA.md).
 - **Opnemen in de database** loopt via [meedoen](../docs/bijdragen/README.md): de beheerder voegt de laatste controles toe.
 
 ## Licentie

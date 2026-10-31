@@ -43,7 +43,7 @@ Omnibus draait lokaal en als [proefversie online](https://omnibus.rijksmap.nl), 
 
 ## Verder lezen
 
-De [acceptatiecontracten](docs/beheer/acceptatiecontracten.md) en de [architectuur](docs/bijdragen/architectuur.md) beschrijven wat beschermd moet blijven. `npm run check:code-only` zoekt naar bestanden en geheimen die niet in Git horen; het is geen volledige beveiligingsscan.
+De [auditcriteria](AUDIT-CRITERIA.md) zeggen per beheersdoelstelling waaraan de applicatie en de MCP-server moeten voldoen, met bewijs en bekende gaten. De [acceptatiecontracten](docs/beheer/acceptatiecontracten.md) en de [architectuur](docs/bijdragen/architectuur.md) beschrijven wat beschermd moet blijven. `npm run check:code-only` zoekt naar bestanden en geheimen die niet in Git horen; het is geen volledige beveiligingsscan.
 
 ---
 
