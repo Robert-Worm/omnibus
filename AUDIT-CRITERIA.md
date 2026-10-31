@@ -98,6 +98,7 @@ Wat een auditor redelijkerwijs zou verwachten en wat nu (nog) ontbreekt. Aangevu
 5. **Inhoudelijke juistheid buiten de passagecontrole.** `check:passages` toetst of een passage letterlijk klopt, niet of hij inhoudelijk bij de norm past. Dat beoordeelt de skill `omnibus-review-audit-quality` (zie het skills-document).
 6. **Geen spoor van wie wat bekeek, bewust.** Privacy gaat voor. De server logt alleen technische fouten en weigeringen, zonder adressen of verzoekinhoud. Hooguit komen er later geanonimiseerde totalen, zoals aantallen bezoeken per land; die zijn er nu niet (besluit beheerder, 31 oktober 2026).
 7. **Terugzetten online** gebeurt door opnieuw te bouwen, niet met een bewaarde image ([B-024](docs/beheer/besluiten.md#b-024)).
+8. **Niet elke commit verwijst naar een issue.** Sinds de afspraak van 26 oktober 2026 hadden 14 van de 143 commits geen issuenummer, waarvan 4 van de voortgangsbot (telling van 31 oktober, zoals de *light scan* van SAAF Agent-Auditor). Daarvóór was het ongeveer de helft. Een controle die dit afdwingt, is er nog niet.
 
 ## 6. Status en bewijs
 

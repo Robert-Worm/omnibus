@@ -88,6 +88,13 @@ Omnibus bestaat uit twee delen. Online en met Docker krijg je ze samen; bij een 
 - **De applicatie:** de code van Omnibus. Draait lokaal in je browser. Staat in deze repository, met vaste versies, zoals [versie 0.1.0](https://github.com/Robert-Worm/omnibus/releases/tag/v0.1.0).
 - **De database:** de inhoud, met <!--n:rapporten-->27<!--/n--> rapporten van de Auditdienst Rijk, <!--n:kaders-->7<!--/n--> wetten en kaders en <!--n:modellen-->14<!--/n--> onderzoeksmodellen. Staat als zip van 10 MB bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest).
 
+Daarnaast zijn er twee onderdelen voor AI-assistenten:
+
+- **De AI-koppeling (MCP-server):** laat je eigen AI-assistent bronnen doorzoeken, bouwstenen lezen en een concept-referentiekader met Excel maken. Omnibus roept zelf geen AI-model aan; dat doet jouw assistent. Zie [de AI-koppeling](agent-tools/README.md).
+- **De AI-skills:** werkwijzen waarmee een AI-assistent een bron omzet naar bouwstenen of de kwaliteit beoordeelt. Zie [de skills](skills/README.md).
+
+Waaraan Omnibus, de koppeling en de skills moeten voldoen, met bewijs en bekende gaten, staat in de [auditcriteria](AUDIT-CRITERIA.md).
+
 Applicatie 0.1.0 en de database van 19 oktober 2026 zijn samen getest. Wat er precies in de database zit en wat er nog komt, staat in de [voortgang](docs/bijdragen/voortgang.md).
 
 <a id="aan-de-slag"></a>
