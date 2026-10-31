@@ -80,7 +80,7 @@ De EU AI Act noemen we alleen als richtlijn: de artikelen 13 en 14 gelden voor A
 
 Aangevuld met de auditorblik van de beheerder ([#274](https://github.com/Robert-Worm/omnibus/issues/274)).
 
-1. **Geen test op gerichte instructies in een bron** (CO-2). Een proef met een brondocument vol instructies ontbreekt. Dit krijgt voorrang, omdat deelnemers aan de SAAF-challenge het zeker proberen: [#277](https://github.com/Robert-Worm/omnibus/issues/277).
+1. **Geen test op gerichte instructies in een bron** (CO-2). Een proef met een brondocument vol instructies ontbreekt. Dit krijgt voorrang, omdat deelnemers aan de SAAF-challenge het zeker proberen: [#277](https://github.com/Robert-Worm/omnibus/issues/277) en het [overzicht per invoerplek](../docs/beheer/prompt-injection.md).
 2. **Afhankelijk van de AI-assistent.** Een skill is een instructie; de naleving hangt af van het model en de omgeving van de bijdrager. Omnibus kan niet afdwingen dat de onafhankelijkheid uit CO-3 echt wordt gevolgd.
 3. **Geen vaste meting per skill.** De meting uit CO-5 bestaat; niet elke skill heeft al een nulmeting met kwaliteitsoordeel.
 4. **De EU AI Act is niet juridisch beoordeeld** voor deze toepassing; hij dient hier als richtlijn.

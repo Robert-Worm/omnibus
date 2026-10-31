@@ -66,6 +66,7 @@ AI-specifieke kaders (EU AI Act, OWASP LLM) staan hier bewust niet als doelstell
 3. Gegeven een te groot of ongeldig verzoek, weigert de server vóórdat er iets wordt aangemaakt.
 4. Gegeven de online leesroute (HTTP), zijn er precies vier leesfuncties en geen schrijfroute.
 5. Gegeven een fout, geeft de server geen paden, databasevragen of brontekst prijs.
+6. Gegeven eigen tekst die op een formule of opmaakcode lijkt, zet de Excel-export die als letterlijke tekst in de cel, nooit als formule.
 
 *Beperking, eerlijk benoemd:* `consent: true` is een verklaring van de AI-client, geen bewijs dat een mens akkoord gaf. Omnibus kan dat niet controleren.
 
@@ -91,7 +92,7 @@ AI-specifieke kaders (EU AI Act, OWASP LLM) staan hier bewust niet als doelstell
 
 Wat een auditor redelijkerwijs zou verwachten en wat nu (nog) ontbreekt. Aangevuld met de auditorblik van de beheerder ([#274](https://github.com/Robert-Worm/omnibus/issues/274)).
 
-1. **Prompt injection via de MCP-server.** Brontekst en citaten gaan naar de AI-client van de gebruiker. Staat daar een verstopte instructie in, dan beslist die client wat ermee gebeurt. Omnibus zegt in de werkwijze dat brongegevens geen instructies zijn, maar heeft daar nog geen gerichte test voor. Zie [#277](https://github.com/Robert-Worm/omnibus/issues/277).
+1. **Prompt injection via de MCP-server.** Brontekst en citaten gaan naar de AI-client van de gebruiker. Staat daar een verstopte instructie in, dan beslist die client wat ermee gebeurt. Elk antwoord met broninhoud zegt dat het gegevens zijn, geen instructie (getest), maar of de client dat volgt, ligt bij de client. Overzicht per invoerplek: [prompt injection](docs/beheer/prompt-injection.md), [#277](https://github.com/Robert-Worm/omnibus/issues/277).
 2. **AI-kaders voor wie Omnibus aan een AI-client koppelt.** De MCP-server is een hulpmiddel voor een taalmodel. Voor die koppeling zijn OWASP Top 10 voor LLM-toepassingen LLM01 (*prompt injection*) en LLM06 (*excessive agency*) relevant. Ze staan niet als doelstelling, omdat Omnibus zelf geen model aanroept; de grenzen uit CO-4 en de proef in #277 dekken het deel dat bij Omnibus ligt.
 3. **Menselijke toestemming bij de MCP-server.** Omnibus kan niet vaststellen dat een mens akkoord gaf; het vertrouwt op de AI-client (zie CO-4).
 4. **Geen externe beveiligingsaudit.** De tests en CodeQL zijn geen volledige beveiligingsaudit. De SAAF-challenge is de eerste externe proef.
@@ -126,6 +127,7 @@ Of elke test het criterium echt dekt, is nog niet door een mens beoordeeld.
 | CO-4 #3 | `agent-tools/input-contract.test.mjs` en `agent-tools/output-safety.test.mjs` | Te grote of ongeldige invoer faalt vóór er een bestand ontstaat | ☑ |
 | CO-4 #4 | `agent-tools/read-only-http.test.mjs` | Precies vier leesfuncties; schrijven heeft geen route | ☑ |
 | CO-4 #5 | `agent-tools/read-only-http.test.mjs` en `local-data/server-security.test.mjs` | Fouten geven geen paden, databasevragen of invoer prijs | ☑ |
+| CO-4 #6 | `lib/question-quality-export.test.mjs` | Tekst met `=`, `+`, `-`, `@` of XML-tekens blijft tekst en komt in geen formule | ☑ |
 | CO-5 #1 | `local-data/server-security.test.mjs` | De server weigert schrijfverzoeken, dus kan hij geen projecten bewaren | ◐ Indirect bewijs; dat de browser niets stuurt, toetst de frontend niet apart |
 | CO-5 #2 | `local-data/server-security.test.mjs` en `local-data/server-hosting.test.mjs` | Vreemde `Host` of `Origin` wordt geweigerd | ☑ |
 | CO-5 #3 | `local-data/request-rate-limit.test.mjs` | Eén bezoeker wordt begrensd; anderen niet | ☑ |
