@@ -18,7 +18,7 @@ const rules=[
   ['credential-url', /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|https?):\/\/[^\s/:"'<>]+:[^\s/@"'<>]+@/i],
 ];
 const checkPath=file=>{if(withheld.has(file)||blocked.test(file)||(file.endsWith('.json')&&!jsonConfigs.has(file)))throw Error('Excluded path in Git: '+file);};
-// Three reviewed negative-test literals from the unmodified wave-5 handovers.
+// Reviewed literals: three negative-test URLs from the wave-5 handovers and one documented header.
 // Match the exact immutable Git blob AND path, mask only that literal, and scan
 // everything else. No test-directory, domain or whole-file secret exemption.
 // Current fixtures construct these synthetic URLs; history is not rewritten.
@@ -26,6 +26,9 @@ const reviewedFixtures=new Map([
   ['947df70b01dc2d5384c43e6ee21291e5c1b6eb82', ['local-data/server-hosting.test.mjs','https://user:'+'secret@omnibus.example.invalid']],
   ['47c7a17a9c2a0bf39777f94cccfd0e605fa5ab81', ['scripts/start-hosting-options.test.mjs','https://user:'+'password@omnibus.example.invalid']],
   ['118105eac02a192d730ec8090eac7e34f659723b', ['local-data/hosting-release-contract.test.mjs','https://user:'+'secret@${publicHost}']],
+  // Documentation, not a key: the first version of the harden-agent-repo skill named the
+  // header line it tells reviewers to search for (#276). Later versions avoid the literal.
+  ['27c8b48a1b9461ae7b35d9474c2874a3a87532e4', ['.claude/skills/harden-agent-repo/SKILL.md','-----BEGIN '+'PRIVATE KEY-----','private-key']],
 ]);
 const checkText=(bytes,label,id)=>{
   let text=bytes.toString('utf8');
@@ -34,11 +37,12 @@ const checkText=(bytes,label,id)=>{
   for(const[name,pattern]of rules)if(pattern.test(text))throw Error('Possible '+name+' in '+label+' (value redacted)');
 };
 if(process.argv.includes('--test')){
-  for(const[id,[label,literal]]of reviewedFixtures){
+  for(const[id,[label,literal,rule='credential-url']]of reviewedFixtures){
+    const expected=new RegExp(rule);
     assert.doesNotThrow(()=>checkText(literal,label,id));
-    assert.throws(()=>checkText(literal,label,'unreviewed-blob'),/credential-url/);
-    assert.throws(()=>checkText(literal,'other.test.mjs',id),/credential-url/);
-    assert.throws(()=>checkText(literal+' '+literal,label,id),/credential-url/);
+    assert.throws(()=>checkText(literal,label,'unreviewed-blob'),expected);
+    assert.throws(()=>checkText(literal,'other.test.mjs',id),expected);
+    assert.throws(()=>checkText(literal+' '+literal,label,id),expected);
     assert.throws(()=>checkText(literal+' https://different:'+ 'synthetic@other.invalid',label,id),/credential-url/);
   }
   console.log('Reviewed synthetic credential fixtures: exact blob/path/literal checks passed.');

@@ -28,7 +28,7 @@ Gebruik wat er is: README's, besluiten, tests, de uitkomst van een echte run. No
 
 Doe dit zonder er een zijproject van te maken:
 
-- **Geheimen.** Zoek naar `sk-`, `AKIA`, `-----BEGIN PRIVATE KEY-----` en een `.env` in Git. `npm run check:code-only` doet een deel hiervan. Herschrijf nooit de geschiedenis zonder toestemming van de beheerder.
+- **Geheimen.** Zoek naar `sk-`, `AKIA`, de kopregel van een private key (*BEGIN … PRIVATE KEY*) en een `.env` in Git. `npm run check:code-only` doet een deel hiervan. Herschrijf nooit de geschiedenis zonder toestemming van de beheerder.
 - **Commits zonder issue.** Tel de commits sinds de vorige ronde zonder `#nummer`, zoals de *light scan* van Agent-Auditor dat doet. Zet de telling in de dekkingsgaten.
 - **Observability.** Klopt sectie 7 nog: wat wordt vastgelegd, wat bewust niet (privacy eerst), en wat ontbreekt?
 - **De MCP-protocolproef.** Draai `npm run build:agent -- --settings <database>` en daarna `npm run test:agent:protocol`. Een verouderde build geeft valse fouten.
@@ -50,7 +50,8 @@ Werk de bestanden tijdens het interview bij, zodat de beheerder ze ziet groeien.
 
 ## Stap 5 · Vastleggen
 
-- Commit met het issuenummer van de epic of story, draai `npm test` en push alleen met toestemming van de beheerder.
+- Zet nieuwe bestanden eerst klaar met `git add` en draai dan `npm test`: de grenscontrole leest alleen bestanden die Git kent, ook in de geschiedenis. Schrijf daarom nooit een echte sleutelkop of een tokenvoorbeeld letterlijk in documentatie.
+- Commit met het issuenummer van de epic of story en push alleen met toestemming van de beheerder.
 - Zet open punten als reactie in de epic, met de overdrachtsnotitie uit `docs/beheer/samenwerking-ai.md`.
 - Geen PR in een SAAF-repository zonder nieuw besluit van de beheerder.
 
