@@ -29,6 +29,14 @@ Ontbreken deze gegevens in een oud pakket, laat dan de ontbrekende uitwerking ma
 
 `viewerShapeValidated: true` betekent alleen dat de gedeelde presentatievorm gecontroleerd is, niet dat software de bron inhoudelijk heeft goedgekeurd.
 
+### Meerdere onderzoeksopzetten bij één kader
+
+Een kader kan verschillende gereviewde onderzoeksopzetten aanbieden via `questionPlan.routes`. Elke route bevat een eigen stabiele `routeId`, `title`, `scope`, `central`, `subquestions`, `broadSubquestions` en `questionReview`. De route-ID gebruikt maximaal 50 letters, cijfers, liggende streepjes of underscores. Het bestaande enkelvoudige `questionPlan` blijft geldig.
+
+Per route dekken brede en specifieke deelvragen dezelfde expliciete toetspunten. Samen dekken de routes alle selecteerbare punten; een koppeling naar een onbekend of niet-selecteerbaar punt wordt geweigerd. De review bindt de eigen route én het volledige routeoverzicht aan de broncontext. Veranderde routegrenzen vragen nieuwe review; oude bewijzen mogen niet opnieuw worden gestempeld.
+
+De gebruiker kiest een route bij de bestaande vraagvoorstellen in **Bouw je kader**. De tool kiest niet automatisch de eerste route. De afbakening blijft zichtbaar en is geen uitspraak over wettelijke toepasselijkheid. Opgeslagen projecten behouden de gekozen route en eigen vraagteksten. Deze uitbreiding verandert niets aan de afzonderlijke eisen voor interviewvragen en doorvragen.
+
 ### Wanneer mag een pakket in de lokale viewer?
 
 De bestaande [modelreviewcontrole](model-quality.mjs) controleert verschillende reviewer-ID's, de afzonderlijke beoordelingen en hun binding aan de exacte model- en bronbasis. Het resultaat is `READY_FOR_INTEGRATION_REVIEW`. Volgens de [bestaande reviewwerkwijze](../skills/omnibus-add-model/references/question-quality.md#reviewbewijs) verifieert de coördinator daarnaast de onafhankelijkheid en werkelijke bronlezing buiten het JSON. Alleen verschillende `actorId`-waarden zijn daarvoor geen bewijs.

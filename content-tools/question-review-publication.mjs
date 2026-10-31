@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { assertJsonData } from './runtime-author-data.mjs';
 import { questionReviewIds, questionReviewIssues, readQuestionReview,
   QUESTION_REVIEW_PUBLICATION_FORMAT } from '../lib/question-quality-review.mjs';
-import {questionPlanInventory} from '../lib/source-question-plan.mjs';
+import {questionPlanInventory,questionPlanItemId} from '../lib/source-question-plan.mjs';
 
 const sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const need = (ok, detail) => { if (!ok) throw Error('Question publication: ' + detail); };
@@ -59,6 +59,6 @@ export function prepareQuestionPlanPublication({plan, ...input}) {
   need(plan.central.trim() && plan.subquestions.length && plan.broadSubquestions?.length,
     'central, broad and specific questions required for a new source plan');
   const prepared=prepareQuestionReviewPublication({...input,
-    itemId:input.sourceId+':question-plan',questions});
+    itemId:questionPlanItemId(input.sourceId,plan),questions});
   return {...prepared,plan:{...structuredClone(plan),questionReview:{...prepared.publication,planInventory:questions}}};
 }

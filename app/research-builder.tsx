@@ -173,11 +173,12 @@ export default function ResearchBuilder({
   const modelPlan = useMemo(()=>composerVisible && selectedModelId ? modelQuestionPlan(draft,selectedModelId,{themeIds,framework,models,direction}) : null,
     [composerVisible,selectedModelId,draft,themeIds,framework,models,direction]);
   const selectedSourceId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || "").match(/^source:([^:]+)/)?.[1];
+  const selectedSourcePlanKey=String(chosenProposalKey||activeProposal?.key||roots.find(q=>q.id===centralTarget)?.planKey||'');
   const hasBroadQuestions=useMemo(()=>Boolean(selectedSourceId&&sourceQuestionDetails(selectedSourceId).includes('broad')),[selectedSourceId]);
   const sourceDetail=hasBroadQuestions?subquestionDetail:'specific';
   const composerContext=useMemo(()=>({...proposalContext,allowOverlap:true,subquestionDetail:sourceDetail}),[proposalContext,sourceDetail]);
-  const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail) : null,
-    [composerVisible,modelPlan,selectedSourceId,draft,direction,sourceDetail]);
+  const sourcePlan = useMemo(()=>composerVisible && !modelPlan && selectedSourceId ? sourceQuestionPlan(draft,selectedSourceId,direction,sourceDetail,selectedSourcePlanKey) : null,
+    [composerVisible,modelPlan,selectedSourceId,draft,direction,sourceDetail,selectedSourcePlanKey]);
   const selectedProcessId = ownCentral ? undefined : (chosenProposalKey || activeProposal?.key || roots.find(q=>q.id===centralTarget)?.planKey || '').match(/^process:([^:]+)/)?.[1];
   const processPlan = useMemo(()=>composerVisible && selectedProcessId ? processQuestionPlan(draft,selectedProcessId,direction) : null,
     [composerVisible,selectedProcessId,draft,direction]);
@@ -366,7 +367,7 @@ export default function ResearchBuilder({
       }
       if(sourcePlan) {
         return adoptSourceQuestionPlan(draft,selectedSourceId,modelMode,
-          {targetId:centralTarget,text,origin:firstOrigin,design:selectedDesign,selectedKeys:[],subquestionDetail:sourceDetail});
+          {targetId:centralTarget,text,origin:firstOrigin,design:selectedDesign,selectedKeys:[],subquestionDetail:sourceDetail,planKey:sourcePlan.key});
       }
       if(processPlan) {
         return adoptProcessQuestionPlan(draft,selectedProcessId,modelMode,
@@ -1057,6 +1058,7 @@ export default function ResearchBuilder({
             <div className="composer-wording-heading"><div id="central-question-label" className="composer-field-label"><TermHelp id="central">Centrale vraag</TermHelp></div><QuestionWordingCycle text={firstText} label="centrale vraag" disabled={disabled} onChange={text=>{setFirstText(text);setFirstOrigin('user');if(ownCentral)ownText.current=text;setMessage('Formulering aangepast. Betekenis en bouwstenen zijn gelijk gebleven.');}}/></div>
             <Textarea id="central-question-input" ref={firstInput} aria-labelledby="central-question-label" value={firstText} maxLength={2000} rows={3} disabled={disabled} placeholder="Schrijf hier je centrale onderzoeksvraag…"
               onChange={e=>{if(activeProposal?.topic)setChosenTopic(activeProposal.topic);if(activeProposal?.key)setChosenProposalKey(activeProposal.key);if(activeProposal?.modelId)setChosenModelId(activeProposal.modelId);setFirstText(e.target.value);setFirstOrigin('user');if(ownCentral)ownText.current=e.target.value;}}/>
+            <ProposalCoverage scopeNote={sourcePlan?.scopeNote}/>
             {alternatives && alternativeStarts.length>0 && <section className="composer-alternatives" aria-label="Andere vraagvoorstellen">
               <Input aria-label="Zoek vraagvoorstel" placeholder="Zoek een bron of onderwerp…" value={proposalQuery} onChange={e=>setProposalQuery(e.target.value)}/>
               <div>{alternativeStarts.filter(p=>(p.proposal.label+' '+p.proposal.text).toLocaleLowerCase('nl').includes(proposalQuery.toLocaleLowerCase('nl'))).map(({proposal:p,matched})=><button type="button" disabled={disabled} key={p.key} onClick={()=>pickProposal(p)}><small>{p.label} · {matched} passende bouwstenen</small><span>{p.text}</span></button>)}</div>

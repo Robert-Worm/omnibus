@@ -166,6 +166,10 @@ function LegacyFoundationWorkspace({
   const activeSource =
     view.coverage.find((c) => c.source.id === sourceId)?.source ||
     (view.coverage.length === 1 ? view.coverage[0].source : null);
+  const destinationPlanKey=activeSource&&(destinationQuestion?.planKey===`source:${activeSource.id}`||
+    destinationQuestion?.planKey?.startsWith(`source:${activeSource.id}:route:`))?destinationQuestion.planKey:undefined;
+  const questionPlan=activeSource&&foundationQuestionPlans[activeSource.id]?
+    sourceQuestionPlan(draft,activeSource.id,destinationQuestion?.researchDesign?.direction,destinationQuestion?.subquestionDetail,destinationPlanKey):null;
   const processContext = activeProcesses.find(p=>p.id===processId && p.sourceIds.includes(activeSource?.id ?? ''));
   const groupHints = processContext ? processGroupHints(view.groups,processContext.id) : [];
   function choose(items: typeof view.filtered, include: boolean) {
@@ -299,8 +303,8 @@ function LegacyFoundationWorkspace({
             <details className="foundation-coverage foundation-question-plan">
               <summary>Voorgestelde onderzoeksopzet</summary>
               <div className="suggested-question-tree">
-                <div className="suggested-central-question"><span>{destination ? 'Bestaande centrale vraag · blijft ongewijzigd' : 'Centrale vraag'}</span><p>{destinationQuestion?.text || sourceQuestionPlan(draft,activeSource.id)?.text}</p></div>
-                <ol aria-label="Voorgestelde deelvragen">{sourceQuestionPlan(draft,activeSource.id,destinationQuestion?.researchDesign?.direction)?.subquestions.filter((q:{ids:string[]})=>q.ids.length).map((q:{key:string;text:string;ids:string[];scopeNote?:string}) => <li key={q.key}><span>Deelvraag · {q.ids.length} gekozen normen</span><p>{q.text}</p>{q.scopeNote && <small>{q.scopeNote}</small>}</li>)}</ol>
+                <div className="suggested-central-question"><span>{destination ? 'Bestaande centrale vraag · blijft ongewijzigd' : 'Centrale vraag'}</span><p>{destinationQuestion?.text || questionPlan?.text || 'Kies bij Bouw je kader het vraagvoorstel dat past bij je onderzoek.'}</p>{questionPlan?.scopeNote&&<small>{questionPlan.scopeNote}</small>}</div>
+                <ol aria-label="Voorgestelde deelvragen">{questionPlan?.subquestions.filter((q:{ids:string[]})=>q.ids.length).map((q:{key:string;text:string;ids:string[];scopeNote?:string}) => <li key={q.key}><span>Deelvraag · {q.ids.length} gekozen normen</span><p>{q.text}</p>{q.scopeNote && <small>{q.scopeNote}</small>}</li>)}</ol>
               </div>
               {centralQuestions.length > 0 && <label className="source-plan-destination">Vragen toevoegen aan
                 <select aria-label="Vragen toevoegen aan" value={destination} onChange={e=>setQuestionDestination(e.target.value)}>
@@ -310,11 +314,12 @@ function LegacyFoundationWorkspace({
               </label>}
               <p>Neemt alleen deelvragen met gekozen normen over. Normen bieden houvast; bepaal welk aanvullend bewijs nodig is om je vragen te beantwoorden.</p>
               <Button disabled={disabled} onClick={() => {
+                if(!questionPlan){navigate('framework');return;}
                 try {
                   onChange(adoptFoundationQuestions(draft, activeSource.id, {selectedOnly:true,...(destination ? {targetId:destination} : {})}) as Draft);
                   navigate("framework");
                 } catch (e) { setMessage(e instanceof Error ? e.message : "Vragen konden niet worden toegevoegd."); }
-              }}>Gebruik deze vragen</Button>
+              }}>{questionPlan?'Gebruik deze vragen':'Kies je vraagopzet'}</Button>
             </details>
           )}
           {!!view.contextItems.length && <details className="foundation-scope-notes">

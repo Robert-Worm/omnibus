@@ -1,7 +1,7 @@
 // Pure admission checks, shared with standalone skills. No database access.
 import {createHash} from 'node:crypto';
 import {questionReviewIds,readQuestionReview} from '../lib/question-quality-review.mjs';
-import {questionPlanInventory} from '../lib/source-question-plan.mjs';
+import {questionPlanInventory,questionPlanItemId,sourceQuestionPlanOptions} from '../lib/source-question-plan.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
@@ -125,7 +125,9 @@ export function verifyLocalReportQuestions(framework, reuse, publishedInterviews
  * Changing a norm, actor, exception, link or source invalidates question review. */
 export function frameworkQuestionContext(catalogue, bank) {
   const {questionPlan: _plan, interviewReviews: _interviews, ...normative} = catalogue;
-  return {catalogue: normative, bank};
+  return {catalogue: normative, bank,
+    ...(_plan && Object.hasOwn(_plan,'routes') ? {questionRoutes:sourceQuestionPlanOptions(_plan)
+      .map(({questionReview:_review,...route})=>route)} : {})};
 }
 
 /** New local framework packages must not silently publish an empty plan.
@@ -140,7 +142,7 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   // questions. Its existing source-review and selection gates remain binding.
   if (!points.length) {
     const plans=[packet.questionPlan,catalogue.questionPlan];
-    if(plans.some(plan=>plan?.central?.trim()||plan?.subquestions?.length||plan?.broadSubquestions?.length)||
+    if(plans.some(plan=>plan?.central?.trim()||plan?.subquestions?.length||plan?.broadSubquestions?.length||plan?.routes?.length)||
         Object.keys(catalogue.interviewReviews??{}).length)
       fail('framework without selectable points must not offer a question plan or interviews');
     return;
@@ -148,16 +150,10 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   const keys = points.map(point => sourceId + ':' + point.id);
   if (new Set(keys).size !== keys.length) fail('duplicate local framework point');
   const plan = packet.questionPlan;
-  if (!plan || !plan.central?.trim() || !plan.subquestions?.length || !plan.broadSubquestions?.length)
+  const options=sourceQuestionPlanOptions(plan);
+  if (!options.length || options.some(route=>!route.central?.trim()||!route.subquestions?.length||!route.broadSubquestions?.length))
     fail('local framework needs central, broad and specific questions');
-  const {questionReview, ...authoredPlan} = plan;
   if (JSON.stringify(plan) !== JSON.stringify(catalogue.questionPlan)) fail('framework plan differs from reviewed catalogue');
-  const questions = questionPlanInventory(plan);
-  for (const rows of [plan.subquestions, plan.broadSubquestions]) {
-    const covered = new Set(rows.flatMap(row => row.originKeys));
-    if (covered.size !== keys.length || keys.some(key => !covered.has(key)))
-      fail('framework broad/specific question coverage differs from selectable points');
-  }
   function check(capsule, itemId, item, inventory) {
     if (!capsule) fail('missing local framework question capsule: ' + itemId);
     verifyQuestionCapsule(capsule);
@@ -169,8 +165,19 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
     if (JSON.stringify(fields(capsule.questions)) !== JSON.stringify(fields(inventory)))
       fail('framework receipt questions differ from the offered inventory');
   }
-  check(questionReview, sourceId + ':question-plan', authoredPlan, questions);
-  if (JSON.stringify(questionReview.planInventory) !== JSON.stringify(questions)) fail('framework plan inventory differs');
+  const allCovered=new Set(), allowed=new Set(keys);
+  for (const route of options) {
+    const {questionReview,...authoredPlan}=route, questions=questionPlanInventory(route);
+    const specific=new Set(route.subquestions.flatMap(row=>row.originKeys));
+    const broad=new Set(route.broadSubquestions.flatMap(row=>row.originKeys));
+    if(specific.size!==broad.size||[...specific].some(key=>!broad.has(key)||!allowed.has(key)))
+      fail('framework broad/specific question coverage differs from selectable points');
+    for(const key of specific)allCovered.add(key);
+    check(questionReview,questionPlanItemId(sourceId,route),authoredPlan,questions);
+    if(JSON.stringify(questionReview.planInventory)!==JSON.stringify(questions))fail('framework plan inventory differs');
+  }
+  if(allCovered.size!==keys.length||keys.some(key=>!allCovered.has(key)))
+    fail('framework broad/specific question coverage differs from selectable points');
   const interviews = catalogue.interviewReviews;
   if (!interviews || Array.isArray(interviews) || Object.keys(interviews).length !== keys.length ||
       keys.some(key => !Object.hasOwn(interviews, key))) fail('incomplete framework interview coverage');
