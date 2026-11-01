@@ -103,11 +103,11 @@ Deze route is voor ontwikkelaars, of voor wie precies wil zien wat er gebeurt.
 | --- | --- | --- |
 | [Git](https://git-scm.com/) | Om de code op te halen | `git --version` |
 | [Node.js 24.21](https://nodejs.org/) met npm 11.19 (zie `.nvmrc`) | Om Omnibus te bouwen en te starten | `node --version` en `npm --version` |
-| De database-zip | De inhoud: rapporten, wetten, kaders en modellen | Download bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) |
+| De database | De inhoud: rapporten, wetten, kaders en modellen | Stap 3 haalt de versie op die bij de code hoort |
 
 ```mermaid
 flowchart TD
-    A["1 · Code ophalen"] --> B["2 · Installeren"] --> C["3 · Database uitpakken"] --> D["4 · Controleren<br/>en bouwen"] --> E["5 · Starten"]
+    A["1 · Code ophalen"] --> B["2 · Installeren"] --> C["3 · Database ophalen"] --> D["4 · Controleren<br/>en bouwen"] --> E["5 · Starten"]
     classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
 ```
 
@@ -128,20 +128,20 @@ Dit duurt een paar minuten. npm haalt de bibliotheken op die Omnibus gebruikt.
 
 **Gelukt als:** npm eindigt zonder `ERR!`.
 
-### 3. Pak de database uit
-
-Download `omnibus-database-*.zip` bij de [nieuwste release](https://github.com/Robert-Worm/omnibus/releases/latest) (ongeveer 20 MB; uitgepakt ongeveer 160 MB). Maak de map `local-data/runtime/` aan (die zit niet in Git) en pak de zip daarin uit. Let op: Verkenner en Finder maken bij uitpakken vaak een extra map met de naam van de zip. Verplaats de bestanden dan één map omhoog.
+### 3. Haal de database op
 
 ```text
-mkdir local-data/runtime
+npm run database:ophalen
 ```
+
+De opdracht haalt de database op die bij deze versie van de code hoort (ongeveer 20 MB; uitgepakt ongeveer 160 MB). Het is dezelfde versie als bij Docker en bij één opdracht; hij staat vast in `scripts/database-release.mjs`. De opdracht controleert het controlegetal van de zip en van elk bestand erin, en zet de database pas daarna in `local-data/runtime/`. Staat daar al een database, dan blijft die staan; de opdracht overschrijft niets.
 
 Daar staan dan:
 
 - `catalogue.sqlite`: de database;
 - `local-build.json`: de instellingen, met twee controlegetallen (hashes) die bij deze database horen.
 
-**Gelukt als:** beide bestanden rechtstreeks in `local-data/runtime/` staan, niet in een extra map.
+**Gelukt als:** je `Database opgehaald en gecontroleerd` ziet, of de melding dat er al een database staat.
 
 ### 4. Controleer en bouw
 
@@ -214,7 +214,9 @@ Vervang zo nodig eerst de database, zoals hieronder beschreven. Daarna controlee
 
 **Eén opdracht:** hernoem de map `local-data/runtime` in Verkenner of Finder naar een vrije naam, bijvoorbeeld `runtime-vorig`. Laat die oude map staan. Voer daarna `node scripts/installeer.mjs` uit. Zonder bestaande databasemap haalt de installer de database op die in jouw code is vastgelegd. Dat is niet automatisch de nieuwste database. Met een bestaande map gebruikt hij die opnieuw.
 
-**Stap voor stap:** kies de database die bij jouw code past. Neem de downloadlink en het SHA-256-controlegetal van de zip over uit die release. Vervang `<zip-url>` en `<sha256>` hieronder. De map `local-data/runtime-nieuw` mag nog niet bestaan.
+**Stap voor stap:** hernoem de map `local-data/runtime` naar een vrije naam, bijvoorbeeld `runtime-vorig`, en voer `npm run database:ophalen` opnieuw uit. Je krijgt dan de database die in jouw code is vastgelegd.
+
+Wil je bewust een andere database, bijvoorbeeld uit een nieuwere release? Neem de downloadlink en het SHA-256-controlegetal van de zip over uit die release. Vervang `<zip-url>` en `<sha256>` hieronder. Beide zijn verplicht. De map `local-data/runtime-nieuw` mag nog niet bestaan.
 
 ```text
 node scripts/fetch-release-database.mjs --url <zip-url> --sha256 <sha256> --out local-data/runtime-nieuw
@@ -234,7 +236,7 @@ Ga alleen door na `VERIFIED_RUNTIME_DATABASE`. Hernoem in Verkenner of Finder de
 
 ## Samengevat
 
-Kies je route. Online proberen kan direct, zonder installatie. Docker of één opdracht is de snelste weg naar Omnibus op je eigen computer. Stap voor stap is voor wie wil zien wat er gebeurt: code ophalen, installeren, de database uitpakken in `local-data/runtime/`, controleren, bouwen en starten.
+Kies je route. Online proberen kan direct, zonder installatie. Docker of één opdracht is de snelste weg naar Omnibus op je eigen computer. Stap voor stap is voor wie wil zien wat er gebeurt: code ophalen, installeren, de database ophalen in `local-data/runtime/`, controleren, bouwen en starten. Elke route gebruikt de database die bij de gekozen code hoort.
 
 ## Volgende stap
 

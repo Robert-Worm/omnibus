@@ -7,7 +7,7 @@
   "scripts": {
     "check:code-only": "node scripts/check-code-only.mjs",
     "release:prepare": "node scripts/prepare-release.mjs",
-    "test:release-prepare": "node --test scripts/prepare-release.test.mjs scripts/fetch-release-database.test.mjs",
+    "test:release-prepare": "node --test scripts/prepare-release.test.mjs scripts/fetch-release-database.test.mjs scripts/database-ophalen.test.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "test:voortgang": "node --test .github/scripts/voortgang.test.mjs .github/scripts/rapportvoorstel-lib.test.mjs .github/scripts/backlog.test.mjs .github/scripts/overdracht.test.mjs .github/scripts/gezondheid.test.mjs .github/scripts/geschiktheid.test.mjs .github/scripts/issue-gesloten.test.mjs",
@@ -52,6 +52,7 @@
     "check:keten": "node scripts/check-keten.mjs",
     "audit:skills": "node scripts/auditor/agent-auditor.mjs",
     "proef:injectie": "node scripts/injectieproef/proef.mjs",
+    "database:ophalen": "node scripts/database-ophalen.mjs",
     "proef:skills": "node scripts/skillproef/proef.mjs",
     "check:review-changes": "node scripts/check-review-changes.mjs",
     "check:certainty": "node scripts/check-certainty.mjs",
