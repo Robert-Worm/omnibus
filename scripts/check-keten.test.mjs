@@ -31,6 +31,10 @@ test("een extern kader zonder deel of reden is een melding; met artikel, of als 
   assert.deepEqual(algemeneVerwijzingen("Toets aan ISO 27001, clausule 5.1."), []);
   assert.deepEqual(algemeneVerwijzingen("Zie artikel 32 AVG."), []);
   assert.deepEqual(algemeneVerwijzingen("Zie de AVG.", "Verwerking volgens de AVG."), []);
+  // Een grens noemt de reden: dat de toets geen naleving van het andere kader aantoont.
+  assert.deepEqual(algemeneVerwijzingen("Rol is facultatief. Geen rechtstreeks bewijs van AVG-naleving; externe eisen apart vaststellen."), []);
+  assert.deepEqual(algemeneVerwijzingen("Geen volledige ISO 50001-beoordeling geclaimd."), []);
+  assert.deepEqual(algemeneVerwijzingen("Niet getoetst. Toets daarna conform ISO 27001."), ["ISO 27001"]);
   assert.deepEqual(beoordeel(item({ ...volledig, procedure: "Volg NIST." })).verwijzingen, [{ veld: "procedure", kader: "NIST" }]);
 });
 

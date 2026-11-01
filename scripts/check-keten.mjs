@@ -44,6 +44,10 @@ export function algemeneVerwijzingen(t, bron = "") {
     if (bron.includes(naam.split(/[\s/]/)[0])) return false;
     // 'artikel 32 AVG' of 'ISO 27001, clausule 5.1': kijk kort ervoor en erna.
     const ervoor = t.slice(Math.max(0, m.index - 25), m.index), erna = t.slice(m.index + naam.length, m.index + naam.length + 40);
+    // Een grens zegt waarom het kader genoemd wordt: 'geen rechtstreeks bewijs van AVG-naleving',
+    // 'geen volledige ISO 50001-beoordeling geclaimd'. Dat is geen algemene verwijzing.
+    const zin = t.slice(Math.max(0, t.lastIndexOf(".", m.index) + 1, t.lastIndexOf(";", m.index) + 1), m.index);
+    if (/(?<![\p{L}])(geen|niet|zonder)(?![\p{L}])/iu.test(zin)) return false;
     return !SPECIFIEK.test(ervoor) && !SPECIFIEK.test(erna);
   }).map((m) => m[1]);
 }
