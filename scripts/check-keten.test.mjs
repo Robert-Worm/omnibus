@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { aannametaal, algemeneVerwijzingen, beoordeel, meetelt, rapport, totalen } from "./check-keten.mjs";
+import { aannametaal, algemeneVerwijzingen, artikelenPerBron, beoordeel, meetelt, ongedekteBeweringen, rapport, totalen } from "./check-keten.mjs";
 
 const item = (material, extra = {}) => ({ key: "BRON|P1", kind: "report", material, ...extra });
 const volledig = { sourceText: "De CISO stelt het beleid vast.", body: "De CISO stelt jaarlijks het beleid vast.", rationale: "Sturing op informatiebeveiliging.", risk: "Zonder beleid ontbreekt sturing.",
@@ -16,7 +16,7 @@ test("aannametaal: gissingen wel, onderwerp en grenzen niet", () => {
 });
 
 test("een complete bouwsteen geeft geen melding", () => {
-  assert.deepEqual(beoordeel(item(volledig)), { key: "BRON|P1", ontbreekt: [], aannametaal: [], verwijzingen: [] });
+  assert.deepEqual(beoordeel(item(volledig)), { key: "BRON|P1", ontbreekt: [], aannametaal: [], verwijzingen: [], beweringen: [] });
 });
 
 test("elk ontbrekend deel van de keten wordt genoemd; bewijs mag ook in de toets staan", () => {
@@ -51,10 +51,41 @@ test("alleen selecteerbare bouwstenen uit rapporten, wetten en kaders tellen", (
 
 test("het rapport noemt totalen en alleen sleutels, geen brontekst", () => {
   const uitkomsten = [beoordeel(item(volledig)), beoordeel(item({ ...volledig, body: "Geheime brontekst", risk: "" }, { key: "B|P2" }))];
-  assert.deepEqual(totalen(uitkomsten), { bouwstenen: 2, compleet: 1, zonderPassage: 0, metGat: 1, aannametaal: 0, verwijzingen: 0 });
+  assert.deepEqual(totalen(uitkomsten), { bouwstenen: 2, compleet: 1, zonderPassage: 0, metGat: 1, aannametaal: 0, verwijzingen: 0, beweringen: 0 });
   const r = rapport(uitkomsten, { catalogus: "x" });
   assert.match(r, /Bouwstenen: 2\. Met complete keten: 1\. Zonder bronpassage: 0\. Met gat in de keten: 1\. Met aannametaal: 0\. Met algemene externe verwijzing: 0\./);
   assert.match(r, /\| B\\\|P2 \| \*\*risico\*\* \| – \| – \|/);
   assert.doesNotMatch(r, /Geheime brontekst/);
   assert.match(rapport([beoordeel(item({ ...volledig, risk: "" }, { key: "A\\|B" }))]), /\| A\\\\\\\|B \|/);
+});
+
+test("een getal of artikel uit eigen tekst moet in de bron staan (#280)", () => {
+  const bron = "Meld een incident binnen 72 uur. Zie artikel 9 en artikel 13. Het budget is € 1,5 miljoen.";
+  assert.deepEqual(ongedekteBeweringen("Controleer of de melding binnen 72 uur is gedaan, volgens artikel 9.", bron), []);
+  assert.deepEqual(ongedekteBeweringen("Controleer of de melding binnen 30 dagen is gedaan.", bron), ["30 dagen"]);
+  assert.deepEqual(ongedekteBeweringen("Toets artikel 4c en artikel 13.", bron), ["artikel 4c"]);
+  assert.deepEqual(ongedekteBeweringen("Toets 95% van de dossiers.", bron), ["95%"]);
+  // Een grens noemt een getal juist om het uit te sluiten.
+  assert.deepEqual(ongedekteBeweringen("Bewijs: de afgesproken termijn. Beperking: gebruik geen benchmark van 30 dagen.", bron), []);
+  // Een artikel dat elders in dezelfde bron staat, is gedekt.
+  assert.deepEqual(ongedekteBeweringen("Buiten artikel 15a.", bron, new Set(["15a"])), []);
+  assert.deepEqual(ongedekteBeweringen("", bron), []);
+});
+
+test("artikelen per bron komen uit vindplaatsen en passages", () => {
+  const per = artikelenPerBron([
+    { key: "WET|P1", material: { location: "/Hoofdstuk4/Artikel6/Lid3", sourceText: "bedoeld in artikel 9" } },
+    { key: "WET|P2", material: { location: "def18; 15a.1; 15a.2" } },
+    { key: "ANDER|P1", material: { location: "Artikel 2, lid 1" } },
+  ]);
+  assert.deepEqual([...per.get("WET")].sort(), ["15a", "6", "9"]);
+  assert.deepEqual([...per.get("ANDER")], ["2"]);
+});
+
+test("beoordeel meldt een ongedekt getal in eigen tekst, niet in letterlijke brontekst", () => {
+  const u = beoordeel(item({ ...volledig, testExistence: "Bekijk het besluit van de laatste 3 jaar." }));
+  assert.deepEqual(u.beweringen, [{ veld: "testExistence", bewering: "3 jaar" }]);
+  assert.equal(totalen([u]).beweringen, 1);
+  assert.match(rapport([u]), /\| 3 jaar \(testExistence\) \|/);
+  assert.deepEqual(beoordeel(item({ ...volledig, wordingMode: "source", body: "Binnen 5 dagen." })).beweringen, []);
 });
