@@ -4,15 +4,15 @@
 // Al beoordeelde rapporten worden overgeslagen, zodat het script kan worden hervat.
 //
 //   node .github/scripts/geschiktheid.mjs --rijksmap <rijksmap-rapporten.csv> [--model sonnet] [--groep 40] [--tegelijk 4]
-//     [--ids bestand-met-ids] [--uit ander.csv] [--max 5000]
+//     [--ids bestand-met-ids] [--uit ander.csv] [--max 5000] [--budget 40] [--logboek work/x.jsonl]
+// Elke aanroep komt in het logboek (zonder prompt of antwoord); bij een op budget stopt het netjes.
 //
 // Vraagt Claude Code met een ingelogde sessie (`claude`). Schrijft alleen het CSV-bestand.
-import { spawn } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readCsv } from "./voortgang-lib.mjs";
+import { BudgetOp, Verbruik, vastModel, vraagClaude } from "../../scripts/claude-aanroep.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 export const BESTAND = ".github/voortgang/geschiktheid.csv";
@@ -73,27 +73,10 @@ export function verwerk(groep, antwoord) {
   return uit;
 }
 
-function claude(tekst, model) {
-  return new Promise((klaar, fout) => {
-    const p = spawn("claude", ["-p", "--tools", "", "--no-session-persistence", "--output-format", "json", "--model", model, "--system-prompt", SYSTEEM], { cwd: tmpdir() });
-    let uit = "", err = "";
-    p.stdout.on("data", (d) => (uit += d)); p.stderr.on("data", (d) => (err += d));
-    p.on("error", fout);
-    p.on("close", () => {
-      try {
-        const r = JSON.parse(uit || "{}");
-        if (r.is_error || !r.result) throw new Error(`Claude Code gaf geen antwoord: ${String(r.result ?? err).slice(0, 200)}`);
-        klaar(r.result);
-      } catch (e) { fout(e); }
-    });
-    p.stdin.end(tekst);
-  });
-}
-
 async function main() {
   const args = process.argv.slice(2);
   const waarde = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
-  const model = waarde("--model", "sonnet"), grootte = Number(waarde("--groep", 40)), max = Number(waarde("--max", Infinity)), tegelijk = Number(waarde("--tegelijk", 4));
+  const model = vastModel(waarde("--model", "sonnet")), grootte = Number(waarde("--groep", 40)), max = Number(waarde("--max", Infinity)), tegelijk = Number(waarde("--tegelijk", 4));
   let rapporten = leesCsv(readFileSync(path.join(root, ".github/voortgang/rapporten.csv"), "utf8"));
   // De beschrijvingen komen uit de Rijksmap (rijksmap-rapporten.csv), gekoppeld op datum en titel.
   const rijksmap = waarde("--rijksmap");
@@ -110,13 +93,17 @@ async function main() {
   console.log(`${oordelen.size} al beoordeeld, ${todo.length} te doen.`);
   const groepen = [];
   for (let i = 0; i < todo.length; i += grootte) groepen.push(todo.slice(i, i + grootte));
-  let volgende = 0;
+  const logboek = path.resolve(root, waarde("--logboek", `work/geschiktheid-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "")}.jsonl`));
+  mkdirSync(path.dirname(logboek), { recursive: true });
+  const verbruik = new Verbruik({ budgetUsd: Number(waarde("--budget", 40)), logboek, doel: "geschiktheid werklijst" });
+  let volgende = 0, gestopt = null;
   const werker = async () => {
-    while (volgende < groepen.length) {
+    while (volgende < groepen.length && !gestopt) {
       const nr = volgende++, groep = groepen[nr];
       let nieuw = new Map();
       for (let poging = 0; poging < 2 && nieuw.size < groep.length * 0.9; poging++) {
-        try { nieuw = verwerk(groep, await claude(vraag(groep), model)); } catch (e) { console.error(`Groep ${nr + 1}: ${e.message}`); }
+        try { nieuw = verwerk(groep, await vraagClaude({ invoer: vraag(groep), model, systeem: SYSTEEM, verbruik, onderdeel: `groep ${nr + 1}` })); }
+        catch (e) { if (e instanceof BudgetOp) { gestopt = e.message; return; } console.error(`Groep ${nr + 1}: ${e.message}`); }
       }
       for (const [id, o] of nieuw) oordelen.set(id, o);
       writeFileSync(pad, schrijfCsv(oordelen));
@@ -124,6 +111,8 @@ async function main() {
     }
   };
   await Promise.all(Array.from({ length: tegelijk }, werker));
+  console.log(`Verbruik: ${verbruik.samenvatting()} Logboek: ${path.relative(root, logboek)}`);
+  if (gestopt) { console.error(`Gestopt: ${gestopt} Draai opnieuw om verder te gaan; beoordeelde rapporten worden overgeslagen.`); process.exitCode = 1; }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

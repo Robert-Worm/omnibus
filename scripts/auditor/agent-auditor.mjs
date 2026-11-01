@@ -8,14 +8,15 @@
 //
 // Vraagt Claude Code met een ingelogde sessie (`claude`). Leest alleen de eigen checkout.
 //
-//   npm run audit:skills -- [--doelstelling OD-2] [--model sonnet] [--uit work/auditor-01]
+//   npm run audit:skills -- [--doelstelling OD-2] [--model sonnet] [--budget 20] [--uit work/auditor-01]
+// Elke aanroep komt in aanroepen.jsonl in de uitvoermap; --budget (dollar) stopt de run.
 // Standaard het model sonnet; de standaard van Claude Code kan een licht model zijn.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { BESTANDEN, DOELSTELLINGEN } from "./criteria.mjs";
+import { Verbruik, vastModel, vraagClaudeSync } from "../claude-aanroep.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 export const OORDELEN = { voldoet: "☑", deels: "◐", "voldoet niet": "☐", "n.v.t.": "–", onbekend: "?" };
@@ -104,25 +105,17 @@ export function leesAntwoord(tekst) {
   return JSON.parse(blok.replace(/\\(?!["\\/bfnrtu])/g, "\\\\"));
 }
 
-function vraagClaude(tekst, model = "sonnet") {
-  const args = ["-p", "--tools", "", "--no-session-persistence", "--output-format", "json", "--system-prompt", SYSTEEMPROMPT];
-  if (model) args.push("--model", model);
-  // Buiten de checkout draaien, zodat de projectinstructies het oordeel niet sturen.
-  const r = spawnSync("claude", args, { input: tekst, cwd: tmpdir(), encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 15 * 60 * 1000 });
-  if (r.error) throw new Error(`Claude Code niet gevonden of mislukt: ${r.error.message}`);
-  const uit = JSON.parse(r.stdout || "{}");
-  if (uit.is_error || !uit.result) throw new Error(`Claude Code gaf geen antwoord: ${String(uit.result ?? r.stderr).slice(0, 300)}`);
-  // Claude Code doet bij grote invoer een kleine controle met een licht model ernaast;
-  // het oordeel komt van het gevraagde model.
-  const hoofd = Object.keys(uit.modelUsage ?? {}).find((k) => k.includes(model)) ?? Object.keys(uit.modelUsage ?? {})[0];
-  return { tekst: uit.result, model: hoofd ?? model ?? "standaard", gebruik: uit.modelUsage };
+function vraagClaude(tekst, model = "sonnet", verbruik = new Verbruik(), onderdeel = "") {
+  // Buiten de checkout draaien, zodat de projectinstructies het oordeel niet sturen (claude-aanroep.mjs).
+  const vast = vastModel(model);
+  return { tekst: vraagClaudeSync({ invoer: tekst, model: vast, systeem: SYSTEEMPROMPT, maxPerAanroepUsd: 5, verbruik, onderdeel }), model: vast };
 }
 
 /** Beoordeelt één doelstelling; bij een onleesbaar antwoord één nieuwe poging. */
-export function beoordeel(doelstelling, b, { model, vraag = vraagClaude } = {}) {
+export function beoordeel(doelstelling, b, { model, vraag = vraagClaude, verbruik } = {}) {
   let fout;
   for (let poging = 0; poging < 2; poging++) {
-    const antwoord = vraag(prompt(doelstelling, b.xml), model);
+    const antwoord = vraag(prompt(doelstelling, b.xml), model, verbruik, doelstelling.id);
     try {
       const { oordelen } = leesAntwoord(antwoord.tekst);
       return doelstelling.criteria.map((c) => {
@@ -161,16 +154,18 @@ function main() {
   const b = bundel();
   if (b.ontbreekt.length) throw new Error(`Bestanden ontbreken: ${b.ontbreekt.join(", ")}`);
   const commit = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: root, encoding: "utf8" }).stdout.trim();
+  mkdirSync(uit, { recursive: true });
+  const verbruik = new Verbruik({ budgetUsd: Number(waarde("--budget") ?? 20), logboek: path.join(uit, "aanroepen.jsonl"), doel: "audit:skills" });
   const uitkomsten = [];
   for (const d of doelen) {
     console.log(`${d.id} ${d.titel} …`);
-    uitkomsten.push(...beoordeel(d, b, { model: waarde("--model") }));
+    uitkomsten.push(...beoordeel(d, b, { model: waarde("--model"), verbruik }));
   }
-  mkdirSync(uit, { recursive: true });
   writeFileSync(path.join(uit, "resultaat.json"), JSON.stringify({ commit, bestanden: BESTANDEN, uitkomsten }, null, 2));
   const tekst = rapport(uitkomsten, { commit, model: uitkomsten[0]?.model });
   writeFileSync(path.join(uit, "rapport.md"), tekst);
   console.log(tekst);
+  console.log(`Verbruik: ${verbruik.samenvatting()} Logboek: ${path.relative(root, path.join(uit, "aanroepen.jsonl"))}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

@@ -70,7 +70,7 @@ npm run audit:skills
 npm run audit:skills -- --doelstelling OD-2 --uit work/auditor-04
 ```
 
-Het rapport en de ruwe uitkomst komen in een nieuwe map onder `work/`, buiten Git. Standaard gebruikt de auditor het model *sonnet*. Claude Code doet bij grote invoer een kleine controle met een licht model ernaast; het oordeel komt van het gevraagde model.
+Het rapport, de ruwe uitkomst en een logboek van elke aanroep (`aanroepen.jsonl`) komen in een nieuwe map onder `work/`, buiten Git. `--budget` (standaard 20 dollar) stopt de run als het verbruik daarboven komt. Standaard gebruikt de auditor de vaste versie `claude-sonnet-5-5`. Claude Code doet bij grote invoer een kleine controle met een licht model ernaast; het oordeel komt van het gevraagde model, en beide staan in het logboek.
 
 ## Volgende stap
 
