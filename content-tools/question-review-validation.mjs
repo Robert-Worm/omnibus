@@ -2,6 +2,7 @@
 import {createHash} from 'node:crypto';
 import {questionReviewIds,readQuestionReview} from '../lib/question-quality-review.mjs';
 import {questionPlanInventory,questionPlanItemId,sourceQuestionPlanOptions} from '../lib/source-question-plan.mjs';
+import {interviewPlanInventory} from '../lib/source-interview-plan.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
@@ -143,7 +144,7 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   if (!points.length) {
     const plans=[packet.questionPlan,catalogue.questionPlan];
     if(plans.some(plan=>plan?.central?.trim()||plan?.subquestions?.length||plan?.broadSubquestions?.length||plan?.routes?.length)||
-        Object.keys(catalogue.interviewReviews??{}).length)
+        Object.keys(catalogue.interviewReviews??{}).length || Object.keys(catalogue.interviewPlans??{}).length)
       fail('framework without selectable points must not offer a question plan or interviews');
     return;
   }
@@ -179,16 +180,23 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   if(allCovered.size!==keys.length||keys.some(key=>!allCovered.has(key)))
     fail('framework broad/specific question coverage differs from selectable points');
   const interviews = catalogue.interviewReviews;
+  const plans = catalogue.interviewPlans;
+  if (plans !== undefined && (!plans || typeof plans !== 'object' || Array.isArray(plans) ||
+      Object.keys(plans).some(key=>!keys.includes(key)))) fail('invalid framework interview plans');
   if (!interviews || Array.isArray(interviews) || Object.keys(interviews).length !== keys.length ||
       keys.some(key => !Object.hasOwn(interviews, key))) fail('incomplete framework interview coverage');
   for (const point of points) {
     const key = sourceId + ':' + point.id, capsule = interviews[key];
-    const inventory = capsule?.questions?.map(({id,kind,text}) => ({id,kind,text}));
-    if (!inventory?.some(q => q.id === 'question' && q.kind === 'interview') ||
+    if(Object.hasOwn(point,'interviewPlan'))fail('framework interview plan must remain outside source points');
+    const planned = Object.hasOwn(plans??{},key);
+    const inventory = planned ? interviewPlanInventory(plans[key]) : capsule?.questions?.map(({id,kind,text}) => ({id,kind,text}));
+    if (planned && JSON.stringify(capsule?.interviewInventory) !== JSON.stringify(inventory))
+      fail('framework interview relations differ from reviewed inventory: ' + key);
+    if (!planned && (!inventory?.some(q => q.id === 'question' && q.kind === 'interview') ||
         inventory.some(q => !['interview','doorvraag'].includes(q.kind)) ||
-        inventory.filter(q => q.kind === 'interview').length !== 1)
+        inventory.filter(q => q.kind === 'interview').length !== 1 || Object.hasOwn(capsule??{},'interviewInventory')))
       fail('framework point needs one reviewed interview opening: ' + key);
-    check(capsule, key, point, inventory);
+    check(capsule, key, planned ? {point,interviewPlan:plans[key]} : point, inventory);
     if (JSON.stringify(publishedInterviews?.[key]) !== JSON.stringify(capsule))
       fail('framework interview delivery differs from reviewed catalogue: ' + key);
   }

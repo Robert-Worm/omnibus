@@ -236,8 +236,20 @@ en vóór het bevriezen van de reviewbasis. De bronbestanden blijven ongewijzigd
 - `interviewReviews` heeft per selecteerbaar punt diezelfde sleutel. De capsule
   gebruikt deze sleutel als `itemId`, een opening met ID `question` en soort
   `interview`, en eventuele afzonderlijk beoordeelde `doorvraag`-velden. Deze
-  route ondersteunt één opening per punt; lever een benodigde andere
-  respondentvariant als open integratiepunt aan, niet als verborgen extra opening.
+  eenvoudige route ondersteunt één opening per punt. Bij meerdere openingen of
+  niveaus: gebruik `catalogue.interviewPlans[<bron-id>:<punt-id>]`, naast de
+  bronpunten, zodat interviewredactie hun opgeslagen bronbewijs niet verandert.
+  Iedere opening heeft `id`, `text`, `level`, `respondent`, een leesbare `scope`
+  en `followups` met eigen `{id,text}`; een niveauvariant verwijst via
+  `parentOpeningId` naar de oorspronkelijke opening. Bewaar inhoudelijke
+  toepassingsvoorwaarden bij het omzetten van gestructureerde scope naar tekst.
+  Laat de omzetting beoordelen; samenvoegen of een variant als doorvraag opslaan
+  is geen verliesloze overdracht.
+  `prepareInterviewPlanPublication` bindt het plan aan het item
+  `{point, interviewPlan}` en dezelfde `frameworkQuestionContext`. De bestaande
+  interviewleidraad/export leest uitsluitend de actuele, exact beoordeelde
+  koppelingen. Ontbrekende niveaus krijgen geen andere opening als vervanging.
+  Dit ondersteunt de aanlevering, maar bewijst nog geen volledige viewerproef.
 - Gebruik `prepareQuestionPlanPublication` en `prepareQuestionReviewPublication`
   uit `content-tools/question-review-publication.mjs`. De bronbinding is de
   bron-ID, `catalogue.context.edition` en de SHA-256 van de oorspronkelijke PDF.

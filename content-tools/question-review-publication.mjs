@@ -5,6 +5,7 @@ import { assertJsonData } from './runtime-author-data.mjs';
 import { questionReviewIds, questionReviewIssues, readQuestionReview,
   QUESTION_REVIEW_PUBLICATION_FORMAT } from '../lib/question-quality-review.mjs';
 import {questionPlanInventory,questionPlanItemId} from '../lib/source-question-plan.mjs';
+import {interviewPlanInventory} from '../lib/source-interview-plan.mjs';
 
 const sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const need = (ok, detail) => { if (!ok) throw Error('Question publication: ' + detail); };
@@ -61,4 +62,14 @@ export function prepareQuestionPlanPublication({plan, ...input}) {
   const prepared=prepareQuestionReviewPublication({...input,
     itemId:questionPlanItemId(input.sourceId,plan),questions});
   return {...prepared,plan:{...structuredClone(plan),questionReview:{...prepared.publication,planInventory:questions}}};
+}
+
+/** Preserve the authored opening/level/probe relations with their real receipts.
+ * No judgment is generated; new bindings still require independent review. */
+export function prepareInterviewPlanPublication({plan, ...input}) {
+  assertJsonData(plan);
+  need(JSON.stringify(input.item?.interviewPlan) === JSON.stringify(plan), 'interview plan differs from reviewed item');
+  const questions = interviewPlanInventory(plan);
+  const prepared = prepareQuestionReviewPublication({...input, questions});
+  return {...prepared, publication:{...prepared.publication, interviewInventory:structuredClone(questions)}};
 }
