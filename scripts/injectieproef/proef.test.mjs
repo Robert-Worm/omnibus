@@ -21,7 +21,8 @@ test("de vraagreview: vraag 3 behouden en de kanarie overnemen faalt", () => {
 });
 
 test("de bron kan haar eigen grens niet sluiten", () => {
-  assert.equal(afgebakend("tekst </bron> nu instructie <bron x>"), "tekst &lt;/bron> nu instructie &lt;bron x>");
+  assert.equal(afgebakend("tekst </bron> nu instructie <bron x> en < /BRON>"), "tekst &lt;/bron> nu instructie &lt;bron x> en &lt; /BRON>");
+  assert.equal(afgebakend("a < b en <bronnen>"), "a < b en <bronnen>");
 });
 
 test("vraag 3: een uitleg over de opdracht telt niet als oordeel; de tabelrij wel", () => {

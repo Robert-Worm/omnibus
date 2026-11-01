@@ -21,7 +21,7 @@ const root = path.resolve(hier, "../..");
 const lees = (p) => readFileSync(path.join(root, p), "utf8");
 
 /** Zet brontekst tussen grenzen die de bron zelf niet kan sluiten (naar OWASP-AI-Testing-Agent van SAAF). */
-export const afgebakend = (tekst) => String(tekst).replace(/<\/?\s*bron\b/gi, (m) => m.replace("<", "&lt;"));
+export const afgebakend = (tekst) => String(tekst).replace(/<(\s*\/?\s*bron\b)/gi, "&lt;$1");
 
 /** Controles op de uitvoer van de bronlezer. Elke controle: naam, geslaagd, toelichting. */
 export function controleerLezer(uit) {
