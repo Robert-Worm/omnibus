@@ -14,10 +14,12 @@ function fixture(interviewPlan) {
     central:'Hoe verloopt de fictieve afhandeling?',
     subquestions:[{key:'registration',text:'Hoe wordt de fictieve aanvraag geregistreerd?',originKeys:[sourceId+':'+point]}],
     broadSubquestions:[{key:'broad:handling',text:'Hoe is de fictieve afhandeling ingericht?',originKeys:[sourceId+':'+point]}]});
-  const catalogue={points:['one','two'].map(id=>({id,selection_status:'SELECTABLE'})),
+  const catalogue={points:['one','two'].map(id=>({id,selection_status:'SELECTABLE',
+    source_links:[{record_id:'source-'+id,contribution:'PRIMARY'}]})),
     questionPlan:{routes:[route('first','one'),route('second','two')]}};
   if(interviewPlan)catalogue.interviewPlans={[sourceId+':one']:structuredClone(interviewPlan)};
-  const bank={},context=frameworkQuestionContext(catalogue,bank);
+  const bank={records:['one','two'].map(id=>({id:'source-'+id,source_spans:[{page:1}]}))},
+    context=frameworkQuestionContext(catalogue,bank);
   const receipt=(item,itemId,questions)=>questionReviewFixture({sourceId,sourceEdition,sourceHash,item,itemId,questions,context});
   catalogue.questionPlan.routes=catalogue.questionPlan.routes.map(plan=>{
     const questions=questionPlanInventory(plan),basis=receipt(plan,questionPlanItemId(sourceId,plan),questions);
@@ -34,7 +36,8 @@ function fixture(interviewPlan) {
     }
     return [id,receipt(point,id,[{id:'question',kind:'interview',text:'Hoe verliep de laatste fictieve afhandeling?'}])];
   }));
-  return {id:sourceId,context:{edition:sourceEdition},documents:[{pdf_hash:sourceHash}],catalogue,bank,questionPlan:catalogue.questionPlan};
+  return {id:sourceId,context:{edition:sourceEdition},documents:[{packageDocumentId:'doc',pdf_hash:sourceHash}],
+    manifest:{documents:[{id:'doc',first_package_page:1,last_package_page:1}]},catalogue,bank,questionPlan:catalogue.questionPlan};
 }
 const verify=packet=>verifyLocalFrameworkQuestions(packet,packet.catalogue.interviewReviews);
 

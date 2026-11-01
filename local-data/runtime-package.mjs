@@ -29,6 +29,7 @@ export const runtimeFiles = Object.freeze([
   "content-tools/question-review-validation.mjs",
   "lib/source-question-plan.mjs",
   "lib/source-interview-plan.mjs",
+  "lib/topical-document-identity.mjs",
   "lib/additional-processes.mjs",
   "local-data/runtime-readiness.mjs",
   "local-data/web-resources.mjs",

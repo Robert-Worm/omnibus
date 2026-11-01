@@ -274,11 +274,13 @@ test('own report publication cannot omit parent or point interview reviews, incl
 test('new local frameworks require complete reviewed plans and point interviews at the final write boundary', t=>{
   const {repository,release,contract,value}=fixture(t);
   const catalogue={source_identity:{source_id:'SYNTHETIC'},context:{edition:'synthetic-1'},
-    points:[{id:'P1',selection_status:'SELECTABLE',text:'Een fictieve melding krijgt een behandelaar.'}]};
-  const bank={records:[]}, sourceHash=digest('fictional source');
+    points:[{id:'P1',selection_status:'SELECTABLE',text:'Een fictieve melding krijgt een behandelaar.',
+      source_links:[{record_id:'R1',contribution:'PRIMARY'}]}]};
+  const bank={records:[{id:'R1',source_spans:[{page:1}]}]}, sourceHash=digest('fictional source');
   syntheticFrameworkQuestions(catalogue,bank,sourceHash);
   const packet={id:'SYNTHETIC',family:'local-framework',catalogue,bank,context:catalogue.context,
-    documents:[{pdf_hash:sourceHash}],questionPlan:catalogue.questionPlan};
+    documents:[{packageDocumentId:'doc',pdf_hash:sourceHash}],
+    manifest:{documents:[{id:'doc',first_package_page:1,last_package_page:1}]},questionPlan:catalogue.questionPlan};
   const moduleId='lib/topical-reviewed.json';
   const publish=data=>publishRuntime(repository,{...value,modules:{[moduleId]:data},registrations:{}},{release,contract});
   const correct={packages:[packet],interviewReviews:catalogue.interviewReviews};

@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {questionReviewIds,readQuestionReview} from '../lib/question-quality-review.mjs';
 import {questionPlanInventory,questionPlanItemId,sourceQuestionPlanOptions} from '../lib/source-question-plan.mjs';
 import {interviewPlanInventory} from '../lib/source-interview-plan.mjs';
+import {topicalPointDocument} from '../lib/topical-document-identity.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
@@ -155,11 +156,11 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
   if (!options.length || options.some(route=>!route.central?.trim()||!route.subquestions?.length||!route.broadSubquestions?.length))
     fail('local framework needs central, broad and specific questions');
   if (JSON.stringify(plan) !== JSON.stringify(catalogue.questionPlan)) fail('framework plan differs from reviewed catalogue');
-  function check(capsule, itemId, item, inventory) {
+  function check(capsule, itemId, item, inventory, expectedSourceHash = sourceHash) {
     if (!capsule) fail('missing local framework question capsule: ' + itemId);
     verifyQuestionCapsule(capsule);
     if (capsule.sourceId !== sourceId || capsule.itemId !== itemId ||
-        capsule.sourceEdition !== sourceEdition || capsule.sourceHash !== sourceHash ||
+        capsule.sourceEdition !== sourceEdition || capsule.sourceHash !== expectedSourceHash ||
         capsule.contextHash !== hash(context) || capsule.itemHash !== hash({item, questions: inventory}))
       fail('local framework questions differ from their source, item or context: ' + itemId);
     const fields = rows => rows.map(({id,kind,text})=>({id,kind,text}));
@@ -196,7 +197,8 @@ export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
         inventory.some(q => !['interview','doorvraag'].includes(q.kind)) ||
         inventory.filter(q => q.kind === 'interview').length !== 1 || Object.hasOwn(capsule??{},'interviewInventory')))
       fail('framework point needs one reviewed interview opening: ' + key);
-    check(capsule, key, planned ? {point,interviewPlan:plans[key]} : point, inventory);
+    check(capsule, key, planned ? {point,interviewPlan:plans[key]} : point, inventory,
+      topicalPointDocument(packet,point)?.pdf_hash);
     if (JSON.stringify(publishedInterviews?.[key]) !== JSON.stringify(capsule))
       fail('framework interview delivery differs from reviewed catalogue: ' + key);
   }
