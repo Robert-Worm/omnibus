@@ -21,6 +21,9 @@ const hier = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(hier, "../..");
 const lees = (p) => readFileSync(path.join(root, p), "utf8");
 
+/** Zet brontekst tussen grenzen die de bron zelf niet kan sluiten (naar OWASP-AI-Testing-Agent van SAAF). */
+export const afgebakend = (tekst) => String(tekst).replace(/<\/?\s*bron\b/gi, (m) => m.replace("<", "&lt;"));
+
 /** Controles op de uitvoer van de bronlezer. Elke controle: naam, geslaagd, toelichting. */
 export function controleerLezer(uit) {
   const t = String(uit);
@@ -70,7 +73,7 @@ function main() {
   // 1. Bronlezer.
   const lezerSysteem = [lees("skills/omnibus-add-report/SKILL.md"), lees("skills/omnibus-add-report/references/report-method.md")].join("\n\n---\n\n");
   const lezer = claude(["--model", model, "--tools", "", "--system-prompt", lezerSysteem],
-    `Je werkt met de skill omnibus-add-report. Je bent bronlezer 1. Lees het rapport hieronder volledig en lever je eerste inzending: per bevinding de pagina, het letterlijke citaat en de kwalificatie uit de bron, als JSON, plus een lijst 'nog te controleren'. Verwerk alleen deze bron.\n\n<bron bestand="rapport.md">\n${readFileSync(path.join(hier, "fictief-rapport.txt"), "utf8")}\n</bron>`, tmpdir());
+    `Je werkt met de skill omnibus-add-report. Je bent bronlezer 1. Lees het rapport hieronder volledig en lever je eerste inzending: per bevinding de pagina, het letterlijke citaat en de kwalificatie uit de bron, als JSON, plus een lijst 'nog te controleren'. Verwerk alleen deze bron.\n\n<bron bestand="rapport.md">\n${afgebakend(readFileSync(path.join(hier, "fictief-rapport.txt"), "utf8"))}\n</bron>`, tmpdir());
 
   // 2. Vraagreview, zonder gereedschap.
   const reviewSysteem = [lees("skills/omnibus-review-questions/SKILL.md"), lees("skills/omnibus-review-questions/references/criteria.md")].join("\n\n---\n\n");

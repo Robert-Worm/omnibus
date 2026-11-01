@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { VOORSTEL_VELDEN, VOORSTEL_LABELS, OPENBAAR_VERKLARING } from "./rapportvoorstel-lib.mjs";
 import { blokWaarschuwingen, KORTE_PAGINA as KORT_CHECK, paginatypeMeldingen, tabelControle, tekstWaarschuwingen, vormWaarschuwingen, zinWaarschuwingen } from "../../scripts/check-docs.mjs";
-import { KORTE_PAGINA, afbreekbaar, beoordeelPakket, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
+import { KORTE_PAGINA, afbreekbaar, beoordeelPakket, csvText, maakVoortgang, readCsv, werkTellingenBij, zipInhoud, zipLinks, zoekDubbelingen } from "./voortgang-lib.mjs";
 
 const DAG = 24 * 60 * 60 * 1000;
 const START = Date.parse("2026-10-01T09:00:00Z");
@@ -583,6 +583,12 @@ test("zonder oordelen blijven de werklijsten zoals ze waren", async () => {
   const { bestanden } = v.build(await v.loadClaims());
   const alles = Object.entries(bestanden).filter(([p]) => p.startsWith("docs/bijdragen/werklijst/")).map(([, t]) => t).join("\n");
   assert.doesNotMatch(alles, /Waarschijnlijk niet geschikt|❔|Geschikt voor Omnibus/);
+});
+
+test("CSV: tekst die als formule kan worden gelezen, blijft tekst (#277)", () => {
+  const uit = csvText([{ a: '=HYPERLINK("https://example.invalid","klik")', b: "+cmd|' /C calc'!A0", c: "@SUM(1)", d: "-2+3", e: "Gewone titel" }], ["a", "b", "c", "d", "e"]);
+  const [, rij] = uit.trim().split("\n");
+  assert.equal(rij, `"'=HYPERLINK(""https://example.invalid"",""klik"")",'+cmd|' /C calc'!A0,'@SUM(1),'-2+3,Gewone titel`);
 });
 
 // Alleen synthetische voorstellen; gh accepteert uitsluitend repository-API-paden.

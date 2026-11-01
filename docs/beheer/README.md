@@ -48,6 +48,7 @@ flowchart TD
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
 | [Reviewwijzigingen](reviewwijzigingen.md) | Alleen geraakte bouwstenen opnieuw beoordelen, zonder broncontroles over te slaan |
 | [Kwaliteitsbeoordeling](kwaliteitsbeoordeling.md) | Scores per bron, toegepaste verbeteringen en de werkwijze voor een volgende database |
+| [OWASP Top 10 voor LLM-toepassingen](owasp-llm-top10.md) | De tien risico's van taalmodellen, beoordeeld volgens de SAAF-methode |
 | [Omnibus-auditor](agent-auditor.md) | Een AI-auditor die de opzet van de skills beoordeelt tegen onze eigen uitgangspunten |
 | [Kwaliteitsmeting](kwaliteitsmeting.md) | Automatisch: bronpassages die letterlijk kloppen en vragen zonder vormfout, per database |
 | [Zekerheidscontrole](../claim-certainty.md) | Mogelijke overdrijving en getalproblemen signaleren voor inhoudelijke review |

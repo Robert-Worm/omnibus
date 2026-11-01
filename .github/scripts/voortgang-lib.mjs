@@ -42,7 +42,13 @@ export function readCsv(text) {
   const [head, ...body] = rows;
   return body.filter((r) => r.length === head.length).map((r) => Object.fromEntries(head.map((k, i) => [k, r[i]])));
 }
-const csvCell = (v) => (/[,;"\n]/.test(String(v ?? "")) ? `"${String(v).replace(/"/g, '""')}"` : String(v ?? ""));
+// Een cel die met =, +, -, @, tab of CR begint, ziet een spreadsheet als formule (CSV-injectie, OWASP).
+// Titels en redenen komen van buiten; zet er daarom een apostrof voor, zodat het tekst blijft.
+const csvCell = (v) => {
+  let t = String(v ?? "");
+  if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+  return /[,;"\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+};
 export const csvText = (rows, cols) => "﻿" + [cols.join(","), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(","))].join("\n") + "\n";
 
 // ---------- dubbele rapporten ----------

@@ -20,7 +20,7 @@ Omnibus roept zelf geen AI-model aan. Een verstopte instructie kan dus alleen sc
 
 ## Wat nog moet gebeuren
 
-1. **SAAF-toetsen.** De SAAF-repositories *OWASP-top-10-LLM-assessment* en *OWASP-AI-Testing-Agent* bestuderen en overnemen waar ze iets toevoegen ([B-027](besluiten.md#b-027)).
+1. **SAAF-toetsen.** Gedaan op 1 november 2026: zie [OWASP Top 10 voor LLM-toepassingen](owasp-llm-top10.md).
 
 Een gevonden kwetsbaarheid meld je eerst vertrouwelijk volgens [SECURITY.md](../../SECURITY.md), niet in een openbaar issue.
 
@@ -49,7 +49,7 @@ Zonder `REVIEW_CASE` draaien alle opslagscenario's.
 
 ## Volgende stap
 
-Astra pakt het open punt op in [#277](https://github.com/Robert-Worm/omnibus/issues/277).
+De punten zijn afgerond in [#277](https://github.com/Robert-Worm/omnibus/issues/277).
 
 ---
 
