@@ -1,0 +1,13 @@
+OEFENBOUWSTEEN — verzonnen voor de skillproef (#287). Bron: het verzonnen rapport "Afhandeling van omgevingsvergunningen bij de Dienst Vergunningen Noord, 2026", pagina 3.
+
+Bronpassage (pagina 3, letterlijk):
+"De werkinstructie schrijft voor dat een tweede medewerker elk ontwerpbesluit controleert. In 4 van de 30 dossiers ontbreekt een vastgelegde controle door een tweede medewerker."
+
+Doel: Besluiten over omgevingsvergunningen zijn juist.
+Risico: Zonder controle door een tweede medewerker kan een onjuist besluit worden genomen.
+Beheersdoelstelling: Elk ontwerpbesluit is vóór verzending gecontroleerd.
+Beheersmaatregel: Een tweede medewerker controleert elk ontwerpbesluit en legt dat vast.
+Norm: Elk ontwerpbesluit wordt door een tweede medewerker gecontroleerd, en de controle is vastgelegd in het dossier.
+Toetspunt 1 (opzet): Is in de werkinstructie vastgelegd dat een tweede medewerker elk ontwerpbesluit controleert?
+Toetspunt 2 (bestaan): Is de controle goed?
+Verwacht bewijs: werkinstructie; een steekproef van dossiers met de vastgelegde controle.
