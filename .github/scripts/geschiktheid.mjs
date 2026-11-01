@@ -29,10 +29,15 @@ naleving, uitvoering) en aan het perspectief van de klant of burger op de uitvoe
 - "niet": kleine kans. Ramingen, prognoses, scenariostudies, kosten-batenanalyses, beleidsverkenningen zonder oordeel over de
   uitvoering, literatuuroverzichten, zuivere data- of monitorrapporten, en onderzoek dat als onderzoek relevant is maar niets zegt
   over beheersing of uitvoering (bijvoorbeeld een beleidsontwerp of een maatschappelijk vraagstuk zonder organisatie die getoetst wordt).
-- "twijfel": de beschrijving laat het open. Ook enquêtes of ervaringsonderzoek: die meten beleving, niet hoe iets is ingericht of
-  werkt; geschikt alleen als het de beleving koppelt aan hoe processen of dienstverlening werken.
+  Ook "niet" (na de steekproef van de beheerder): data-analyses en monitors, ook van een toezichthouder, die cijfers of voortgang
+  tonen zonder toetsing; kosten- of compensatieonderzoek; technisch oorzaakonderzoek naar een constructie of installatie; reviews van
+  rekenmodellen of methodiek; evaluaties van een regeling of dienst die alleen benutting, punctualiteit of effect meten; lerende
+  beleidsevaluaties; en verantwoordingsonderzoek zonder bevindingen of verbeterpunten.
+- "twijfel": alleen als de beschrijving wel wijst op risico's voor beheersing, uitvoering of dienstverlening, maar onvolledig is.
+  Een enquête of ervaringsonderzoek meet beleving, niet hoe iets is ingericht of werkt: twijfel als het de beleving koppelt aan
+  hoe processen of dienstverlening werken, anders "niet".
 Een relevant onderwerp alleen is niet genoeg: de vraag is of een auditor er normen, risico's of toetspunten uit kan halen.
-Kies bij twijfel "twijfel"; gok niet.`;
+Ontbreekt elke aanwijzing voor zulke risico's, kies dan "niet"; gok geen "geschikt".`;
 
 const SYSTEEM = `${CRITERIA}
 
