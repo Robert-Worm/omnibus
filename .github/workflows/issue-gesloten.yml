@@ -1,0 +1,27 @@
+name: Checklist bij sluiten
+
+# Als een issue sluit: statuslabels eraf, het vinkje in verwijzende epics aan, en een opmerking
+# als er bij een voltooid issue nog open punten in de checklist staan. Zie .github/scripts/issue-gesloten.mjs.
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  bijwerken:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - name: Checklist en labels bijwerken
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/issue-gesloten.mjs

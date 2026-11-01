@@ -57,6 +57,8 @@ Is jouw deel af, zet dan deze notitie als reactie in het issue:
 
 Zet daarna de labels goed: het werklabel van wie verder gaat, en status `klaar`. Wacht het op een besluit, dan `wacht-op-beheerder`. Is alles af, sluit dan het issue.
 
+**Voordat je een issue sluit,** werk je de checklist bij: vink af wat gehaald is, en noem bij wat niet gehaald is kort waarom, of maak er een nieuw issue van. Bij het sluiten haalt GitHub de statuslabels weg, zet het vinkje in de epic die naar het issue verwijst, en meldt in het issue welke punten nog open staan (`.github/workflows/issue-gesloten.yml`).
+
 ## Vaste afspraken
 
 - **Rood eerst.** Wie `main` rood maakt, herstelt dat vóór nieuw werk. De andere assistent past zijn werk niet aan om een rode test te omzeilen.
