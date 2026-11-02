@@ -50,7 +50,7 @@ Omnibus weigert te starten als database, hashes en code niet bij elkaar passen. 
 | --- | --- |
 | `docs/` | De documentatie, in drie routes: `gebruiken/`, `bijdragen/` en `beheer/` |
 | `skills/` | Zes AI-skills om bronnen te verwerken en te controleren |
-| `app/`, `components/`, `hooks/` | De schermen van de applicatie |
+| `app/`, `components/` | De schermen van de applicatie |
 | `lib/` | Gedeelde regels: selecties, vragen, projecten en Excel-export |
 | `local-data/` | De koppeling met de database |
 | `agent-tools/` | De koppeling voor AI-assistenten |
@@ -121,11 +121,11 @@ De volledige afspraken staan in [AGENTS.md](../../AGENTS.md) en de [acceptatieco
 
 ## Onderzoek: alle applicatiecode in één map?
 
-De hoofdmap heeft vier mappen met applicatiecode: `app/`, `components/`, `hooks/` en `lib/`. Samenvoegen onder `src/` zou de hoofdmap rustiger maken. Uitkomst van het onderzoek (21 oktober 2026): **nu niet doen.**
+De hoofdmap had vier mappen met applicatiecode: `app/`, `components/`, `hooks/` en `lib/`. Sinds 2 november 2026 zijn het er drie: de ongebruikte map `hooks/` is weg ([#293](https://github.com/Robert-Worm/omnibus/issues/293)). Samenvoegen onder `src/` zou de hoofdmap rustiger maken. Uitkomst van het onderzoek (21 oktober 2026): **nu niet doen.**
 
 **Voordeel**
 
-- Vier mappen minder in de hoofdmap; een nieuwkomer ziet sneller `docs/` en `skills/`.
+- Drie mappen minder in de hoofdmap; een nieuwkomer ziet sneller `docs/` en `skills/`.
 
 **Nadelen**
 

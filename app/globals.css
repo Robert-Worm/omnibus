@@ -2705,43 +2705,6 @@ button.readable-reference[data-slot="button"] {
 }
 
 /* Catalogue clarity: stable count group, explicit selection lane and shared source IDs. */
-.excel-export-dialog {
-  width: min(660px, calc(100vw - 32px));
-  max-width: 660px !important;
-  max-height: calc(100dvh - 32px);
-  overflow-y: auto;
-  background: #fff;
-  color: #24364b;
-  padding: 24px;
-}
-.export-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.export-meta-grid label {
-  display: grid;
-  gap: 6px;
-  font-size: 14px;
-}
-.export-wide {
-  grid-column: 1 / -1;
-}
-.export-note {
-  color: #596e83;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.export-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-@media (max-width: 520px) {
-  .export-meta-grid {
-    grid-template-columns: 1fr;
-  }
-}
 .relevance-info-icon {
   width: 16px !important;
   height: 16px !important;
@@ -2970,51 +2933,11 @@ button.readable-reference[data-slot="button"] {
 }
 
 /* Theme selection stays separate from navigation and never selects audit norms. */
-.export-options {
-  border: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-}
-.export-options legend {
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.export-options label,
 .export-check {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
-}
-.export-options small {
-  flex-basis: 100%;
-  color: #596e83;
-  font-size: 13px;
-}
-.export-customize {
-  border-top: 1px solid #d9e2ec;
-  padding-top: 12px;
-}
-.export-customize summary {
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-.export-color {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-  font-size: 14px;
-}
-.export-color select {
-  background: white;
-  border: 1px solid #b5c5d5;
-  padding: 6px 10px;
-  border-radius: 4px;
 }
 .compact-app .theme-card.selectable-theme {
   grid-template-columns: 76px minmax(0, 1fr) 216px 160px;
