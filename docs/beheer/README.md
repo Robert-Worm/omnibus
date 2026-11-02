@@ -50,6 +50,8 @@ flowchart TD
 | [Kwaliteitsbeoordeling](kwaliteitsbeoordeling.md) | Scores per bron, toegepaste verbeteringen en de werkwijze voor een volgende database |
 | [OWASP Top 10 voor LLM-toepassingen](owasp-llm-top10.md) | De tien risico's van taalmodellen, beoordeeld volgens de SAAF-methode |
 | [Omnibus-auditor](agent-auditor.md) | Een AI-auditor die de opzet van de skills beoordeelt tegen onze eigen uitgangspunten |
+| [Skillproef](skillproef.md) | De skills echt laten draaien op een verzonnen testbron, als bewijs voor de auditcriteria |
+| [Controle op verzonnen output](verzonnen-output.md) | Wat de SAAF-hulpmiddelen tegen verzinnen toevoegen, en wat we overnamen |
 | [Kwaliteitsmeting](kwaliteitsmeting.md) | Automatisch: bronpassages die letterlijk kloppen en vragen zonder vormfout, per database |
 | [Zekerheidscontrole](../claim-certainty.md) | Mogelijke overdrijving en getalproblemen signaleren voor inhoudelijke review |
 | [Samenwerking tussen de AI-assistenten](samenwerking-ai.md) | Hoe Opus 5.5 en ChatGPT Astra werk aan elkaar doorgeven |

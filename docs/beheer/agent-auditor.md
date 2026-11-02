@@ -19,7 +19,7 @@ SAAF Agent-Auditor beoordeelt elke agent met dezelfde twintig criteria. Die zijn
 | – | Een criterium met een echte controle verwijst naar de [kwaliteitsmeting](kwaliteitsmeting.md) |
 | – | Leest alleen; schrijft niets naar GitHub of SAAF |
 
-De criteria staan in `scripts/auditor/criteria.mjs`. De werkwijze komt uit [SAAF-Project/Agent-Auditor](https://github.com/SAAF-Project/Agent-Auditor), overgenomen met bronvermelding volgens [B-027](besluiten.md#b-027).
+De criteria staan in `scripts/auditor/criteria.mjs`. De werkwijze komt uit `SAAF-Project/Agent-Auditor`, een besloten repository van SAAF die alleen deelnemers kunnen openen. Hij is overgenomen met bronvermelding volgens [B-027](besluiten.md#b-027).
 
 ## Uitkomst op 31 oktober 2026
 

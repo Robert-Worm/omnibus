@@ -7,7 +7,7 @@
 // Elke stap stopt bij een fout met een uitleg in gewone taal. Wat al klaar is (onderdelen,
 // database), wordt bij een volgende keer niet opnieuw gedaan.
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync, renameSync, rmSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DATABASE_SHA256, DATABASE_URL } from "./database-release.mjs";
@@ -68,19 +68,10 @@ export async function installeer({ starten = true } = {}) {
   });
 
   stap(3, "Database ophalen en controleren");
-  if (existsSync(path.join(root, SETTINGS))) console.log(`  Er staat al een database in ${RUNTIME}; die wordt gebruikt.`);
-  else {
-    const { haalDatabase } = await import("./fetch-release-database.mjs");
-    const tijdelijk = path.join(root, "local-data", ".runtime-download");
-    rmSync(tijdelijk, { recursive: true, force: true });
-    await haalDatabase({ url: DATABASE_URL, verwacht: DATABASE_SHA256, out: tijdelijk }).catch((fout) => {
-      rmSync(tijdelijk, { recursive: true, force: true });
-      throw databaseDownloadFout(fout);
-    });
-    if (existsSync(path.join(root, RUNTIME))) rmSync(tijdelijk, { recursive: true, force: true });
-    else renameSync(tijdelijk, path.join(root, RUNTIME));
-    console.log("  Opgehaald; het controlegetal klopt.");
-  }
+  // Dezelfde vastgelegde versie als Docker en npm run database:ophalen; een bestaande blijft staan.
+  const { haalNaarRuntime } = await import("./database-ophalen.mjs");
+  const uitkomst = await haalNaarRuntime({ url: DATABASE_URL, sha256: DATABASE_SHA256, basis: root }).catch((fout) => { throw databaseDownloadFout(fout); });
+  console.log(uitkomst === "bestaand" ? `  Er staat al een database in ${RUNTIME}; die wordt gebruikt.` : "  Opgehaald; het controlegetal klopt.");
   await draai(process.execPath, ["scripts/check-runtime-database.mjs", "--settings", SETTINGS], { stil: true }).catch(() => {
     throw new Stop("De database haalt de controle niet.", `Verwijder de map ${RUNTIME} en start deze opdracht opnieuw; dan wordt de database opnieuw opgehaald.`, "#de-database-is-beschadigd");
   });

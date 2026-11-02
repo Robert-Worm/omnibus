@@ -37,23 +37,24 @@ const getal = (n) => n.toLocaleString("nl-NL");
 
 /** Haalt de totalen uit het rapport van check-keten. */
 export function leesKeten(tekst) {
-  const m = tekst.match(/Bouwstenen: (\d+)\. Met complete keten: (\d+)\. Zonder bronpassage: (\d+)\. Met gat in de keten: (\d+)\. Met aannametaal: (\d+)\. Met algemene externe verwijzing: (\d+)\./);
+  const m = tekst.match(/Bouwstenen: (\d+)\. Met complete keten: (\d+)\. Zonder bronpassage: (\d+)\. Met gat in de keten: (\d+)\. Met aannametaal: (\d+)\. Met algemene externe verwijzing: (\d+)\.(?: Met getal of artikel dat niet in de bron staat: (\d+)\.)?/);
   if (!m) throw new Error("Rapport van check-keten niet herkend.");
-  const [totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen] = m.slice(1).map(Number);
-  return { totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen };
+  const [totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen] = m.slice(1, 7).map(Number);
+  return { totaal, compleet, zonderPassage, metGat, aannametaal, verwijzingen, ...(m[7] === undefined ? {} : { beweringen: Number(m[7]) }) };
 }
 
 /** Eén regel voor de geschiedenis. */
 export function regel({ datum, release, passages, vragen, keten }) {
   const compleet = keten ? `${getal(keten.compleet)} van ${getal(keten.totaal)}` : "–";
-  return `| ${datum} | \`${release.slice(0, 8)}\` | ${getal(passages.totaal - passages.afwijkend)} van ${getal(passages.totaal)} (${procent(passages.totaal - passages.afwijkend, passages.totaal)}) | ${getal(vragen.door)} van ${getal(vragen.totaal)} (${procent(vragen.door, vragen.totaal)}) | ${getal(vragen.HOLD)} | ${getal(vragen.herschrijven + vragen.schrappen)} | ${compleet} | ${keten ? getal(keten.aannametaal) : "–"} | ${keten ? getal(keten.verwijzingen) : "–"} |`;
+  return `| ${datum} | \`${release.slice(0, 8)}\` | ${getal(passages.totaal - passages.afwijkend)} van ${getal(passages.totaal)} (${procent(passages.totaal - passages.afwijkend, passages.totaal)}) | ${getal(vragen.door)} van ${getal(vragen.totaal)} (${procent(vragen.door, vragen.totaal)}) | ${getal(vragen.HOLD)} | ${getal(vragen.herschrijven + vragen.schrappen)} | ${compleet} | ${keten ? getal(keten.aannametaal) : "–"} | ${keten ? getal(keten.verwijzingen) : "–"} | ${keten?.beweringen === undefined ? "–" : getal(keten.beweringen)} |`;
 }
 
 /** Bouwt de pagina; bestaande geschiedenisregels van andere releases blijven staan. */
 export function pagina(meting, vorige = "") {
-  const kop = "| Gemeten | Release | Bronpassages letterlijk juist | Vragen zonder vormfout | Vragen op HOLD | Te herschrijven of te schrappen | Bouwstenen met complete keten | Bouwstenen met aannametaal | Bouwstenen met algemene externe verwijzing |";
+  const kop = "| Gemeten | Release | Bronpassages letterlijk juist | Vragen zonder vormfout | Vragen op HOLD | Te herschrijven of te schrappen | Bouwstenen met complete keten | Bouwstenen met aannametaal | Bouwstenen met algemene externe verwijzing | Bouwstenen met getal of artikel niet in de bron |";
   const oud = vorige.split("\n").filter((r) => /^\| \d{4}-\d{2}-\d{2} \| `/.test(r) && !r.includes(`\`${meting.release.slice(0, 8)}\``));
-  const rijen = [regel(meting), ...oud].slice(0, 24);
+  // Oudere regels kregen de laatste kolom nog niet.
+  const rijen = [regel(meting), ...oud.map((r) => (r.split("|").length - 2 < 10 ? `${r} – |` : r))].slice(0, 24);
   return `# Kwaliteitsmeting van de database
 
 <!-- paginatype: data -->
@@ -67,13 +68,14 @@ export function pagina(meting, vorige = "") {
 - **Bouwstenen met complete keten:** elke selecteerbare bouwsteen uit een rapport, wet of kader heeft een bronpassage, norm, doel, risico, beheersdoelstelling, beheersmaatregel, toets en een aanwijzing voor bewijs (\`scripts/check-keten.mjs\`). Bij een rapport is de bronpassage vaak de passage over het risico. Modelvragen tellen niet mee.
 - **Bouwstenen met aannametaal:** eigen geformuleerde normen en toetsen met een gissing, zoals *waarschijnlijk* of *naar verwachting*. Dit is een melding om te beoordelen. Letterlijke brontekst telt niet mee, want die wordt nooit herschreven ([B-029](besluiten.md#b-029)).
 - **Bouwstenen met algemene externe verwijzing:** eigen tekst noemt een ander kader, zoals ISO of de AVG, zonder te zeggen welk artikel of onderdeel bedoeld is, terwijl de bron dat kader niet noemt. Verwijzen mag; zeg dan welk deel, of waarom. Dit is een melding om te beoordelen.
+- **Bouwstenen met getal of artikel niet in de bron:** eigen tekst noemt een termijn, percentage, bedrag of artikel dat niet in de bronpassage of de context staat. Een artikel mag ook elders in dezelfde bron staan. Een grens zoals *gebruik geen termijn van 30 dagen* telt niet. Zo vind je een verzonnen of verkeerd overgenomen getal; naar het voorbeeld van SAAF *hallucination-detection-agent*, maar zonder taalmodel ([#280](https://github.com/Robert-Worm/omnibus/issues/280)). Dit is een melding om te beoordelen.
 
 De meting gebruikt de database die bij de huidige code hoort, met een gecontroleerd controlegetal. De pagina bevat geen brontekst.
 
 ## Uitkomst per database
 
 ${kop}
-| --- | --- | --- | --- | ---: | ---: | --- | ---: | ---: |
+| --- | --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: |
 ${rijen.join("\n")}
 
 ## Volgende stap

@@ -46,8 +46,8 @@ Error: Usage: build:database -- --settings <local-build.json> OR ...
 Runtime database check failed: ENOENT: no such file or directory, stat '.../local-data/runtime/local-build.json'
 ```
 
-- **Oorzaak:** `local-build.json` staat niet op de plek waar Omnibus hem zoekt. Vaak is de zip uitgepakt in een extra map, zoals `local-data/runtime/omnibus-database-2026-10-19/`.
-- **Herstellen:** zet `catalogue.sqlite` en `local-build.json` rechtstreeks in `local-data/runtime/`. Zorg ook dat je terminal in de map van Omnibus staat.
+- **Oorzaak:** `local-build.json` staat niet op de plek waar Omnibus hem zoekt. De database is nog niet opgehaald, of een zip is met de hand uitgepakt in een extra map, zoals `local-data/runtime/omnibus-database-2026-10-19/`.
+- **Herstellen:** voer `npm run database:ophalen` uit in de map van Omnibus. Staat er een extra map in `local-data/runtime/`, verplaats die dan eerst.
 
 ### Het instellingenbestand is ongeldig
 
@@ -56,7 +56,7 @@ Runtime database check failed: Invalid database settings: expected database, rel
 ```
 
 - **Oorzaak:** `local-build.json` is aangepast, of opgeslagen in een andere tekstcodering. Dat gebeurt soms als je het bestand opent en bewaart in Kladblok.
-- **Herstellen:** pak het bestand opnieuw uit de zip. Pas het niet aan.
+- **Herstellen:** hernoem de map `local-data/runtime` naar een vrije naam en voer `npm run database:ophalen` opnieuw uit. Pas het bestand niet aan.
 
 ### Database en instellingen horen niet bij elkaar
 
@@ -65,7 +65,7 @@ Runtime database check failed: Invalid runtime publication: unknown release
 ```
 
 - **Oorzaak:** het instellingenbestand hoort bij een andere database. Je hebt bijvoorbeeld bestanden uit twee verschillende zips gemengd.
-- **Herstellen:** pak beide bestanden opnieuw uit dezelfde zip. Pas nooit zelf een controlegetal aan.
+- **Herstellen:** hernoem de map `local-data/runtime` naar een vrije naam en voer `npm run database:ophalen` opnieuw uit. Pas nooit zelf een controlegetal aan.
 
 ### De database is beschadigd
 
@@ -74,7 +74,7 @@ Runtime database check failed: Release content verification failed: package cont
 ```
 
 - **Oorzaak:** de inhoud van `catalogue.sqlite` klopt niet met de controlegetallen. De download is mislukt of het bestand is beschadigd.
-- **Herstellen:** download de zip opnieuw bij de [releases](https://github.com/Robert-Worm/omnibus/releases/latest) en pak hem opnieuw uit. Blijft de melding? Meld het dan; dan is er mogelijk iets mis met de release.
+- **Herstellen:** hernoem de map `local-data/runtime` naar een vrije naam en voer `npm run database:ophalen` opnieuw uit. Blijft de melding? Meld het dan; dan is er mogelijk iets mis met de release.
 
 ### Omnibus weigert te starten
 
@@ -159,7 +159,7 @@ Zet er **geen** vertrouwelijke onderzoeksgegevens of projectbestanden bij. Discu
 
 ## Samengevat
 
-De meeste problemen komen door een ontbrekend programma, een verkeerde Node-versie, een extra map bij het uitpakken of een ander adres in de browser. Pak bij twijfel de zip opnieuw uit; pas nooit zelf een controlegetal aan.
+De meeste problemen komen door een ontbrekend programma, een verkeerde Node-versie, een database die niet op de goede plek staat of een ander adres in de browser. Haal bij twijfel de database opnieuw op met `npm run database:ophalen`; pas nooit zelf een controlegetal aan.
 
 ## Volgende stap
 
