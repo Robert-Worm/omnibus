@@ -47,7 +47,7 @@ Er is geen taalmodel nodig: geen kosten en geen sleutel. De uitkomst staat in he
 - **Een kennisbank met externe kaders.** Omnibus legt eigen tekst naast de eigen bron, niet naast een algemene verzameling ISO- of AVG-teksten. Een verwijzing naar een ander kader controleert `check:keten` al op specifiekheid.
 - **Een score per bevinding.** Omnibus geeft bewust geen score per norm ([B-029](besluiten.md#b-029)).
 
-De werkwijze komt uit [SAAF-Project/hallucination-detection-agent](https://github.com/SAAF-Project/hallucination-detection-agent) en [SAAF-Project/judging-found-controls](https://github.com/SAAF-Project/judging-found-controls). Er is geen code overgenomen; de controle is in eigen code nagebouwd, met bronvermelding volgens [B-027](besluiten.md#b-027).
+De werkwijze komt uit `SAAF-Project/hallucination-detection-agent` en `SAAF-Project/judging-found-controls`. Dat zijn besloten repositories van SAAF die alleen deelnemers kunnen openen. Er is geen code overgenomen; de controle is in eigen code nagebouwd, met bronvermelding volgens [B-027](besluiten.md#b-027).
 
 ## Volgende stap
 
