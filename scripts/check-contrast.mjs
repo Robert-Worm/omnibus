@@ -64,7 +64,7 @@ function meetScherm({ minimum, donker }) {
   return uit;
 }
 
-/** De hoofdschermen, op hun adres in de app. Daarna volgen een onderzoek, een rapport en een bronpassage. */
+/** De hoofdschermen, op hun adres in de app. Daarna volgen een onderzoek, een kadertoetspunt, een rapport en een bronpassage. */
 const ROUTES = ["begin", "grondslagen", "themas", "processen", "modellen", "rapporten", "open-grondslagen", "open-themas", "mijn-kader", "kaderexport", "risicoverkenning"];
 
 async function main() {
@@ -103,6 +103,13 @@ async function main() {
       await pagina.evaluate(() => { location.hash = "grondslagen"; }); await pagina.waitForTimeout(800);
       await pagina.getByRole("button", { name: "Toon alle bronnen" }).click(); await meet("alle bronnen");
       await pagina.getByRole("button", { name: "Open in viewer" }).first().click(); await pagina.waitForTimeout(1500); await meet("normtabel");
+      // Een toetspunt van een kader, met de drie tabbladen van de kaderviewer.
+      await ga("open-grondslagen");
+      await pagina.getByRole("button", { name: "Wet of kader openen" }).click(); await pagina.waitForTimeout(800);
+      await pagina.getByPlaceholder(/Zoek in bronnen/).fill("conflicterende belangen"); await pagina.waitForTimeout(1200);
+      await pagina.getByRole("button", { name: /Open in viewer/ }).first().click(); await pagina.waitForTimeout(1500);
+      await pagina.getByText("Advies bij conflicterende belangen tussen diensten", { exact: false }).first().click(); await meet("kaderdetail");
+      for (const tab of ["Bronpassage", "Toetsaanpak"]) { await pagina.locator(".law-main-tabs button", { hasText: tab }).click(); await meet(`kaderdetail ${tab.toLowerCase()}`); }
       // Een rapport, het normdetail en de bronpassage.
       await ga("rapporten");
       await pagina.getByText("Bekijk normen en toetspunten").first().click(); await pagina.waitForTimeout(1500); await meet("rapport");
