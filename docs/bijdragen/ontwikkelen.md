@@ -21,6 +21,13 @@ npm test
 
 `npm test` controleert typen en lint, en draait alle tests met fictieve testdata. Sommige tests starten tijdelijk een lokale server. Er is geen account, database of internet nodig.
 
+Twee testscripts zitten bewust niet in `npm test`:
+
+- `npm run test:agent:protocol` vraagt eerst een agentbuild met de echte database (`npm run build:agent`).
+- `npm run test:hosting-first-start` draait alleen op Linux als gebruiker 1000, zoals in de container.
+
+Een test die in geen enkel script staat, laat `npm test` falen (`scripts/testdekking.test.mjs`).
+
 Wil je de applicatie zelf zien? Volg [installeren](../gebruiken/installeren.md) vanaf stap 3.
 
 ## Een wijziging bekijken zonder je huidige versie te verliezen
