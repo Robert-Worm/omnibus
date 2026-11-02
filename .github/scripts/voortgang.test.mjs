@@ -159,6 +159,16 @@ test("een bron die al in de database zit of niet openbaar is, wordt gesloten", a
   assert.ok(!g.labelsVan(geheim).includes("dubbel"));
 });
 
+test("een ingeleverde claim wordt niet afgewezen als de bron intussen in de database staat (#291)", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-in-db") });
+  g.issues.get(n).labels.push({ name: "ingeleverd" });
+  await draai(g);
+  assert.equal(g.issues.get(n).state, "open");
+  assert.ok(!g.labelsVan(n).includes("dubbel"));
+  assert.doesNotMatch(g.botTekst(n), /al in de database/);
+});
+
 test("een beschermd kader vraagt eerst om toestemming en krijgt geen welkom", async () => {
   const g = nepGitHub();
   const n = g.claim("anna", { bron: "ISO27001" });

@@ -43,11 +43,20 @@ async function main() {
     await gh(`/issues/${issue.number}/labels/${encodeURIComponent(l)}`, { method: "DELETE" });
   // 2. Vinkjes in verwijzende open issues.
   const voltooid = issue.state_reason !== "not_planned";
-  const gevonden = await gh(`/issues?state=open&per_page=100`);
-  for (const ander of (gevonden ?? []).filter((i) => !i.pull_request && i.number !== issue.number)) {
-    if (!new RegExp(`^\\s*[-*] \\[ \\] #${issue.number}\\b`, "m").test(ander.body ?? "")) continue;
-    if (voltooid) await gh(`/issues/${ander.number}`, { method: "PATCH", body: JSON.stringify({ body: vinkAf(ander.body, issue.number) }) });
-    else await gh(`/issues/${ander.number}/comments`, { method: "POST", body: JSON.stringify({ body: `#${issue.number} is gesloten als *niet gepland*. Het vinkje blijft daarom uit; haal het punt weg of vervang het.` }) });
+  const verwijst = (body) => new RegExp(`^\\s*[-*] \\[ \\] #${issue.number}\\b`, "m").test(body ?? "");
+  const gevonden = [];
+  for (let pagina = 1; ; pagina++) {
+    const deel = (await gh(`/issues?state=open&per_page=100&page=${pagina}`)) ?? [];
+    gevonden.push(...deel);
+    if (deel.length < 100) break;
+  }
+  for (const ander of gevonden.filter((i) => !i.pull_request && i.number !== issue.number)) {
+    if (!verwijst(ander.body)) continue;
+    if (voltooid) {
+      // Vlak voor het bijwerken opnieuw lezen: een ander issue kan net een vinkje in dezelfde epic hebben gezet.
+      const vers = await gh(`/issues/${ander.number}`);
+      if (verwijst(vers?.body)) await gh(`/issues/${ander.number}`, { method: "PATCH", body: JSON.stringify({ body: vinkAf(vers.body, issue.number) }) });
+    } else await gh(`/issues/${ander.number}/comments`, { method: "POST", body: JSON.stringify({ body: `#${issue.number} is gesloten als *niet gepland*. Het vinkje blijft daarom uit; haal het punt weg of vervang het.` }) });
   }
   // 3. Open punten bij een voltooid issue: één opmerking.
   const punten = voltooid ? openPunten(issue.body) : [];

@@ -355,7 +355,10 @@ export function maakVoortgang({ data, repo = "Robert-Worm/omnibus", gh, proposal
 
       // 2. Al geclaimd, al verwerkt, dubbel of niet openbaar?
       const eerder = claims.find((c) => c.open && c.number < n && c.bron && !c.labels.includes("dubbel") && keyOf(c) === keyOf(claim));
-      const klaar = claim.bron.soort === "rapport" ? verwerkt.rapporten[claim.bron.id] : inDatabaseKaders.has(claim.bron.id);
+      // Een ingeleverde claim is de bijdrage zelf: staat de bron daarna in de database, dan is hij
+      // opgenomen, niet dubbel. De beheerder sluit hem met het label verwerkt.
+      const ingeleverd = claim.labels.includes("ingeleverd") || claim.labels.includes("verwerkt");
+      const klaar = !ingeleverd && (claim.bron.soort === "rapport" ? verwerkt.rapporten[claim.bron.id] : inDatabaseKaders.has(claim.bron.id));
       const rapport = claim.bron.soort === "rapport" ? rapportById.get(claim.bron.id) : null;
       const kader = claim.bron.soort === "kader" ? kaderById.get(claim.bron.id) : null;
       if (rapport?.voorstel && rapport.status !== "approved") {

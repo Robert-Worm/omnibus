@@ -50,4 +50,9 @@ jobs:
           git add .github/voortgang/voorgestelde-rapporten.json docs/bijdragen/werklijst docs/bijdragen/voortgang.md docs/bijdragen/werklijst-aanbevolen.md docs/bijdragen/werklijst-wetten-en-kaders.md docs/bijdragen/werklijst-rapporten.csv README.md docs/routekaart.md docs/begrippen.md docs/bijdragen/README.md
           if git diff --cached --quiet; then echo "Geen wijzigingen"; exit 0; fi
           git commit -m "Voortgang bijgewerkt"
-          git push origin HEAD:main
+          # Pusht iemand intussen naar main, dan eerst bijwerken en opnieuw proberen.
+          for poging in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main || { git rebase --abort; exit 1; }
+          done
+          exit 1

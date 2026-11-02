@@ -4,7 +4,7 @@
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { controleerNieuweStory } from "./backlog-lib.mjs";
+import { controleerNieuweStory, vinkje } from "./backlog-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const repo = process.env.GITHUB_REPOSITORY;
@@ -99,7 +99,7 @@ for (const backlog of backlogs) {
       ...(epic.toelichting ? ["", epic.toelichting] : []),
       "",
       "**User stories**",
-      ...stories.map((i) => `- [${i.state === "closed" ? "x" : " "}] #${i.number}`),
+      ...stories.map((i) => `- [${vinkje(i)}] #${i.number}`),
     ].join("\n");
     const title = `Epic: ${epic.titel}`;
     if ((epicIssue.body || "") !== body || epicIssue.title !== title) await gh(`/issues/${epicIssue.number}`, { method: "PATCH", body: JSON.stringify({ title, body }) });

@@ -14,3 +14,6 @@ export function controleerNieuweStory(story) {
   const onbekend = labels.filter((l) => !WERKLABELS.includes(l) && !["story", "routekaart", "kwaliteit", "presentatie", "P1", "P2", "P3", "klaar", "bezig", "wacht-op-ander", "wacht-op-beheerder", "gepauzeerd"].includes(l));
   if (onbekend.length) throw new Error(`Story ${story.id} heeft een onbekend label: ${onbekend.join(", ")}.`);
 }
+
+/** Het vinkje van een story in een epic: alleen gehaald als hij is gesloten en niet als 'niet gepland' (#291). */
+export const vinkje = (i) => (i.state === "closed" && i.state_reason !== "not_planned" ? "x" : " ");
