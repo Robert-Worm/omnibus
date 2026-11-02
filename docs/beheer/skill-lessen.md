@@ -48,6 +48,25 @@ Tweede ronde, bekeken op 24 oktober 2026:
 
 Licenties met *ShareAlike* (SA) of een eigen ‘alleen gebruiken’-licentie, zoals [hedralab/eskill](https://github.com/hedralab/eskill), vragen dat je overgenomen tekst onder dezelfde licentie deelt. Dat past niet bij de licentie van de Omnibus-skills, dus daarvan nemen we alleen ideeën over. Bij CC BY 4.0 mag overnemen met naamsvermelding.
 
+## Voor het programmeren
+
+Bekeken op 2 november 2026. Deze skill gaat over code schrijven, niet over bronnen lezen.
+
+| Skill | Licentie | Wat Omnibus ervan kan leren |
+| --- | --- | --- |
+| [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | MIT | Een ladder vóór je code schrijft: moet het bestaan, staat het er al, kan de standaardbibliotheek het? Pas daarna het minimum dat werkt |
+| idem | MIT | Lui in de oplossing, nooit in het lezen: eerst de code lezen die de wijziging raakt |
+| idem | MIT | Nooit inkorten op validatie, beveiliging, toegankelijkheid en gegevensverlies. Logica met keuzes of lussen krijgt een kleine test |
+| idem | MIT | Het antwoord eindigt met wat is overgeslagen of niet gecontroleerd. Dat lijkt op *Nog te controleren* |
+
+Wat we niet overnemen:
+
+- **In de inhoudsskills.** Rapporten, kaders en reviews moeten volledig zijn. Zuiniger mag daar alleen na een meting zonder kwaliteitsverlies ([B-018](besluiten.md#b-018)).
+- **Als vaste plugin in de repository.** De regels in `AGENTS.md` gaan voor. Ponytail mag niets weghalen uit tests, controles of de bewijsketen.
+- **De cijfers van de maker,** zoals 53% minder code. Die zijn door de maker zelf gemeten.
+
+Wel: één keer de code laten nalopen op onnodige omvang, alleen lezend ([#290](https://github.com/Robert-Worm/omnibus/issues/290)).
+
 ## Ideeën om te meten
 
 | Idee | Bron | Wat het kan besparen | Risico voor de kwaliteit |
