@@ -276,6 +276,35 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-title],h2,h3,h4,strong,p,dd,li,label,blockquote):not(:is(.comparison-source,.report-reading) *) { color:var(--foreground); }
   html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-description],small,.bd-panel-nav button:not([aria-pressed=true]),.bd-footer span):not(:is(.comparison-source,.report-reading) *) { color:var(--rm-muted); }
   html[data-appearance=dark] .bd-pilot-detail .bd-panel-nav button[aria-pressed=true] { background:#294b69; color:#f0f7ff; }
+  /* Kaderviewer (wetten en kaders): tabbalk, ketenkaarten en toetspuntkaarten hadden vaste lichte vlakken. */
+  html[data-appearance=dark] .law-detail .law-main-tabs { background:#172330; }
+  html[data-appearance=dark] .law-detail .law-point-tabs button:not([aria-pressed=true]) { background:transparent; border-color:transparent; color:var(--rm-muted); }
+  html[data-appearance=dark] .law-detail .law-point-tabs button[aria-pressed=true] { background:#294b69; color:#f0f7ff; box-shadow:inset 0 -2px #94c8f5; }
+  html[data-appearance=dark] .law-detail .law-context-card { background:color-mix(in srgb,#5f8fbf 16%,#172330); color:var(--foreground); }
+  html[data-appearance=dark] .law-detail .law-context-risk { background:color-mix(in srgb,#d7ad6b 14%,#172330); }
+  html[data-appearance=dark] .law-detail .law-context-controlObjective { background:color-mix(in srgb,#9482b1 16%,#172330); }
+  html[data-appearance=dark] .law-detail .law-context-control { background:color-mix(in srgb,#80a595 16%,#172330); }
+  html[data-appearance=dark] .law-detail .law-context-card .law-context-reason { color:var(--rm-muted); }
+  html[data-appearance=dark] .law-detail :is(.law-choice-card,.law-point-item) { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .law-detail :is(.law-choice-card,.law-point-item).is-chosen { background:#1d3a2e; border-color:#6fb08f; }
+  html[data-appearance=dark] .law-detail .law-point-item.is-active { background:#20354a; }
+  html[data-appearance=dark] .law-detail .law-point-item.is-hold { background:#3c2e16; }
+  html[data-appearance=dark] .law-detail .law-choice-actions button { background:transparent; border-color:transparent; color:var(--rm-accent); }
+  /* Tabbladen Bronpassage en Toetsaanpak; de bron zelf houdt zijn papierkleur. */
+  html[data-appearance=dark] .law-detail .cio-norm-summary { background:color-mix(in srgb,#80a595 16%,#172330); }
+  html[data-appearance=dark] .law-detail .cio-norm-heading { color:#a5e0bb; }
+  html[data-appearance=dark] .law-detail .cio-norm-heading > span { color:#c9e6d6; border-color:#4e8064; }
+  html[data-appearance=dark] .law-detail .cio-norm-summary > small { color:var(--rm-muted); }
+  html[data-appearance=dark] .law-detail :is(.cio-source-link-card,.cio-phase) { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .law-detail .cio-point-source [data-source-group=context] { background:var(--rm-surface); }
+  html[data-appearance=dark] .law-detail .cio-point-source [data-source-group=context] .cio-source-link-card { background:#172330; }
+  html[data-appearance=dark] .law-detail .cio-source-link-card.is-active { border-color:#729bbc; box-shadow:inset 3px 0 #94c8f5; }
+  html[data-appearance=dark] .law-detail .cio-source-links button { background:transparent; border-color:transparent; color:var(--rm-accent); }
+  html[data-appearance=dark] .law-detail .cio-source-links > section > h4 { color:var(--foreground); }
+  html[data-appearance=dark] .law-detail .cio-phase .cio-phase-evidence { background:var(--rm-surface); }
+  /* Begripsuitleg in een kop: een woord, geen knop; ook in een paneel buiten .framework-app. */
+  html[data-appearance=dark] :is([data-slot=sheet-content],[data-slot=dialog-content]) button.term-help-trigger { background:transparent; color:inherit; border-color:transparent; }
+  html[data-appearance=dark] :is([data-slot=sheet-content],[data-slot=dialog-content]) button.term-help-trigger:hover { color:#abd5f7; }
   html[data-appearance=dark] [data-slot=dropdown-menu-content].research-menu { background:#172330; color:var(--foreground); border-color:var(--border); }
   html[data-appearance=dark] .research-menu [data-highlighted] { background:#29455f; color:var(--foreground); }
   html[data-appearance=dark] .research-menu [data-variant=destructive] { color:#ffcfce; }
