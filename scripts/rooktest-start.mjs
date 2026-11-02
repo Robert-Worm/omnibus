@@ -33,7 +33,7 @@ async function main() {
   try {
     while (Date.now() < einde) {
       try {
-        const antwoord = await fetch(adres);
+        const antwoord = await fetch(adres, { signal: AbortSignal.timeout(5000) });
         if (isOmnibus(antwoord.status, await antwoord.text())) { console.log(`✓ Omnibus antwoordt op ${adres}`); return; }
       } catch { /* nog niet gestart */ }
       await new Promise((r) => setTimeout(r, 1000));

@@ -6,7 +6,7 @@ import { lstat, mkdir, readdir, realpath, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { performance } from "node:perf_hooks";
-import { intakeContracts, intakeLimits, readVerifiedFile } from "./intake.mjs";
+import { intakeContracts, intakeLimits, readVerifiedFile, reserved } from "./intake.mjs";
 import { canonical } from "./identity.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -32,7 +32,7 @@ function exact(value, keys, label) {
 function portable(name) {
   need(typeof name === "string" && name.length <= 240 && name.split("/").every(part =>
     /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(part) && !/[. ]$/.test(part) &&
-    !/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(part)), "unsafe relative path");
+    !reserved.test(part)), "unsafe relative path");
   return name;
 }
 function json(bytes) {

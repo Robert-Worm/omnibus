@@ -33,13 +33,18 @@ export function readCsv(text) {
     if (quoted) {
       if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false; }
       else field += c;
-    } else if (c === '"') quoted = true;
+    } else if (c === '"' && field === "") quoted = true; // alleen aan het begin van een veld
     else if (c === ";") { row.push(field); field = ""; }
     else if (c === "\n") { row.push(field.replace(/\r$/, "")); rows.push(row); row = []; field = ""; }
     else field += c;
   }
   if (field || row.length) { row.push(field); rows.push(row); }
+  if (quoted) throw new Error("CSV: een aanhalingsteken wordt niet gesloten");
   const [head, ...body] = rows;
+  // Een rij met een ander aantal kolommen is een fout in het bestand, geen rij om stil over te slaan.
+  // Een lege regel (alleen een regeleinde) telt niet.
+  const fout = body.findIndex((r) => r.length !== head.length && !(r.length === 1 && r[0] === ""));
+  if (fout >= 0) throw new Error(`CSV: rij ${fout + 2} heeft ${body[fout].length} kolommen in plaats van ${head.length}`);
   return body.filter((r) => r.length === head.length).map((r) => Object.fromEntries(head.map((k, i) => [k, r[i]])));
 }
 // Een cel die met =, +, -, @, tab of CR begint, ziet een spreadsheet als formule (CSV-injectie, OWASP).

@@ -367,13 +367,22 @@ test('visitor storage defaults are fixed and configuration cannot shorten natura
 test('high-cardinality synthetic peers never exceed the default storage ceiling', () => {
   const { limiter, at } = visitors();
   for (let i = 0; i < 8192; i++) {
-    assert.deepEqual(limiter.take(`2001:db8::${i.toString(16)}`), i < 4096 ? allowed : denied(60));
+    assert.deepEqual(limiter.take(`2001:db8:${i.toString(16)}::1`), i < 4096 ? allowed : denied(60));
     assert(limiter.size <= 4096);
   }
   assert.equal(limiter.size, 4096);
   at(60000);
   assert.deepEqual(limiter.take('192.0.2.1'), allowed);
   assert.equal(limiter.size, 1);
+});
+
+test('addresses in one IPv6 /64 share one visitor entry (#296)', () => {
+  const { limiter } = visitors();
+  for (let i = 0; i < 5000; i++) limiter.take(`2001:db8:1:2:${i.toString(16)}::1`);
+  assert.equal(limiter.size, 1);
+  limiter.take('2001:db8:1:3::1');
+  limiter.take('192.0.2.1');
+  assert.equal(limiter.size, 3);
 });
 
 test('Sliplane appends the address it saw: only the rightmost entry counts (#213)', () => {

@@ -1,5 +1,6 @@
 import { lstatSync, readFileSync, realpathSync } from 'node:fs';
 import { dirname, join, posix, resolve, win32 } from 'node:path';
+import { reserved } from './intake.mjs';
 
 // Relocate sealed evidence, not its identities or approval decisions. The caller
 // must still verify the original receipt's hash against the returned file bytes.
@@ -33,7 +34,7 @@ export function createEvidencePathResolver(manifestPath) {
     const key = historicalKey(entry.original), parts = entry.path.split('/');
     if (files.has(key)) throw new Error('Duplicate historical evidence path');
     if (!parts.every(part => part && part !== '.' && part !== '..' && !/[\\:<>"|?*]/.test(part) && !hasControlCharacters(part) &&
-        !/[. ]$/.test(part) && !/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(part)))
+        !/[. ]$/.test(part) && !reserved.test(part)))
       throw new Error('Unsafe evidence destination');
     files.set(key, parts);
   }

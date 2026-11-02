@@ -20,16 +20,20 @@ export function hydratedModule(prepared, id) {
 
 export function appendRuntimeEdits(prepared, module, prefix, edits) {
   const keys = prepared.content.registrations[module] ??= [];
-  let chunk = [];
+  // `bytes` is exactly Buffer.byteLength(JSON.stringify(chunk)): brackets, items and commas.
+  // Counting along keeps this linear instead of re-serialising the chunk per edit (#296).
+  let chunk = [], bytes = 2;
   const flush = () => {
     if (!chunk.length) return;
     const key = prefix + ":local:" + module + ":" + keys.length;
     requireRuntime(!Object.hasOwn(prepared.resources, key), "duplicate delivery identity");
-    requireRuntime(Buffer.byteLength(JSON.stringify(chunk)) <= 2 * 1024 * 1024, "individual delivery record exceeds 2 MiB");
-    prepared.resources[key] = chunk; keys.push(key); chunk = [];
+    requireRuntime(bytes <= 2 * 1024 * 1024, "individual delivery record exceeds 2 MiB");
+    prepared.resources[key] = chunk; keys.push(key); chunk = []; bytes = 2;
   };
   for (const edit of edits) {
-    if (chunk.length && Buffer.byteLength(JSON.stringify([...chunk, edit])) > 900_000) flush();
+    const size = Buffer.byteLength(JSON.stringify(edit));
+    if (chunk.length && bytes + 1 + size > 900_000) flush();
+    bytes += (chunk.length ? 1 : 0) + size;
     chunk.push(edit);
   }
   flush();
@@ -199,10 +203,17 @@ function reportPacket(snapshot) {
 }
 function replaceRows(rows, before, after, label) {
   same(before.map(row => row.id ?? row.point_id), after.map(row => row.id ?? row.point_id), label + " identity inventory");
+  // Hash each published row once; the lookup stays "exactly one unchanged match" (#296).
+  const byDigest = new Map();
+  for (const [index, row] of rows.entries()) { const d = digest(row); byDigest.set(d, [...(byDigest.get(d) ?? []), index]); }
   for (const [i, old] of before.entries()) {
-    const matches = rows.map((row, index) => digest(row) === digest(old) ? index : -1).filter(index => index >= 0);
+    const matches = byDigest.get(digest(old)) ?? [];
     requireRuntime(matches.length === 1, "correction requires exactly one unchanged published " + label);
-    rows[matches[0]] = structuredClone(after[i]);
+    const index = matches[0], oldDigest = digest(old);
+    rows[index] = structuredClone(after[i]);
+    // Keep the map in step with the rows, as the original per-row rehash did.
+    byDigest.set(oldDigest, byDigest.get(oldDigest).filter(x => x !== index));
+    const d = digest(rows[index]); byDigest.set(d, [...(byDigest.get(d) ?? []), index].sort((a, b) => a - b));
   }
 }
 function removeSourceDelivery(prepared, moduleId, prefixes) {

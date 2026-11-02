@@ -793,3 +793,10 @@ test('voorstel: corrupte metadata wordt nooit als lege lijst gebruikt', () => {
   for (const voorstellen of [null, {}, [null], [{ id: 'voorstel-1', issue: 1 }]])
     assert.throws(() => voorstelBot(g, voorstellen), /metadata/);
 });
+
+test("readCsv: een aanhalingsteken midden in een veld is gewone tekst; een fout bestand faalt luid (#296)", () => {
+  assert.deepEqual(readCsv('id;titel\n1;Rapport "Alpha" 2026\n2;"Met ; puntkomma"\n'), [{ id: "1", titel: 'Rapport "Alpha" 2026' }, { id: "2", titel: "Met ; puntkomma" }]);
+  assert.throws(() => readCsv('id;titel\n1;a;b\n2;c\n'), /rij 2 heeft 3 kolommen in plaats van 2/);
+  assert.throws(() => readCsv('id;titel\n1;"open\n2;c\n'), /niet gesloten/);
+  assert.deepEqual(readCsv('id;titel\n1;a\n\n'), [{ id: "1", titel: "a" }]);
+});

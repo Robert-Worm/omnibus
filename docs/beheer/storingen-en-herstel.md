@@ -106,6 +106,8 @@ Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 reg
 
 Daarnaast controleert GitHub elk kwartier of de online versie gezond is (`.github/workflows/gezondheid.yml`). Na drie mislukte pogingen komt er een issue met het label `storing`, en GitHub mailt je. Dat issue sluit vanzelf zodra de site weer gezond is. Handmatig controleren: `node .github/scripts/gezondheid.mjs`.
 
+**Let op:** GitHub zet geplande workflows stil als er 60 dagen niets in de repository is gebeurd. Dan komt er ook geen storingsmelding meer. Kijk na een rustige periode onder *Actions → Online versie controleren* of de controle nog loopt; zet hem zo nodig weer aan met **Enable workflow**.
+
 | Regel in de runtime-log | Betekenis | Wat je doet |
 | --- | --- | --- |
 | `Omnibus packaged read-only web runtime: https://…` | De server is gestart | Niets |
