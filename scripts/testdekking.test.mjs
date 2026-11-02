@@ -13,7 +13,6 @@ const lees = (p) => readFileSync(path.join(root, p), "utf8");
 /** Testscripts die bewust niet in `npm test` zitten, met de reden. */
 export const BUITEN_NPM_TEST = {
   "test:agent:protocol": "Vraagt een verse agentbuild met de echte database (npm run build:agent); zie AUDIT-CRITERIA.md §6.",
-  "test:hosting-first-start": "Draait alleen op Linux als gebruiker 1000, zoals in de container van de reserve-hostingroute (#295).",
   "test:intake": "Zit al in test:content-handoff.",
 };
 

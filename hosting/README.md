@@ -1,29 +1,19 @@
 # Hosting (`hosting/`)
 
-> **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl). De andere mappen beschrijven een uitgebreidere route met de database op een aparte schijf; die is nodig zodra er een niet-openbare database online moet.
+> **In het kort:** alles voor de [online versie](../docs/routekaart.md#pad-a--online-versie). De proefversie draait via de [container-route](container/README.md) op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl).
 
 ## Zo draait de proefversie nu
 
 De proefversie draait via [`container/`](container/README.md): één Dockerfile met de openbare database erin, voor één app bij een containerhost (Sliplane). Je vindt hem op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl).
 
-Begin hier als je de online versie wilt bijwerken of herstellen.
-
-## Klaarliggend: de route met een aparte database
-
-Deze route is nodig zodra er een niet-openbare database online moet. De vier mappen volgen elkaar op:
-
-```mermaid
-flowchart LR
-    A["release-delivery<br/>image maken"] --> B["image-verification<br/>image controleren"] --> C["data-transfer<br/>database ontvangen"] --> D["first-start<br/>eerste start"]
-    classDef default fill:#eaf2f8,stroke:#01689b,color:#15233b;
-```
+Begin hier als je de online versie wilt bijwerken of herstellen. Op je eigen computer draai je Omnibus zonder deze map; zie [installeren](../docs/gebruiken/installeren.md).
 
 | Map | Wat het doet |
 | --- | --- |
-| [`release-delivery/`](release-delivery/README.md) | Het runtimepakket in een container (image) zetten, met de database apart ernaast |
-| [`image-verification/`](image-verification/README.md) | De image lokaal bouwen en controleren met fictieve gegevens |
-| [`data-transfer/`](data-transfer/README.md) | Een database op de server ontvangen en tegen vaste controlegetallen controleren |
-| [`first-start/`](first-start/README.md) | De allereerste start op de server, voordat de database er staat |
+| [`container/`](container/README.md) | De online versie: app en openbare database in één image |
+| `mcp/` | Een aparte image voor de AI-koppeling via internet; nog niet online |
+
+Er was ook een uitgebreidere route met de database op een aparte schijf, voor een niet-openbare database. Die is op 2 november 2026 weggehaald, omdat de site de openbare database gebruikt ([B-033](../docs/beheer/besluiten.md#b-033)). Hij staat nog in de geschiedenis van Git, mocht hij ooit nodig zijn.
 
 ## Volgende stap
 

@@ -8,8 +8,6 @@ import "./matrix-readability.css";
 import { useBrowseState } from "./browse-state";
 import {resetReportView} from '@/lib/report-workspaces.mjs';
 import FilterPicker from "./filter-picker";
-import { AuditProfilePicker, RelevancePreview, type AuditProfile } from "./audit-profile";
-import { defaultProfile, profileActive, rankForProfile } from "@/lib/audit-relevance.mjs";
 import { normId, filterSubjects, subjectOptions } from "@/lib/norm-navigation.mjs";
 import FullTextPreview from "./full-text-preview";
 import DeferredMatrixRows from './deferred-matrix-rows';
@@ -52,8 +50,6 @@ export default function CompactMatrix({
   viewKey = "fixture",
   reveal,
   onRevealComplete,
-  profile = defaultProfile,
-  onProfileChange,
   onOpenReport,
   resetRequest=0,
   onResetComplete,
@@ -90,8 +86,6 @@ export default function CompactMatrix({
   viewKey?: string;
   reveal?: { id: string; nonce: number };
   onRevealComplete?: () => void;
-  profile?: AuditProfile;
-  onProfileChange?: (p: AuditProfile) => void;
   onOpenReport?: (line: Line) => void;
   resetRequest?: number;
   onResetComplete?: ()=>void;
@@ -214,10 +208,7 @@ export default function CompactMatrix({
     (l: Line) => !selectedOnly || draft.included.includes(l.id) || Boolean(pointChoices?.counts[l.id]?.selected || pointChoices?.counts[l.id]?.legacySelected),
   ) as Line[], [embedded, lines, viewDraft, query, selectedOnly, draft.included, pointChoices]);
   const subjectFiltered = useMemo(() => embedded || groupLines ? candidates : filterSubjects(candidates, view.subjects) as Line[], [embedded, groupLines, candidates, view.subjects]);
-  const ranked = useMemo(() => !embedded && onProfileChange
-    ? rankForProfile(subjectFiltered, profile)
-    : { lines: subjectFiltered, hidden: 0, unknown: 0 }, [embedded, onProfileChange, subjectFiltered, profile]);
-  const filtered = useMemo(() => (groupLines&&view.group ? groupLines(ranked.lines as Line[]).find(g=>g.id===view.group)?.lines||[] : ranked.lines) as Line[], [groupLines, view.group, ranked.lines]);
+  const filtered = useMemo(() => (groupLines&&view.group ? groupLines(subjectFiltered).find(g=>g.id===view.group)?.lines||[] : subjectFiltered) as Line[], [groupLines, view.group, subjectFiltered]);
   const { page, pages, rows } = pageSlice(filtered, embedded || groupLines || showAll ? 0 : index, embedded || groupLines || showAll ? Math.max(1, filtered.length) : 25) as {
     page: number;
     pages: number;
@@ -229,9 +220,7 @@ export default function CompactMatrix({
   const optionsFor = (items:Line[]) => subjectDefinitions
     ? subjectDefinitions.map(s=>({...s,count:items.filter(l=>filterSubjects([l],[s.id]).length>0).length})).filter(s=>s.count>0)
     : subjectOptions(items);
-  const counts = optionsFor(
-    onProfileChange ? rankForProfile(candidates, profile).lines : candidates,
-  );
+  const counts = optionsFor(candidates);
   const options = optionsFor(lines)
     .map((o) => ({ ...o, count: counts.find((c) => c.id === o.id)?.count ?? 0 }))
     .filter((o) => o.count > 0 || view.subjects.includes(o.id));
@@ -270,23 +259,18 @@ export default function CompactMatrix({
         ...v,
         ...(hidden ? { query: "", subjects: [], selectedOnly: false, group:'' } : {}),
         index: v.showAll ? 0 : Math.floor(
-          (hidden
-            ? rankForProfile(lines, { ...profile, strongOnly: false }).lines.findIndex(
-                (l: Line) => l.id === reveal.id,
-              )
-            : i) / 25,
+          (hidden ? lines.findIndex((l: Line) => l.id === reveal.id) : i) / 25,
         ),
         lastId: reveal.id,
         top: 0,
         revealNonce: reveal.nonce,
       }));
       if (hidden) setNotice("Filters gewist om " + normId(reveal.id) + " te tonen.");
-      if (hidden && profile.strongOnly) onProfileChange?.({ ...profile, strongOnly: false });
     });
     return () => {
       cancelled = true;
     };
-  }, [reveal, ready, lines, filtered, setView, profile, onProfileChange]);
+  }, [reveal, ready, lines, filtered, setView]);
   useEffect(() => {
     // Group wrappers delegate to the target matrix, which knows when its page
     // and rows are ready. Never consume a request while the row is absent.
@@ -360,9 +344,6 @@ export default function CompactMatrix({
       <span>{line.title}</span>
     </Button>
     {descriptiveTitles&&renderNorm(line)}
-    {onProfileChange && profileActive(profile) && (
-      <RelevancePreview line={line} profile={profile} onOpen={() => onOpen(line.id)} />
-    )}
   </>;
   function scroll(direction: number) {
     const element = scroller.current?.querySelector<HTMLElement>("[data-slot=table-container]");
@@ -456,15 +437,6 @@ export default function CompactMatrix({
         </fieldset>}
       </div>
       <div className="subject-toolbar">
-        {onProfileChange && (
-          <AuditProfilePicker
-            value={profile}
-            onChange={(p) => {
-              onProfileChange(p);
-              setIndex(0);
-            }}
-          />
-        )}
         {groupLines?<label className="matrix-group-filter">Procesgroep<select aria-label="Procesgroep" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupLines(lines).map(g=><option key={g.id} value={g.id}>{g.title}</option>)}</select></label>:<FilterPicker
           label={subjectLabel}
           options={options}
@@ -483,26 +455,6 @@ export default function CompactMatrix({
             </Button>
           ))}
       </div>
-      {onProfileChange && profileActive(profile) && (
-        <output className="profile-results">
-          AI-inschatting ·{" "}
-          {profile.sort === "original" ? "oorspronkelijke volgorde" : "meest passend eerst"}
-          {profile.strongOnly ? " · alleen sterk passend" : ""}
-          {ranked.hidden > 0 ? ` · ${ranked.hidden} verborgen` : ""}
-          {ranked.unknown > 0 ? ` · ${ranked.unknown} nog niet beoordeeld` : ""}
-          {profile.strongOnly && (
-            <Button
-              variant="link"
-              onClick={() => {
-                onProfileChange({ ...profile, strongOnly: false });
-                setIndex(0);
-              }}
-            >
-              Toon ook overige normen
-            </Button>
-          )}
-        </output>
-      )}
       </>}
       {notice && (
         <output className="navigation-notice">
