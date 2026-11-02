@@ -122,7 +122,7 @@ Overige bestanden krijgen de rol `supporting`. De controle kijkt of de rollen aa
 
 - Maximaal 256 bestanden, 256 MiB per bestand en 512 MiB in totaal; het manifest maximaal 1 MiB.
 - Geweigerd: dubbele namen, paden buiten de map, snelkoppelingen en onbruikbare Windows-bestandsnamen.
-- Voor oude, bevroren rapportarchieven met meer bestanden is er `--historical-report` (maximaal 1.024 bestanden, alleen voor rapporten, altijd met `--expect-sha256`).
+- Voor oude, bevroren rapportarchieven met meer bestanden is er `--historical-report` (maximaal 1.024 bestanden, alleen voor rapporten, altijd met `--expect-sha256`). De lokale databasebouw gebruikt die grens vanzelf voor een rapport met `sourceEvidence` in het plan.
 - De controle voert nooit code uit het pakket uit en maakt geen netwerkverbinding. Het is geen uploaddienst voor internet.
 
 ## Samengevat
