@@ -61,8 +61,7 @@ test("een afgewezen zip laat geen database en geen tijdelijke map achter", () =>
 }));
 
 test("docs noemen geen losse zip uit de nieuwste release als installatieroute", () => {
-  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-  const installeren = readFileSync(path.join(root, "docs/gebruiken/installeren.md"), "utf8");
+  const installeren = readFileSync(new URL("../docs/gebruiken/installeren.md", import.meta.url), "utf8");
   assert.match(installeren, /npm run database:ophalen/);
   assert.doesNotMatch(installeren, /nieuwste release/);
 });
