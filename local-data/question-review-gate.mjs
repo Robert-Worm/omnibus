@@ -66,11 +66,18 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     if(!node||node.format!==QUESTION_REVIEW_PUBLICATION_FORMAT)fail('invalid or missing capsule');
     verifyQuestionCapsule(node);
   }
+  const checkedAuthoringContexts=new WeakSet();
   function visit(node){
     if(!node||typeof node!=='object')return;
     if(node.format===QUESTION_REVIEW_PUBLICATION_FORMAT){verifyQuestionCapsule(node);return;}
     for(const [key,child]of Object.entries(node)){
-      if(key==='questionReview'||key==='interviewReview')capsule(child);
+      if(key==='questionReview'||key==='interviewReview'){
+        // A frozen authoring snapshot can explicitly have no review yet. This
+        // exact context is already bound by every offered framework receipt;
+        // it is not itself an offered question or a publication capsule.
+        if(key==='questionReview'&&child===null&&checkedAuthoringContexts.has(node))continue;
+        capsule(child);
+      }
       else if(key==='interviewReviews'){
         if(!child||typeof child!=='object'||Array.isArray(child))fail('invalid capsule index');
         for(const entry of Object.values(child))capsule(entry);
@@ -100,6 +107,11 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     // resource must not change a previously valid receipt or evade this gate.
     const hydrated=structuredClone(initial);
     for(const rows of edits)applyCatalogueEdits(hydrated,structuredClone(rows));
+    if(frameworks)for(const packet of hydrated.packages??[])if(packet.family==='local-framework'){
+      verifyLocalFrameworkQuestions(packet,hydrated.interviewReviews);
+      const context=packet.catalogue.questionAuthoringContext;
+      if(context&&typeof context==='object'&&!Array.isArray(context))checkedAuthoringContexts.add(context);
+    }
     visit(hydrated);
     if(sourcePlans)deliveredPlans=hydrated.foundationQuestionPlans;
     if(processPlans)verifyProcessQuestionPlans([...(hydrated.processes??[]),...additionalProcesses],hydrated.questionPlans);
@@ -110,8 +122,6 @@ export function verifyPublishedQuestionCapsules(repository, value) {
     for(const row of presets??[])verifyMappedResearchQuestion(row,'theme:'+row.themeId);
     for(const row of groups??[])verifyMappedResearchQuestion(row,'theme-groups');
     if(models||wording)modelInputs[id]=hydrated;
-    if(frameworks)for(const packet of hydrated.packages??[])
-      if(packet.family==='local-framework')verifyLocalFrameworkQuestions(packet,hydrated.interviewReviews);
     if(reports)for(const sourceId of ownReports){
       const sources=(hydrated.corpus??[]).filter(app=>app.framework?.report.id===sourceId);
       if(sources.length!==1)fail('missing or ambiguous local report: '+sourceId);

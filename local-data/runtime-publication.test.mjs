@@ -320,6 +320,41 @@ test('new local frameworks require complete reviewed plans and point interviews 
   assert.equal(repository.db.prepare('SELECT count(*) AS n FROM runtime_publications').get().n,2);
 });
 
+test('a bound framework authoring snapshot may retain its direct null review without relaxing offered reviews',t=>{
+  const {repository,release,contract,value}=fixture(t),moduleId='lib/topical-reviewed.json';
+  const make=(context={questionReview:null})=>{
+    const catalogue={source_identity:{source_id:'SYNTHETIC'},context:{edition:'synthetic-1'},questionAuthoringContext:context,
+      points:[{id:'P1',selection_status:'SELECTABLE',text:'Fictieve melding.',source_links:[{record_id:'R1',contribution:'PRIMARY'}]}]};
+    const bank={records:[{id:'R1',source_spans:[{page:1}]}]},sourceHash=digest('fictional source');
+    syntheticFrameworkQuestions(catalogue,bank,sourceHash);
+    return {packages:[{id:'SYNTHETIC',family:'local-framework',catalogue,bank,context:catalogue.context,
+      documents:[{packageDocumentId:'doc',pdf_hash:sourceHash}],manifest:{documents:[{id:'doc',first_package_page:1,last_package_page:1}]},
+      questionPlan:catalogue.questionPlan}],interviewReviews:catalogue.interviewReviews};
+  };
+  const publish=(data,late=false,id=moduleId)=>{
+    const refs=late?prepareWebResources(repository,release,{late:[{path:['packages'],value:data.packages}]}):{};
+    return publishRuntime(repository,{...value,modules:{[id]:late?{...data,packages:[]}:data},refs,
+      registrations:late?{[id]:['late']} : {}},{release,contract});
+  };
+  for(const late of [false,true]){
+    const good=make(),snapshot=structuredClone(good),publication=publish(good,late);
+    assert.deepEqual(good,snapshot);
+    assert(readRuntimePublication(repository,{release,publication,contract}));
+    for(const mutate of [
+      p=>{p.questionPlan.questionReview=null;},
+      p=>{delete p.questionPlan.questionReview;},
+      p=>{p.catalogue.interviewReviews['SYNTHETIC:P1']=null;},
+      p=>{p.catalogue.questionAuthoringContext.changed='different reviewed context';},
+      p=>{p.family='other';},
+    ]){const data=make();mutate(data.packages[0]);assert.throws(()=>publish(data,late),/question review publication/);}
+    // These contexts have genuine synthetic bindings, so rejection exercises
+    // the generic scanner rather than only the changed-context hash check.
+    for(const context of [{questionReview:{}},{questionReview:null,nested:{questionReview:null}},
+      {questionReview:null,interviewReview:null}])assert.throws(()=>publish(make(context),late),/question review publication/);
+    assert.throws(()=>publish(make(),late,'lib/example.json'),/question review publication/);
+  }
+});
+
 // Explicitly fictional receipts test the contract, not a real content review.
 function syntheticQuestionCapsule(decision='behouden') {
   const question={id:'opening',kind:'interview',text:'Hoe wordt een fictieve melding verwerkt?'};
