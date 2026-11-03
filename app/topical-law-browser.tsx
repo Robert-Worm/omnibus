@@ -9,6 +9,7 @@ import {LawAboutIntro,LawAboutSpecifications} from './law-about-layout';
 import CatalogueContent from './catalogue-content';
 import {topicalPackage,topicalRows,topicalGroups,topicalGoal,topicalMeasure,type TopicalPoint} from '@/lib/topical-content.mjs';
 import {topicalRecordSources} from '@/lib/topical-source-reader.mjs';
+import {topicalSourceFormat} from '@/lib/topical-document-identity.mjs';
 import {topicalSelection,chooseTopicalPoints} from '@/lib/topical-selection.mjs';
 import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
 import {cioSourceGroups} from '@/lib/cio-source-groups.mjs';
@@ -46,7 +47,8 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  </div>;
  const source=chosen&&record?<><nav aria-label="Brondocument">{choices.length>1&&choices.map((c,i)=><button key={c.document.id} aria-pressed={i===documentIndex} onClick={()=>{setDocumentIndex(i);setPage(c.passages[0]?.page||1);setTarget(c.passages[0]?.start);setFocus(n=>n+1);}}>{c.document.title}</button>)}</nav><LawSourceDocument recordId={record.id} title={record.title} locator={record.locator} sourceKind={record.source_status==='EXPLANATORY_CONTEXT'?'Toelichting':'Hoofdtekst'} document={chosen.document} passages={chosen.passages} page={page} target={target} focusRequest={focus}
  onFocus={p=>{setPage(p.page);setTarget(p.start);setFocus(n=>n+1);}} onPage={p=>{setPage(p);setTarget(undefined);}} onReturn={()=>setActive('criterion')}
- notice={<><p className="cio-meta">{chosen.document.title} · fysieke PDF-pagina’s</p>{chosen.passages.length!==chosen.spans.length&&<p role="alert">Niet alle bronmarkeringen konden worden bevestigd.</p>}</>}/></>:<p role="alert">De exacte bron is niet beschikbaar.</p>;
+ pageLabel={topicalSourceFormat(chosen.document).pageLabel}
+ notice={<><p className="cio-meta">{chosen.document.title} · {topicalSourceFormat(chosen.document).notice}</p>{chosen.passages.length!==chosen.spans.length&&<p role="alert">Niet alle bronmarkeringen konden worden bevestigd.</p>}</>}/></>:<p role="alert">De exacte bron is niet beschikbaar.</p>;
  return <LawPointSourceLayout label={'Bron bij '+point.title} summary={<CioNormSummary point={point}/>} publication={<a href={bundle.status.official_url} target="_blank" rel="noreferrer">Officiële publicatie ↗</a>} criterion={criterion} source={source} active={active} onActive={setActive}/>;
 }
 type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};

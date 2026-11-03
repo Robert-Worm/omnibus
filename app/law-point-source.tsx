@@ -19,10 +19,10 @@ export function LawPointSourceLayout({label,summary,publication,criterion,source
 }
 
 /** Receives only verified, document-global character offsets from a source adapter. */
-export function LawSourceDocument({recordId,title,locator,sourceKind,document,passages,page,target,focusRequest,onFocus,onPage,onReturn,notice,fallback}:{recordId:string;title:string;locator:string;sourceKind:string;document:LawReaderDocument|null;passages:LawPassage[];page:number;target?:number;focusRequest:number;onFocus:(passage:LawPassage)=>void;onPage:(page:number)=>void;onReturn:()=>void;notice?:ReactNode;fallback?:ReactNode}){
+export function LawSourceDocument({recordId,title,locator,sourceKind,document,passages,page,target,focusRequest,onFocus,onPage,onReturn,notice,fallback,pageLabel='p.'}:{recordId:string;title:string;locator:string;sourceKind:string;document:LawReaderDocument|null;passages:LawPassage[];page:number;target?:number;focusRequest:number;onFocus:(passage:LawPassage)=>void;onPage:(page:number)=>void;onReturn:()=>void;notice?:ReactNode;fallback?:ReactNode;pageLabel?:string}){
  return <div className="cio-source-document">
   <header className="cio-source-record-heading"><h3 title={title}>{locator}</h3><span>{sourceKind}</span>
-   <nav aria-label="Gemarkeerde passages in deze bepaling">{passages.map((p,i)=><Button key={`${p.start}-${i}`} variant="outline" aria-pressed={page===p.page&&target===p.start} onClick={()=>onFocus(p)}>p. {p.page}{passages.length>1?` · passage ${i+1}`:''}</Button>)}</nav>
+   <nav aria-label="Gemarkeerde passages in deze bepaling">{passages.map((p,i)=><Button key={`${p.start}-${i}`} variant="outline" aria-pressed={page===p.page&&target===p.start} onClick={()=>onFocus(p)}>{pageLabel} {p.page}{passages.length>1?` · passage ${i+1}`:''}</Button>)}</nav>
   </header>
   {notice}
   {document?<ReportLibrary key={recordId} compactSource document={document} source={document} reportThemes={[]} page={page} onPage={onPage} sourcePassages={passages} sourceTarget={target} sourceFocusRequest={focusRequest} onTopic={()=>{}} onClearEvidence={()=>{}} onReturn={onReturn}/>:fallback||<p role="alert">Deze bronversie is niet lokaal beschikbaar.</p>}
