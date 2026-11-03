@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readdirSync } from "node:fs";
-import { controleerNieuweStory } from "./backlog-lib.mjs";
+import { controleerNieuweStory, vinkje } from "./backlog-lib.mjs";
 
 test("een nieuwe story zonder werklabel wordt geweigerd (B-019)", () => {
   assert.throws(() => controleerNieuweStory({ id: "X-1" }), /mist een werklabel/);
@@ -18,4 +18,10 @@ test("de stories uit de backlog van 24 oktober hebben allemaal een werklabel", a
     const b = (await import(new URL(f, dir))).default;
     for (const e of b.epics) for (const s of e.stories) controleerNieuweStory(s);
   }
+});
+
+test("een story die als niet gepland sloot, krijgt geen vinkje in de epic (#291)", () => {
+  assert.equal(vinkje({ state: "closed", state_reason: "completed" }), "x");
+  assert.equal(vinkje({ state: "closed", state_reason: "not_planned" }), " ");
+  assert.equal(vinkje({ state: "open" }), " ");
 });

@@ -22,7 +22,6 @@
     "lib/project-codec.test.mjs",
     "lib/project-codec-security.test.mjs",
     "local-data/catalogue.test.mjs",
-    "local-data/transfer.test.mjs",
     "scripts/python-gate.test.mjs"
   ],
   "files": [

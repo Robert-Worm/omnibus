@@ -82,7 +82,7 @@ Elke situatie heeft dezelfde kaart. Wat je in elk geval vastlegt, staat bij [wat
 - **Eerst doen:** beperk de toegang. Alleen de beheerder, Robert Worm, heeft toegang tot Sliplane en kan de site offline halen; waarschuw hem. Laat rechten, cache en logs onderzoeken; bewaar het bewijs afgeschermd.
 - **Herstellen:** ga pas weer verder als alleen toegestane inhoud bereikbaar is en een onafhankelijke beoordeling klaar is.
 
-Bij de container-route is er geen aparte schijf: zie [online terug naar de vorige werkende versie](#online-terug-naar-de-vorige-werkende-versie). Let op bij een route met een aparte schijf. Terugzetten bij de hostingpartij herstelt de schijf niet, en het terugzetten van de schijf haalt ook nieuwere bestanden weg. Kies daarom altijd bewust de hele combinatie van code, database en controlegetallen.
+De container-route heeft geen aparte schijf: zie [online terug naar de vorige werkende versie](#online-terug-naar-de-vorige-werkende-versie). Kies altijd bewust de hele combinatie van code, database en controlegetallen.
 
 ## Wat je vastlegt bij een fout
 
@@ -105,6 +105,8 @@ Open bij [Sliplane](https://docs.sliplane.io/services/logging/) de dienst van Om
 Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 regels van de laatste 7 dagen.
 
 Daarnaast controleert GitHub elk kwartier of de online versie gezond is (`.github/workflows/gezondheid.yml`). Na drie mislukte pogingen komt er een issue met het label `storing`, en GitHub mailt je. Dat issue sluit vanzelf zodra de site weer gezond is. Handmatig controleren: `node .github/scripts/gezondheid.mjs`.
+
+**Let op:** GitHub zet geplande workflows stil als er 60 dagen niets in de repository is gebeurd. Dan komt er ook geen storingsmelding meer. Kijk na een rustige periode onder *Actions → Online versie controleren* of de controle nog loopt; zet hem zo nodig weer aan met **Enable workflow**.
 
 | Regel in de runtime-log | Betekenis | Wat je doet |
 | --- | --- | --- |

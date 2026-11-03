@@ -122,9 +122,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   if(hosts!==1||origins>1){res.setHeader('Connection','close');return reply(400,{error:'Invalid request headers'});}
   // The former public address sends page visits on to the current one, path included.
   if(hosting.formerAuthority&&req.headers.host===hosting.formerAuthority&&(req.method==='GET'||req.method==='HEAD')){
-   const path=typeof req.url==='string'&&req.url.startsWith('/')&&!req.url.startsWith('//')&&req.url.length<=2048?req.url:'/';
+   const path=typeof req.url==='string'&&req.url.startsWith('/')&&!req.url.startsWith('//')&&!req.url.includes('\\')&&req.url.length<=2048?req.url:'/';
+   // The target must stay on the current origin, whatever the path contains.
+   const target=new URL(path,hosting.publicOrigin);
    res.removeHeader('Content-Type');
-   res.writeHead(308,{Location:new URL(path,hosting.publicOrigin).href,'Content-Length':'0'});res.end();return;
+   res.writeHead(308,{Location:target.origin===new URL(hosting.publicOrigin).origin?target.href:new URL('/',hosting.publicOrigin).href,'Content-Length':'0'});res.end();return;
   }
   if(req.headers.host!==expected)return reply(403,{error:'Host not allowed'});
   if(req.headers.origin!==undefined&&req.headers.origin!==expectedOrigin)

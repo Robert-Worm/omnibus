@@ -114,12 +114,20 @@ export function createRequestRateLimit({
 
 // Only accept the transport's address, never a request header or socket port.
 // Canonicalize IPv6 and mapped IPv4 so alternate spellings share one budget.
-function peerKey(address) {
+// One visitor usually owns a whole IPv6 /64; group by that prefix so a single
+// network cannot fill the visitor table with many addresses (#296).
+export function peerKey(address) {
   if (typeof address !== 'string' || address.length > 64) return null;
   const family = isIP(address);
   if (!family) return null;
-  try { return new URL(`http://[${family === 4 ? '::ffff:' : ''}${address}]/`).hostname; }
+  let host;
+  try { host = new URL(`http://[${family === 4 ? '::ffff:' : ''}${address}]/`).hostname; }
   catch { return null; }
+  if (family === 4 || host.startsWith('[::ffff:')) return host;
+  const [left, right = ''] = host.slice(1, -1).split('::');
+  const a = left ? left.split(':') : [], b = right ? right.split(':') : [];
+  const groups = host.includes('::') ? [...a, ...Array(8 - a.length - b.length).fill('0'), ...b] : a;
+  return `[${groups.slice(0, 4).join(':')}::/64]`;
 }
 
 /** Bounded, idle-expiring peer buckets; a full table never evicts an active peer. */

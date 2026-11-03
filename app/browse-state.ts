@@ -1,5 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
+/** Only saved values of the expected type survive; anything else falls back to the default. */
+export function cleanSaved<T extends object>(defaults: T, saved: unknown): T {
+  const clean = { ...defaults };
+  if (!saved || typeof saved !== "object") return clean;
+  const s = saved as Record<keyof T, unknown>;
+  for (const k of Object.keys(defaults) as (keyof T)[]) {
+    const ok = Array.isArray(defaults[k])
+      ? Array.isArray(s[k]) && (s[k] as unknown[]).every((x) => typeof x === "string")
+      : typeof s[k] === typeof defaults[k];
+    if (ok) clean[k] = s[k] as T[keyof T];
+  }
+  return clean;
+}
 // Optional device-local view preferences; never stores audit data.
 export function useBrowseState<T extends object>(key: string, initial: T, storage: 'session'|'local'='session') {
   const [defaults] = useState(initial);
@@ -11,19 +24,7 @@ export function useBrowseState<T extends object>(key: string, initial: T, storag
       if (cancelled) return;
       try {
         const raw = (storage==='local'?localStorage:sessionStorage).getItem("rijksmap-view-" + key);
-        if (raw) {
-          const saved = JSON.parse(raw);
-          const clean = { ...defaults };
-          for (const k of Object.keys(defaults) as (keyof T)[]) {
-            if (
-              Array.isArray(defaults[k])
-                ? Array.isArray(saved[k]) && saved[k].every((x: unknown) => typeof x === "string")
-                : typeof saved[k] === typeof defaults[k]
-            )
-              clean[k] = saved[k];
-          }
-          setValue(clean);
-        }
+        if (raw) setValue(cleanSaved(defaults, JSON.parse(raw)));
       } catch {
         /* View preferences are optional. */
       }

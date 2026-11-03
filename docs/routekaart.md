@@ -42,7 +42,7 @@ flowchart TD
 | Stap | Status |
 | --- | --- |
 | Applicatie verpakken als zelfstandig [runtimepakket](beheer/runtime-pakket.md) | ✅ Klaar |
-| Container (image) maken en lokaal testen met fictieve gegevens, zie [`hosting/`](../hosting/release-delivery/README.md) | ✅ Klaar |
+| Container (image) maken en lokaal testen, zie [`hosting/`](../hosting/container/README.md) | ✅ Klaar |
 | Database gecontroleerd meebouwen in de image ([container-route](../hosting/container/README.md)) | ✅ Klaar |
 | Proefversie online op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl), met beveiligde verbinding en gezondheidscontrole | ✅ Klaar |
 | Snelheid online aantoonbaar · [#84](https://github.com/Robert-Worm/omnibus/issues/84) | 🔄 Bezig |

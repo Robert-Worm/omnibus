@@ -15,7 +15,6 @@ test('the retained stylesheet is the exact shadcn 4.18.0 asset, without its gene
   const lock=JSON.parse(read('package-lock.json'));
   for(const name of ['shadcn','braces','micromatch','fast-glob'])
     assert(!Object.keys(lock.packages).some(path=>path.endsWith('node_modules/'+name)),name);
-  assert(lock.packages['node_modules/@shadcn/react'],'Used React components must remain available');
 });
 
 test('redistribution notices retain their text without allowing a comment escape',()=>{

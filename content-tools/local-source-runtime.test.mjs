@@ -204,3 +204,21 @@ for (const status of ["HOLD", "CONTEXT_ONLY"]) test(`framework ${status} remains
     if (status === "HOLD") assert.equal(reader.exportRelease(built.release).packages.find(p => p.id === "FICTIEF").records.find(r => r.data.id === "K1").status, "HOLD");
   } finally { reader.close(); }
 });
+
+test("appendRuntimeEdits knipt precies zoals het oude, kwadratische algoritme (#296)", async () => {
+  const { appendRuntimeEdits } = await import("./local-source-runtime.mjs");
+  const oud = (edits) => {
+    const uit = []; let chunk = [];
+    for (const edit of edits) {
+      if (chunk.length && Buffer.byteLength(JSON.stringify([...chunk, edit])) > 900_000) { uit.push(chunk); chunk = []; }
+      chunk.push(edit);
+    }
+    if (chunk.length) uit.push(chunk);
+    return uit;
+  };
+  let zaad = 7; const kans = () => (zaad = (zaad * 48271) % 2147483647) / 2147483647;
+  const edits = Array.from({ length: 3000 }, (_, i) => ({ path: ["rows"], value: ["é".repeat(Math.floor(kans() * 2000)) + i] }));
+  const prepared = { content: { registrations: {} }, resources: {} };
+  appendRuntimeEdits(prepared, "m", "p", edits);
+  assert.deepEqual(prepared.content.registrations.m.map((k) => prepared.resources[k]), oud(edits));
+});

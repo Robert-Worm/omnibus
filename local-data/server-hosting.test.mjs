@@ -403,7 +403,7 @@ test('a former public address only redirects page visits to the current origin',
   assert.throws(()=>createHostingPolicy({publicOrigin,webRoot:'synthetic',formerOrigin}),formerOrigin);
  assert.throws(()=>createHostingPolicy({formerOrigin:former}));
  const f=fixture(t),app=await f.start({formerOrigin:former});
- for(const [path,location] of [['/','/'],['/database.html?x=1','/database.html?x=1'],['/api/v1/version','/api/v1/version'],['//elders.example/','/']]){
+ for(const [path,location] of [['/','/'],['/database.html?x=1','/database.html?x=1'],['/api/v1/version','/api/v1/version'],['//elders.example/','/'],['/\\elders.example/','/'],['/\\\\elders.example','/'],['/x\\y','/']]){
   for(const method of ['GET','HEAD']){
    const moved=await request(app,{path,method,headers:{Host:formerHost}});
    assert.equal(moved.status,308,path);assert.equal(moved.headers.location,publicOrigin+location,path);

@@ -19,7 +19,7 @@ De meting gebruikt de database die bij de huidige code hoort, met een gecontrole
 
 | Gemeten | Release | Bronpassages letterlijk juist | Vragen zonder vormfout | Vragen op HOLD | Te herschrijven of te schrappen | Bouwstenen met complete keten | Bouwstenen met aannametaal | Bouwstenen met algemene externe verwijzing | Bouwstenen met getal of artikel niet in de bron |
 | --- | --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: |
-| 2026-11-01 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 | 1.017 van 1.017 | 0 | 0 | 1 |
+| 2026-11-03 | `ffaf0f56` | 6.462 van 6.462 (100%) | 1.497 van 1.650 (90,7%) | 152 | 1 | 1.017 van 1.017 | 0 | 0 | 1 |
 
 ## Volgende stap
 

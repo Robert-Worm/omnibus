@@ -35,7 +35,10 @@ export const intakeLimits = Object.freeze({
 export const historicalReportIntakeLimits = Object.freeze({ ...intakeLimits, files: 1024 });
 const shaPattern = /^[a-f0-9]{64}$/;
 const idPattern = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,95}$/;
-const reserved = /^(con|prn|aux|nul|conin\$|conout\$|com[0-9¹²³]|lpt[0-9¹²³])(?:\.|$)/i;
+// Windows-namen die geen bestand mogen zijn. fetch-release-database.mjs draait los en heeft een
+// kopie; scripts/padregel.test.mjs houdt die gelijk. De skill-kopie in stage-receipts.mjs is
+// smaller, maar elk pakket gaat daarna nog door deze intake.
+export const reserved = /^(con|prn|aux|nul|conin\$|conout\$|com[0-9¹²³]|lpt[0-9¹²³])(?:\.|$)/i;
 
 // Keep the original Error (including Node error codes) and legacy CLI fields.
 // Only diagnostics created here may enter the optional operator feedback.

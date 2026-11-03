@@ -197,6 +197,12 @@ function ownerAdmissionSnapshot(entry, planRoot, snapshot, manifest, files, budg
   return { receipt, bytes, sha256: entry.admission.sha256 };
 }
 
+/** Intake options for one planned package: a report with a frozen baseline archive (sourceEvidence) may hold up to 1,024 files. */
+export function intakeOptions(entry, manifest) {
+  const historicalReport = manifest?.package?.kind === "report" && Object.hasOwn(entry ?? {}, "sourceEvidence");
+  return { expectedSha256: entry.sha256, ...(historicalReport ? { historicalReport } : {}) };
+}
+
 async function readPackage(entry, planRoot, budget) {
   exactKeys(entry, ["intake", "sha256", "authorIds", ...["admission", "sourceEvidence"].filter(key => Object.hasOwn(entry ?? {}, key))], "package plan");
   requireValue(nonempty(entry.intake) && hash(entry.sha256), "Each package needs an intake path and independently retained SHA256");
@@ -204,7 +210,12 @@ async function readPackage(entry, planRoot, budget) {
     entry.authorIds.every(id => nonempty(id) && id.length <= 200) && new Set(entry.authorIds).size === entry.authorIds.length,
   "Supply the actual distinct authorIds; do not infer them from review receipts");
   const intakePath = resolve(planRoot, entry.intake), root = realpathSync(dirname(intakePath));
-  const checked = await checkIntake(intakePath, { expectedSha256: entry.sha256 });
+  // Peek at the package kind only to choose the file limit: a report with a frozen baseline
+  // archive was prepared with the historical limit (#297). checkIntake then verifies the
+  // pinned hash and the whole manifest, before any content is trusted.
+  let peek = null;
+  try { peek = JSON.parse(readBytes(intakePath, intakeLimits.manifestBytes).toString("utf8")); } catch { /* checkIntake reports it */ }
+  const checked = await checkIntake(intakePath, intakeOptions(entry, peek));
   const intakeBytes = readBytes(intakePath, intakeLimits.manifestBytes, entry.sha256);
   const manifest = json(intakeBytes, "intake"), files = new Map();
   const archives = baselineArchiveIds(manifest, entry.sourceEvidence, file =>

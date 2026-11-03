@@ -392,3 +392,12 @@ test("a missing owner admission points to the owner decision, not to rehashing e
   const other = localDatabaseFailure(new Error("Source passages differ"));
   assert.match(other.action, /Restore the exact source\/review files/);
 });
+
+test("een rapport met een bevroren archief krijgt de historische bestandsgrens (#297)", async () => {
+  const { intakeOptions } = await import("./local-database.mjs");
+  const sha256 = "a".repeat(64), report = { package: { kind: "report" } };
+  assert.deepEqual(intakeOptions({ sha256, sourceEvidence: {} }, report), { expectedSha256: sha256, historicalReport: true });
+  assert.deepEqual(intakeOptions({ sha256 }, report), { expectedSha256: sha256 });
+  assert.deepEqual(intakeOptions({ sha256, sourceEvidence: {} }, { package: { kind: "framework" } }), { expectedSha256: sha256 });
+  assert.deepEqual(intakeOptions({ sha256 }, { package: { kind: "model" } }), { expectedSha256: sha256 });
+});

@@ -86,3 +86,9 @@ export function overdrachtTekst(issues, tests, { nu = new Date(), repoUrl = "htt
   r.push("---", `*Automatisch bijgewerkt op ${nu.toISOString().slice(0, 16).replace("T", " ")} UTC. Werkwijze: [samenwerking tussen de AI-assistenten](${repoUrl}/blob/main/docs/beheer/samenwerking-ai.md).*`);
   return r.join("\n");
 }
+
+/** De laatste testrun met een echte uitkomst. Een geannuleerde of overgeslagen run zegt niets over main (#291). */
+export function laatsteTestrun(runs = []) {
+  const r = runs.find((x) => x.conclusion === "success" || x.conclusion === "failure");
+  return r ? { conclusie: r.conclusion, commit: r.head_sha, url: r.html_url } : { conclusie: null, commit: null, url: null };
+}

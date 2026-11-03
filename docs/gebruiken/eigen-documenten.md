@@ -49,7 +49,7 @@ Projectbestanden en browseropslag bewaren de collectiekeuze en herkomstbindingen
 
 Een ondersteunde openbare opvolgpublicatie kan een project openen als de bestaande controles op bronversies en bewijssnapshots slagen. De historische binding blijft behouden; een nieuw gekozen openbare bron krijgt de huidige publicatiebinding. Een gebruikte eigen bron vereist dezelfde exacte pakketbinding. Ontbreekt of verandert die, dan blijft het oorspronkelijke project beschermd en wordt geen andere bron gebruikt. Bewaar bij die melding het **herstelbestand** voordat je verdergaat.
 
-Is de browseropslag te klein voor de verplichte herstelkopie, dan wordt het oude project niet geopend. De herstelmelding blijft zichtbaar in je huidige werkstap. Bewaar het herstelbestand; de oorspronkelijke opslag wordt niet overschreven.
+Omnibus bewaart per soort hooguit drie herstelkopieën in de browser en ruimt oudere op; is de opslag vol, dan maakt hij eerst ruimte tussen die oudere kopieën. Is de browseropslag dan nog te klein voor de verplichte herstelkopie, dan wordt het oude project niet geopend. De herstelmelding blijft zichtbaar in je huidige werkstap. Bewaar het herstelbestand; de oorspronkelijke opslag wordt niet overschreven.
 
 Voor oudere samengestelde lokale publicaties zonder deze herkomstmetadata moet de beheerroute een nieuwe publicatie uit de oorspronkelijke openbare basis en gecontroleerde pakketten maken. Bewaar de bestaande publicatie en projecten. De collectiekeuze verandert geen databasebestand en activeert geen nieuwe publicatie.
 

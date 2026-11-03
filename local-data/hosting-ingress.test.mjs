@@ -138,11 +138,11 @@ test('synthetic loopback ingress: current guarantees and explicit future gaps', 
         assert.equal(received[index+1], headers[name], name);
       }
     }
-    await observe('duplicate-host-local-first', {headers:['Host',localHost,'Host','hostile.invalid']}, 200, 400);
+    await observe('duplicate-host-local-first', {headers:['Host',localHost,'Host','hostile.invalid']}, 400, 400);
     assert.deepEqual(received.filter((_, i) => i < 4), ['Host',localHost,'Host','hostile.invalid']);
-    await observe('duplicate-host-hostile-first', {headers:['Host','hostile.invalid','Host',localHost]}, 403, 400);
+    await observe('duplicate-host-hostile-first', {headers:['Host','hostile.invalid','Host',localHost]}, 400, 400);
     await observe('duplicate-origin', {headers:['Host',localHost,'Origin',`http://${localHost}`,
-      'Origin','https://hostile.invalid']}, 403, 400);
+      'Origin','https://hostile.invalid']}, 400, 400);
     for (const path of [`http://${publicHost}/api/v1/ready`, `//${publicHost}/api/v1/ready`])
       await observe('non-origin-form', {path}, 400);
   });
@@ -166,12 +166,14 @@ test('synthetic loopback ingress: current guarantees and explicit future gaps', 
   });
 
   await t.test('probe Host mismatch is explicit; headers and user-agent grant no probe bypass', async () => {
-    // localhost is documented as the probe URL, not a verified wire Host value.
+    // Since the local preview accepts both 127.0.0.1 and localhost (installeren.md), localhost is a
+    // normal local Host: probes and pages answer alike. Hosting mode keeps its own Host checks
+    // (server-hosting.test.mjs).
     const probe = {Host:`localhost:${runtimePort}`, 'User-Agent':'synthetic-probe',
       'X-Forwarded-Host':localHost};
-    await observe('localhost-probe-hypothesis', {headers:probe}, 403, 200);
-    for (const path of ['/', '/assets/synthetic.js', '/api/v1/releases'])
-      await observe('probe-authority-cannot-read-content', {path, headers:probe}, 403);
+    await observe('localhost-probe-hypothesis', {headers:probe}, 200, 200);
+    for (const path of ['/api/v1/health', '/api/v1/version'])
+      await observe('localhost-reads-local-content', {path, headers:probe}, 200);
     for (const [id, options, status] of [
       ['probe-post', {method:'POST'}, 405],
       ['probe-head', {method:'HEAD'}, 405],

@@ -159,6 +159,16 @@ test("een bron die al in de database zit of niet openbaar is, wordt gesloten", a
   assert.ok(!g.labelsVan(geheim).includes("dubbel"));
 });
 
+test("een ingeleverde claim wordt niet afgewezen als de bron intussen in de database staat (#291)", async () => {
+  const g = nepGitHub();
+  const n = g.claim("anna", { bron: rapport("2026-in-db") });
+  g.issues.get(n).labels.push({ name: "ingeleverd" });
+  await draai(g);
+  assert.equal(g.issues.get(n).state, "open");
+  assert.ok(!g.labelsVan(n).includes("dubbel"));
+  assert.doesNotMatch(g.botTekst(n), /al in de database/);
+});
+
 test("een beschermd kader vraagt eerst om toestemming en krijgt geen welkom", async () => {
   const g = nepGitHub();
   const n = g.claim("anna", { bron: "ISO27001" });
@@ -782,4 +792,11 @@ test('voorstel: corrupte metadata wordt nooit als lege lijst gebruikt', () => {
   const g = nepGitHub();
   for (const voorstellen of [null, {}, [null], [{ id: 'voorstel-1', issue: 1 }]])
     assert.throws(() => voorstelBot(g, voorstellen), /metadata/);
+});
+
+test("readCsv: een aanhalingsteken midden in een veld is gewone tekst; een fout bestand faalt luid (#296)", () => {
+  assert.deepEqual(readCsv('id;titel\n1;Rapport "Alpha" 2026\n2;"Met ; puntkomma"\n'), [{ id: "1", titel: 'Rapport "Alpha" 2026' }, { id: "2", titel: "Met ; puntkomma" }]);
+  assert.throws(() => readCsv('id;titel\n1;a;b\n2;c\n'), /rij 2 heeft 3 kolommen in plaats van 2/);
+  assert.throws(() => readCsv('id;titel\n1;"open\n2;c\n'), /niet gesloten/);
+  assert.deepEqual(readCsv('id;titel\n1;a\n\n'), [{ id: "1", titel: "a" }]);
 });

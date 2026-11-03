@@ -82,6 +82,8 @@ export function vraagClaude({ invoer, verbruik = new Verbruik(), onderdeel = "",
         klaar(uit.result);
       } catch (e) { verbruik.boek(e.uit, { model, duurMs: Date.now() - start, gelukt: false, onderdeel }); fout(e); }
     });
+    // Stopt claude meteen (niet ingelogd, foute optie), dan geeft schrijven EPIPE; die fout komt via close.
+    p.stdin.on("error", () => {});
     p.stdin.end(invoer);
   });
 }

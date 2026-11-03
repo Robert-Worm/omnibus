@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {workbookFileSnapshot} from '@/lib/workbook-file-snapshot.mjs';
 import {downloadFile,useFileDownload} from './file-download';
-import { excelMime, exportFields, workbookStyles, columnName } from "@/lib/excel-model.mjs";
+import { excelMime, workbookStyles, columnName } from "@/lib/excel-model.mjs";
 import { exportInputs } from './export-state';
 import {useExportPreview} from './use-export-preview';
 import type {WorkbookPreviewStyle} from '@/lib/workbook-preview-types';
@@ -71,9 +71,9 @@ export default function ExportCreator({
   }
   const {
     selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
-    excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
+    excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
-    requiredFields, choices, selectionError, planningIssues,
+    choices, selectionError, planningIssues,
   } = useMemo(() => exportInputs(framework, draft, config, models), [framework, draft, config, models]);
   const request=useMemo(()=>({framework,draft,config,models}),[framework,draft,config,models]);
   const calculation=useExportPreview(request,active&&!disabled);
@@ -84,7 +84,6 @@ export default function ExportCreator({
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
   const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
   const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
-  const setFields = setting('fields', fields), setNotes = setting('notes', notes);
   const setAccent = setting('accent', accent), setColorMode = setting('colorMode', colorMode);
   const setFontFamily = setting('fontFamily', fontFamily), setFontSize = setting('fontSize', fontSize);
   const setFilename = setting('filename', filename);
@@ -110,7 +109,6 @@ export default function ExportCreator({
   const previewEntry = previewEntries[previewIndex];
   const detailPreview = register?.viewer && register?.detailRecords;
   const detailPoint = Math.min(detailPointIndex, Math.max(0, (register?.detailRecords?.length ?? 1) - 1));
-  const templateLayout = true;
   const design: WorkbookPreviewStyle[] = preview?.previewStyles || workbookStyles({ accent, colorMode, fontFamily, fontSize });
   const previewHeaderRow = register?.headerRow || 5;
   const previewHidden = (i:number) => register?.hiddenColumns?.includes(i) || register?.previewHiddenColumns?.includes(i);
@@ -379,7 +377,7 @@ export default function ExportCreator({
           </section>
           <section className="creator-card">
             <h2>Vormgeving</h2>
-            {templateLayout && <p className="creator-help">De indeling volgt het referentiesjabloon. Kies hieronder de kleuren en het lettertype. {profile === 'testing' ? 'Uitvoering toont de norm en het volledige toetspunt, met instructie en verwacht bewijs naast elkaar. De detailviewer staat achteraan.' : profile === 'risk' ? 'De matrix blijft compact. Lees de volledige norm, risico’s, beheersing en toetsaanpak in de detailviewer.' : 'De leidraad blijft compact. Lees de volledige vragen, doorvragen en gespreksnotities in de detailviewer.'}</p>}
+            <p className="creator-help">De indeling volgt het referentiesjabloon. Kies hieronder de kleuren en het lettertype. {profile === 'testing' ? 'Uitvoering toont de norm en het volledige toetspunt, met instructie en verwacht bewijs naast elkaar. De detailviewer staat achteraan.' : profile === 'risk' ? 'De matrix blijft compact. Lees de volledige norm, risico’s, beheersing en toetsaanpak in de detailviewer.' : 'De leidraad blijft compact. Lees de volledige vragen, doorvragen en gespreksnotities in de detailviewer.'}</p>
             <fieldset className="creator-basis" aria-label="Kleurgebruik">
               <Button
                 variant="outline"
@@ -423,49 +421,6 @@ export default function ExportCreator({
               <label htmlFor="export-font">Lettertype<select id="export-font" value={fontFamily} onChange={e=>setFontFamily(e.target.value)}>{exportFonts.map(f=><option key={f}>{f}</option>)}</select></label>
               <label htmlFor="export-font-size">Tekstgrootte<select id="export-font-size" value={fontSize} onChange={e=>setFontSize(Number(e.target.value))}>{exportFontSizes.map(s=><option key={s} value={s}>{s} pt{s===11?' · standaard':''}</option>)}</select></label>
             </div>
-            {!modelBasis && !templateLayout && (
-              <details>
-                <summary>Kolommen en werkbladen aanpassen</summary>
-                {profile === "testing" && hasCriteria && testScope.length > 0 && <p className="creator-help">Toetsaanpak, bewijs en oordelen staan op Toetsuitvoering.</p>}
-                <div className="creator-field-grid">
-                  {exportFields
-                    .filter(f=>profile!=='interview' || !pickedLines.length || !pickedLines.every(l=>l.materialKind==='model-question') || !['auditQuestion','procedure'].includes(f.id))
-                    .filter((f) => f.id !== "testingAspects")
-                    .filter((f) => profile !== "testing" || !hasCriteria || !testScope.length ||
-                      !["procedure", ...(pickedLines.some(l => l.materialKind === "model-question") ? [] : ["documentation"]), "observation", "evidenceLocation", "verdict", "tester", "testedOn", "status"].includes(f.id))
-                    .map((f) => (
-                      <label className="creator-check" key={f.id}>
-                        <Checkbox
-                          checked={fields.includes(f.id) || Boolean(requiredFields[f.id])}
-                          disabled={Boolean(requiredFields[f.id])}
-                          onCheckedChange={(v) =>
-                            setFields((old) =>
-                              v ? [...old, f.id] : old.filter((id) => id !== f.id),
-                            )
-                          }
-                        />
-                        <span>{f.label}{requiredFields[f.id] && <small>{requiredFields[f.id]}</small>}</span>
-                      </label>
-                    ))}
-                </div>
-                <label className="creator-check" htmlFor="creator-questions">
-                  <Checkbox
-                    id="creator-questions"
-                    checked={true}
-                    disabled
-                  />
-                  Onderzoeksvragen met beide viewers (vast onderdeel)
-                </label>
-                <label className="creator-check" htmlFor="creator-notes">
-                  <Checkbox
-                    id="creator-notes"
-                    checked={notes}
-                    onCheckedChange={(v) => setNotes(Boolean(v))}
-                  />
-                  Bestaande auditnotities opnemen
-                </label>
-              </details>
-            )}
           </section>
           <section className="creator-card">
             <h2>Versie en team</h2>

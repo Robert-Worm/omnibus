@@ -27,7 +27,7 @@ const LEGACY_SUMS = new Map([
 // Flat, portable filenames only; Windows aliases must not overwrite an entry.
 function bestandsnaam(naam) {
   if (!/^[\w.-]+$/.test(naam) || naam.endsWith('.') ||
-      /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(naam))
+      /^(con|prn|aux|nul|conin\$|conout\$|com[0-9¹²³]|lpt[0-9¹²³])(?:\.|$)/i.test(naam))
     throw new Error('onverwacht bestand in de zip');
   return naam.toLowerCase();
 }

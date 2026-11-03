@@ -24,6 +24,10 @@ jobs:
           RUN: ${{ github.event.workflow_run.id }}
           REPO: ${{ github.repository }}
         run: |
+          # Een run die is afgebroken omdat er een nieuwere is, nooit herhalen: dat zou de nieuwere
+          # run weer afbreken (zelfde concurrency-groep).
+          nieuwste=$(gh api "repos/$REPO/actions/workflows/installatie.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[0].id')
+          if [ "$nieuwste" != "$RUN" ]; then echo "Er is een nieuwere run ($nieuwste); niets te herhalen."; exit 0; fi
           jobs=$(gh api "repos/$REPO/actions/runs/$RUN/jobs")
           echte_fout=$(echo "$jobs" | jq '[.jobs[] | select(.conclusion == "failure" or (.conclusion == "cancelled" and (.steps | length) > 0))] | length')
           zonder_machine=$(echo "$jobs" | jq '[.jobs[] | select(.conclusion == "cancelled" and (.steps | length) == 0)] | length')

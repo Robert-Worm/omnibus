@@ -104,7 +104,7 @@ Dit is een herhaalbare controle van de genoemde routes en handelingen, geen alge
 
 Andere browsers, extensies, malware, nieuwe functionaliteit, processen buiten de proef, cloudback-ups en synchronisatie van je downloadmap vallen erbuiten. Serviceworkers zijn tijdens de proef geblokkeerd; een bestaand browserprofiel en eerder geïnstalleerde serviceworkers worden niet onderzocht. Een geslaagde lokale proef bewijst evenmin de privacy van een gehoste website, AI-provider of echte externe bronwebsite. De getelde tegenproeven zijn bewuste testverzoeken, geen gevonden lekken van Omnibus.
 
-Browseropslag en projectbestanden zijn niet vanzelf versleuteld of een back-up. Bestaande herstelkopieën kunnen achterblijven. Bewaar benodigde bestanden en volg de opslaguitleg in Omnibus voordat je sitegegevens verwijdert. De proef wijzigt die bewaarbeveiligingen niet.
+Browseropslag en projectbestanden zijn niet vanzelf versleuteld of een back-up. Bestaande herstelkopieën kunnen achterblijven; Omnibus houdt er per soort hooguit drie. Bewaar benodigde bestanden en volg de opslaguitleg in Omnibus voordat je sitegegevens verwijdert. De proef wijzigt die bewaarbeveiligingen niet.
 
 ## Volgende stap
 

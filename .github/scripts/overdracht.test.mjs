@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { overdrachtTekst, sorteer, MARKERING, overbodigeStatussen, volgordeVoor } from "./overdracht-lib.mjs";
+import { laatsteTestrun, overdrachtTekst, sorteer, MARKERING, overbodigeStatussen, volgordeVoor } from "./overdracht-lib.mjs";
 
 const issue = (number, title, ...labels) => ({ number, title, labels: labels.map((name) => ({ name })) });
 const issues = [
@@ -76,4 +76,12 @@ test("met een vaste volgorde: alleen wat op te pakken is, in rondes van vijf; ro
   assert.match(tekst, /## Wacht op de beheerder[\s\S]*#2/);
   assert.match(tekst, /## Gepauzeerd[\s\S]*#10/);
   assert.doesNotMatch(tekst.split("## Wacht op de beheerder")[0], /#10\b|#2\b/);
+});
+
+test("een geannuleerde testrun telt niet als rood (#291)", () => {
+  const run = (conclusion, sha) => ({ conclusion, head_sha: sha, html_url: `u/${sha}` });
+  assert.deepEqual(laatsteTestrun([run("cancelled", "a"), run("skipped", "b"), run("success", "c"), run("failure", "d")]), { conclusie: "success", commit: "c", url: "u/c" });
+  assert.equal(laatsteTestrun([run("failure", "a"), run("success", "b")]).conclusie, "failure");
+  assert.deepEqual(laatsteTestrun([run("cancelled", "a")]), { conclusie: null, commit: null, url: null });
+  assert.equal(laatsteTestrun().conclusie, null);
 });
