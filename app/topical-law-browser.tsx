@@ -11,7 +11,8 @@ import {frameworkBackgrounds} from '@/lib/framework-backgrounds.mjs';
 import {frameworkPublication} from '@/lib/framework-publication-facts.mjs';
 import {frameworkSourceRole,frameworkSourceLink} from '@/lib/framework-source-labels.mjs';
 import {frameworkContextText} from '@/lib/framework-context-wording.mjs';
-import {frameworkLimitation} from '@/lib/framework-limitations-wording.mjs';
+import {frameworkAboutLimitations} from '@/lib/framework-limitations-wording.mjs';
+import {frameworkAboutGuidance} from '@/lib/framework-about-guidance.mjs';
 import CatalogueContent from './catalogue-content';
 import {topicalPackage,topicalRows,topicalGroups,topicalGoal,topicalMeasure,type TopicalPoint} from '@/lib/topical-content.mjs';
 import {topicalRecordSources} from '@/lib/topical-source-reader.mjs';
@@ -28,6 +29,8 @@ import type {LawOverviewProps} from './law-overview-state';
 type Package=NonNullable<ReturnType<typeof topicalPackage>>;
 function TopicalAbout({bundle}:{bundle:Package}){
  const c=bundle.context,sourceStatus=sourceSnapshotStatus(c);
+ const guidance=useMemo(()=>frameworkAboutGuidance(bundle.id,c),[bundle.id,c]);
+ const limitations=frameworkAboutLimitations(bundle.id,c.limitations);
  const wording=(field:string,text:string)=>frameworkContextText(bundle.id,field,text);
  const background=Object.hasOwn(frameworkBackgrounds,bundle.id)?frameworkBackgrounds[bundle.id as keyof typeof frameworkBackgrounds]:undefined;
  const publication=frameworkPublication(bundle.id),officialUrl=frameworkSourceLink(bundle.status.official_url);
@@ -46,14 +49,15 @@ function TopicalAbout({bundle}:{bundle:Package}){
    <div><dt>Bronnen in deze viewer</dt><dd>{documents.length} brondocumenten<small>{sourceRoles.join('; ')}. Hieronder staan de afzonderlijke bronnen en links.</small></dd></div>
    <div><dt>Omvang van de uitwerking</dt><dd>{bundle.catalogue.criteria.length} normen · {bundle.catalogue.points.length} toetspunten<small>{selectable} selecteerbaar{hold>0&&` · ${hold} op HOLD`}{contextOnly>0&&` · ${contextOnly} contextpunten`}</small></dd></div>
   </LawAboutSpecifications>
-  <FrameworkBackground sourceId={bundle.id}
-   audience={<section className="law-about-card"><h3><Users size={18} aria-hidden="true"/>Voor wie en waarvoor?</h3>{c.audience.map(text=><p key={text}>{wording('audience',text)}</p>)}<h4>Waarvoor kun je het gebruiken?</h4><ul className="law-about-use-cases">{c.use_cases.map(text=><li key={text}>{wording('use_cases',text)}</li>)}</ul></section>}
-   application={<LawAboutParagraphs text={wording('applicability',c.applicability)}/>}/>
+  <FrameworkBackground sourceId={bundle.id} compactApplication={!!guidance}
+   audience={<section className="law-about-card"><h3><Users size={18} aria-hidden="true"/>Voor wie en waarvoor?</h3>{(guidance?.audience||c.audience).map(text=><p key={text}>{wording('audience',text)}</p>)}{!guidance&&<><h4>Waarvoor kun je het gebruiken?</h4><ul className="law-about-use-cases">{c.use_cases.map(text=><li key={text}>{wording('use_cases',text)}</li>)}</ul></>}</section>}
+   application={<LawAboutParagraphs text={guidance?.application||wording('applicability',c.applicability)}/>}/>
   <LawAboutSources documents={documents}>
    <h4>Hoe zijn deze bronnen gebruikt?</h4><LawAboutParagraphs text={wording('source_explanation',c.source_explanation||(['TR-CYBER','TR-BEHAV','TR-RESIL','TR-THIRD'].includes(bundle.id)?'De vereisten vormen de normatieve basis voor de audit. De gebruikershandleiding licht het gebruik toe en geeft voorbeelden; die voorbeelden zijn geen aanvullende verplichtingen.':'Raadpleeg de genoemde brondocumenten voor de oorspronkelijke eisen en hun toelichting.'))}/>
-   {background&&<><h4>Onderwerp van deze uitwerking</h4><LawAboutParagraphs text={c.intro}/></>}
+   {guidance?.sourceExplanationExtra&&<LawAboutParagraphs text={guidance.sourceExplanationExtra}/>}
+   {background&&!guidance&&<><h4>Onderwerp van deze uitwerking</h4><LawAboutParagraphs text={c.intro}/></>}
   </LawAboutSources>
-  <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en open punten</h3><p className="law-about-quality-meta">De uitwerking is met AI gecontroleerd op aansluiting bij de bron, betekenis en bruikbaarheid voor onderzoek. Dat is geen goedkeuring door een auditor of jurist. De onderstaande grenzen blijven belangrijk bij het kiezen en beoordelen van toetspunten.</p><p className="law-about-quality-meta">{sourceStatus.asOf}. {sourceStatus.qualification}</p>{hold>0&&<p>Toetspunten met selectiestatus HOLD zijn niet beschikbaar voor selectie. Een contextpunt geeft uitleg en is geen zelfstandige norm.</p>}<div className="law-about-limitations">{distinctAuditLimitations(c.limitations).map(l=>{const reading=frameworkLimitation(l);return <section key={l.text}><h4>{reading.title}</h4>{reading.guide&&<p className="law-about-reading-guide">{reading.guide}</p>}<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/></section>;})}</div></section>
+  <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en open punten</h3><p className="law-about-quality-meta">AI-review op brontrouw, betekenis en bruikbaarheid; geen menselijke audit- of juridische goedkeuring. Hieronder staan de grenzen van de uitwerking en resterende bronvragen.</p><p className="law-about-quality-meta">{sourceStatus.asOf}. {sourceStatus.qualification}</p>{hold>0&&<p>Toetspunten op HOLD zijn niet selecteerbaar.</p>}{contextOnly>0&&<p>Contextpunten geven uitleg en zijn geen zelfstandige normen.</p>}<div className="law-about-limitations">{guidance?.qualityNotes&&<section><h4>{guidance.qualityTitle}</h4><LawAboutParagraphs text={guidance.qualityNotes}/></section>}{limitations.map(reading=><section key={reading.title+reading.text}><h4>{reading.title}</h4>{reading.guide&&<p className="law-about-reading-guide">{reading.guide}</p>}<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/></section>)}</div></section>
  </section>;
 }
 function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:Criterion}){
