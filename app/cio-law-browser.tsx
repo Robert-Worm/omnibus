@@ -22,6 +22,7 @@ import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
 import {lawCountText} from '@/lib/law-view-counts.mjs';
 import {remapTopicalGroup} from '@/lib/topical-navigation-groups.mjs';
+import {frameworkTitle} from '@/lib/framework-title.mjs';
 import FilterPicker from './filter-picker';
 import OpenItemStrip from './open-item-strip';
 import {useBrowseState} from './browse-state';
@@ -67,7 +68,7 @@ export function CioPointViewer({pointId,onClose,...props}:Omit<Props,'navigate'|
 }
 function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,hideOpenStrip=false,adapter,prepareDetails,...overviewProps}:Props){
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
- const sourceId=adapter?.sourceId||cioSourceId,title=adapter?.title||cioStatus.title;
+ const sourceId=adapter?.sourceId||cioSourceId,title=frameworkTitle(adapter?.title||cioStatus.title);
  // Projection objects are for this overview only. Detail panels and adoption
  // first cross the complete source boundary; they never consume these subsets.
  const preview=foundationOverview(sourceId) as Pick<LawBrowserAdapter,'points'|'rows'|'records'|'groups'>|undefined;
@@ -139,7 +140,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}
   {overview==='norms'&&<>
-   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{adapter?.heading||'Normen van het CIO-stelsel'}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div><div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
+   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Normen van het CIO-stelsel')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div><div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
    <div className="law-browse-filters" aria-label="Normen filteren">
     <label className="law-search-label" htmlFor="law-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="law-search" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>
     <label htmlFor="law-group-filter">Groep binnen het kader<select id="law-group-filter" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupsForSource.map(group=><option key={group.id} value={group.id}>{group.title}</option>)}</select></label>

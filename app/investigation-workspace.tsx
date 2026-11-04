@@ -1,4 +1,5 @@
 "use client";
+import {frameworkTitle} from '@/lib/framework-title.mjs';
 import FoundationSourceReader from './lazy-foundation-reader';
 import {useCollectionScope} from './collection-choice';
 import TermHelp, {TermText} from './term-help';
@@ -478,14 +479,14 @@ export function FoundationCatalogue({
                 <span className="catalogue-card-id">{foundationKinds[s.kind as keyof typeof foundationKinds]}</span>
                 <h4>
                 <button className="source-title" onClick={() => prepareSources([s.id],()=>setActive(s.id))}>
-                  {s.title}
+                  {frameworkTitle(s.title)}
                 </button>
                 </h4>
                 <p>{s.usage}</p>
                 {search.contextSourceIds.includes(s.id) && <span className="source-meta">Gevonden via normen in deze bron</span>}
                 <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> groepen</span><span><strong>{lawCounts.norms}</strong> normen</span><span><strong>{selection.total}</strong> selecteerbare toetspunten</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>
               </div>
-              <CatalogueCardActions layout="buttons" title={s.title} opened={wb.sourceIds.includes(s.id)} disabled={disabled} onPrepare={()=>onPrepareSource?.(s.id)}
+              <CatalogueCardActions layout="buttons" title={frameworkTitle(s.title)} opened={wb.sourceIds.includes(s.id)} disabled={disabled} onPrepare={()=>onPrepareSource?.(s.id)}
                 onOpen={()=>{if(!wb.sourceIds.includes(s.id))toggle(s.id,true);onCriteria(s.id);}} onToggle={value=>toggle(s.id,value)}
                 selection={{label:s.kind==='audit'&&!lawCounts?'Alle dekkingspunten':'Alle normen',ariaLabel:'Alle normen selecteren: '+s.title,checked:selection.all,partial:selection.partial,disabled:!selection.total,
                   onChange:checked=>prepareSources([s.id],()=>{try{const next=chooseFoundationSource(draft,s.id,checked);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}}/>

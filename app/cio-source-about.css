@@ -1,4 +1,7 @@
 .law-about{--about-surface:#fff;--about-text:#293c50;--about-hold:#fffcf5;display:grid;gap:1.5rem;min-width:0;color:var(--about-text);font-size:14px;line-height:1.65}
+.framework-background{display:grid;gap:inherit;min-width:0}
+.framework-background .law-about-card>ol:not(.law-about-timeline){list-style:decimal;padding-left:1.3rem}
+.framework-background .law-about-card>ol:not(.law-about-timeline)>li{margin:.5rem 0}
 html[data-appearance=dark] .law-about{--about-surface:#172330;--about-text:#e0eaf5;--about-hold:#29271f}
 .law-about :is(p,li,dd){overflow-wrap:break-word}.law-about p{margin:.65rem 0;max-width:none}
 .law-about-intro{padding:1.4rem 1.5rem;background:var(--rm-surface);border:1px solid var(--border);border-top:3px solid var(--rm-accent);border-radius:.7rem}

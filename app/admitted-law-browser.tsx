@@ -3,6 +3,8 @@ import {useMemo,useState,useSyncExternalStore} from 'react';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
 import {LawAboutIntro,LawAboutSpecifications} from './law-about-layout';
+import FrameworkBackground from './framework-background';
+import {frameworkBackgrounds} from '@/lib/framework-backgrounds.mjs';
 import {LawPointSourceLayout} from './law-point-source';
 import FoundationSourceReader from './lazy-foundation-reader';
 import {foundations,foundationProposals} from '@/lib/investigation.mjs';
@@ -16,11 +18,13 @@ type Item=(typeof foundationProposals)[number];
 type Source=(typeof foundations)[number];
 function About({source,items}:{source:Source;items:Item[]}){
  const context=items.filter(p=>p.auditRole!=='norm');
+ const background=Object.hasOwn(frameworkBackgrounds,source.id)?frameworkBackgrounds[source.id as keyof typeof frameworkBackgrounds]:undefined;
  return <section className="law-about" aria-label={'Achtergrond '+source.title}>
-  <LawAboutIntro title={source.title} links={[{label:'Officiële publicatie',url:source.url}]}><p>{source.usage}</p></LawAboutIntro>
+  <LawAboutIntro title={source.title} links={[{label:'Officiële publicatie',url:source.url}]}><p>{background?.intro||source.usage}</p></LawAboutIntro>
   <LawAboutSpecifications><div><dt>Uitgave</dt><dd>{source.edition}</dd></div><div><dt>Omvang</dt><dd>{items.filter(p=>p.auditRole==='norm').length} normen · {context.length} afbakeningspunten</dd></div></LawAboutSpecifications>
   <section className="law-about-card"><h3>Voor wie en waarvoor?</h3><p>{source.context}</p></section>
-  <section className="law-about-card"><h3>Toepassing en afbakening</h3>{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</section>
+  <FrameworkBackground sourceId={source.id}/>
+  <section className="law-about-card"><h3>Toepassing en afbakening</h3>{background&&<p>{source.usage}</p>}{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</section>
   <section className="law-about-card"><h3>Bronkwaliteit en beperkingen</h3><p>{source.coverage}</p><p>{items[0]?.statusNote}</p><p>{items[0]?.sourceChanges}</p></section>
  </section>;
 }

@@ -1,4 +1,5 @@
 "use client";
+import {frameworkTitle} from '@/lib/framework-title.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 import {useCollectionScope,CollectionBadge} from './collection-choice';
 import { Fragment, useState, useRef, useLayoutEffect, useEffect } from "react";
@@ -71,7 +72,7 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   }
   const current=known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active?opened[0]?.id:undefined);
   if(current){const onActivate=(id:string)=>{const apply=()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});};if(props.prepareSource)props.prepareSource(id,apply);else apply();};return <>
-   <OpenItemStrip id="reviewed-law-open" items={opened.map(s=>({id:s.id,title:s.title}))} activeId={current} onActivate={onActivate} onClose={id=>{props.onChange(closeFoundation(props.draft,id) as Draft);const next=opened.find(s=>s.id!==id);if(next)onActivate(next.id);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Wet of kader openen" disabled={props.disabled}/>
+   <OpenItemStrip id="reviewed-law-open" items={opened.map(s=>({id:s.id,title:frameworkTitle(s.title)}))} activeId={current} onActivate={onActivate} onClose={id=>{props.onChange(closeFoundation(props.draft,id) as Draft);const next=opened.find(s=>s.id!==id);if(next)onActivate(next.id);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Wet of kader openen" disabled={props.disabled}/>
    {admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
   </>;}
   return <LegacyFoundationWorkspace {...props} />;
@@ -188,7 +189,7 @@ function LegacyFoundationWorkspace({
   return (
     <section ref={workspaceRef} className="foundation-workbench" aria-labelledby="workflow-page-title">
       <LegacyCioNotice draft={draft} />
-      <OpenItemStrip id="foundations" items={view.coverage.map(c=>({id:c.source.id,title:c.source.title}))} activeId={sourceId||(view.coverage.length===1?view.coverage[0].source.id:null)} allActive={!sourceId&&view.coverage.length>1} disabled={disabled}
+      <OpenItemStrip id="foundations" items={view.coverage.map(c=>({id:c.source.id,title:frameworkTitle(c.source.title)}))} activeId={sourceId||(view.coverage.length===1?view.coverage[0].source.id:null)} allActive={!sourceId&&view.coverage.length>1} disabled={disabled}
         onActivate={id=>{setSourceId(id);setTopic("");setGroupId("");setPage(0);}}
         onAll={()=>{setSourceId("");setTopic("");setGroupId("");setPage(0);}}
         onClose={id=>{onChange(closeFoundation(draft,id) as Draft);if(sourceId===id)setSourceId("");setMessage("Bron gesloten. Je verzamelde bouwstenen en koppelingen blijven bewaard.");}}
@@ -243,7 +244,7 @@ function LegacyFoundationWorkspace({
                             setSourcePicker(false);
                           }}
                         >
-                          {c.source.title}
+                          {frameworkTitle(c.source.title)}
                         </Button>
                         <Button
                           variant="ghost"
@@ -405,7 +406,7 @@ function LegacyFoundationWorkspace({
                   {view.coverage.map((c) => (
                     <TableRow key={c.source.id}>
                       <TableCell>
-                        {c.source.title}<span className="criterion-reference">{c.source.id} · {c.source.edition}</span>
+                        {frameworkTitle(c.source.title)}<span className="criterion-reference">{c.source.id} · {c.source.edition}</span>
                       </TableCell>
                       <TableCell>{c.available}</TableCell>
                       <TableCell>{c.reviewed}</TableCell>
