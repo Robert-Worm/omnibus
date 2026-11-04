@@ -223,9 +223,11 @@ introductie, specificaties, aard van de regeling en doelgroep, ontstaansgeschied
 open punten**. Pas de titel aan de bronsoort aan (bijvoorbeeld besluit of kader),
 maar zet de doelgroep of toepassing niet vóór de uitleg wat de bron is.
 
-- Voeg toepasselijkheid en praktische gebruiksinstructies samen; voorkom een
-  tweede sectie die dezelfde toepassing opnieuw uitlegt. Bewaar voorwaarden,
-  uitzonderingen en juridische beperkingen. Geef een herkenbare onderzoekshandeling.
+- Geef één korte, concrete toepassing in het onderzoek. Zet doelgroep en
+  toepassingsvoorwaarden bij de doelgroep; bronproblemen bij bronkwaliteit.
+  Controleer toepassing, gebruiksvoorbeelden en praktijkadvies samen op herhaling.
+  Bewaar alle betekenisdragende voorwaarden en uitzonderingen, maar zet geen
+  aantallen HOLD-punten of historische voorbereidingsstatus in de toepassing.
 - Vermeld uitgever/vaststeller, exacte opgenomen editie, officiële publicatie
   met link en de daadwerkelijk opgenomen brondocumenten. Houd vaststelling,
   publicatie, inwerkingtreding, toepassing en peildatum afzonderlijk. Gebruik
@@ -235,9 +237,16 @@ maar zet de doelgroep of toepassing niet vóór de uitleg wat de bron is.
   leeshulp, taalvergelijking en toelichting. Een nieuwe achtergrondcontrole
   verklaart de bevroren broneditie niet automatisch actueel of toepasselijk.
 - Vergelijk desktop en smal scherm op sectievolgorde, typografie, witruimte,
-  lange bronlabels en volledige tekstafbreking. Kaarten hoeven niet kunstmatig
-  tot de hoogte van een veel langere buur te rekken. Algemene uitleg over
-  AI-review mag rustig worden weergegeven; inhoudelijke HOLD-punten blijven zichtbaar.
+  lange bronlabels en volledige tekstafbreking. Naastgelegen kaarten over aard
+  en doelgroep zijn even hoog zonder tekstafkapping; onder elkaar volgen ze
+  hun eigen inhoudshoogte. Algemene AI-reviewuitleg staat eenmaal bij bronkwaliteit.
+- Beoordeel elke vermelding onder bronkwaliteit: echte open vraag, relevante
+  reikwijdte, onderzoekskeuze, doublure of afgehandelde werknotitie. Controleer
+  eenvoudig oplosbare punten in bestaand bronbewijs. Beschrijf bij echte
+  onzekerheid het onderwerp, de oorzaak en de grens voor het onderzoek, niet
+  alleen een interne code. Samenvoegen of verwijderen uit de uitleg heft geen
+  HOLD op en verandert geen bronbewijs; onbekende of gewijzigde teksten blijven
+  zichtbaar totdat ze opnieuw zijn beoordeeld.
 - Rond af met een gerichte controle van selectie, heropenen en eigen vragen.
   Opmaakherstel wijzigt geen broncitaten, bewijs-ID's of opgeslagen inhoud.
 
