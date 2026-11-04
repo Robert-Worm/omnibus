@@ -11,6 +11,7 @@ import {deferredCatalogueMetadata} from './deferred-catalogue-metadata.mjs';
 import {projectModelDelivery} from './model-delivery-projection.mjs';
 import {projectReportDelivery, reportDeliveryModule} from './report-delivery-projection.mjs';
 import {webResource} from '../local-data/web-resources.mjs';
+import {lawViewCounts} from '../lib/law-view-counts.mjs';
 export {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -102,7 +103,8 @@ export function publishedCataloguePlugin({release, publication, databasePath, tr
             `const load${index}=featureLoader(attempt=>import(/* @vite-ignore */ attempt?url${index}+'?retry='+attempt:url${index}));`);
           entries.push(`${code(key)}:()=>load${index}().then(m=>m.default)`);
         });
-        return lines.join('\n')+'\nexport default {'+entries.join(',')+'};';
+        const counts=Object.fromEntries(Object.entries(foundationOverviews).map(([key,value])=>[key,lawViewCounts(value.rows)]));
+        return lines.join('\n')+'\nexport const counts='+code(counts)+';\nexport default {'+entries.join(',')+'};';
       }
       if(id===virtualPrefix+'overview-resources')return 'export default {'+Object.keys(overviews).map(key=>
         `${code(key)}:()=>import(${code('omnibus-report-overview:'+key)}).then(m=>m.default)`).join(',')+'};';

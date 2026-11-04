@@ -21,6 +21,7 @@ import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
 import {lawCountText} from '@/lib/law-view-counts.mjs';
+import {remapTopicalGroup} from '@/lib/topical-navigation-groups.mjs';
 import FilterPicker from './filter-picker';
 import OpenItemStrip from './open-item-strip';
 import {useBrowseState} from './browse-state';
@@ -36,7 +37,7 @@ import './cio-law-browser.css';
 
 export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void};
-type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[]};
+type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[];navigationSubjects?:string[]};
 type Tab='points'|'source'|'approach';
 const catalogue=rawCatalogue as unknown as {objectives:Objective[];criteria:Criterion[]};
 const points=rawPoints as unknown as Point[];
@@ -96,6 +97,8 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const [error,setError]=useState('');
  const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('comfortable');
  const [view,setView,viewReady]=useBrowseState(adapter?.viewKey||'cio-source-groups-v3',{query:'',group:'',selectedOnly:false,density:'compact',columns:columns.map(c=>c.id),columnsVersion:0});
+ const currentGroup=remapTopicalGroup(view.group,sourceRows,groupsForSource);
+ useEffect(()=>{if(viewReady&&currentGroup!==view.group)setView(v=>v.group===view.group?{...v,group:currentGroup}:v);},[viewReady,currentGroup,view.group,setView]);
  // Expand only the previous default; deliberately customised column choices stay intact.
  const chosenColumns=view.columnsVersion===0&&view.columns.join(',')==='objective,risk,controlObjective,criterion'?columns.map(c=>c.id):view.columns;
  useEffect(()=>{if(viewReady&&view.columnsVersion===0)setView(v=>({...v,columns:v.columns.join(',')==='objective,risk,controlObjective,criterion'?columns.map(c=>c.id):v.columns,columnsVersion:1}));},[viewReady,view.columnsVersion,setView]);

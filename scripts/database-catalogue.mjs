@@ -8,6 +8,7 @@ import {prepareFoundationSources} from './database-foundation-sources.mjs';
 import {prepareModels} from './database-models.mjs';
 import {verifyThemeCuration} from './verify-theme-curation.mjs';
 import {flatLawSummary} from '../lib/admitted-foundation.mjs';
+import {topicalNavigation} from '../lib/topical-navigation-groups.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const quote = JSON.stringify;
@@ -81,7 +82,7 @@ export function databaseCataloguePlugin({release, databasePath, transportModule}
       navigation.foundationSummaries=Object.fromEntries([[law.cioSourceId,law.cioPoints],[wwke.wwkeSourceId,wwke.wwkePoints]].map(([id,points])=>[id,{...lawCatalogueCounts(id),pointIds:points.filter(p=>p.selection_status==='SELECTABLE').map(p=>p.id)}]));
       const topicalPath='lib/topical-reviewed.json',topical=read(topicalPath);
       for(const [index,p] of topical.packages.entries()){
-        navigation.foundationSummaries[p.id]={groups:new Set(p.catalogue.points.map(x=>x.chapter)).size,norms:p.catalogue.criteria.length,pointIds:p.catalogue.points.filter(x=>x.selection_status==='SELECTABLE').map(x=>x.id)};
+        navigation.foundationSummaries[p.id]={groups:topicalNavigation(p).groups.length,norms:p.catalogue.criteria.length,pointIds:p.catalogue.points.filter(x=>x.selection_status==='SELECTABLE').map(x=>x.id)};
         for(const field of ['criteria','points','objectives','goals','source_dispositions','issues'])move(topicalPath,topical,['packages',index,'catalogue',field],'foundation:'+p.id+':topical');
         move(topicalPath,topical,['packages',index,'bank','records'],'foundation:'+p.id+':topical');
         move(topicalPath,topical,['packages',index,'questionPlan','subquestions'],'foundation:'+p.id+':topical');
