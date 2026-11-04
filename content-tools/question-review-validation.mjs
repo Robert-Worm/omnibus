@@ -18,6 +18,8 @@ export function verifyProcessQuestionPlans(processes,plans) {
     if(matches.length!==1||!Array.isArray(process.sourceIds)||typeof plan?.central!=='string'||!plan.central.trim()||
         !plan.subquestions?.length||!plan.broadSubquestions?.length)
       fail('process plan needs a known process and central, broad and specific questions: '+id);
+    if(Object.hasOwn(plan,'discovery')&&plan.discovery!=='selected-mapped-sources')
+      fail('unknown process plan discovery: '+id);
     const {questionReview,...item}=plan,questions=questionPlanInventory(plan);
     verifyQuestionCapsule(questionReview);
     if(questionReview.sourceId!=='process:'+id||questionReview.itemId!==`process:${id}:question-plan`||
