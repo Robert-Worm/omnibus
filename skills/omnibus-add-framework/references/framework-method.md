@@ -48,6 +48,20 @@ Iedere bronrelatie vermeldt ondersteunde clausule en bijdrage: primary,
 definition, scope, condition, exception, qualification of explanation.
 Bronparafrase, synthese en eigen toetsuitwerking zijn verschillend.
 
+Controleer ieder toetspunt ook als zelfstandig geselecteerde of geëxporteerde
+maatstaf. Een titel of zin als 'de voorgeschreven gegevens zijn aanwezig' is
+onvoldoende als de concrete vereisten alleen in bronnuanceringen of toetsen
+staan. Vergelijk de punttekst met alle betekenisdragende bronbijdragen en de
+opzet-/bestaanstoets: benoem de relevante aspecten, actor en voorwaarden in het
+punt, zonder groepscontext of siblingpunten tot extra eisen te maken. Bij een
+identiteits- en groepsopgave kunnen bijvoorbeeld contactgegevens, identificatie
+en de voorwaardelijke groepsgegevens wezenlijke onderdelen zijn. Behoud een
+volledig specifiek punt; lengte op zichzelf is geen herstelcriterium.
+
+Interne reviewstatussen en redenen voor een auteursvoorstel horen bij het
+bewijsdossier. Houd ze buiten de lezerstekst van een toets. Een inhoudelijke
+toepassingsvoorwaarde of bewijsgrens blijft wel begrijpelijk zichtbaar.
+
 Gebruik `SELECTABLE`, `CONTEXT_ONLY` of `HOLD` met reden. Een beperkte norm met
 expliciete externe afhankelijkheid kan beoordeeld worden; ontbrekende
 betekenisdragende onderbouwing wordt niet aangevuld met een verzonnen eis.
