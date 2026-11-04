@@ -4,6 +4,7 @@ import {questionReviewIds,readQuestionReview} from '../lib/question-quality-revi
 import {questionPlanInventory,questionPlanItemId,sourceQuestionPlanOptions} from '../lib/source-question-plan.mjs';
 import {interviewPlanInventory} from '../lib/source-interview-plan.mjs';
 import {topicalPointDocument} from '../lib/topical-document-identity.mjs';
+import {verifyTopicalTraceTransitions} from '../lib/topical-source-trace.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=message=>{throw Error('Invalid question review publication: '+message);};
@@ -138,6 +139,7 @@ export function frameworkQuestionContext(catalogue, bank) {
  * This is a write/admission rule, never a migration of saved user questions.
  * An explicit negative decision is retained and withheld by the shared reader. */
 export function verifyLocalFrameworkQuestions(packet, publishedInterviews) {
+  verifyTopicalTraceTransitions(packet,text=>createHash('sha256').update(text).digest('hex'));
   const {catalogue, bank, id: sourceId} = packet;
   const context = frameworkQuestionContext(catalogue, bank);
   const sourceEdition = packet.context?.edition, sourceHash = packet.documents?.[0]?.pdf_hash;

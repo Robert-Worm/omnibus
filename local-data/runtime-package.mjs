@@ -30,6 +30,8 @@ export const runtimeFiles = Object.freeze([
   "lib/source-question-plan.mjs",
   "lib/source-interview-plan.mjs",
   "lib/topical-document-identity.mjs",
+  "lib/topical-source-trace.mjs",
+  "lib/evidence-path-core.mjs",
   "lib/additional-processes.mjs",
   "local-data/runtime-readiness.mjs",
   "local-data/web-resources.mjs",
