@@ -26,7 +26,7 @@ import {
 } from "@/lib/cio-law-adapter.mjs";
 import "./cio-law-workspace.css";
 import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
-import {lawTestPhases} from '@/lib/law-test-phases.mjs';
+import {lawTestPhases,lawPhaseContext} from '@/lib/law-test-phases.mjs';
 
 type Actor = { label: string; role: string; condition?: string | null };
 type Phase = {
@@ -330,6 +330,7 @@ export function Approach({ point }: { point: Point }) {
       </p>
       <div className="cio-phase-grid">
         {phases.map(({key,label,plan:p}) => {
+          const context=lawPhaseContext(p);
           return (
             <section key={key} className={`cio-phase cio-phase-${key}`}>
               <h4>{label}</h4>
@@ -358,11 +359,11 @@ export function Approach({ point }: { point: Point }) {
                 </p>
               )}
               {shared.some(b=>b.text===p.interpretation_boundary) && <p className="cio-phase-boundary">De gezamenlijke bewijs- en interpretatiegrens staat hieronder.</p>}
-              <p className="cio-phase-reason">
-                <strong>Reden</strong>
+              {context&&<p className="cio-phase-reason">
+                <strong>Toepassing van de toets</strong>
                 <br />
-                {p.reason}
-              </p>
+                {context}
+              </p>}
             </section>
           );
         })}

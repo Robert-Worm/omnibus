@@ -20,6 +20,7 @@ import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
 import {lawReaderText} from '@/lib/law-reader-language.mjs';
+import {lawPhaseContext} from '@/lib/law-test-phases.mjs';
 import {lawCountText} from '@/lib/law-view-counts.mjs';
 import FilterPicker from './filter-picker';
 import WwkeSourceAbout from './wwke-source-about';
@@ -141,7 +142,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  </>:point&&<>
  {children.length>1&&<nav className="law-point-switcher" aria-label="Kies een toetspunt">{children.map(p=><button key={p.id} aria-pressed={point.id===p.id} onClick={()=>setPointId(p.id)}>{p.title}</button>)}</nav>}
  {tab==='approach'&&<section className="law-active-point"><div className="law-point-kind">{point.id} · {labels[point.selection_status]}</div><h2>{point.title}</h2><p>{point.text}</p></section>}
- {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<section className="cio-approach"><p className="cio-muted">Analytische toetsvoorstellen. Werking is niet geselecteerd; er zijn geen onderzoeksresultaten ingevuld.</p><div className="cio-phase-grid">{Object.entries(point.phase_plans).map(([key,plan])=><section className={'cio-phase cio-phase-'+key} key={key}><h4>{key==='opzet'?'Opzet':key==='bestaan'?'Bestaan':'Werking'}</h4><p className="cio-phase-action">{plan.action||plan.reason}</p>{plan.expected_evidence&&<p className="cio-phase-evidence"><strong>Verwacht bewijs</strong><br/>{plan.expected_evidence}</p>}<p className="cio-phase-boundary">{plan.interpretation_boundary}</p><p className="cio-phase-reason">{plan.reason}</p></section>)}</div></section>}
+ {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<section className="cio-approach"><p className="cio-muted">Analytische toetsvoorstellen. Werking is niet geselecteerd; er zijn geen onderzoeksresultaten ingevuld.</p><div className="cio-phase-grid">{Object.entries(point.phase_plans).map(([key,plan])=>{const context=lawPhaseContext(plan);return <section className={'cio-phase cio-phase-'+key} key={key}><h4>{key==='opzet'?'Opzet':key==='bestaan'?'Bestaan':'Werking'}</h4><p className="cio-phase-action">{plan.action||context}</p>{plan.expected_evidence&&<p className="cio-phase-evidence"><strong>Verwacht bewijs</strong><br/>{plan.expected_evidence}</p>}<p className="cio-phase-boundary">{plan.interpretation_boundary}</p>{plan.action&&context&&<p className="cio-phase-reason"><strong>Toepassing van de toets</strong><br/>{context}</p>}</section>;})}</div></section>}
  </>}
  </div>}
  <footer className="bd-footer"><span>{rowSelection.total>0?rowSelection.selected+' van '+countLabel(rowSelection.total,'toetspunten')+' gekozen':'Broncontext · geen normselectie'}</span><div><Button variant="outline" onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button><Button variant="outline" onClick={close}>Gereed</Button></div></footer>
