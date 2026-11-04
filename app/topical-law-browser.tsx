@@ -1,13 +1,15 @@
 'use client';
 import {useMemo,useState,useSyncExternalStore} from 'react';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
-import {BookOpen,Users,Compass,ShieldCheck} from 'lucide-react';
+import {BookOpen,Users,ShieldCheck} from 'lucide-react';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
 import CioNormSummary from './cio-norm-summary';
 import {LawPointSourceLayout,LawSourceDocument,type LawPassage} from './law-point-source';
 import {LawAboutIntro,LawAboutSpecifications,LawAboutParagraphs,LawAboutSources} from './law-about-layout';
 import FrameworkBackground from './framework-background';
 import {frameworkBackgrounds} from '@/lib/framework-backgrounds.mjs';
+import {frameworkPublication} from '@/lib/framework-publication-facts.mjs';
+import {frameworkSourceRole,frameworkSourceLink} from '@/lib/framework-source-labels.mjs';
 import {frameworkContextText} from '@/lib/framework-context-wording.mjs';
 import {frameworkLimitation} from '@/lib/framework-limitations-wording.mjs';
 import CatalogueContent from './catalogue-content';
@@ -28,20 +30,30 @@ function TopicalAbout({bundle}:{bundle:Package}){
  const c=bundle.context,sourceStatus=sourceSnapshotStatus(c);
  const wording=(field:string,text:string)=>frameworkContextText(bundle.id,field,text);
  const background=Object.hasOwn(frameworkBackgrounds,bundle.id)?frameworkBackgrounds[bundle.id as keyof typeof frameworkBackgrounds]:undefined;
+ const publication=frameworkPublication(bundle.id),officialUrl=frameworkSourceLink(bundle.status.official_url);
+ const documents=c.documents.map(d=>{const source=bundle.documents.find(source=>source.packageDocumentId===d.id);return {id:d.id,title:source?.title||d.role,role:d.role,url:source?.url};});
+ const sourceRoles=[...new Set(documents.map(d=>frameworkSourceRole(d.role)))];
  const selectable=bundle.catalogue.points.filter(p=>p.selection_status==='SELECTABLE').length;
  const hold=bundle.catalogue.points.filter(p=>p.selection_status==='HOLD').length;
  const contextOnly=bundle.catalogue.points.length-selectable-hold;
  return <section className="law-about" aria-label={'Achtergrond '+c.title}>
   <LawAboutIntro title={c.title} links={[{label:'Officiële publicatie',url:bundle.status.official_url}]}><p>{background?.intro||c.intro}</p></LawAboutIntro>
-  <LawAboutSpecifications><div><dt>Soort kader</dt><dd>{c.kind_label||'Brongebonden kader; raadpleeg de officiële publicatie'}</dd></div><div><dt>Uitgave</dt><dd>{c.edition}</dd></div><div><dt>Ingang volgens bronpakket</dt><dd>{sourceStatus.date}<small>{sourceStatus.asOf}</small></dd></div><div><dt>Omvang</dt><dd>{bundle.catalogue.criteria.length} normen · {bundle.catalogue.points.length} toetspunten<small>{selectable} selecteerbaar{hold>0&&` · ${hold} op HOLD`}{contextOnly>0&&` · ${contextOnly} contextpunten`}</small></dd></div></LawAboutSpecifications>
-  <p>{sourceStatus.qualification}</p>
-  <div className="law-about-columns"><section className="law-about-card"><h3><Users size={18} aria-hidden="true"/>Voor wie en waarvoor?</h3>{c.audience.map(text=><p key={text}>{wording('audience',text)}</p>)}<h4>Waarvoor kun je het gebruiken?</h4><ul className="law-about-use-cases">{c.use_cases.map(text=><li key={text}>{wording('use_cases',text)}</li>)}</ul></section><section className="law-about-card"><h3><Compass size={18} aria-hidden="true"/>Toepassing in je onderzoek</h3><LawAboutParagraphs text={wording('applicability',c.applicability)}/></section></div>
-  <FrameworkBackground sourceId={bundle.id}/>
-  <LawAboutSources documents={c.documents.map(d=>{const source=bundle.documents.find(source=>source.packageDocumentId===d.id);return {id:d.id,title:source?.title||d.role,role:d.role,url:source?.url};})}>
+  <LawAboutSpecifications>
+   <div><dt>Soort kader en opgenomen uitgave</dt><dd>{c.kind_label||'Brongebonden kader; raadpleeg de officiële publicatie'}<small>{c.edition}</small></dd></div>
+   {publication&&<div><dt>Uitgebracht door</dt><dd>{publication.issuer}{publication.adopted&&<small>Vastgesteld op {publication.adopted}</small>}</dd></div>}
+   <div><dt>Officiële publicatie</dt><dd>{officialUrl?<a href={officialUrl} target="_blank" rel="noreferrer">{publication?.publication||c.title}</a>:publication?.publication||c.title}{publication&&<small>{publication.dateLabel}: {publication.published}</small>}</dd></div>
+   <div><dt>{publication?.effective?'In werking vanaf':publication?'Toepassing':'Ingang volgens bronpakket'}</dt><dd>{publication?.effective||(!publication?sourceStatus.date:'')}{publication?.entryNote&&<small>{publication.entryNote}</small>}{publication?.application&&<small>{publication.application}</small>}{!publication&&<small>{sourceStatus.asOf}</small>}</dd></div>
+   <div><dt>Bronnen in deze viewer</dt><dd>{documents.length} brondocumenten<small>{sourceRoles.join('; ')}. Hieronder staan de afzonderlijke bronnen en links.</small></dd></div>
+   <div><dt>Omvang van de uitwerking</dt><dd>{bundle.catalogue.criteria.length} normen · {bundle.catalogue.points.length} toetspunten<small>{selectable} selecteerbaar{hold>0&&` · ${hold} op HOLD`}{contextOnly>0&&` · ${contextOnly} contextpunten`}</small></dd></div>
+  </LawAboutSpecifications>
+  <FrameworkBackground sourceId={bundle.id}
+   audience={<section className="law-about-card"><h3><Users size={18} aria-hidden="true"/>Voor wie en waarvoor?</h3>{c.audience.map(text=><p key={text}>{wording('audience',text)}</p>)}<h4>Waarvoor kun je het gebruiken?</h4><ul className="law-about-use-cases">{c.use_cases.map(text=><li key={text}>{wording('use_cases',text)}</li>)}</ul></section>}
+   application={<LawAboutParagraphs text={wording('applicability',c.applicability)}/>}/>
+  <LawAboutSources documents={documents}>
    <h4>Hoe zijn deze bronnen gebruikt?</h4><LawAboutParagraphs text={wording('source_explanation',c.source_explanation||(['TR-CYBER','TR-BEHAV','TR-RESIL','TR-THIRD'].includes(bundle.id)?'De vereisten vormen de normatieve basis voor de audit. De gebruikershandleiding licht het gebruik toe en geeft voorbeelden; die voorbeelden zijn geen aanvullende verplichtingen.':'Raadpleeg de genoemde brondocumenten voor de oorspronkelijke eisen en hun toelichting.'))}/>
    {background&&<><h4>Onderwerp van deze uitwerking</h4><LawAboutParagraphs text={c.intro}/></>}
   </LawAboutSources>
-  <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en beperkingen</h3><p>De uitwerking is met AI gecontroleerd op aansluiting bij de bron, betekenis en bruikbaarheid voor onderzoek. Dat is geen goedkeuring door een auditor of jurist. De onderstaande grenzen blijven belangrijk bij het kiezen en beoordelen van toetspunten.</p>{hold>0&&<p>Toetspunten met selectiestatus HOLD zijn niet beschikbaar voor selectie. Een contextpunt geeft uitleg en is geen zelfstandige norm.</p>}<div className="law-about-limitations">{distinctAuditLimitations(c.limitations).map(l=>{const reading=frameworkLimitation(l);return <section key={l.text}><h4>{reading.title}</h4>{reading.guide&&<p className="law-about-reading-guide">{reading.guide}</p>}<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/></section>;})}</div></section>
+  <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en open punten</h3><p className="law-about-quality-meta">De uitwerking is met AI gecontroleerd op aansluiting bij de bron, betekenis en bruikbaarheid voor onderzoek. Dat is geen goedkeuring door een auditor of jurist. De onderstaande grenzen blijven belangrijk bij het kiezen en beoordelen van toetspunten.</p><p className="law-about-quality-meta">{sourceStatus.asOf}. {sourceStatus.qualification}</p>{hold>0&&<p>Toetspunten met selectiestatus HOLD zijn niet beschikbaar voor selectie. Een contextpunt geeft uitleg en is geen zelfstandige norm.</p>}<div className="law-about-limitations">{distinctAuditLimitations(c.limitations).map(l=>{const reading=frameworkLimitation(l);return <section key={l.text}><h4>{reading.title}</h4>{reading.guide&&<p className="law-about-reading-guide">{reading.guide}</p>}<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/></section>;})}</div></section>
  </section>;
 }
 function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:Criterion}){

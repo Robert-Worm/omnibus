@@ -21,7 +21,7 @@ export function LawAboutSources({documents,children}:{documents:{id:string;title
  return <section className="law-about-card law-about-sources"><h3><BookOpen size={18} aria-hidden="true"/>Gebruikte bronnen</h3>
   <ul className="law-about-document-list">{documents.map(document=>{const url=frameworkSourceLink(document.url);return <li key={document.id}>
    <h4>{frameworkTitle(document.title)}</h4>{document.title!==document.role&&<p>{frameworkSourceRole(document.role)}</p>}
-   {url&&<a href={url} target="_blank" rel="noreferrer" aria-label={`Bekijk bij de uitgever: ${frameworkTitle(document.title)}`}>Bekijk bij de uitgever <ExternalLink size={13} aria-hidden="true"/></a>}
+   {url&&<a href={url} target="_blank" rel="noreferrer" aria-label={`Bekijk bij de uitgever: ${frameworkTitle(document.title)}`}><span>Bekijk bij de uitgever</span><ExternalLink size={13} aria-hidden="true"/></a>}
   </li>;})}</ul>{children&&<div className="law-about-source-explanation">{children}</div>}
  </section>;
 }

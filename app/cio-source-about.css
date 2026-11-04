@@ -10,13 +10,14 @@
 .law-about-document-list>li:first-child{padding-top:0}
 .law-about-document-list :is(h4,a){overflow-wrap:anywhere}
 .law-about .law-about-document-list p{margin:.35rem 0;color:var(--rm-muted)}
-.law-about-document-list a{display:inline-flex;align-items:center;gap:.4rem;min-height:2.25rem;max-width:100%}
+.law-about-document-list a{display:inline-flex;align-items:baseline;gap:.4rem;min-height:2.25rem;max-width:100%;min-width:0;white-space:normal}
+.law-about-document-list a span{min-width:0;overflow-wrap:anywhere}
 .law-about-document-list svg{flex-shrink:0}
 .law-about-source-explanation{border-top:1px solid var(--border);padding-top:1rem}
 .law-about-source-explanation h4:not(:first-child){margin-top:1.25rem}
 .law-about-limitations>section{padding:1rem 0}
 .law-about-limitations>section:last-child{padding-bottom:0}
-.law-about :is(.law-about-limitations,.law-about-sources) p{max-width:90ch}
+.law-about :is(.law-about-document-list,.law-about-source-explanation) :is(p,h4){white-space:normal;overflow-wrap:anywhere;max-height:none;overflow:visible;-webkit-line-clamp:unset;line-clamp:unset}
 html[data-appearance=dark] .law-about{--about-surface:#172330;--about-text:#e0eaf5;--about-hold:#29271f}
 .law-about :is(p,li,dd){overflow-wrap:break-word}.law-about p{margin:.65rem 0;max-width:none}
 .law-about-intro{padding:1.4rem 1.5rem;background:var(--rm-surface);border:1px solid var(--border);border-top:3px solid var(--rm-accent);border-radius:.7rem}
@@ -32,7 +33,8 @@ html[data-appearance=dark] .law-about{--about-surface:#172330;--about-text:#e0ea
 .law-about-facts dt{color:var(--rm-muted);font-size:12px;margin-bottom:.35rem}.law-about-facts dd{margin:0;font-weight:600}.law-about-facts small{display:block;font-size:12px;font-weight:400;color:var(--rm-muted);margin-top:.25rem}
 .law-about a{color:var(--rm-accent);text-decoration:underline;text-underline-offset:3px}.law-about-references{display:flex;flex-wrap:wrap;gap:.45rem 1.15rem;margin-top:.85rem;font-size:12px}
 .law-about-references a{display:inline-flex;align-items:baseline;gap:.35rem;max-width:100%;min-width:0;white-space:normal}.law-about-references a span{min-width:0;overflow-wrap:break-word}.law-about-references svg{flex-shrink:0}
-.law-about-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}.law-about-card{border:1px solid var(--border);border-radius:.7rem;padding:1.3rem 1.5rem;min-width:0;background:var(--about-surface)}
+.law-about-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;align-items:start}.law-about-card{border:1px solid var(--border);border-radius:.7rem;padding:1.3rem 1.5rem;min-width:0;background:var(--about-surface)}
+.law-about-card>:last-child{margin-bottom:0}
 .law-about :is(.law-about-card,.law-about-specifications)>h3{display:flex;align-items:center;gap:.6rem;font-size:1.05rem;line-height:1.45;margin:0 0 .8rem}.law-about :is(.law-about-card,.law-about-specifications)>h3 svg{flex-shrink:0;color:var(--rm-accent)}
 .law-about-card>h3{padding-bottom:.75rem;border-bottom:1px solid var(--border)}.law-about .law-about-specifications>h3{margin:0}
 .law-about h4{font-family:var(--font-ui);font-size:14px;font-weight:600;line-height:1.5;margin:0}

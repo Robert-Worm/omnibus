@@ -12,7 +12,8 @@ export function CollectionBadge({kind,id}:{kind:CollectionKind;id:string}){
   const context=useContext(CollectionContext);
   if(!context||!id)return null;
   const origin=collectionOrigin(context.collections,kind,id);
-  return <small className="criterion-reference" data-collection={origin?.kind||'unknown'}>{origin?.kind==='own'?'Eigen collectie':origin?.kind==='public'?'Openbare collectie':'Herkomst niet beschikbaar'}</small>;
+  if(origin?.kind==='public')return null;
+  return <small className="criterion-reference" data-collection={origin?.kind||'unknown'}>{origin?.kind==='own'?'Eigen collectie':'Herkomst niet beschikbaar'}</small>;
 }
 export function NormCollection({line,draft,sourceId}:{line:Line;draft:Draft;sourceId?:string}){
   const context=useContext(CollectionContext);
