@@ -49,6 +49,11 @@ laat onduidelijk wat succes betekent. Een mogelijke neutrale centrale vraag is:
 [kader/versie] ingericht en uitgevoerd in [periode]?' Gebruik deze zin alleen als
 beide fasen werkelijk in scope zijn; splits ze in samenhangende deelvragen.
 
+Controleer ook de werkwoorden en populatie in de centrale én brede/specifieke
+vraag: alleen 'ingericht' of 'voorbereid' dekt geen gekoppelde uitvoeringshandeling.
+'Toegestane' of 'uitgevoerde' gevallen mogen ontbrekende of ongeautoriseerde
+handelingen niet buiten het onderzoek zetten, tenzij de bron die beperking maakt.
+
 ### Team, proces of thema uit rapporten
 
 Begin bij activiteiten en resultaten die het object verbinden. Onderzoek bijvoorbeeld

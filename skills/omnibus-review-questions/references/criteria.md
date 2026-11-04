@@ -49,6 +49,7 @@ wordt gebruikt, moet ook aan de criteria voor een interviewvraag voldoen.
 | **Neutraal**: de gewenste uitkomst schemert niet door | ‘Hoe reageert de organisatie op zorgvuldig en onzorgvuldig gedrag?’ (SC008) | Afgeleid: ‘Waarom reageert de organisatie niet op onzorgvuldig gedrag?’ |
 | **Alleen bekende invulplekken** (`technisch`): `{{onderwerp}}` mag, andere niet | ‘… bij {{onderwerp}} …’ | ‘Hoe wordt ${topic} bestuurd?’ |
 | **Deelvragen dekken samen de centrale vraag**, zonder onbedoelde dubbeling | Drie of vier brede vragen per samenhangend brongebied, of gerichtere specifieke vragen | Een deelvraag die alleen de centrale vraag herhaalt |
+| **Vraagtekst dekt de gekoppelde fasen en populatie** | Voorbereiding én uitvoering waar beide worden onderzocht; ook ontbrekende of ongeautoriseerde handelingen blijven zichtbaar | Alleen 'voorbereid' bij uitvoeringspunten, of alleen 'toegestane' gevallen zonder zo'n bronbeperking |
 
 Breed is niet automatisch zwak. Beoordeel of de gekoppelde taken één zinvol,
 beantwoordbaar onderzoeksgebied vormen. Brede en specifieke varianten mogen
