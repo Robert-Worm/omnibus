@@ -132,6 +132,10 @@ bronadapter en `LawPointSourceLayout`/`LawSourceDocument`, die
 `CriterionSourceLayout` en `ReportLibrary` hergebruiken. Gebruik de bestaande
 matrix, selectie, About-opbouw en gedeelde CSS. Geen quote-only bronviewer,
 nieuwe toolbar of broncontext-dropdown onder de hoofdviewer.
+Vergelijk de uiteindelijke pagina daadwerkelijk naast CIO op secties, volgorde,
+volledige specificaties en bronlinks; voeg dubbele toepassingsteksten samen.
+Gebruik de [About-controle](references/framework-method.md#over-dit-kader-vergelijken-met-cio)
+ook voor correcties aan bestaande kaderpagina's.
 
 Zichtbare labels: `Norm` en `Toetspunt`; interne criterion-ID's en schema's blijven
 behouden. Directe individuele/groepsselectie zoals CIO, inclusief gedeeltelijke

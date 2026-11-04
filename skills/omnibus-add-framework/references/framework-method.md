@@ -214,6 +214,33 @@ tot een vaststellingsplicht te maken.
 
 ## Review, reparatie en handoff
 
+### Over dit kader: vergelijken met CIO
+
+Controleer de werkelijke pagina naast **Over dit kader** van het CIO-stelsel,
+niet alleen de namen van gedeelde componenten. Gebruik dezelfde leesvolgorde:
+introductie, specificaties, aard van de regeling en doelgroep, ontstaansgeschiedenis,
+één sectie **Toepassing in je onderzoek**, gebruikte bronnen, **Bronkwaliteit en
+open punten**. Pas de titel aan de bronsoort aan (bijvoorbeeld besluit of kader),
+maar zet de doelgroep of toepassing niet vóór de uitleg wat de bron is.
+
+- Voeg toepasselijkheid en praktische gebruiksinstructies samen; voorkom een
+  tweede sectie die dezelfde toepassing opnieuw uitlegt. Bewaar voorwaarden,
+  uitzonderingen en juridische beperkingen. Geef een herkenbare onderzoekshandeling.
+- Vermeld uitgever/vaststeller, exacte opgenomen editie, officiële publicatie
+  met link en de daadwerkelijk opgenomen brondocumenten. Houd vaststelling,
+  publicatie, inwerkingtreding, toepassing en peildatum afzonderlijk. Gebruik
+  bij handreikingen een onderbouwde uitgavedatum of uitgavejaar, geen verzonnen
+  inwerkingtreding. Een onbekende datum blijft herkenbaar onbekend.
+- Toon bronrollen apart: oorspronkelijke tekst, rectificatie, consolidatie als
+  leeshulp, taalvergelijking en toelichting. Een nieuwe achtergrondcontrole
+  verklaart de bevroren broneditie niet automatisch actueel of toepasselijk.
+- Vergelijk desktop en smal scherm op sectievolgorde, typografie, witruimte,
+  lange bronlabels en volledige tekstafbreking. Kaarten hoeven niet kunstmatig
+  tot de hoogte van een veel langere buur te rekken. Algemene uitleg over
+  AI-review mag rustig worden weergegeven; inhoudelijke HOLD-punten blijven zichtbaar.
+- Rond af met een gerichte controle van selectie, heropenen en eigen vragen.
+  Opmaakherstel wijzigt geen broncitaten, bewijs-ID's of opgeslagen inhoud.
+
 ### Vraagopzet en dekking
 
 Laat de hoofd- en deelvragen de geselecteerde taken onderzoeken. Een wetstitel
