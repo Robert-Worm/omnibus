@@ -57,7 +57,7 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
 type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};
 function TopicalApproach({point}:{point:Point}){
  const phases={...point.phase_plans};
- for(const key of ['opzet','bestaan'] as const)phases[key]={...phases[key],interpretation_boundary:currentAuditGuidance(phases[key].interpretation_boundary)};
+ for(const key of ['opzet','bestaan','werking'] as const)phases[key]={...phases[key],interpretation_boundary:currentAuditGuidance(phases[key].interpretation_boundary)};
  return <Approach point={{...point,phase_plans:phases}}/>;
 }
 export function TopicalSavedSource({serialized}:{serialized:string}){
