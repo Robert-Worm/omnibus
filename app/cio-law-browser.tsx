@@ -34,7 +34,7 @@ import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
 import './control-objective-pilot.css';
 import './cio-law-browser.css';
 
-export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>};
+export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[]};
 type Tab='points'|'source'|'approach';
@@ -70,7 +70,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  // Projection objects are for this overview only. Detail panels and adoption
  // first cross the complete source boundary; they never consume these subsets.
  const preview=foundationOverview(sourceId) as Pick<LawBrowserAdapter,'points'|'rows'|'records'|'groups'>|undefined;
- const activeCatalogue=adapter?.catalogue||cioDefaults.catalogue,activePoints=preview?.points||adapter?.points||cioDefaults.points,activeRows=preview?.rows||adapter?.rows||cioDefaults.rows;
+ const activeCatalogue=adapter?.catalogue||cioDefaults.catalogue,activePoints=preview?.points||adapter?.points||cioDefaults.points,sourceRows=preview?.rows||adapter?.rows||cioDefaults.rows;
+ const readNorm=adapter?.readNorm;
+ const activeRows=readNorm?sourceRows.map(row=>({...row,criterion:{...row.criterion,text:readNorm(row.criterion.text)}})):sourceRows;
  const activePointMap=preview||adapter?new Map(activePoints.map(p=>[p.id,p])):cioDefaults.pointMap,activeRecordMap=preview||adapter?new Map((preview?.records||adapter!.records).map(r=>[r.id,r])):cioDefaults.recordMap;
  const groupsForSource=preview?.groups||adapter?.groups||cioFunctionGroups,select=preview?(value:Draft,ids?:string[])=>foundationOverviewSelection(preview,value,ids):adapter?.selection||cioSelection,choosePoints=adapter?.choose||chooseCioPoints;
  const latestDraft=useRef(draft);useLayoutEffect(()=>{latestDraft.current=draft;},[draft]);

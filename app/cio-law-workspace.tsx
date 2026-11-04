@@ -324,7 +324,7 @@ export function Approach({ point }: { point: Point }) {
     <div className="cio-approach">
       <p className="cio-muted">
         Toetsvoorstellen, geen voorgeschreven bewijsformat en geen bewijs dat aan het punt is
-        voldaan.
+        voldaan. Bevat een toetspunt meerdere aspecten? Leg de uitkomst per aspect vast en benoem wat ontbreekt of niet beoordeelbaar is.
       </p>
       <div className="cio-phase-grid">
         {(["opzet", "bestaan"] as const).map((key) => {
