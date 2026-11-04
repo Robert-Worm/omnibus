@@ -7,7 +7,7 @@ name: Kwaliteitsmeting
 on:
   push:
     branches: [main]
-    paths: ['scripts/database-release.mjs', 'scripts/kwaliteitsmeting.mjs', 'scripts/check-keten.mjs', '.github/workflows/kwaliteit.yml']
+    paths: ['scripts/database-release.mjs', 'scripts/kwaliteitsmeting.mjs', 'scripts/check-keten.mjs', 'scripts/check-passages.mjs', 'scripts/check-passages.test.mjs', '.github/workflows/kwaliteit.yml']
   schedule:
     - cron: '41 5 3 * *'
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
       - name: Afhankelijkheden voor de agentcatalogus
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Tests van de meting
-        run: node --test scripts/kwaliteitsmeting.test.mjs scripts/check-keten.test.mjs
+        run: node --test scripts/kwaliteitsmeting.test.mjs scripts/check-keten.test.mjs scripts/check-passages.test.mjs
       - name: Database ophalen en meten
         run: node scripts/kwaliteitsmeting.mjs --met-keten
       - name: Wijzigingen opslaan

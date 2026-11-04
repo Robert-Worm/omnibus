@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { controleer, isHold, maakBron, passagesUit, rapport } from "./check-passages.mjs";
+import { controleer, isHold, maakBron, ordenBronnen, passagesUit, rapport } from "./check-passages.mjs";
 
 // Fictieve bron met een emoji: posities tellen in codepoints, niet in UTF-16.
 const hoofd = maakBron([{ number: 1, text: "Kop 😀\nDe minister stelt regels." }, { number: 2, text: "Tweede pagina met tekst." }]);
 const gids = maakBron([{ number: 1, text: "Inhoud" }, { number: 2, text: "Handleiding: lees dit eerst." }]);
-const pos = (tekst, deel) => { const i = [...tekst].join("").indexOf(deel); return [...tekst.slice(0, i)].length; };
+const pos = (tekst, deel) => Array.from(tekst.slice(0, tekst.indexOf(deel))).length;
 
 test("exact op de opgeslagen plek, documentbreed of per pagina", () => {
   const s = pos(hoofd.tekst, "De minister");
@@ -17,6 +17,33 @@ test("doorlopende paginanummering over hoofdtekst en handleiding is geen HOLD", 
   const r = controleer({ quote: "lees dit", start: 13, end: 21, page: 4 }, [hoofd, gids]);
   assert.equal(r.uitkomst, "doorgeteld");
   assert.equal(isHold(r.uitkomst), false);
+});
+
+test("pakketvolgorde gaat voor alfabetische documentnamen bij doorlopende pagina's", () => {
+  const kandidaten = [{ id: "a-gids", inhoud: gids }, { id: "z-hoofd", inhoud: hoofd }];
+  const volgorde = [{ id: "z-hoofd" }, { id: "a-gids" }];
+  const passage = { quote: "lees dit", start: 13, end: 21, page: 4 };
+  assert.equal(controleer(passage, kandidaten.map((d) => d.inhoud)).uitkomst, "andere-pagina");
+  const bronnen = ordenBronnen(kandidaten, volgorde).map((d) => d.inhoud);
+  assert.equal(controleer(passage, bronnen).uitkomst, "doorgeteld");
+  assert.equal(controleer({ ...passage, start: 12 }, bronnen).uitkomst, "verschoven");
+  assert.equal(controleer({ ...passage, quote: "Verzonnen bron" }, bronnen).uitkomst, "ontbreekt");
+  assert.deepEqual(kandidaten.map((d) => d.id), ["a-gids", "z-hoofd"]);
+});
+
+test("pakketidentiteit wordt behouden en ontbrekende of dubbele documenten blokkeren de controle", () => {
+  const document = { id: "public-reader", packageDocumentId: "pakket-bron" };
+  assert.deepEqual(ordenBronnen([document], [{ id: "pakket-bron" }]), [document]);
+  for (const [kandidaten, volgorde] of [
+    [[], [{ id: "ontbreekt" }]],
+    [[document, document], [{ id: "pakket-bron" }]],
+    [[document], [{ id: "pakket-bron" }, { id: "pakket-bron" }]],
+  ]) assert.throws(() => ordenBronnen(kandidaten, volgorde), /onvolledig of niet eenduidig/);
+});
+
+test("bestaande bronnen zonder pakketvolgorde behouden de hoofdbron eerst", () => {
+  const documenten = [{ id: "b" }, { id: "z", rol: "main" }, { id: "a" }];
+  assert.deepEqual(ordenBronnen(documenten).map((d) => d.id), ["z", "a", "b"]);
 });
 
 test("afwijkingen worden HOLD en de markering wordt nooit verschoven", () => {

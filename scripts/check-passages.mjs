@@ -33,6 +33,19 @@ export function maakBron(paginas) {
   return { perPagina, geheel, tekst: geheel.join("") };
 }
 
+/** Gebruik de vastgelegde pakketvolgorde voor doorlopende bronpaginanummers. */
+export function ordenBronnen(kandidaten, documentVolgorde) {
+  if (!documentVolgorde?.length) return [...kandidaten].sort((a, b) =>
+    (a.rol === "main" ? 0 : 1) - (b.rol === "main" ? 0 : 1) || a.id.localeCompare(b.id));
+  const gezien = new Set();
+  return documentVolgorde.map(({ id }) => {
+    const matches = kandidaten.filter((d) => (d.packageDocumentId ?? d.id) === id);
+    if (!id || gezien.has(id) || matches.length !== 1) throw Error("De vastgelegde brondocumentvolgorde is onvolledig of niet eenduidig.");
+    gezien.add(id);
+    return matches[0];
+  });
+}
+
 /** Beoordeel één passage tegen de kandidaat-bronnen. */
 export function controleer(passage, bronnen, { alleenXml = false } = {}) {
   const { quote, start, end, page } = passage;
@@ -78,17 +91,17 @@ async function main() {
   if (!database) throw Error("Geef de database mee: --database local-data/runtime/catalogue.sqlite");
   const { DatabaseSync } = await import("node:sqlite");
   const db = new DatabaseSync(database, { readOnly: true });
-  const documenten = db.prepare("select version, id, metadata from documents").all().map((d) => { const m = JSON.parse(d.metadata); return { ...d, bronId: m.sourceId, rol: m.role }; });
+  const documenten = db.prepare("select version, id, metadata from documents").all().map((d) => { const m = JSON.parse(d.metadata); return { ...d, bronId: m.sourceId, rol: m.role, packageDocumentId: m.packageDocumentId }; });
+  const volgordes = new Map(db.prepare("select version, payload from packages").all().map((p) => [p.version, JSON.parse(p.payload).context?.documents]));
   const paginas = db.prepare("select number, payload from pages where document_version = ? order by number");
   const cache = new Map();
   const bron = (d) => { if (!cache.has(d.version)) cache.set(d.version, maakBron(paginas.all(d.version).map((p) => ({ number: p.number, text: JSON.parse(p.payload).text })))); return cache.get(d.version); };
-  const records = db.prepare("select r.id, r.payload, p.source_id from records r join packages p on p.version = r.version join release_packages rp on rp.version = p.version where r.kind in ('evidence', 'source-link') order by p.source_id, r.position").all();
+  const records = db.prepare("select r.id, r.payload, p.source_id, p.version from records r join packages p on p.version = r.version join release_packages rp on rp.version = p.version where r.kind in ('evidence', 'source-link') order by p.source_id, r.position").all();
   const perBron = new Map();
   for (const rec of records) {
     for (const passage of passagesUit(JSON.parse(rec.payload))) {
       const kandidaten = documenten.filter((d) => d.id === passage.document || d.id === rec.source_id || d.bronId === rec.source_id || d.id.startsWith(rec.source_id + "-"));
-      kandidaten.sort((a, b) => (a.rol === "main" ? 0 : 1) - (b.rol === "main" ? 0 : 1) || a.id.localeCompare(b.id));
-      const uitkomst = controleer(passage, kandidaten.map(bron), { alleenXml: passage.alleenXml });
+      const uitkomst = controleer(passage, ordenBronnen(kandidaten, volgordes.get(rec.version)).map(bron), { alleenXml: passage.alleenXml });
       if (!perBron.has(rec.source_id)) perBron.set(rec.source_id, []);
       perBron.get(rec.source_id).push({ record: rec.id, page: passage.page, ...uitkomst });
     }
