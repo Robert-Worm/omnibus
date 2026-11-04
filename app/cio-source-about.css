@@ -2,6 +2,21 @@
 .framework-background{display:grid;gap:inherit;min-width:0}
 .framework-background .law-about-card>ol:not(.law-about-timeline){list-style:decimal;padding-left:1.3rem}
 .framework-background .law-about-card>ol:not(.law-about-timeline)>li{margin:.5rem 0}
+.law-about .law-about-use-cases{list-style:disc;padding-left:1.25rem;margin:.65rem 0 0}
+.law-about-use-cases>li{margin:.45rem 0}
+.law-about .law-about-document-list{list-style:none;padding:0;margin:0}
+.law-about-document-list>li{padding:1rem 0;min-width:0}
+.law-about-document-list>li+li,.law-about-limitations>section+section{border-top:1px solid var(--border)}
+.law-about-document-list>li:first-child{padding-top:0}
+.law-about-document-list :is(h4,a){overflow-wrap:anywhere}
+.law-about .law-about-document-list p{margin:.35rem 0;color:var(--rm-muted)}
+.law-about-document-list a{display:inline-flex;align-items:center;gap:.4rem;min-height:2.25rem;max-width:100%}
+.law-about-document-list svg{flex-shrink:0}
+.law-about-source-explanation{border-top:1px solid var(--border);padding-top:1rem}
+.law-about-source-explanation h4:not(:first-child){margin-top:1.25rem}
+.law-about-limitations>section{padding:1rem 0}
+.law-about-limitations>section:last-child{padding-bottom:0}
+.law-about :is(.law-about-limitations,.law-about-sources) p{max-width:90ch}
 html[data-appearance=dark] .law-about{--about-surface:#172330;--about-text:#e0eaf5;--about-hold:#29271f}
 .law-about :is(p,li,dd){overflow-wrap:break-word}.law-about p{margin:.65rem 0;max-width:none}
 .law-about-intro{padding:1.4rem 1.5rem;background:var(--rm-surface);border:1px solid var(--border);border-top:3px solid var(--rm-accent);border-radius:.7rem}

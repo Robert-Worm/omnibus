@@ -2,7 +2,7 @@
 import {useMemo,useState,useSyncExternalStore} from 'react';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
-import {LawAboutIntro,LawAboutSpecifications} from './law-about-layout';
+import {LawAboutIntro,LawAboutSpecifications,LawAboutSources,LawAboutParagraphs} from './law-about-layout';
 import FrameworkBackground from './framework-background';
 import {frameworkBackgrounds} from '@/lib/framework-backgrounds.mjs';
 import {LawPointSourceLayout} from './law-point-source';
@@ -25,7 +25,8 @@ function About({source,items}:{source:Source;items:Item[]}){
   <section className="law-about-card"><h3>Voor wie en waarvoor?</h3><p>{source.context}</p></section>
   <FrameworkBackground sourceId={source.id}/>
   <section className="law-about-card"><h3>Toepassing en afbakening</h3>{background&&<p>{source.usage}</p>}{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</section>
-  <section className="law-about-card"><h3>Bronkwaliteit en beperkingen</h3><p>{source.coverage}</p><p>{items[0]?.statusNote}</p><p>{items[0]?.sourceChanges}</p></section>
+  <LawAboutSources documents={[{id:source.id,title:source.title,role:source.edition,url:source.url}]}/>
+  <section className="law-about-card law-about-quality"><h3>Bronkwaliteit en beperkingen</h3><div className="law-about-limitations">{[{title:'Wat is uitgewerkt?',text:source.coverage},{title:'Status van de uitwerking',text:items[0]?.statusNote},{title:'Brontekst en eigen uitwerking',text:items[0]?.sourceChanges}].filter(item=>item.text?.trim()).map(item=><section key={item.title}><h4>{item.title}</h4><LawAboutParagraphs text={item.text!}/></section>)}</div></section>
  </section>;
 }
 function SourceContent({item}:{item:Item}){

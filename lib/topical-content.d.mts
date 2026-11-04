@@ -20,7 +20,7 @@ export type TopicalPackage = {
   status: {official_url: string; publication_rights: string};
   catalogue: {criteria: Criterion[]; points: TopicalPoint[]};
   bank: {records: RecordEntry[]};
-  documents: (LawReaderDocument & {packageDocumentId: string})[];
+  documents: (LawReaderDocument & {packageDocumentId: string; url?: string})[];
 };
 export const topicalPackages: TopicalPackage[];
 export const topicalIds: string[];
