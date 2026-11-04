@@ -8,16 +8,16 @@
 
 ## Zo staat het ervoor
 
-Database van 2026-10-30. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.
+Database van 2026-11-04. Daarnaast zitten er 14 onderzoeksmodellen in. In de tabel: *aanbevolen* zijn de aanbevolen rapporten, *alle* zijn alle rapporten van de Rijksmap en beoordeelde voorstellen, en *kaders* zijn de wetten en kaders.
 
 **Volgende database:** bij 5 ingeleverde bronnen, of een maand na de vorige als er minstens één klaarligt. Nu liggen er 0 bronnen klaar.
 
 | Status | Aanbevolen | Alle | Kaders |
 | --- | ---: | ---: | ---: |
-| ✅ In database | 27 | 27 | 7 |
+| ✅ In database | 27 | 27 | 9 |
 | 🔄 In bewerking | 0 | 0 | 0 |
 | 📦 Ingeleverd | 0 | 0 | 0 |
-| ⬜ Open | 513 | 9008 | 34 |
+| ⬜ Open | 513 | 9008 | 32 |
 | 🔒 Niet beschikbaar | 2 | 81 | 0 |
 
 **Legenda**
@@ -102,15 +102,17 @@ Er wacht nu niets op de beheerder.
 
 </details>
 
-<details><summary><b>Wetten en kaders</b> · 7</summary>
+<details><summary><b>Wetten en kaders</b> · 9</summary>
 
 - Wet weerbaarheid kritieke entiteiten (Wwke)
 - Besluit BVA-stelsel Rijksdienst 2021
 - Besluit CIO-stelsel Rijksdienst 2026
+- DORA met RTS en ITS, digitale weerbaarheid van de financiële sector
 - IIA Topical Requirement Cybersecurity
 - IIA Topical Requirement Third-Party
 - IIA Topical Requirement Organizational Behavior
 - IIA Topical Requirement Organizational Resilience
+- NOREA DORA in Control (update 2025, Framework 3.2)
 
 </details>
 
@@ -120,7 +122,7 @@ Nog geen bijdragen via claims. De bronnen die nu in de database zitten, zijn doo
 
 ## Samengevat
 
-27 rapporten, 7 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Op dit moment werkt niemand aan een bron.
+27 rapporten, 9 wetten en kaders en 14 onderzoeksmodellen zitten in de database. Op dit moment werkt niemand aan een bron.
 
 ## Volgende stap
 
