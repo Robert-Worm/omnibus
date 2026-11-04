@@ -23,6 +23,9 @@ const checkPath=file=>{if(withheld.has(file)||blocked.test(file)||(file.endsWith
 // everything else. No test-directory, domain or whole-file secret exemption.
 // Current fixtures construct these synthetic URLs; history is not rewritten.
 const reviewedFixtures=new Map([
+  // #267 link-rejection test used example.org with literal dummy credentials.
+  // The current test constructs its URL; allow only the original exact blob.
+  ['eadc8398f8db811e9bf41e56a7773c76847e808a', ['lib/audit-reading.test.mjs','https://user:'+'password@example.org']],
   ['947df70b01dc2d5384c43e6ee21291e5c1b6eb82', ['local-data/server-hosting.test.mjs','https://user:'+'secret@omnibus.example.invalid']],
   ['47c7a17a9c2a0bf39777f94cccfd0e605fa5ab81', ['scripts/start-hosting-options.test.mjs','https://user:'+'password@omnibus.example.invalid']],
   ['118105eac02a192d730ec8090eac7e34f659723b', ['local-data/hosting-release-contract.test.mjs','https://user:'+'secret@${publicHost}']],
