@@ -163,7 +163,7 @@ export default function ReportLibrary({
         </div>
         {!document&&<div className="report-overview-actions">{onRisks&&<Button onClick={onRisks}>Bekijk normen en toetspunten →</Button>}<ReportContextLinks items={reportThemes} onOpen={onTopic}/></div>}
       </div>}
-      {report.localPdf && !source.databaseSource && <p className="edit-note">
+      {reportPdfLink(report,current.page) && !source.databaseSource && <p className="edit-note">
         <a href={reportPdfLink(report,current.page)||undefined} target="_blank" rel="noreferrer">Open pagina {current.page} in de lokale PDF</a>
         {current.incompleteText && ' · Deze pagina heeft geen volledige tekstlaag. Lees de oorspronkelijke PDF.'}
       </p>}
