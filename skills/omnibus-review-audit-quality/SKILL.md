@@ -77,8 +77,10 @@ Beoordeel niet of de onderzochte organisatie zelf aan de norm voldoet.
   **Bestaan:** is die inrichting aantoonbaar ingevoerd op het relevante moment?
   Een beleidsdocument op zichzelf bewijst niet de feitelijke invoering.
 - **Werking:** uitvoering gedurende een onderzochte periode; beoordeel alleen
-  wanneer aanwezig/geclaimd of expliciet in scope. Omnibus gebruikt hiervoor
-  bewust een korte aanwijzing voor periode en casusselectie; verlang geen
+  wanneer aanwezig/geclaimd of expliciet in scope. Zonder specifiek uitgewerkt
+  plan geeft Omnibus korte hulp voor periode en casusselectie. Gebruik bij een
+  opgedragen uitwerking beschikbare bronaanwijzingen over uitvoering, frequenties
+  en triggers; onderscheid die van de gekozen auditmethode. Verlang geen
   verzonnen steekproef, uitvoeringsbewijs of lange standaardtekst.
 
 ## Beoordeel eerlijk, verbeter gericht

@@ -10,6 +10,11 @@ Iedere dimensie krijgt een heel cijfer 1–10 met een aanwijsbare reden en bewij
 Lees begrijpelijkheid, relevante detaillering en bronstatus in **ieder** veld mee.
 Jargonarm betekent niet dat noodzakelijke juridische of technische precisie vervalt.
 
+Lengte of identieke bewijsgrenzen zijn op zichzelf geen kwaliteitsgebrek.
+Beoordeel of de auditor alle nodige informatie kan vinden en of opzet, bestaan
+en werking verschillende handelingen, bewijs en conclusies vragen. Een kortere
+tekst met verdwenen voorwaarden is slechter dan een langere, uitvoerbare toets.
+
 | Sleutel | Gewicht | Wat is een goed resultaat (8–10)? | Signaal van onvoldoende kwaliteit |
 |---|---:|---|---|
 | bron | 25 | Exacte bron/context gelezen; elke claim en afleiding herleidbaar; actor, modaliteit, uitzondering, tijd en bronstatus intact. | Goede verwijzing maar verkeerde betekenis; advies als wet; historische situatie als actueel feit. |

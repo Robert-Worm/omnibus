@@ -29,6 +29,11 @@ Bevoegdheden zijn geen plichten. Definities/voorwaarden kunnen nodig zijn voor
 de betekenis zonder zelf een selecteerbare norm te worden. Controleer betekenis
 van verwijzingen; repareer een bronintern probleem niet stilzwijgend.
 
+Leid juridische bronsoort nooit af uit de menucategorie wet/kader. Een RTS of ITS
+kan bindende EU-regelgeving zijn terwijl het als kader wordt aangeboden.
+Leg normatieve bronsoort, actuele geldingsstatus en toepasselijkheid op de
+onderzochte actor afzonderlijk vast op basis van de bron.
+
 Een ontvanger van verantwoording is niet vanzelf degene die taken of
 bevoegdheden toedeelt. Leg die rollen afzonderlijk vast. Is een verwijzing zoals
 'zijn taken' dubbelzinnig, behoud dan die onzekerheid in de praktische uitwerking
@@ -55,6 +60,16 @@ organisaties/rollen, hoe het ontstond, officiële broneditie, scope en bruikbare
 bronbeperkingen. Filters zijn navigatiehulp, geen toepasselijkheidsbesluit.
 Opzet en bestaan hebben zelfstandige instructies en passend bewijs. Werking
 krijgt geen verzonnen periode/populatie/steekproef of fictieve conclusie.
+
+Gebruik beschikbare bronaanwijzingen over daadwerkelijke of periodieke uitvoering
+ook in het toetsontwerp. Opzet onderzoekt de geschiktheid van de inrichting;
+bestaan de concrete invoering; werking, indien in scope, de uitvoering over een
+onderbouwde periode en populatie. Een wettelijk voorgeschreven test is het
+onderzoeksobject, niet automatisch bewijs van werking voor de hele periode.
+Behoud bronfrequenties en triggers; benoem lokale keuzes als auditontwerp.
+Gelijke juridische grenzen bij verschillende fasen zijn geen inhoudsfout:
+vergelijk handeling, bewijs en mogelijke conclusie. Deel alleen identieke uitleg;
+schrap of verberg geen betekenisdragende uitzondering om tekst korter te maken.
 
 ### Complete beheersketen
 

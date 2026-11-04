@@ -91,6 +91,17 @@ integer?' combineert meerdere begrippen en is niet één bruikbare hoofdvraag.
 
 ## Brede en specifieke vragen
 
+Bij gemengde kaders kan één gereviewde onderzoeksvraag meerdere bronlagen dragen.
+Beoordeel daarvoor het toetsobject, de actor, het regime, de fase en de betekenis
+van iedere koppeling; gelijke woorden of dezelfde menucategorie bewijzen geen
+equivalentie. Geef zowel brede als specifieke vragen expliciete koppelingen over
+bronnen heen waar die inhoudelijk passen. Behoud de afzonderlijke maatstaven en
+het verschil tussen wet en guidance. De gezamenlijke vraag en haar volledige
+mapping vragen een eigen review, gebonden aan alle geraakte bronversies.
+Gebruik eerst passende bestaande vragen; maak niet per bron een duplicaat.
+Koppel alleen geselecteerde punten en behoud eigen tekst, handmatige koppelingen
+en bewuste ontkoppelingen. Bied bij twijfel een keuze; voeg geen normen toe.
+
 Beide niveaus zijn standaard voor wetten, kaders en samenhangende thema's,
 processen en teams. Ze delen hetzelfde afgebakende onderzoeksdoel. Beoordeel de
 dekking per niveau afzonderlijk: een gat in Breed wordt niet verborgen door een
