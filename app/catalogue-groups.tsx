@@ -6,7 +6,7 @@ import {ArrowLeft,ArrowRight,BookOpen,Brain,ShieldCheck,Users,RefreshCw,HandHear
 import {Button} from '@/components/ui/button';
 import {catalogueDescription,searchCatalogueGroups} from '@/lib/catalogue-directory.mjs';
 type Group={id:string;title:string;count:number;description?:string};
-const icons:Record<string,typeof BookOpen>={gedrag:Users,verandering:RefreshCw,dienstverlening:HandHeart,risico:ShieldCheck,privacy:ShieldCheck,cyber:ShieldCheck,it:Monitor,governance:Landmark,information:Database,audit:BookOpen,procurement:Package,energy:Leaf};
+const icons:Record<string,typeof BookOpen>={gedrag:Users,verandering:RefreshCw,dienstverlening:HandHeart,risico:ShieldCheck,privacy:ShieldCheck,cyber:ShieldCheck,it:Monitor,governance:Landmark,financial:Landmark,information:Database,audit:BookOpen,procurement:Package,energy:Leaf};
 export function CatalogueFamily({title,groupId,noun,children}:{title:string;groupId:string;noun:string;children:ReactNode}){
  const Icon=icons[groupId]||(noun==='modellen'?Brain:BookOpen);
  const description=catalogueDescription(noun,groupId);
