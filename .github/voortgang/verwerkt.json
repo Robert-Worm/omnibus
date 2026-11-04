@@ -1,5 +1,5 @@
 {
-  "database": "2026-10-30",
+  "database": "2026-11-04",
   "toelichting": "Bijwerken bij elke nieuwe databaserelease: welke Rijksmap-rapporten en welke wetten/kaders in de openbare database zitten.",
   "rapporten": {
     "2025-accountantsrapport-bij-de-25e-voortgangsrapportage-groot-project": "F35V25",
@@ -37,7 +37,9 @@
     "TR-CYBER",
     "TR-THIRD",
     "TR-BEHAV",
-    "TR-RESIL"
+    "TR-RESIL",
+    "DORA",
+    "NOREA-DORA"
   ],
   "modellen": 14
 }
