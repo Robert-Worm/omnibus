@@ -15,6 +15,9 @@ export async function buildCatalogueOverviews({release, publication, databasePat
   try {
     repository = new CatalogueRepository(resolve(databasePath), {readOnly: true});
     await build({root, configFile: false, logLevel: 'silent', resolve: {alias: {'@': root}},
+      // The module executes outside the checkout, where project node_modules
+      // cannot be resolved. Include the shared evidence identity helper's hash.
+      ssr: {noExternal: ['@noble/hashes']},
       plugins: [publishedCataloguePlugin({release, publication, databasePath,
         transportModule: resolve(root, 'agent-tools/catalogue-transport.mjs')})],
       build: {ssr: resolve(root, 'scripts/catalogue-overview-entry.mjs'), outDir: output, emptyOutDir: false,
