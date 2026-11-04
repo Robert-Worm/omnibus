@@ -34,6 +34,10 @@ Vergelijk geen totaalcijfers tussen verschillende profielen zonder dit te benoem
 Een passende korte instructie kan goed scoren: periode kiezen, passende gevallen
 of momenten selecteren, selectie onderbouwen en uitvoering tegen de gekoppelde
 maatstaf beoordelen. Geen vaste steekproefaantallen of bewijsstukken verzinnen.
+Controleer of de populatie ook objecten met ontbrekende controles of ongunstige
+uitkomsten omvat. Alleen reeds uitgevoerde controles of positieve bevestigingen
+selecteren kan geen oordeel over de vereiste uitvoering dragen. Onderscheid een
+niet-opgetreden aanleiding van ontbrekend bewijs van een wel vereiste handeling.
 Leg de toepasselijkheid per toetspunt vast: alleen de toepasselijke punten
 bepalen het werkingscijfer. Een gemotiveerd niet-toepasselijk punt is geen ontbrekende
 review. Als geen enkel punt werking bevat of claimt, laat de dimensie geheel weg.

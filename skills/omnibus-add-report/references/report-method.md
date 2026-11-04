@@ -83,6 +83,11 @@ Veronderstel geen historische tekortkoming, oorzaak of gewenste uitkomst.
 Elke uitgewerkte opzet- of bestaanstoets heeft een concrete handeling, passend
 verwacht bewijs en een grens aan de conclusie. Verzin geen periode, populatie of steekproefomvang.
 Bewaar de historische onderzoeksmethode apart van een nieuw toetsvoorstel.
+Begin bij een nieuw toetsvoorstel met de te behandelen objecten of aanleidingen;
+selecteer niet uitsluitend uitgevoerde controles of gunstige uitkomsten.
+Vergelijk daarop de vereiste behandeling met de uitvoering, zodat ontbrekende
+controles zichtbaar blijven. Geen toepasselijke aanleiding is iets anders dan
+ontbrekend bewijs van een vereiste handeling.
 Houd bewaartermijn, onderzoeksperiode en controlefrequentie uit elkaar: logging
 een halfjaar beschikbaar houden betekent niet halfjaarlijks controleren.
 De huidige productweergave gebruikt voor niet-uitgewerkte werking uitsluitend

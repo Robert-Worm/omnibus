@@ -67,6 +67,11 @@ bestaan de concrete invoering; werking, indien in scope, de uitvoering over een
 onderbouwde periode en populatie. Een wettelijk voorgeschreven test is het
 onderzoeksobject, niet automatisch bewijs van werking voor de hele periode.
 Behoud bronfrequenties en triggers; benoem lokale keuzes als auditontwerp.
+Begin de populatie bij de te behandelen objecten of aanleidingen, niet alleen bij
+uitgevoerde controles, ontvangen bevestigingen of goedgekeurde gevallen. Vergelijk
+daarna de vereiste behandeling met de uitvoering, zodat ontbrekende controles en
+ongunstige uitkomsten zichtbaar blijven. Geen toepasselijke aanleiding is iets
+anders dan ontbrekend bewijs van een vereiste handeling.
 Gelijke juridische grenzen bij verschillende fasen zijn geen inhoudsfout:
 vergelijk handeling, bewijs en mogelijke conclusie. Deel alleen identieke uitleg;
 schrap of verberg geen betekenisdragende uitzondering om tekst korter te maken.
