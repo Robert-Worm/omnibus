@@ -2,6 +2,21 @@
 
 De belangrijkste wijzigingen, nieuwste eerst.
 
+## 6 november 2026 · volledige en leesbare toetspunten
+
+- **Toetspunten los volledig:** in de DORA-kaders en NOREA DORA in Control staan voorwaarden, uitzonderingen en opsommingen uit de bron nu in het toetspunt zelf, niet alleen in de bronpassage en de toetsen. 654 toetspunten zijn herschreven en elk apart beoordeeld ([B-035](docs/beheer/besluiten.md#b-035), [#301](https://github.com/Robert-Worm/omnibus/issues/301)).
+- **Geen werktaal meer:** woorden uit de uitwerking, zoals *brongebonden*, *HOLD* en *meldroute*, zijn vervangen door gewone taal. Tussen woord en nummer staat weer een spatie (*artikel 8, lid 2*). Interviewvragen die niet meer bij een herschreven toetspunt passen, worden niet meer aangeboden.
+- **Nieuwe controle:** `npm run check:toetspunten` meldt onvolledige, vage en onleesbare toetspunten, zonder taalmodel. Nummers zonder spatie gingen van 998 naar 0 toetspunten, werktaal van 1.180 naar 10 ([uitleg](docs/beheer/toetspunten-controle.md)).
+- **Viewer:** geen selectieredenen, werknotities en herhaalde standaardzinnen meer bij een toetspunt. De documentnaam boven de bron is leesbaar en de markering loopt niet meer tegen het kader.
+- **Over dit kader:** elk kader volgt dezelfde vaste opbouw. Onder elke kaarttitel staat voor wie het kader geldt, en een link brengt je naar de uitvoeringskaders of de wetgeving ([B-034](docs/beheer/besluiten.md#b-034)).
+- **Skills:** de lessen uit de DORA-toetspunten staan in de kaderskill en de reviewskill. Een ontbrekende nuance of werktaal begrenst de reviewscore.
+- **Database 6 november:** bevat het herstel van de toetspunten. Komt beschikbaar met de release `database-2026-11-06-leesbaar`.
+
+## 4 november 2026 · DORA-kaders
+
+- **Database 4 november:** de DORA-verordening, de bijbehorende RTS'en, ITS'en en richtsnoeren, en NOREA DORA in Control, met gereviewde toetspunten en interviewvragen ([#267](https://github.com/Robert-Worm/omnibus/issues/267)).
+- **Kaders vinden:** alle DORA-bronnen staan in passende categorieën, met leesbare titels, documentnamen en bronstatus.
+
 ## 30 oktober 2026 · een eigen adres
 
 - **Nieuw adres:** de proefversie online staat op [omnibus.rijksmap.nl](https://omnibus.rijksmap.nl). Links naar omnibus.sliplane.app sturen door naar dezelfde pagina op het nieuwe adres.
