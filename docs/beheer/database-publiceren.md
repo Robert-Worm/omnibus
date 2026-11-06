@@ -133,8 +133,10 @@ In het kort:
    | Onderdeel | Vorm | Voorbeeld |
    | --- | --- | --- |
    | Tag | `database-<jjjj-mm-dd>-<thema>` | `database-2026-11-06-DORA` |
-   | Titel | `Database <d maand jjjj> · <thema>` | Database 6 november 2026 · DORA |
+   | Titel | `Database <d maand jjjj> · <thema> · v<versie>` | Database 6 november 2026 · DORA · v0.1.3 |
    | Zip | `omnibus-database-<jjjj-mm-dd>-<thema>.zip` | `omnibus-database-2026-11-06-brontrouw.zip` |
+
+   De versie telt in één reeks over alle releases (databases, applicatie en voorbeeldpakketten), op datum: de volgende release krijgt het laatste nummer plus één in het laatste cijfer. Zo krijgt de release na v0.1.3 versie v0.1.4. De tag blijft zoals hij is.
 
    Houd alleen de huidige database en de database die bij een applicatieversie hoort (nu `database-2026-10-19` bij `v0.1.0`). Een vervangen database verwijdert de beheerder zelf, nadat de online versie de nieuwe toont.
 4. **Zet de nieuwe database online en in de installatieopdracht.** Pas de zip-link en het controlegetal aan in `hosting/container/Dockerfile` én `scripts/database-release.mjs`, en push. De online versie bouwt dan opnieuw; controleer daarna of hij de nieuwe database toont.

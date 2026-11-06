@@ -40,7 +40,7 @@ body:
 
         **3. Uitbrengen**
         - [ ] Releasebestanden gemaakt met `npm run release:prepare` (zip, controlegetallen, LEESMIJ, releasenotities en `verwerkt.json`), zonder HOLD
-        - [ ] Release gemaakt met tag `database-<datum>-<thema>`, titel `Database <d maand jjjj> · <thema>`, beschrijving en zip
+        - [ ] Release gemaakt met tag `database-<datum>-<thema>`, titel `Database <d maand jjjj> · <thema> · v<versie>` (vorige versie plus één), beschrijving en zip
         - [ ] Vervangen databasereleases verwijderd (de huidige en die bij een applicatieversie blijven)
         - [ ] `.github/voortgang/verwerkt.json` vervangen door het voorstel uit de uitvoermap, nagekeken met `git diff` en gepusht
         - [ ] Voortgang, badge en tellingen in de README kloppen (vanzelf bijgewerkt na de push)
