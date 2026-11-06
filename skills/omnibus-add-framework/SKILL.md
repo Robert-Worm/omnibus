@@ -137,6 +137,15 @@ volledige specificaties en bronlinks; voeg dubbele toepassingsteksten samen.
 Gebruik de [About-controle](references/framework-method.md#over-dit-kader-vergelijken-met-cio)
 ook voor correcties aan bestaande kaderpagina's.
 
+Vaste opbouw, afgedwongen in code ([B-034](../../docs/beheer/besluiten.md#b-034)):
+**Over dit kader** gebruikt altijd `LawAboutPage` uit `app/law-about-layout.tsx`.
+Lever de inhoud voor de vaste vakken aan; voeg geen eigen secties, kaarten of
+volgorde toe. Open punten bij bronkwaliteit zijn uitklapblokken met een korte
+titel. Geef brondocumenten een leesbare titel, geen bestandsnaam. Elke nieuwe
+wet of elk nieuw kader krijgt in `lib/source-scope.mjs` een toepassingsgebied
+van één regel (wie: organisatie, toezichthouder of beide). `npm test` faalt
+zonder die regel of met een eigen opbouw.
+
 Zichtbare labels: `Norm` en `Toetspunt`; interne criterion-ID's en schema's blijven
 behouden. Directe individuele/groepsselectie zoals CIO, inclusief gedeeltelijke
 stand; selectie bevestigt geen wettelijke toepasselijkheid. HOLD en context-only

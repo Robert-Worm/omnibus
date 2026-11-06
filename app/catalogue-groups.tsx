@@ -7,10 +7,10 @@ import {Button} from '@/components/ui/button';
 import {catalogueDescription,searchCatalogueGroups} from '@/lib/catalogue-directory.mjs';
 type Group={id:string;title:string;count:number;description?:string};
 const icons:Record<string,typeof BookOpen>={gedrag:Users,verandering:RefreshCw,dienstverlening:HandHeart,risico:ShieldCheck,privacy:ShieldCheck,cyber:ShieldCheck,it:Monitor,governance:Landmark,financial:Landmark,information:Database,audit:BookOpen,procurement:Package,energy:Leaf};
-export function CatalogueFamily({title,groupId,noun,children}:{title:string;groupId:string;noun:string;children:ReactNode}){
+export function CatalogueFamily({title,groupId,noun,children,action}:{title:string;groupId:string;noun:string;children:ReactNode;action?:ReactNode}){
  const Icon=icons[groupId]||(noun==='modellen'?Brain:BookOpen);
  const description=catalogueDescription(noun,groupId);
- return <section className="directory-family catalogue-family"><header className="directory-family-heading"><h3><span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{title}</span></h3>{description&&<p>{description}</p>}</header><div className="directory-children">{children}</div></section>;
+ return <section className="directory-family catalogue-family"><header className="directory-family-heading" data-action={action?true:undefined}><h3><span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{title}</span></h3>{action&&<div className="catalogue-family-action">{action}</div>}{description&&<p>{description}</p>}</header><div className="directory-children">{children}</div></section>;
 }
 // Navigation only: selecting a category must never select criteria or model questions.
 export default function CatalogueGroups({groups,value,onChange,noun,searching=false,compact=false,query='',hideTitle=false}:{groups:Group[];value:string;onChange:(id:string)=>void;noun:string;searching?:boolean;compact?:boolean;query?:string;hideTitle?:boolean}){

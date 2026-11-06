@@ -1,11 +1,9 @@
 'use client';
 import {useMemo,useState,useSyncExternalStore} from 'react';
-import {Users} from 'lucide-react';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
-import {LawAboutIntro,LawAboutSpecifications,LawAboutSources,LawAboutParagraphs} from './law-about-layout';
-import FrameworkBackground from './framework-background';
-import {frameworkBackgrounds} from '@/lib/framework-backgrounds.mjs';
+import {LawAboutPage,LawAboutParagraphs} from './law-about-layout';
+import {frameworkBackgrounds,backgroundCheckedOn} from '@/lib/framework-backgrounds.mjs';
 import {LawPointSourceLayout} from './law-point-source';
 import FoundationSourceReader from './lazy-foundation-reader';
 import {foundations,foundationProposals} from '@/lib/investigation.mjs';
@@ -18,17 +16,19 @@ import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
 type Item=(typeof foundationProposals)[number];
 type Source=(typeof foundations)[number];
 function About({source,items}:{source:Source;items:Item[]}){
- const context=items.filter(p=>p.auditRole!=='norm');
+ const context=items.filter(p=>p.auditRole!=='norm'),norms=items.filter(p=>p.auditRole==='norm').length;
  const background=Object.hasOwn(frameworkBackgrounds,source.id)?frameworkBackgrounds[source.id as keyof typeof frameworkBackgrounds]:undefined;
- return <section className="law-about" aria-label={'Achtergrond '+source.title}>
-  <LawAboutIntro title={source.title} links={[{label:'Officiële publicatie',url:source.url}]}><p>{background?.intro||source.usage}</p></LawAboutIntro>
-  <LawAboutSpecifications><div><dt>Uitgave</dt><dd>{source.edition}</dd></div><div><dt>Omvang</dt><dd>{items.filter(p=>p.auditRole==='norm').length} normen · {context.length} afbakeningspunten</dd></div></LawAboutSpecifications>
-  <FrameworkBackground sourceId={source.id}
-   audience={<section className="law-about-card"><h3><Users size={18} aria-hidden="true"/>Voor wie en waarvoor?</h3><p>{source.context}</p></section>}
-   application={<>{background&&<p>{source.usage}</p>}{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</>}/>
-  <LawAboutSources documents={[{id:source.id,title:source.title,role:source.edition,url:source.url}]}/>
-  <section className="law-about-card law-about-quality"><h3>Bronkwaliteit en open punten</h3><div className="law-about-limitations">{[{title:'Wat is uitgewerkt?',text:source.coverage},{title:'Status van de uitwerking',text:items[0]?.statusNote},{title:'Brontekst en eigen uitwerking',text:items[0]?.sourceChanges}].filter(item=>item.text?.trim()).map(item=><section key={item.title}><h4>{item.title}</h4><LawAboutParagraphs text={item.text!}/></section>)}</div></section>
- </section>;
+ return <LawAboutPage label={'Achtergrond '+source.title} title={source.title} links={[{label:'Officiële publicatie',url:source.url}]}
+  intro={<p>{background?.intro||source.usage}</p>}
+  specifications={<><div><dt>Uitgave</dt><dd>{source.edition}</dd></div><div><dt>Omvang</dt><dd>{norms} normen · {context.length} afbakeningspunten</dd></div></>}
+  kind={{title:source.kind==='law'?'Wat voor regeling is dit?':'Wat voor kader is dit?',body:<p>{background?.meaning||source.usage}</p>}}
+  audience={<p>{source.context}</p>}
+  history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. De broneditie, toepassingsvoorwaarden en genoemde bronbeperkingen blijven bepalend voor deze uitwerking.`}}
+  application={<>{background&&<p>{source.usage}</p>}{background&&<ol className="law-about-practice">{background.practice.map(text=><li key={text}>{text}</li>)}</ol>}{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</>}
+  related={background?.related}
+  sources={[{id:source.id,title:source.title,role:source.edition,url:source.url}]}
+  quality={{meta:[`${norms} normen · ${context.length} afbakeningspunten`,'AI-review op brontrouw, betekenis en bruikbaarheid; geen menselijke audit- of juridische goedkeuring.'],
+   checks:[{title:'Wat is uitgewerkt?',text:source.coverage},{title:'Status van de uitwerking',text:items[0]?.statusNote},{title:'Brontekst en eigen uitwerking',text:items[0]?.sourceChanges}].filter(item=>item.text?.trim()).map(item=>({title:item.title,body:<LawAboutParagraphs text={item.text!}/>}))}}/>;
 }
 function SourceContent({item}:{item:Item}){
  const [active,setActive]=useState<'criterion'|'source'>('criterion');

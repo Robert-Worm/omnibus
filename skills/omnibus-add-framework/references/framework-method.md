@@ -230,6 +230,11 @@ tot een vaststellingsplicht te maken.
 
 ### Over dit kader: vergelijken met CIO
 
+De opbouw ligt vast in `LawAboutPage` en wordt getest
+(`app/law-about-standard.test.mjs`); een kader levert alleen de inhoud. Het
+toepassingsgebied onder de titel in de catalogus staat in `lib/source-scope.mjs`
+(`lib/source-scope.test.mjs`).
+
 Controleer de werkelijke pagina naast **Over dit kader** van het CIO-stelsel,
 niet alleen de namen van gedeelde componenten. Gebruik dezelfde leesvolgorde:
 introductie, specificaties, aard van de regeling en doelgroep, ontstaansgeschiedenis,

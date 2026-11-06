@@ -8,6 +8,7 @@ import DirectorySearch from './directory-search';
 import CatalogueCardActions from './catalogue-card-actions';
 import {CatalogueHeader,SourceChoices} from './catalogue-navigation';
 import {scopeFoundationSources} from '@/lib/catalogue-directory.mjs';
+import {sourceScope as scopeOfSource} from '@/lib/source-scope.mjs';
 import CriterionSearchResults from './criterion-search-results';
 import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
 import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
@@ -23,6 +24,7 @@ import {
   Scale,
   Plus,
   ExternalLink,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -398,7 +400,8 @@ export function FoundationCatalogue({
   const setSourceArea=(value:'laws'|'frameworks')=>{setLocalSourceArea(value);onSourceScopeChange?.(value);};
   const scope=guided||onSourceScopeChange?sourceScope:sourceArea;
   const allows=useCollectionScope();
-  const scopedSources=scopeFoundationSources(foundations.filter(source=>allows('foundation',source.id)),scope);
+  const allowedSources=foundations.filter(source=>allows('foundation',source.id));
+  const scopedSources=scopeFoundationSources(allowedSources,scope);
   const [query, setQuery] = useState(searchQuery),
     [kind, setKind] = useState("all"),
     [selectedOnly, setSelectedOnly] = useState(false),
@@ -412,6 +415,9 @@ export function FoundationCatalogue({
   const domain=onDirectoryGroup?(directoryGroup||'all'):localDomain;
   const setDomain=(id:string)=>{setLocalDomain(id||'all');onDirectoryGroup?.(id);};
   const showList=Boolean(directoryGroup||query.trim()||processId||kind!=='all'||selectedOnly);
+  // Cross-link between the two halves of one category: laws ↔ implementing frameworks.
+  const otherScope=scope==='laws'?'frameworks':scope==='frameworks'?'laws':undefined;
+  const crossScope=otherScope&&domain!=='all'&&!query.trim()&&filterSources(scopeFoundationSources(allowedSources,otherScope),{domain}).length>0?otherScope:undefined;
   const criteriaFilter = JSON.stringify([kind,domain,processId,selectedOnly]);
   const [criteriaPagination,setCriteriaPagination] = useState({filter:criteriaFilter,page:0});
   if(criteriaPagination.filter!==criteriaFilter)setCriteriaPagination({filter:criteriaFilter,page:0});
@@ -467,7 +473,8 @@ export function FoundationCatalogue({
       {searchError && <p role="alert">{searchError}</p>}
       {query.trim() && <h2>Wetten &amp; kaders <small>({filtered.length})</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
-      <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}>
+      <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
+        action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
       <div className="foundation-list">
         {filtered.slice(index * sourcePageSize, index * sourcePageSize + sourcePageSize).map((s) => {
           const selection=foundationSelection(draft,s.id);
@@ -482,6 +489,7 @@ export function FoundationCatalogue({
                   {frameworkTitle(s.title)}
                 </button>
                 </h4>
+                {scopeOfSource(s.id)&&<p className="catalogue-card-scope"><Users size={14} aria-hidden="true"/><span>Voor: <strong>{scopeOfSource(s.id)!.text}</strong></span></p>}
                 <p>{s.usage}</p>
                 {search.contextSourceIds.includes(s.id) && <span className="source-meta">Gevonden via normen in deze bron</span>}
                 <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> groepen</span><span><strong>{lawCounts.norms}</strong> normen</span><span><strong>{selection.total}</strong> selecteerbare toetspunten</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>
