@@ -14,7 +14,8 @@ De belangrijkste wijzigingen, nieuwste eerst.
 - **Uitvoeringsregelingen bij DORA:** in de viewer staat bij elke DORA-groep welke RTS, ITS of richtsnoeren haar uitwerken, met het artikel waarop die steunen. Een klik opent de regeling in hetzelfde project. Andersom zie je bij een RTS welke DORA-groep zij uitwerkt ([#312](https://github.com/Robert-Worm/omnibus/issues/312)).
 - **Onderzoeksvragen bij DORA:** de voorgestelde vragen noemen *de entiteit*, niet het onderwerp dat je bij de start invulde. De afbakening onder een voorstel is gewone taal ([#311](https://github.com/Robert-Worm/omnibus/issues/311)).
 - **Werking in de export:** werkt de bron bij een toetspunt geen werkingstoets uit, dan staat dat er eerlijk bij, in plaats van een algemene instructie met een lege bewijskolom. Verwacht bewijs van meer alinea's staat volledig in de bewijskolom ([#310](https://github.com/Robert-Worm/omnibus/issues/310)).
-- **Database 6 november:** bevat het herstel van de toetspunten; release [`database-2026-11-06-DORA`](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-11-06-DORA). De online versie gebruikt deze database.
+- **Database 6 november (v0.1.3):** bevat het herstel van de toetspunten; release [`database-2026-11-06-DORA`](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-11-06-DORA).
+- **Database 6 november (v0.1.4):** bewijs van uitgevoerde gevallen staat bij 30 DORA-toetspunten niet meer bij opzet, alleen bij bestaan. Het toetspunt over teruggave van ICT-assets (RTS 2024/1774, artikel 19) geldt voor de eigen medewerkers ([#302](https://github.com/Robert-Worm/omnibus/issues/302), [#310](https://github.com/Robert-Worm/omnibus/issues/310)). Release [`database-2026-11-06-toetsfasen`](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-11-06-toetsfasen). De online versie gebruikt deze database.
 
 ## 4 november 2026 · DORA-kaders
 
