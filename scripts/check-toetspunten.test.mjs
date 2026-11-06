@@ -34,3 +34,11 @@ test("beoordeel telt per soort en per bron, alleen selecteerbare toetspunten", (
   assert.equal(s.perSoort.aaneen, 1);
   assert.equal(s.perSoort.werktaal, 0);
 });
+
+test("aaneen en werktaal vangen ook wat de export toont (#303)", () => {
+  assert.deepEqual(aaneen("met eigen uitzondering26(1) en hoofdstuk V-I-evenredigheid4(2); verwijzing naar kader6"), ["uitzondering26(1)", "evenredigheid4(2)", "kader6"]);
+  assert.deepEqual(aaneen("RTS1774-N104-P01 en sha256 blijven"), ["sha256"]);
+  assert.ok(werktaal("Aanvullend ANALYST_PROPOSAL bij de bevroren bronbasis").some((w) => w.woord === "ANALYST_PROPOSAL"));
+  assert.ok(werktaal("Financiële entiteit (NORM_ADDRESSEE)").some((w) => w.soort === "interne code"));
+  assert.ok(werktaal("Geen uitbreiding van EX16(5–15)").some((w) => w.soort === "interne afkorting"));
+});

@@ -20,12 +20,12 @@
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { leesCatalogus, meetelt } from "./check-keten.mjs";
-import { pakketNotities, standaardzinnen, lezersnotities } from "../lib/reader-notes.mjs";
+import { pakketNotities, standaardzinnen, lezersnotities, lezersbroncontext } from "../lib/reader-notes.mjs";
 
 /** Velden die de lezer ziet bij een toetspunt, in leesvolgorde. */
-export const VELDEN = ["title", "body", "parentCriterion", "rationale", "risk", "controlObjective", "control", "testDesign", "testExistence", "testOperation", "documents"];
+export const VELDEN = ["title", "body", "parentCriterion", "rationale", "risk", "controlObjective", "control", "testDesign", "testExistence", "testOperation", "documents", "sourceContext"];
 const TOETS = ["testDesign", "testExistence", "testOperation"];
-const veldNaam = { title: "titel", body: "toetspunt", parentCriterion: "norm", rationale: "doel", risk: "risico", controlObjective: "beheersdoelstelling", control: "beheersmaatregel", testDesign: "opzet", testExistence: "bestaan", testOperation: "werking", documents: "bewijs" };
+const veldNaam = { title: "titel", body: "toetspunt", parentCriterion: "norm", rationale: "doel", risk: "risico", controlObjective: "beheersdoelstelling", control: "beheersmaatregel", testDesign: "opzet", testExistence: "bestaan", testOperation: "werking", documents: "bewijs", sourceContext: "broncontext" };
 
 // Woorden die in bijna elke bron en toets staan en niets zeggen over volledigheid.
 const ALGEMEEN = new Set(("waarbij waarin waarop daarbij daarvan daarnaast hiervan hierbij volgens bedoeld bedoelde overeenkomstig " +
@@ -59,8 +59,12 @@ export function verwijzingen(t) {
 
 // Aan elkaar: een woord direct gevolgd door een nummer of Romeins cijfer (artikel8, titelIII, uiterlijk24, in11(6)).
 const AANEEN = /(?<![\p{L}\d-])(artikel(?:en)?|titel|hoofdstuk(?:ken)?|afdeling(?:en)?|lid|leden|bijlage|verordening|richtlijn|DORA|RTS|ITS|uiterlijk|binnen|naast|volgens|in|uit|van|en|of|tot)(\d{1,4}[a-z]?(?:\(\d+\))?(?![\d]|-[A-Z0-9])|(?:I{1,3}|IV|VI{0,3}|IX|X)(?![\p{L}]))/gu;
+// Algemeen (#303): elk woord van drie of meer kleine letters direct gevolgd door een nummer
+// (uitzondering26(1), evenredigheid4(2), kader6). Vaste ID's met hoofdletters vallen erbuiten.
+const AANEEN_ALGEMEEN = /(?<![\p{L}\d_])\p{Ll}{3,}\d{1,3}(?:\(\d+\))?(?![\d]|-[A-Z0-9])/gu;
 export function aaneen(t) {
-  return [...String(t ?? "").matchAll(AANEEN)].map((m) => m[0]);
+  const s = String(t ?? "");
+  return [...new Set([...s.matchAll(AANEEN)].map((m) => m[0]).concat([...s.matchAll(AANEEN_ALGEMEEN)].map((m) => m[0])))];
 }
 
 // Werktaal: notities over de uitwerking zelf, interne statussen en ID's, en -route-samenstellingen.
@@ -68,6 +72,8 @@ const WERKTAAL = [
   [/(?<![\p{L}])(dit|het|deze) voorstel(?![\p{L}])/giu, "notitie over 'het voorstel'"],
   [/(?<![\p{L}])(brongebonden|bronconform|bronbinding|bronvoorwaarden?|bronbasis|bronrecord|brongrens\p{L}*|beoordeelde object|inhoudelijke verwijzing)(?![\p{L}])/giu, "werkwoord uit de uitwerking"],
   [/(?<![\p{L}])(HOLD|SELECTABLE|CONTEXT_ONLY|ANALYST_PROPOSAL|PILOT\d+)(?![\p{L}])/gu, "interne status of code"],
+  [/(?<![\p{L}\d])[A-Z]+(?:_[A-Z]+)+(?![\p{L}\d])/gu, "interne code"],
+  [/(?<![\p{L}\d])(?:EX|T|B)\d{1,3}(?:\([\d–-]+\))?(?![\p{L}\d-])/gu, "interne afkorting"],
   [/(?<![\p{L}\d-])[NP]\d{2,3}(?![\p{L}\d-])/gu, "intern ID"],
   [/\((?:[A-Z][A-Z0-9]*-){2,}[A-Z0-9-]+\)/gu, "record-ID tussen haakjes"],
   [/(?<![\p{L}])(normadressaat|taakdrager|batch|analistenvoorstel\p{L}*|kandidaat\p{L}*)(?![\p{L}])/giu, "vakjargon van de uitwerking"],
@@ -139,11 +145,13 @@ export function beoordeel(items, { bron = /./ } = {}) {
     const ref = verwijzingen(m.body);
     if (ref.length) voeg("verwijzing", "body", ref.join("; "));
     for (const veld of VELDEN) {
-      const a = aaneen(m[veld]);
+      // De broncontext zoals de export haar toont (#303).
+      const tekst = veld === "sourceContext" ? lezersbroncontext(m[veld] ?? "") : m[veld];
+      const a = aaneen(tekst);
       if (a.length) voeg("aaneen", veld, [...new Set(a)].join(", "));
-      const w = werktaal(m[veld]);
+      const w = werktaal(tekst);
       if (w.length) voeg("werktaal", veld, [...new Set(w.map((x) => `${x.woord} (${x.soort})`))].join(", "));
-      const e = engels(m[veld]);
+      const e = engels(tekst);
       if (e.length) voeg("engels", veld, e.join(", "));
     }
     for (const [veld, t] of viewerTekst(i, standaard.get(i.sourceId))) {
