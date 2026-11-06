@@ -10,7 +10,8 @@ De belangrijkste wijzigingen, nieuwste eerst.
 - **Viewer:** geen selectieredenen, werknotities en herhaalde standaardzinnen meer bij een toetspunt. De documentnaam boven de bron is leesbaar en de markering loopt niet meer tegen het kader.
 - **Over dit kader:** elk kader volgt dezelfde vaste opbouw. Onder elke kaarttitel staat voor wie het kader geldt, en een link brengt je naar de uitvoeringskaders of de wetgeving ([B-034](docs/beheer/besluiten.md#b-034)).
 - **Skills:** de lessen uit de DORA-toetspunten staan in de kaderskill en de reviewskill. Een ontbrekende nuance of werktaal begrenst de reviewscore.
-- **Database 6 november:** bevat het herstel van de toetspunten; release [`database-2026-11-06-leesbaar`](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-11-06-leesbaar). De online versie gebruikt deze database.
+- **Brontrouw na een panelbeoordeling:** alle 531 herschreven toetspunten zijn opnieuw naast de bron gelegd; 60 zijn gecorrigeerd en elke correctie is tegen de volledige wettekst gecontroleerd. De Excel-export toont geen bronstatus per toetspunt, interne codes of werknotities meer, heeft de grondslag W bij wetgeving, een vaste ID en de letterlijke bronpassage ([#313](https://github.com/Robert-Worm/omnibus/issues/313)).
+- **Database 6 november:** bevat het herstel van de toetspunten; release [`database-2026-11-06-DORA`](https://github.com/Robert-Worm/omnibus/releases/tag/database-2026-11-06-DORA). De online versie gebruikt deze database.
 
 ## 4 november 2026 · DORA-kaders
 

@@ -128,7 +128,15 @@ In het kort:
    - Geef elk nieuw rapport mee met `--rapport <rijksmap-id>=<bron-id>`; de Rijksmap-ID staat in de link van de claim. Ontbreekt er een, dan meldt hij **HOLD** met de bron-ID en eindigt de opdracht met exitcode 1. De gemaakte bestanden zijn dan alleen concepten: publiceer ze niet. Vul de koppeling aan en draai opnieuw met een nieuwe uitvoermap.
    - **Gelukt als:** de opdracht eindigt met exitcode 0 en `Lokaal voorbereid`. Dit bevestigt de technische voorbereiding; de inhoudelijke goedkeuring en het publicatiebesluit blijven afzonderlijke stappen.
 2. **Controleer de rechten.** Staan er alleen bronnen in die openbaar mogen? Zie de [werklijst wetten en kaders](../bijdragen/werklijst-wetten-en-kaders.md).
-3. **Maak een release** op GitHub met tag `database-<jjjj-mm-dd>`. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe.
+3. **Maak een release** op GitHub. Beschrijf wat erin zit en wat er nieuw is, en voeg de zip toe. Gebruik één vaste naamgeving, met één thema: waar deze database vooral mee is verbeterd.
+
+   | Onderdeel | Vorm | Voorbeeld |
+   | --- | --- | --- |
+   | Tag | `database-<jjjj-mm-dd>-<thema>` | `database-2026-11-06-DORA` |
+   | Titel | `Database <d maand jjjj> · <thema>` | Database 6 november 2026 · DORA |
+   | Zip | `omnibus-database-<jjjj-mm-dd>-<thema>.zip` | `omnibus-database-2026-11-06-brontrouw.zip` |
+
+   Houd alleen de huidige database en de database die bij een applicatieversie hoort (nu `database-2026-10-19` bij `v0.1.0`). Een vervangen database verwijdert de beheerder zelf, nadat de online versie de nieuwe toont.
 4. **Zet de nieuwe database online en in de installatieopdracht.** Pas de zip-link en het controlegetal aan in `hosting/container/Dockerfile` én `scripts/database-release.mjs`, en push. De online versie bouwt dan opnieuw; controleer daarna of hij de nieuwe database toont.
 5. **Werk de voortgang bij:** vervang `.github/voortgang/verwerkt.json` door het bestand uit de uitvoermap, bekijk de wijziging met `git diff` en push. De voortgangspagina's, de badge *database* en alle tellingen in de README, de routekaart en de werklijsten werken zich daarna vanzelf bij.
 6. **Sluit de verwerkte claims** met het label **verwerkt**.

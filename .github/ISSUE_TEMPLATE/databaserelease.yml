@@ -11,7 +11,7 @@ body:
     id: datum
     attributes:
       label: Datum van de database
-      description: Wordt de tag database-<datum> en de naam van de zip.
+      description: Wordt de tag database-<datum>-<thema> en de naam van de zip.
       placeholder: "2026-11-30"
     validations:
       required: true
@@ -40,7 +40,8 @@ body:
 
         **3. Uitbrengen**
         - [ ] Releasebestanden gemaakt met `npm run release:prepare` (zip, controlegetallen, LEESMIJ, releasenotities en `verwerkt.json`), zonder HOLD
-        - [ ] Release gemaakt met tag `database-<datum>`, beschrijving en zip
+        - [ ] Release gemaakt met tag `database-<datum>-<thema>`, titel `Database <d maand jjjj> · <thema>`, beschrijving en zip
+        - [ ] Vervangen databasereleases verwijderd (de huidige en die bij een applicatieversie blijven)
         - [ ] `.github/voortgang/verwerkt.json` vervangen door het voorstel uit de uitvoermap, nagekeken met `git diff` en gepusht
         - [ ] Voortgang, badge en tellingen in de README kloppen (vanzelf bijgewerkt na de push)
         - [ ] Nieuwe zip en controlegetal in `hosting/container/Dockerfile` én `scripts/database-release.mjs` gezet en gepusht; de online versie toont de nieuwe database
