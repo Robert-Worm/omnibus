@@ -76,3 +76,9 @@
 .cio-point-source :is(.cio-source-toolbar,.cio-source-toolbar a,.cio-source-toolbar>span,.cio-source-kicker,.cio-source-status,.cio-source-status p,.cio-source-record-heading>span,.cio-source-record-heading nav button){font-size:12px;line-height:1.5}
 .cio-point-source .cio-norm-summary>p{font-size:13px}.cio-point-source .cio-norm-heading h3{font-size:14px;margin:0}
 @media(max-width:1023px){.cio-point-source .criterion-source-panels{grid-template-columns:1fr}}
+/* Ruimte tussen brontekst en kader: de focusrand van een gemarkeerde passage valt binnen de kaart (#267). */
+.cio-source-document .report-reading{padding:1.1rem 1.6rem}
+.cio-source-document .report-reading mark{box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cio-source-document .report-reading :is(mark,[data-source-start]):focus{outline-offset:1px}
+@media(max-width:1023px){.cio-source-document .report-reading{padding:.9rem 1.1rem}}
+.cio-source-document>.cio-meta,.cio-source-document .cio-meta{padding-inline:.65rem;margin-top:.5rem}

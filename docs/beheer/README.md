@@ -52,6 +52,7 @@ flowchart TD
 | [Omnibus-auditor](agent-auditor.md) | Een AI-auditor die de opzet van de skills beoordeelt tegen onze eigen uitgangspunten |
 | [Skillproef](skillproef.md) | De skills echt laten draaien op een verzonnen testbron, als bewijs voor de auditcriteria |
 | [Controle op verzonnen output](verzonnen-output.md) | Wat de SAAF-hulpmiddelen tegen verzinnen toevoegen, en wat we overnamen |
+| [Controle op volledige en leesbare toetspunten](toetspunten-controle.md) | Of een toetspunt de nuance uit bron en toets bevat, en vrij is van werktaal |
 | [Kwaliteitsmeting](kwaliteitsmeting.md) | Automatisch: bronpassages die letterlijk kloppen en vragen zonder vormfout, per database |
 | [Zekerheidscontrole](../claim-certainty.md) | Mogelijke overdrijving en getalproblemen signaleren voor inhoudelijke review |
 | [Samenwerking tussen de AI-assistenten](samenwerking-ai.md) | Hoe Opus 5.5 en ChatGPT Astra werk aan elkaar doorgeven |
