@@ -93,7 +93,8 @@ test("new framework database uses the CIO-shaped viewer, exact source, selection
   assert.equal(material.controlObjective, p.catalogue.objectives[0].text);
   assert.equal(material.control, p.catalogue.objectives[0].control_measure);
   assert.equal(material.rationale, p.catalogue.goals[0].text);
-  assert.match(material.sourceContext, /NORM_ADDRESSEE/); assert.match(material.sourceContext, /Geen echte verplichting/);
+  // Readers see the addressee and its condition, not the internal role code (#306).
+  assert.match(material.sourceContext, /Testorganisatie — Bij ontvangst/); assert.doesNotMatch(material.sourceContext, /NORM_ADDRESSEE/); assert.match(material.sourceContext, /Geen echte verplichting/);
   assert.equal(material.testExistence, ""); assert.equal(material.testOperation, "");
   draft = updateValue(draft, materialLine(material), "criterion", "Eigen norm voor het onderzoek.");
   const question = addQuestion(draft, null, "Hoe worden meldingen toegewezen?");
