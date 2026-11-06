@@ -54,6 +54,20 @@ In de viewer:
 
 De inhoud zelf verandert niet door de viewer. Het herstel in de toetspunten volgt in [#301](https://github.com/Robert-Worm/omnibus/issues/301).
 
+## Wat er misging en wat we leren
+
+Vijf oorzaken, met de les die nu in de skills staat.
+
+| Wat er misging | Les | Waar vastgelegd |
+| --- | --- | --- |
+| Bij het splitsen van een norm in toetspunten bleef het toetspunt kort. De voorwaarden gingen naar de toetsen en de toepassing | Een toetspunt moet los gelezen kloppen. Elke voorwaarde, uitzondering en opsomming gaat mee naar het toetspunt | Kaderskill, werkwijze *Toetspunt zelfstandig* |
+| De reviews keken vooral of de tekst trouw was aan de bron, niet of het toetspunt zelf volledig was | Lees een toetspunt eerst los, en leg dan bron en toets ernaast. Een ontbrekende nuance begrenst de score op 5 | Reviewskill en rubric |
+| Velden voor het dossier en voor de lezer liepen door elkaar. Selectieredenen en standaardzinnen kwamen in de viewer | Lezerstekst en dossier zijn gescheiden. De viewer toont alleen lezerstekst | Kaderskill; viewer |
+| Werktaal en nummers zonder spatie vielen in de reviews niet op. Schrijver en reviewer waren allebei een taalmodel met dezelfde gewoonten | Een vaste controle zonder taalmodel vangt wat een model zelf niet ziet | `check:toetspunten`, verplicht voor de overdracht |
+| De bestaande metingen telden of elk veld gevuld was, niet of het bruikbaar was | Meet ook wat de lezer ervaart | Kwaliteitsmeting en auditcriteria (CO-1 #6) |
+
+Waar de spaties tussen woord en nummer precies verdwijnen, is nog niet bekend. Dat zoekt [#301](https://github.com/Robert-Worm/omnibus/issues/301) uit.
+
 ## Zo draai je hem
 
 ```bash

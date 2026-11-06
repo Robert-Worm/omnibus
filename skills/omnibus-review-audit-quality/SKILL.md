@@ -56,6 +56,8 @@ Beoordeel niet of de onderzochte organisatie zelf aan de norm voldoet.
    **elk** toetspunt → opzet/bestaan → verwachte bewijsstukken en beslisregel.
    Een sterke norm kan slechte toetspunten hebben; een goede schrijfstijl kan
    een bronfout niet goedmaken. Geen score uit tekstgelijkenis of lengte afleiden.
+   Lees elk toetspunt eerst **los**; nuance die alleen in passage of toets staat,
+   maakt het onvolledig (B-035, rubric). Voorcontrole: `npm run check:toetspunten`.
 5. Laat de perspectieven uit de panelreferentie de bron én dezelfde volledige
    keten beoordelen. Gebruik echte afzonderlijke contexten voor een onafhankelijk
    AI-panel als delegatie beschikbaar en toegestaan is. Anders heet het

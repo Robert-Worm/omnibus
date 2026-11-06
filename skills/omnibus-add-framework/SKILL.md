@@ -137,23 +137,11 @@ volledige specificaties en bronlinks; voeg dubbele toepassingsteksten samen.
 Gebruik de [About-controle](references/framework-method.md#over-dit-kader-vergelijken-met-cio)
 ook voor correcties aan bestaande kaderpagina's.
 
-Vaste opbouw, afgedwongen in code ([B-034](../../docs/beheer/besluiten.md#b-034)):
-**Over dit kader** gebruikt altijd `LawAboutPage` uit `app/law-about-layout.tsx`.
-Lever de inhoud voor de vaste vakken aan; voeg geen eigen secties, kaarten of
-volgorde toe. Open punten bij bronkwaliteit zijn uitklapblokken met een korte
-titel. Geef brondocumenten een leesbare titel, geen bestandsnaam. Elke nieuwe
-wet of elk nieuw kader krijgt in `lib/source-scope.mjs` een toepassingsgebied
-van één regel (wie: organisatie, toezichthouder of beide). `npm test` faalt
-zonder die regel of met een eigen opbouw.
-
-Volledige en leesbare toetspunten ([B-035](../../docs/beheer/besluiten.md#b-035)):
-wat de bronpassage en de toetsen noemen, staat in het toetspunt zelf of in een
-ander toetspunt bij dezelfde norm. Schrijf de inhoud uit in plaats van alleen
-een artikelnummer of *de vereiste inhoud*. Zet een spatie tussen woord en
-nummer (*artikel 8, lid 2*). Geen werknotities, interne ID's of zelfbedachte
--route-woorden in tekst die de lezer ziet. Draai `npm run check:toetspunten`
-vóór de overdracht: geen *aaneen* en *werktaal* in toetspunt en toets, en elke
-melding *onvolledig*, *vaag* en *verwijzing* beoordeeld.
+**Over dit kader** gebruikt altijd `LawAboutPage`; elke bron krijgt een regel in
+`lib/source-scope.mjs` ([B-034](../../docs/beheer/besluiten.md#b-034)). Elk toetspunt
+is los leesbaar en volledig, zonder werktaal; draai `npm run check:toetspunten`
+vóór de overdracht ([B-035](../../docs/beheer/besluiten.md#b-035), zie
+[werkwijze](references/framework-method.md#toetspunt-zelfstandig-lezerstekst-gescheiden-b-035)).
 
 Zichtbare labels: `Norm` en `Toetspunt`; interne criterion-ID's en schema's blijven
 behouden. Directe individuele/groepsselectie zoals CIO, inclusief gedeeltelijke

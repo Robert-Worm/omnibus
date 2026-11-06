@@ -228,6 +228,33 @@ tot een vaststellingsplicht te maken.
 
 ## Review, reparatie en handoff
 
+### Toetspunt zelfstandig, lezerstekst gescheiden (B-035)
+
+Een toetspunt is wat de auditor selecteert en exporteert. Het moet los gelezen
+kloppen. Splits je een norm in toetspunten, dan gaat elke voorwaarde,
+uitzondering en opsomming mee naar het toetspunt waar ze bij hoort. Zet nuance
+niet alleen in opzet, bestaan, werking, toepassing of herleiding.
+
+| Niet | Wel |
+| --- | --- |
+| *evalueert de risico's op de brongebonden risicobasis* | *evalueert de risico's op basis van het algehele risicoprofiel en de schaal en complexiteit van de zakelijke diensten* |
+| *verstrekt een waarborg met de vereiste inhoud* | noem de inhoud: deugdelijk beheer van TLPT-risico's, bescherming van vertrouwelijke informatie, herstel van bedrijfsrisico's |
+| *getest overeenkomstig artikel8(2)b(v–vii)* | zeg wat er moet, met de verwijzing erachter: *… met gescheiden test- en productieomgevingen (artikel 8, lid 2, onder b)* |
+| *de vier gegevenskwaliteiten* | *beschikbaarheid, authenticiteit, integriteit en vertrouwelijkheid* |
+
+Houd lezerstekst en dossier gescheiden. Lezerstekst is wat de viewer en de export
+tonen: titel, toetspunt, norm, doel, risico, beheersing, toetsen, bewijs,
+toepassing (`scope`), voorwaarden, uitzonderingen en een specifieke bijdrage
+(`explanation`). Selectiereden, splitsingsreden, reviewstatus, kandidaat- of
+toelatingsstatus en standaardzinnen horen in het dossier. Schrijf lezerstekst in
+gewone taal: geen *dit voorstel*, *brongebonden*, *HOLD*, *P02*, *normadressaat*,
+*taakdrager* of zelfbedachte samenstellingen op *-route*. Zet altijd een spatie
+tussen woord en nummer: *artikel 8, lid 2*, *titel III*, *uiterlijk 24 uur*.
+
+Draai vóór de overdracht `npm run check:toetspunten`. Geen *aaneen* en *werktaal*
+in toetspunt en toets; elke melding *onvolledig*, *vaag* en *verwijzing* is
+beoordeeld en hersteld of gemotiveerd.
+
 ### Over dit kader: vergelijken met CIO
 
 De opbouw ligt vast in `LawAboutPage` en wordt getest
