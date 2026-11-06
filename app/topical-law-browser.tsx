@@ -2,6 +2,7 @@
 import {useMemo,useState,useSyncExternalStore} from 'react';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import {BookOpen} from 'lucide-react';
+import {uitwerkingenBijGroep,uitgewerktVanuit} from '@/lib/dora-uitwerkingen.mjs';
 import CioLawBrowser,{type LawBrowserAdapter} from './cio-law-browser';
 import CioNormSummary from './cio-norm-summary';
 import {LawPointSourceLayout,LawSourceDocument,type LawPassage} from './law-point-source';
@@ -91,7 +92,7 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  notice={<><p className="cio-meta">{docLabel(chosen.document)} · {topicalSourceFormat(chosen.document).notice}</p>{chosen.passages.length!==chosen.spans.length&&<p role="alert">Niet alle bronmarkeringen konden worden bevestigd.</p>}</>}/></>:<p role="alert">De exacte bron is niet beschikbaar.</p>;
  return <LawPointSourceLayout label={'Bron bij '+point.title} summary={<CioNormSummary point={point}/>} publication={<a href={bundle.status.official_url} target="_blank" rel="noreferrer">Officiële publicatie ↗</a>} criterion={criterion} source={source} active={active} onActive={setActive}/>;
 }
-type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};
+type Props=LawOverviewProps&{sourceId:string;draft:Draft;onChange:(d:Draft)=>void;navigate:(page:string)=>void;disabled?:boolean;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void;onOpenSource?:(id:string)=>void};
 function TopicalApproach({point}:{point:Point}){
  const phases={...point.phase_plans};
  for(const key of ['opzet','bestaan','werking'] as const)phases[key]={...phases[key],interpretation_boundary:currentAuditGuidance(phases[key].interpretation_boundary)};
@@ -105,7 +106,7 @@ export function TopicalSavedSource({serialized}:{serialized:string}){
 export default function TopicalLawBrowser({sourceId,...props}:Props){
  const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const bundle=topicalPackage(sourceId)!;
- const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
+ const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
   catalogue:{...bundle.catalogue,criteria:bundle.catalogue.criteria.map(c=>({...c,text:auditReadingText(c.text)}))},points:bundle.catalogue.points,records:bundle.bank.records,rows:topicalRows(bundle),groups:topicalGroups(bundle),
   goalFor:(id:string)=>topicalGoal(bundle,id),measureFor:(id:string)=>topicalMeasure(bundle,id),
   selection:(draft:Draft,ids?:string[])=>topicalSelection(draft,sourceId,ids),choose:(draft:Draft,ids:string[],include:boolean)=>chooseTopicalPoints(draft,sourceId,ids,include),
