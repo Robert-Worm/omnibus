@@ -16,7 +16,7 @@
 //   engels          Engelse zinsdelen in Nederlandse tekst.
 //
 //   npm run check:toetspunten -- --catalogue agent-build/<release>/catalogue.sqlite \
-//     [--bron '^(DORA|NOREA)'] [--uit rapport.md] [--csv meldingen.csv]
+//     [--bron DORA,NOREA] [--uit rapport.md] [--csv meldingen.csv]
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { leesCatalogus, meetelt } from "./check-keten.mjs";
@@ -194,10 +194,19 @@ export function rapport(uitkomst, { catalogus = "", bron = "" } = {}) {
     const lijst = uitkomst.meldingen.filter((m) => m.soort === soort);
     if (!lijst.length) continue;
     r.push(`## ${soort}`, "", "| Toetspunt | Veld | Melding |", "| --- | --- | --- |");
-    for (const m of lijst) r.push(`| ${m.key.replace(/[|]/g, "\\|")} | ${m.veld} | ${m.wat.replace(/[|\n]/g, " ")} |`);
+    for (const m of lijst) r.push(`| ${cel(m.key)} | ${m.veld} | ${m.wat.replace(/[|\n]/g, " ")} |`);
     r.push("");
   }
   return r.join("\n");
+}
+
+// Markdown-tabelcel: eerst de backslash, dan het scheidingsteken (#19).
+const cel = (v) => String(v).replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+
+/** `--bron DORA,NOREA`: voorvoegsels van bron-ID's, zonder reguliere expressie uit de invoer (#18). */
+export function bronFilter(tekst = "") {
+  const voorvoegsels = String(tekst).match(/[A-Za-z0-9][A-Za-z0-9-]*/g) ?? [];
+  return { test: (id) => !voorvoegsels.length || voorvoegsels.some((v) => String(id).startsWith(v)) };
 }
 
 export function csv({ meldingen }) {
@@ -211,7 +220,7 @@ function main() {
   const catalogus = waarde("--catalogue");
   if (!catalogus) throw Error("Geef de agentcatalogus mee: --catalogue agent-build/<release>/catalogue.sqlite (maak die met npm run build:agent).");
   const bronTekst = waarde("--bron") ?? "";
-  const uitkomst = beoordeel(leesCatalogus(catalogus), { bron: new RegExp(bronTekst || ".") });
+  const uitkomst = beoordeel(leesCatalogus(catalogus), { bron: bronFilter(bronTekst) });
   if (waarde("--uit")) writeFileSync(waarde("--uit"), rapport(uitkomst, { catalogus, bron: bronTekst }));
   if (waarde("--csv")) writeFileSync(waarde("--csv"), csv(uitkomst));
   const s = samenvatting(uitkomst);

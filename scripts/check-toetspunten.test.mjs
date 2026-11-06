@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { aaneen, beoordeel, engels, ontbrekendeNuance, vaag, verwijzingen, werktaal, samenvatting } from "./check-toetspunten.mjs";
+import { aaneen, beoordeel, bronFilter, engels, ontbrekendeNuance, rapport, vaag, verwijzingen, werktaal, samenvatting } from "./check-toetspunten.mjs";
 
 test("nuance die alleen in bron en toets staat, valt op; een ander toetspunt bij de norm telt mee", () => {
   const punt = { title: "Contractrisico's", body: "Het orgaan evalueert de risico's op de brongebonden basis.",
@@ -41,4 +41,12 @@ test("aaneen en werktaal vangen ook wat de export toont (#303)", () => {
   assert.ok(werktaal("Aanvullend ANALYST_PROPOSAL bij de bevroren bronbasis").some((w) => w.woord === "ANALYST_PROPOSAL"));
   assert.ok(werktaal("Financiële entiteit (NORM_ADDRESSEE)").some((w) => w.soort === "interne code"));
   assert.ok(werktaal("Geen uitbreiding van EX16(5–15)").some((w) => w.soort === "interne afkorting"));
+});
+
+test("--bron is een lijst voorvoegsels, geen reguliere expressie uit de invoer (#18)", () => {
+  const f = bronFilter("DORA,NOREA");
+  assert.ok(f.test("DORA-2022-2554") && f.test("NOREA-DORA-3-2") && !f.test("CIO2026"));
+  assert.ok(bronFilter("^(DORA|NOREA)").test("NOREA-DORA-3-2"));
+  assert.ok(bronFilter("").test("WWKE"));
+  assert.ok(bronFilter("(a+)+$").test("a-bron"));
 });

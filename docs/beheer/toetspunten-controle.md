@@ -119,7 +119,7 @@ Waar de spaties tussen woord en nummer precies verdwijnen, is nog niet bekend. D
 
 ```bash
 npm run build:agent -- --settings local-data/runtime/local-build.json
-npm run check:toetspunten -- --catalogue agent-build/<release>/catalogue.sqlite --bron '^(DORA|NOREA)' --uit toetspunten.md --csv toetspunten.csv
+npm run check:toetspunten -- --catalogue agent-build/<release>/catalogue.sqlite --bron DORA,NOREA --uit toetspunten.md --csv toetspunten.csv
 ```
 
 Laat `--bron` weg voor alle bronnen. Het CSV-bestand heeft één regel per melding, met toetspunt, bron, soort, veld en wat er gevonden is.

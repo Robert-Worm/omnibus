@@ -44,7 +44,9 @@ test("elke test draait ergens", () => {
 
 test("een testscript buiten npm test heeft een reden", () => {
   const scripts = JSON.parse(lees("package.json")).scripts;
-  const buiten = Object.keys(scripts).filter((k) => k.startsWith("test:") && !new RegExp(`npm run ${k.replace(/[:]/g, "\\:")}(\\s|$)`).test(scripts.test));
+  // Zonder reguliere expressie uit een scriptnaam (#17): zoek de opdracht als los woord.
+  const opdrachten = scripts.test.split(/\s+/);
+  const buiten = Object.keys(scripts).filter((k) => k.startsWith("test:") && !opdrachten.some((w, i) => opdrachten[i - 2] === "npm" && opdrachten[i - 1] === "run" && w === k));
   assert.deepEqual(buiten.sort(), Object.keys(BUITEN_NPM_TEST).sort());
 });
 
