@@ -47,7 +47,7 @@ Drie dingen vallen op:
 In de viewer:
 
 - de selectiereden en de splitsingsreden staan niet meer bij een toetspunt;
-- een standaardzin die bij vijf of meer toetspunten van dezelfde bron terugkomt, staat niet meer bij *Bijdrage aan dit toetspunt* of bij de context. Ze blijven in het bewijsdossier en de Excel-export;
+- de herleiding bij een bronkoppeling (*Bijdrage aan dit toetspunt*) staat niet meer in de viewer: dat waren werknotities. Een standaardzin die bij vijf of meer toetspunten van dezelfde bron terugkomt, staat ook niet meer bij de betrokken partijen of de context. Alles blijft in het bewijsdossier en de Excel-export;
 - een dubbele regel bij een bronkoppeling (zelfde tekst als de bepaling) staat er één keer;
 - de documentnaam boven de bron is leesbaar (*Oorspronkelijke publicatie*, niet *rts-original-nl.pdf*);
 - de brontekst heeft meer ruimte tot de rand, zodat de markering niet tegen het kader loopt.

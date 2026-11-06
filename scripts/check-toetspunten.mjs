@@ -58,7 +58,7 @@ export function verwijzingen(t) {
 }
 
 // Aan elkaar: een woord direct gevolgd door een nummer of Romeins cijfer (artikel8, titelIII, uiterlijk24, in11(6)).
-const AANEEN = /(?<![\p{L}\d-])(artikel(?:en)?|titel|hoofdstuk(?:ken)?|afdeling(?:en)?|lid|leden|bijlage|verordening|richtlijn|DORA|RTS|ITS|uiterlijk|binnen|naast|volgens|in|uit|van|en|of|tot)(\d{1,4}[a-z]?(?:\(\d+\))?|(?:I{1,3}|IV|VI{0,3}|IX|X)(?![\p{L}]))/gu;
+const AANEEN = /(?<![\p{L}\d-])(artikel(?:en)?|titel|hoofdstuk(?:ken)?|afdeling(?:en)?|lid|leden|bijlage|verordening|richtlijn|DORA|RTS|ITS|uiterlijk|binnen|naast|volgens|in|uit|van|en|of|tot)(\d{1,4}[a-z]?(?:\(\d+\))?(?![\d]|-[A-Z0-9])|(?:I{1,3}|IV|VI{0,3}|IX|X)(?![\p{L}]))/gu;
 export function aaneen(t) {
   return [...String(t ?? "").matchAll(AANEEN)].map((m) => m[0]);
 }
@@ -68,7 +68,8 @@ const WERKTAAL = [
   [/(?<![\p{L}])(dit|het|deze) voorstel(?![\p{L}])/giu, "notitie over 'het voorstel'"],
   [/(?<![\p{L}])(brongebonden|bronconform|bronbinding|bronvoorwaarden?|bronbasis|bronrecord|brongrens\p{L}*|beoordeelde object|inhoudelijke verwijzing)(?![\p{L}])/giu, "werkwoord uit de uitwerking"],
   [/(?<![\p{L}])(HOLD|SELECTABLE|CONTEXT_ONLY|ANALYST_PROPOSAL|PILOT\d+)(?![\p{L}])/gu, "interne status of code"],
-  [/(?<![\p{L}\d])[NP]\d{2,3}(?![\p{L}\d])/gu, "intern ID"],
+  [/(?<![\p{L}\d-])[NP]\d{2,3}(?![\p{L}\d-])/gu, "intern ID"],
+  [/\((?:[A-Z][A-Z0-9]*-){2,}[A-Z0-9-]+\)/gu, "record-ID tussen haakjes"],
   [/(?<![\p{L}])(normadressaat|taakdrager|batch|analistenvoorstel\p{L}*|kandidaat\p{L}*)(?![\p{L}])/giu, "vakjargon van de uitwerking"],
   [/(?<![\p{L}])\p{L}*[a-z]route(?![\p{L}])/gu, "samenstelling met -route"],
 ];
@@ -104,8 +105,8 @@ export function viewerTekst(item, standaard = new Set()) {
   if (!p) return [];
   const records = spoor.records ?? [];
   return [
-    ["toepassing", [p.scope, ...(p.addressees ?? []).map((a) => a.condition), ...(p.conditions ?? []), ...(p.exceptions ?? [])]],
-    ["bijdrage", lezersnotities((p.source_links ?? []).map((l) => l.explanation), standaard)],
+    ["toepassing", [p.scope, ...lezersnotities((p.addressees ?? []).map((a) => a.condition), standaard), ...(p.conditions ?? []), ...(p.exceptions ?? [])]],
+
     ["context", records.flatMap((r) => [...(r.conditions ?? []), ...(r.exceptions ?? []), ...lezersnotities(r.interpretation_notes ?? [], standaard)])],
   ].map(([veld, teksten]) => [veld, teksten.filter(Boolean).join("\n")]);
 }
@@ -125,7 +126,7 @@ export function beoordeel(items, { bron = /./ } = {}) {
   const standaard = new Map();
   for (const bronId of new Set(gekozen.map((i) => i.sourceId))) {
     const sporen = gekozen.filter((i) => i.sourceId === bronId).map((i) => { try { return JSON.parse(i.material?.topicalTrace || "null"); } catch { return null; } }).filter(Boolean);
-    standaard.set(bronId, standaardzinnen(pakketNotities(sporen.map((s) => s.point), sporen.flatMap((s) => s.records ?? []))));
+    standaard.set(bronId, standaardzinnen([...pakketNotities(sporen.map((s) => s.point), sporen.flatMap((s) => s.records ?? [])), ...sporen.flatMap((s) => (s.point.addressees ?? []).map((a) => a.condition))]));
   }
   const meldingen = [];
   for (const i of gekozen) {
