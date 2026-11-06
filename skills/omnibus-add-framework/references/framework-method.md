@@ -255,6 +255,23 @@ Draai vóór de overdracht `npm run check:toetspunten`. Geen *aaneen* en *werkta
 in toetspunt en toets; elke melding *onvolledig*, *vaag* en *verwijzing* is
 beoordeeld en hersteld of gemotiveerd.
 
+### Verwijzing uitschrijven zonder iets te verliezen (#302)
+
+Vervang je een verwijzing door de inhoud (*als bedoeld in artikel 20, lid 2,
+onder a* wordt *een unieke identiteit aan medewerkers …*), neem dan elk beperkend
+zinsdeel uit de bepaling mee. Bij de herschrijving van 6 november vielen zo
+onder meer weg: *die toegang hebben tot de ICT-assets*, *van de financiële
+entiteit*, *de in artikel 16, lid 1, bedoelde entiteiten* en *gefactureerd en
+betaald*. Een eigen toetsaanwijzing (*het verzoek is herleidbaar …*) is geen eis
+uit de bron en hoort niet in het toetspunt.
+
+Controleer per herschreven toetspunt tegen de bron, niet tegen de oude tekst:
+actor, moet of mag, voorwaarden en beperkingen, termijnen, en of de verwijzing bij
+het juiste zinsdeel staat. Laat elke correctie die steunt op kennis buiten de
+meegeleverde bron door een tweede reviewer naast de volledige wettekst leggen: op
+6 november wees die 5 van de 65 voorgestelde correcties af omdat de eerste
+reviewer op een verkeerde herinnering steunde.
+
 ### Over dit kader: vergelijken met CIO
 
 De opbouw ligt vast in `LawAboutPage` en wordt getest

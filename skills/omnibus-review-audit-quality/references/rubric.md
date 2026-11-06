@@ -111,7 +111,7 @@ Pas daarna alle relevante plafonds toe; het laagste plafond geldt.
 | Situatie | Resultaat |
 |---|---|
 | Bron niet echt beschikbaar/gecontroleerd, ongelezen punten of onbesliste materiële bronvraag | Geen totaalcijfer (`ONVOLLEDIG`); alleen benoemde voorlopige deelscores. Geen ontbrekende lezing verwarren met slechte inhoud. |
-| Aantoonbare materiële bronverdraaiing: andere actor/plicht, verdwenen uitzondering, verzonnen termijn, verkeerd gepresenteerde bronstatus | `BRONFOUT`, totaal maximaal **3**; ook bij vloeiende tekst. |
+| Aantoonbare materiële bronverdraaiing: andere actor/plicht, verdwenen uitzondering, verzonnen termijn, verkeerd gepresenteerde bronstatus, of een beperking die wegviel toen een verwijzing werd uitgeschreven (#302) | `BRONFOUT`, totaal maximaal **3**; ook bij vloeiende tekst. Toets tegen de bron, niet tegen een eerdere versie. Een correctie die steunt op kennis buiten de meegeleverde bron, leg je eerst naast de volledige wettekst. |
 | Onterechte bewijs-/assuranceclaim, bijvoorbeeld bestaan voorgesteld als werking over een periode | `HERZIEN`, maximaal **4**. |
 | Essentiële toets niet uitvoerbaar of cruciale schakel/dekking ontbreekt | `HERZIEN`, maximaal **5**. |
 | Een toetspunt mist een voorwaarde, uitzondering of onderdeel dat de eigen bronpassage of toets wel noemt, of leunt alleen op een artikelnummer | `HERZIEN`, maximaal **5**. Ook als een ander veld de nuance wel noemt: het toetspunt is wat de auditor selecteert. |

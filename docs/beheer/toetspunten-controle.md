@@ -79,9 +79,30 @@ Wat nog openstaat:
 - **Werktaal (10)**: vooral in het veld *doel*. Dat komt uit de laag met organisatiedoelen, die niet in deze ronde zat. Drie zinnen keurde de reviewer af zonder zekere verbetering; die zijn blijven staan.
 - **Kanttekeningen van reviewers**: bij een paar toetspunten steunt de verbetering op kennis van de reviewer buiten het meegeleverde bronfragment. Die staan in het reviewdossier. Dat dossier bewaart de beheerder buiten de repository; de database bevat de hash van elk bestand erin.
 
+## Tweede ronde: brontrouw en de export (6 november)
+
+Een panelbeoordeling ([epic #313](https://github.com/Robert-Worm/omnibus/issues/313)) vond twee dingen: een paar herschreven toetspunten waren ruimer dan de bron, en de Excel-export toonde werktaal die deze controle niet zag. Zo is het opgepakt:
+
+1. **Brontrouw** ([#302](https://github.com/Robert-Worm/omnibus/issues/302)): alle 531 herschreven toetspunten opnieuw naast de bron gelegd, met één vraag: zegt het toetspunt precies wat de bron zegt? 65 meldingen. Een tweede reviewer legde elke melding naast de volledige wettekst: 57 overgenomen, 3 aangepast, 5 afgewezen omdat de wettekst de bestaande tekst steunt. 60 toetspunten zijn gecorrigeerd.
+2. **De controle leest wat de export toont** ([#303](https://github.com/Robert-Worm/omnibus/issues/303)): ook de broncontext (toepassing, grens per toets, beperkingen van het kader), en een algemene spatieregel voor elk woord direct gevolgd door een nummer.
+3. **Werktaal in die velden**: 487 zinnen herschreven of weggehaald (alleen notities over de uitwerking zelf), elke zin apart beoordeeld.
+
+| Soort | Na eerste ronde, met de nieuwe regels | Na tweede ronde |
+| --- | ---: | ---: |
+| aaneen | 677 | 0 |
+| werktaal | 1.249 | 18 |
+| engels | 171 | 129 |
+
+Wat nog openstaat:
+
+- **Engels (129)**: vrijwel alles in de NOREA-kaders, waar de toepassing Engelse zinsdelen uit het NOREA-werkboek aanhaalt. Een citaat vertalen we niet zonder besluit.
+- **Werktaal (18)**: vooral afkortingen voor bijlagepunten (*B13*, *B14*) en een code in een verwijzingsveld.
+- **Te beslissen door een mens**: bij `RTS1774-N102-P01` zegt de Nederlandse wettekst *voor de medewerkers:* zonder te zeggen of alleen eigen medewerkers bedoeld zijn. Het toetspunt noemt ook medewerkers van ICT-dienstverleners.
+- **Vraagplannen en de licentieregel van NOREA** zijn niet herschreven; vraagplannen vallen onder [#311](https://github.com/Robert-Worm/omnibus/issues/311).
+
 ## Wat er misging en wat we leren
 
-Vijf oorzaken, met de les die nu in de skills staat.
+Zes oorzaken, met de les die nu in de skills staat.
 
 | Wat er misging | Les | Waar vastgelegd |
 | --- | --- | --- |
@@ -90,6 +111,7 @@ Vijf oorzaken, met de les die nu in de skills staat.
 | Velden voor het dossier en voor de lezer liepen door elkaar. Selectieredenen en standaardzinnen kwamen in de viewer | Lezerstekst en dossier zijn gescheiden. De viewer toont alleen lezerstekst | Kaderskill; viewer |
 | Werktaal en nummers zonder spatie vielen in de reviews niet op. Schrijver en reviewer waren allebei een taalmodel met dezelfde gewoonten | Een vaste controle zonder taalmodel vangt wat een model zelf niet ziet | `check:toetspunten`, verplicht voor de overdracht |
 | De bestaande metingen telden of elk veld gevuld was, niet of het bruikbaar was | Meet ook wat de lezer ervaart | Kwaliteitsmeting en auditcriteria (CO-1 #6) |
+| Bij het uitschrijven van een verwijzing viel soms een beperking weg (*die toegang hebben tot*, *de in artikel 16, lid 1, bedoelde*). De reviewer vergeleek met de oude tekst, niet met de bron | Toets tegen de bron. Laat een correctie die steunt op kennis buiten de meegeleverde bron naast de volledige wettekst leggen | Kaderskill, *Verwijzing uitschrijven zonder iets te verliezen*; reviewrubric |
 
 Waar de spaties tussen woord en nummer precies verdwijnen, is nog niet bekend. Dat zoekt [#301](https://github.com/Robert-Worm/omnibus/issues/301) uit.
 
