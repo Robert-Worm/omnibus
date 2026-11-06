@@ -2,7 +2,7 @@
 
 <!-- paginatype: naslag -->
 
-> **In het kort:** een toetspunt moet op zichzelf kloppen. Wat in de bronpassage en in de toets van opzet, bestaan en werking staat, hoort ook in het toetspunt. De tekst moet leesbaar zijn, zonder werknotities of nummers die aan elkaar zijn geschreven. `npm run check:toetspunten` spoort dat op zonder taalmodel. De eerste meting, op de DORA-kaders, is van 6 november 2026 ([B-035](besluiten.md#b-035)).
+> **In het kort:** een toetspunt moet op zichzelf kloppen. Wat in de bronpassage en in de toets van opzet, bestaan en werking staat, hoort ook in het toetspunt. De tekst moet leesbaar zijn, zonder werknotities of nummers die aan elkaar zijn geschreven. `npm run check:toetspunten` spoort dat op zonder taalmodel. De eerste meting, op de DORA-kaders, is van 6 november 2026 ([B-035](besluiten.md#b-035)). Dezelfde dag zijn de meldingen hersteld in een nieuwe database; zie [Herstel van 6 november 2026](#herstel-van-6-november-2026).
 
 ## Waarom
 
@@ -52,7 +52,32 @@ In de viewer:
 - de documentnaam boven de bron is leesbaar (*Oorspronkelijke publicatie*, niet *rts-original-nl.pdf*);
 - de brontekst heeft meer ruimte tot de rand, zodat de markering niet tegen het kader loopt.
 
-De inhoud zelf verandert niet door de viewer. Het herstel in de toetspunten volgt in [#301](https://github.com/Robert-Worm/omnibus/issues/301).
+De inhoud zelf verandert niet door de viewer.
+
+## Herstel van 6 november 2026
+
+In de database van 6 november zijn de DORA-toetspunten zelf hersteld ([#301](https://github.com/Robert-Worm/omnibus/issues/301)). Zo is het gedaan:
+
+1. **Spaties tussen woord en nummer**: vast script, zonder taalmodel. ID's en hashes blijven ongemoeid.
+2. **Toetspunten met een melding** (654): herschreven per batch van 20, met bron, toetsen en de andere toetspunten bij de norm ernaast. Daarna beoordeelde een ander taalmodelexemplaar elke batch onafhankelijk. Het zag de brontekst en beoordeelde brontrouw, volledigheid, afbakening en leesbaarheid. Alleen goedgekeurde tekst is overgenomen; bij een afkeuring de verbetering van de reviewer, of anders de oude tekst.
+3. **Werktaal in losse zinnen** (toepassing, normen, toetsen, bewijs, context bij de bronbepaling): per zin herschreven en per zin beoordeeld op gelijke betekenis.
+4. **Interviewvragen**: de reviewer beoordeelde per vraag of die nog bij het herschreven toetspunt past. Vragen die niet passen (48), worden niet meer aangeboden. De tekst van vragen is niet aangepast.
+
+De brontekst, de selectie van toetspunten en de documenten zijn niet veranderd. De bouw controleert dat.
+
+| Soort | 4 november | 6 november |
+| --- | ---: | ---: |
+| onvolledig | 283 | 125 |
+| vaag | 86 | 15 |
+| verwijzing | 147 | 1 |
+| aaneen | 998 | 0 |
+| werktaal | 1.180 | 10 |
+
+Wat nog openstaat:
+
+- **Onvolledig (125)**: deze controle vergelijkt woorden en geeft ook vals alarm. De meeste meldingen gaan over een andere formulering van hetzelfde. De toetspunten die op 4 november deze melding hadden, zijn allemaal herschreven en beoordeeld.
+- **Werktaal (10)**: vooral in het veld *doel*. Dat komt uit de laag met organisatiedoelen, die niet in deze ronde zat. Drie zinnen keurde de reviewer af zonder zekere verbetering; die zijn blijven staan.
+- **Kanttekeningen van reviewers**: bij een paar toetspunten steunt de verbetering op kennis van de reviewer buiten het meegeleverde bronfragment. Die staan in het reviewdossier. Dat dossier bewaart de beheerder buiten de repository; de database bevat de hash van elk bestand erin.
 
 ## Wat er misging en wat we leren
 
@@ -79,7 +104,7 @@ Laat `--bron` weg voor alle bronnen. Het CSV-bestand heeft één regel per meldi
 
 ## Volgende stap
 
-Herstel de meldingen in de bron van de uitwerking en draai de controle opnieuw. Doel: geen *aaneen* en geen *werktaal* in toetspunt en toets, en elke melding *onvolledig*, *vaag* en *verwijzing* beoordeeld.
+Haal de werktaal uit de organisatiedoelen. Draai de controle bij elke nieuwe uitwerking, vóór de overdracht. Doel: geen *aaneen* en geen *werktaal*, en elke melding *onvolledig*, *vaag* en *verwijzing* beoordeeld.
 
 ---
 
