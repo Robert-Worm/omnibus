@@ -647,6 +647,13 @@ overgenomen, 11 aangepast, 0 afgewezen. Lessen:
 - Neem de leestekens van de bron over waar ze de reikwijdte van een verwijzing
   bepalen.
 
+**Bewijs bij de juiste toets (7 november 2026):** controleer na een
+herschrijving ook de toetsen. Opzet toetst de inrichting; bewijs van
+uitgevoerde, ingediende of verzonden gevallen hoort bij bestaan. Een
+opzetbewijs dat letterlijk gelijk is aan het bestaansbewijs is bijna altijd
+fout (177 van 273 gevallen). Haal je gevallen bij opzet weg, kijk dan of
+bestaan ze nog noemt.
+
 **Taalversies vergelijken (EUR-Lex):** gebruik de officiële tekst op EUR-Lex,
 niet een wegwijzer als springlex of regulation-dora.eu. De pagina's
 `eli/…/oj/eng` en `eli/…/oj/nld` laden de tekst pas in de browser; lees ze in de
