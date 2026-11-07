@@ -556,6 +556,25 @@ Lessen:
   selectiewijziging: niet stilzwijgend toevoegen, maar aan de beheerder
   voorleggen.
 
+**Deel 10 (NOREA DORA in Control, derden en onderaanneming):** 79 overgenomen,
+21 aangepast, 0 afgewezen. Lessen:
+
+- Een beperking die NOREA alleen in de titel van het subdomein of de control
+  zet (standaard tegenover kritieke dienstverlening), hoort in de relevantie:
+  zij bepaalt wanneer het toetspunt speelt.
+- Een aanhef boven een groep controls (*With regards to subcontracts that
+  support a critical or important function*) staat in elk toetspunt van die
+  controls.
+- Een controlbrede verwijzing (*For all details see tab*) behandel je bij alle
+  controls gelijk; het is geen selectiewijziging.
+- Een onaf zinsdeel (*in accordance.*) vul je niet aan met een DORA- of
+  RTS-artikel. Laat de letterlijke tekst staan en meld de vermoedelijke herkomst
+  als twijfel.
+- Splits niet als een deel een bevoegdheid is die de plicht kan vervangen
+  (*mag gebundelde TLPT*): los beoordeeld geeft dat een onterechte tekortkoming.
+- Een voorwaarde die de doelgroep bepaalt (toepasselijkheid voor TLPT), staat
+  in de relevantie, niet in de bewering.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
