@@ -9,7 +9,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 1, ronde 1 | 1–100 van 1.337 | DORA 2022/2554 | 30 | 70 | 0 | 18 bronfouten hersteld; relevantie in vaste zinnen. Toetspunten bleven herschikte wetszinnen (48 woorden gemiddeld) |
 | 1, ronde 2 | 1–100 | DORA 2022/2554 | 92 | 8 | 0 | Elementen eerst; bewering vanuit object of actor. Open: 11 onvolledige bronpassages, 5 splitsingen, 8 mogelijke dubbels (`work/toetspunten-auditor/DEEL1-OPEN.json`) |
 | 2 | 101–200 | DORA 2022/2554 (rest), RTS 2024/1774 (begin) | 83 | 17 | 0 | 35 bronfouten hersteld; vaste relevantiezinnen per hoofdstuk. Open: 26 onvolledige bronpassages, 15 splitsingen, 6 dubbels (`DEEL2-OPEN.json`) |
-| 3 | 201–300 | RTS 2024/1774 | | | | |
+| 3 | 201–300 | RTS 2024/1774 (titel II) | 95 | 5 | 0 | 43 bronfouten hersteld, vooral ontbrekende actor of aanhef; toetspunten werden langer (31 naar 39 woorden) doordat de actor terugkwam. Open: 1 splitsing, 6 dubbels (`DEEL3-OPEN.json`) |
+| 4 | 301–400 | RTS 2024/1774 | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.

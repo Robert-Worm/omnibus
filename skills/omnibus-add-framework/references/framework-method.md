@@ -400,6 +400,32 @@ Lessen:
 - Lengte is geen maat bij contract- en opsommingsbepalingen: daar blijven de
   toetspunten lang omdat elk element telt (deel 2: 59 naar 60 woorden).
 
+**Deel 3 (RTS 2024/1774, titel II):** 95 overgenomen, 5 aangepast, 0 afgewezen.
+De schrijvers vonden 43 bronfouten; alle klopten. Vaak ontbrak de aanhef met de
+actor (*Financiële entiteiten bewaken dat …*, *het beleid schrijft voor dat …*).
+Lessen:
+
+- Wie of wat de plicht draagt, bepaalt wat de auditor bekijkt: *het beleid
+  schrijft voor dat de entiteit vastleggingen maakt* toets je in het beleid, niet
+  in de vastleggingen. Een toestand (*zijn beschikbaar*) is geen eis dat de
+  procedure iets bevat.
+- Volg ook de komma's van de bron: een komma vóór *waardoor* laat het zinsdeel
+  voor de hele opsomming gelden.
+- Een eis aan het resultaat (*die updates borgen dat*) wordt geen doelzin
+  (*zodat*).
+- Een splitsdeel is los leesbaar: geen *zo'n* of *die* dat naar een ander deel
+  verwijst.
+- Schrijf je een verwijzing uit naar een punt plus een toelichtende alinea, houd
+  dan het onderwerp zoals de alinea het noemt: *testen* is niet *ontwikkeling en
+  testen*.
+- Relevantie over een keuze van de entiteit (apparaten laten gebruiken, thuiswerk
+  toestaan) mag als de bepaling alleen over die situatie gaat; het is dan geen
+  voorwaarde uit de bron.
+- Vaste zin titel II van RTS 2024/1774: *Entiteiten onder het volledige
+  ICT-risicobeheerkader (titel II van RTS 2024/1774), niet onder het
+  vereenvoudigde kader van artikel 16 van DORA.* Binnen titel II is *artikel 28,
+  lid 2, van DORA* gelijk aan *alleen als de entiteit geen micro-onderneming is*.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
