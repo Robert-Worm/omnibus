@@ -493,6 +493,28 @@ toetspunten gevonden (zie `nog-verwerken/toetspunten.md`). Lessen:
 - Eigen uitleg (*een maand is geen 30 dagen*, *beoordeel afzonderlijk*) hoort
   niet in het toetspunt, ook als ze klopt.
 
+**Deel 7 (ITS 2025/302, RTS 2024/1773, RTS 2025/532, begin ITS 2024/2956):** 70
+overgenomen, 30 aangepast, 0 afgewezen. 81 bronfouten, op één na bevestigd.
+Lessen:
+
+- Een toetspunt bij een meldformulier of register begint bij het formulier en de
+  fase (*elke kennisgeving en elk verslag*, *het eindverslag*) en noemt het
+  exacte veld (*veld 3.13 van bijlage II*, *veld B_01.01.0010*).
+- Taalafwijking: noem niet beide lezingen zonder keuze (twee auditors oordelen
+  dan verschillend). Schrijf wat bedoeld is en meld de Nederlandse tekst kort.
+  Vergelijk met de officiële taalversies op EUR-Lex; een andere site
+  (bijvoorbeeld springlex) is alleen een wegwijzer en wordt als zodanig genoemd.
+- Een zin die niet in de ITS of RTS staat, zoek je eerst in DORA voordat je
+  schrijft dat hij nergens staat.
+- Een splitsdeel neemt elke opsomming en aggregatieregel volledig over; codes
+  alleen (*2 a, 2 c*) zijn niet leesbaar zonder de naam.
+- *Omvatten, maar zijn niet beperkt tot* is *onder meer*, niet *in elk geval*.
+- Vaste zin RTS 2024/1773: *Financiële entiteiten die geen micro-onderneming
+  zijn en niet onder het vereenvoudigde ICT-risicobeheerkader van artikel 16,
+  lid 1, van DORA vallen; voor hen geldt het beleid voor ICT-diensten van derde
+  aanbieders die kritieke of belangrijke functies ondersteunen.* (DORA artikel
+  28, lid 2).
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |

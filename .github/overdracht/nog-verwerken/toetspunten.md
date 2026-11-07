@@ -13,7 +13,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 4 | 301–400 | RTS 2024/1774 (titel II) | 92 | 8 | 0 | 84 bronfouten hersteld (vooral toestand in plaats van eis aan beleid of procedure). Database: leescontext van artikel 22, onder d, toont nog de tekst van vóór rectificatie 2025/90420 (`DEEL4-OPEN.json`) |
 | 5 | 401–500 | RTS 2024/1774 (titel II slot, titel III begin) | 96 | 4 | 0 | 78 bronfouten hersteld; panelpunt artikel 28, lid 2, onder i opgelost. Open: ontbrekende aanhef in ~70 bronpassages (`DEEL5-OPEN.json`) |
 | 6 | 501–600 | RTS 2024/1774 (titel III slot), RTS 2024/1772, RTS 2025/301, ITS 2025/302 (begin) | 79 | 21 | 0 | 69 bronfouten hersteld; 3 ontbrekende toetspunten (zie hieronder). Nog gelijktrekken: relevantiezin RTS 2024/1772 met die van DORA hoofdstuk III (`DEEL6-OPEN.json`) |
-| 7 | 601–700 | ITS 2025/302, RTS 2024/1773, RTS 2025/532, ITS 2024/2956 | | | | |
+| 7 | 601–700 | ITS 2025/302, RTS 2024/1773, RTS 2025/532, ITS 2024/2956 (begin) | 70 | 30 | 0 | 80 bronfouten hersteld. Ter beoordeling: afronding in velden 3.5, 3.7 en 3.10 gelezen als *rekenkundig, 5 naar boven* (Engelse tekst, via springlex; nog tegen EUR-Lex leggen). Veld B_02.01.0050 verwijst in de bron naar het verkeerde veld (`DEEL7-OPEN.json`) |
+| 8 | 701–800 | ITS 2024/2956, RTS 2025/1190, richtsnoeren incidentkosten, NOREA | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.
