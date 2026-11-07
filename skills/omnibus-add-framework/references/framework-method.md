@@ -310,7 +310,20 @@ voordat het volgende deel begint. De lessen per deel staan hieronder.
 
 #### Lessen per deel
 
-*(Wordt per deel aangevuld.)*
+**Deel 1 (DORA 2022/2554, eerste 100), na het schrijven:**
+
+- Relevantie is geen lijst van uitgezonderde entiteiten. Bij hoofdstuk II van
+  DORA volstaat: *Entiteiten onder het volledige ICT-risicobeheerkader van DORA
+  (artikelen 5 tot en met 15), niet onder het vereenvoudigde kader van artikel
+  16.* Voeg alleen toe wat dit toetspunt anders maakt: *alleen als de entiteit
+  geen micro-onderneming is*, *alleen bij uitbesteding*.
+- Een vindplaats tussen haakjes aan het eind van het toetspunt gaat weg; een
+  verwijzing die zegt hoe of waarnaar (*overeenkomstig artikel 14*, *de criteria
+  van artikel 4, lid 2*) blijft.
+- Schrijvers vonden bij 18 van de 100 toetspunten een bronfout in de huidige
+  tekst: weggevallen woorden (*op bedrijfsniveau*, *door auditors*, *op
+  ICT-systemen*), een ontbrekende actor of aanhef, of *onder meer door* als
+  losse plicht. Lees dus altijd de bron, nooit alleen de oude tekst.
 
 ### Over dit kader: vergelijken met CIO
 
