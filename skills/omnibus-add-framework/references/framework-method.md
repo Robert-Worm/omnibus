@@ -370,6 +370,36 @@ nog vonden:
 - Een bron die alleen zegt waarmee de entiteit rekening houdt bij het bepalen
   van iets, maakt van dat bepalen geen aparte plicht.
 
+**Deel 2 (DORA hoofdstukken III tot en met V en oversight, begin RTS 2024/1774):**
+83 overgenomen, 17 aangepast, 0 afgewezen. Alle gemelde bronfouten klopten (35).
+Lessen:
+
+- Een doelzin die bepaalt wat je vaststelt (*om de effecten te beperken*,
+  *heeft tot doel*) blijft een doel. Maak er geen bewering over het resultaat
+  van (*procedures die de effecten beperken*, *omvat*).
+- *Zorgt ervoor dat …* houdt zijn actor; maak er geen toestand van (*is
+  voldaan*).
+- Schrijf je een verwijzing uit, neem dan geen plicht mee die voor deze
+  doelgroep niet geldt (micro-ondernemingen hebben geen testprogramma volgens
+  artikel 24). En neem *met name* en *dergelijke* mee: anders wordt een
+  voorbeeldlijst een gesloten lijst.
+- Een middel na *onder meer door … zoals bepaald in artikel X* blijft een
+  voorbeeld met verwijzing. Staat artikel X al als eigen toetspunt, markeer dan
+  als dubbel en maak er geen splitsdeel van.
+- Een splitsdeel moet samen met de andere delen het hele toetspunt dekken; een
+  zin uit het origineel mag niet tussen de delen wegvallen.
+- Relevantie: per regeling één vaste zin, zonder vindplaats, zonder verwijzing
+  naar een ander toetspunt en zonder voorbehoud dat niet in de eigen voorwaarden
+  staat. Vaste zinnen die nu gelden: hoofdstuk III (incidenten): *Alle
+  financiële entiteiten, ook micro-ondernemingen en entiteiten onder het
+  vereenvoudigde kader van artikel 16.* Artikel 24 en 25: *Financiële entiteiten
+  die geen micro-onderneming zijn; voor hen geldt het testprogramma van artikel
+  24.* Artikel 26: *Alleen entiteiten die voor TLPT zijn aangewezen.* Artikel 27:
+  *Financiële entiteiten die TLPT uitvoeren en daarvoor testers inzetten.*
+  Sectorregelingen: *Alleen voor … onder …, zoals gewijzigd door DORA.*
+- Lengte is geen maat bij contract- en opsommingsbepalingen: daar blijven de
+  toetspunten lang omdat elk element telt (deel 2: 59 naar 60 woorden).
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
