@@ -575,6 +575,23 @@ Lessen:
 - Een voorwaarde die de doelgroep bepaalt (toepasselijkheid voor TLPT), staat
   in de relevantie, niet in de bewering.
 
+**Deel 11 (NOREA slot, begin Gedelegeerde Verordening 2024/1502):** 80
+overgenomen, 20 aangepast, 0 afgewezen. Lessen:
+
+- Terminologie bij NOREA: gebruik de term van de regeling waar het subdomein
+  naar verwijst. De Nederlandse DORA zegt *ICT-activa* en *informatieactiva*,
+  de Nederlandse RTS 2024/1774 *ICT-assets*, *informatieassets* en
+  *endpoint-apparaten*. Verwijst het subdomein naar beide of geen, gebruik de
+  RTS-term.
+- Lees de afbakening voordat je een zin als selectiewijziging meldt: vaak vangt
+  een bestaand toetspunt de zin al af. Ontbreekt dan alleen de resultaatzin, vul
+  die aan.
+- *Material* is in de Nederlandse DORA soms *fysieke* (artikel 10, lid 1);
+  controleer de officiële vertaling voordat je een beperking toevoegt of
+  weglaat.
+- Een termijn uit DORA waarnaar de gedelegeerde verordening verwijst, mag kort
+  uitgeschreven worden, met de herkomst erbij.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |

@@ -17,7 +17,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 8 | 701–800 | ITS 2024/2956 (slot), RTS 2025/1190, richtsnoeren incidentkosten, NOREA (begin) | 66 | 34 | 0 | 75 bronfouten hersteld; rectificatie 2025/90725 toegepast op registervelden. Ter beoordeling: attest TLPT verwijst naar niet-bestaand artikel 5, lid 3; gelezen als artikel 7, lid 2 (`DEEL8-OPEN.json`) |
 | 9 | 801–900 | NOREA DORA in Control | 87 | 13 | 0 | Alle gemelde bronfouten klopten. Bronpassages 5.3 en 8.2-P05 onvolledig (tweede pdf-blok ontbreekt). Werkblad *DORA RTS IM (Major Incidents)* staat niet in de bron: drempels bij 10.1 en 10.2 vervangen door een verwijzing (`DEEL9-OPEN.json`) |
 | 10 | 901–1000 | NOREA DORA in Control (derden, onderaanneming, TLPT) | 79 | 21 | 0 | Aanhef *critical or important function* toegevoegd aan 19 toetspunten bij 18.1–18.3. Bronpassage C16-1 onvolledig (stopt bij *by reviewing*). Werkbladverwijzing staat bij 18.x in elk toetspunt, bij 16.x alleen in het eerste: gelijktrekken? (`DEEL10-OPEN.json`) |
-| 11 | 1001–1100 | NOREA (slot) en volgende bronnen | | | | |
+| 11 | 1001–1100 | NOREA (slot), Gedelegeerde Verordening 2024/1502 (begin) | 80 | 20 | 0 | NOREA-termen volgen nu de regeling van het subdomein (*ICT-assets* bij RTS 2024/1774). **Bij toepassen: deel 8 en 9 gelijktrekken** (daar staat nog *ICT-activa*). Bronpassages 1502-T01 en T03 tonen de aanhef in plaats van de punten. Drempel 10 % (2024/1502, artikel 2, lid 4) nagaan in deel 12 (`DEEL11-OPEN.json`) |
+| 12 | 1101–1200 | 2024/1502 (vervolg) en volgende bronnen | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.
