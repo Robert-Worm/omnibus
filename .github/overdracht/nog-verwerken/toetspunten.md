@@ -18,7 +18,9 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 9 | 801–900 | NOREA DORA in Control | 87 | 13 | 0 | Alle gemelde bronfouten klopten. Bronpassages 5.3 en 8.2-P05 onvolledig (tweede pdf-blok ontbreekt). Werkblad *DORA RTS IM (Major Incidents)* staat niet in de bron: drempels bij 10.1 en 10.2 vervangen door een verwijzing (`DEEL9-OPEN.json`) |
 | 10 | 901–1000 | NOREA DORA in Control (derden, onderaanneming, TLPT) | 79 | 21 | 0 | Aanhef *critical or important function* toegevoegd aan 19 toetspunten bij 18.1–18.3. Bronpassage C16-1 onvolledig (stopt bij *by reviewing*). Werkbladverwijzing staat bij 18.x in elk toetspunt, bij 16.x alleen in het eerste: gelijktrekken? (`DEEL10-OPEN.json`) |
 | 11 | 1001–1100 | NOREA (slot), Gedelegeerde Verordening 2024/1502 (begin) | 80 | 20 | 0 | NOREA-termen volgen nu de regeling van het subdomein (*ICT-assets* bij RTS 2024/1774). **Bij toepassen: deel 8 en 9 gelijktrekken** (daar staat nog *ICT-activa*). Bronpassages 1502-T01 en T03 tonen de aanhef in plaats van de punten. Drempel 10 % (2024/1502, artikel 2, lid 4) nagaan in deel 12 (`DEEL11-OPEN.json`) |
-| 12 | 1101–1200 | 2024/1502 (vervolg) en volgende bronnen | | | | |
+| 12 | 1101–1200 | 2024/1502, oversight DORA artikel 31–42 | 93 | 7 | 0 | Veel onvolledige bronpassages (18 + 16), vooral aanhef in plaats van punt. Kop *Artikel 2(5)(b)* in de wettekst van 2024/1502 hoort bij artikel 7. Ter beoordeling met EUR-Lex: *bevoegde organen* (artikel 38, lid 5), onderwerp bij *formuleren* (artikel 35), *of een categorie* (2024/1502, artikel 5, lid 4, onder b) (`DEEL12-OPEN.json`) |
+| 13 | 1201–1300 | oversight (slot), vergoedingen, 295, gezamenlijke teams, GL36 | | | | |
+| 14 | 1301–1337 | GL36 (slot), sectorrichtlijn 2022/2556 | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.
@@ -37,4 +39,6 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | Richtsnoeren incidentkosten (GL34) | punt 5: geen kosten en verliezen van incidenten vóór of na het referentiejaar | review deel 8 | Geen eigen toetspunt |
 | NOREA DORA in Control | 9.1 en 9.6: verwijzing naar RTS 2024/1774, artikel 24, voor CTP's, handelsplatformen en CSD's | review deel 9 | Staat in de control; geen toetspunt. Twijfel: bij 9.6 gaan de testeisen over artikel 25, leden 3 en 4 |
 | NOREA DORA in Control | 11.3: significante cyberdreigingen melden aan de toezichthouder | review deel 9 | Staat in de control; geen toetspunt. DORA artikel 19, lid 2, maakt deze melding vrijwillig |
+| Gedelegeerde Verordening 2024/1502 | artikel 2, lid 4: drempel van 10 % | review deel 11 en 12 | In geen toetspunt gedekt |
+| Gedelegeerde Verordening 2024/1502 | artikel 5, lid 4, onder b: drempel van 10 % voor subcriterium 4.2 | review deel 12 | Alleen punt a in een toetspunt |
 | NOREA DORA in Control | werkbladen *DORA RTS IM (Major Incidents)*, *DORA RTS TPPM* en *DORA RTS SCM* | review deel 9 en 10 | Werkbladen niet in de bron opgenomen; ophalen of niet |

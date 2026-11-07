@@ -592,6 +592,26 @@ overgenomen, 20 aangepast, 0 afgewezen. Lessen:
 - Een termijn uit DORA waarnaar de gedelegeerde verordening verwijst, mag kort
   uitgeschreven worden, met de herkomst erbij.
 
+**Deel 12 (Gedelegeerde Verordening 2024/1502, oversight DORA artikel 31–42):**
+93 overgenomen, 7 aangepast, 0 afgewezen. Lessen:
+
+- Een opdracht aan de auditor (*Onderzoek …*) is geen toetspunt. Schrijf wat de
+  bron vastlegt, vanuit de actor.
+- Laat een verwijzing exact staan. Vervang haar niet door een eigen samenvatting
+  of uitleg, ook niet tussen haakjes of in de relevantie.
+- Gebruik de termen van de officiële Nederlandse DORA, ook als ze Engels zijn
+  (*lead overseer*, *oversightforum*, *als cruciaal aangewezen*).
+- Vaste relevantiezinnen voor eisen aan de financiële entiteit binnen het
+  oversightkader:
+  - artikel 31, lid 12: de vaste zin voor ICT-diensten van derden, zonder
+    vindplaats, plus *Alleen bij diensten van een in een derde land gevestigde
+    derde aanbieder van ICT-diensten die als cruciaal is aangewezen.*
+  - artikel 42: *Financiële entiteiten die ICT-diensten van een kritieke derde
+    aanbieder van ICT-diensten gebruiken.* Daarna alleen de gebeurtenis
+    (*Alleen als …*).
+- Een splitsdeel krijgt de actor van dat deel in de relevantie (samenstelling:
+  *alleen voor het oversightforum*).
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
