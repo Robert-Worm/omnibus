@@ -272,6 +272,46 @@ meegeleverde bron door een tweede reviewer naast de volledige wettekst leggen: o
 6 november wees die 5 van de 65 voorgestelde correcties af omdat de eerste
 reviewer op een verkeerde herinnering steunde.
 
+### Toetspunt vanuit de auditor (besluit 7 november 2026)
+
+Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
+als één controleerbare bewering die de auditor als juist of onjuist kan
+vaststellen: een actor en iets vaststelbaars (beleid, procedure, contract,
+registratie, maatregel, verslag). Geen gebiedende wijs (*Vul … in*, *Leg vast*)
+en geen herhaling van de wettekst; die staat in de bronpassage.
+
+| Laag | Wat erin staat | Regel |
+| --- | --- | --- |
+| Toetspunt | De bewering | Alles wat het toetspunt uit de bron afvangt, staat erin, op hoofdlijnen. Geen woordgrens; wordt het te veel, splits dan in losse toetspunten. Weglaten mag nooit. Een voorwaarde die bepaalt wát je vaststelt, hoort in het toetspunt. |
+| Relevantie | Wanneer het speelt: doelgroep, gebeurtenis, keuze van de entiteit | Eén of twee zinnen gewone taal. Getoond achter een icoon bij het toetspunt en als kolom in de export. Bij NOREA: *operationalisering van DORA door NOREA; niet rechtstreeks een wettelijke eis*. |
+| Verwijzing in de tekst | Alleen bij een instructie, template, veld of criterium dat de entiteit moet volgen | Dan exact: *velden 1.7 tot en met 1.12 van bijlage II*, *tabel B_01.01*, *de criteria van artikelen 1 tot en met 8 van RTS 2024/1772*. Een gewone vindplaats staat al in de bronpassage. |
+
+Toets elk toetspunt op de kenmerken van geschikte criteria (ISAE 3000):
+
+- **Volledig:** niets uit het afgevangen deel van de bron ontbreekt.
+- **Betrouwbaar:** twee auditors komen tot hetzelfde oordeel. Geen *passend* of
+  *voldoende* zonder maatstaf, tenzij de bron het woord zelf gebruikt.
+- **Neutraal:** niets toegevoegd of verzwakt. *Moet* en *mag*, termijnen,
+  aantallen, *ten minste*, *alleen*, *in voorkomend geval* en *onder meer*
+  blijven staan. Bij *onder meer door* is het genoemde middel een voorbeeld,
+  geen losse plicht.
+- **Begrijpelijk:** gewone taal, geen werktaal of codes.
+- **Relevant:** de relevantie maakt duidelijk wanneer het speelt.
+
+| Nu | Wel |
+| --- | --- |
+| *Vul naam, telefoon en e-mailadres van het primaire en secundaire contact in.* | *De melding noemt naam, e-mailadres en telefoonnummer (met internationaal kengetal) van de voornaamste en de tweede contactpersoon.* |
+| *Financiële entiteiten kunnen … uitbesteden … Bij een dergelijke uitbesteding blijft de financiële entiteit volledig verantwoordelijk …* | *De entiteit blijft zelf volledig verantwoordelijk voor de controle op de naleving van het ICT-risicobeheer, ook nu zij de verificatie daarvan heeft uitbesteed.* Relevantie: *de entiteit heeft de verificatie uitbesteed*. |
+| *… herhaalde klachten van verschillende cliënten of tegenpartijen …* | *… financiële tegenpartijen …* (een weggevallen woord maakt het toetspunt ruimer dan de bron) |
+
+Werk in delen van ongeveer 100 toetspunten: herschrijven, tweede reviewer naast
+de volledige wettekst, dan de afwijkingen uit die review hier als les opnemen
+voordat het volgende deel begint. De lessen per deel staan hieronder.
+
+#### Lessen per deel
+
+*(Wordt per deel aangevuld.)*
+
 ### Over dit kader: vergelijken met CIO
 
 De opbouw ligt vast in `LawAboutPage` en wordt getest
