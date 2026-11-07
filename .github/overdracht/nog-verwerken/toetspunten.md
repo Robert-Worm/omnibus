@@ -49,3 +49,12 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | Gezamenlijke onderzoeksteams (2025/420) | artikel 1, lid 1, onder c, f en g (bij c en f wijkt de Nederlandse tekst af van de Engelse) | review deel 13 | Geen toetspunt |
 | Richtlijn 2022/2556 (BRRD) | groepsafwikkelingsplannen (artikel 12), groepsherstelplannen en afwikkelbaarheid van groepen (artikel 16) | review deel 14 | Toetspunten gelden nu alleen voor een instelling buiten een groep |
 | NOREA DORA in Control | werkbladen *DORA RTS IM (Major Incidents)*, *DORA RTS TPPM* en *DORA RTS SCM* | review deel 9 en 10 | Werkbladen niet in de bron opgenomen; ophalen of niet |
+
+## Verwerkingsplan (ronde 5, na de herschrijving)
+
+1. **Inhoud:** `apply5.mjs` op `STAP4-INHOUD.json`: per toetspunt nieuwe tekst (`text`) en een nieuw veld `relevance`. De 103 splitsingen worden aparte punten (`<id>-D1`, `-D2`, …); de oorspronkelijke ID vervalt. Nieuwe toetspunten uit `ontbrekend/`.
+2. **Titels en toetsaanpak:** voor gesplitste en nieuwe punten, en voor de 210 aangepaste punten, controleren of titel, opzet- en bestaanstoets nog passen bij de nieuwe tekst; zo niet, herschrijven en reviewen.
+3. **Bronpassages:** de 343 meldingen omzetten naar extra bronkoppelingen (`source_links`) met bestaande bronrecords; ontbreekt een record, dan de bronbank aanvullen. Kop *Artikel 2(5)(b)* in 2024/1502 corrigeren.
+4. **Termen gelijktrekken:** NOREA deel 8 en 9 naar de regel van deel 11 (*ICT-assets*); de inspanningszin bij GL36 in één vorm.
+5. **Code:** veld `relevance` in materiaal, viewer (icoon rechtsboven met uitleg bij aanwijzen, klik en toetsenbord), kolom *Relevantie* in de Excel- en MD-export; tests.
+6. **Controle en release:** `check:toetspunten`, `check:passages`, `npm test`; database v0.1.5 klaarzetten voor upload door de beheerder; panelronde in de browser.
