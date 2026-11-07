@@ -352,6 +352,24 @@ voor, de vertaalslag naar de auditor bleef uit. Daarom:
 - **Bronpassage onvolledig?** Steunt het toetspunt op een alinea die niet in de
   bronpassage staat, meld de bronpassage als fout en laat de inhoud staan.
 
+**Deel 1, ronde 2 (na de tweede review):** 92 overgenomen, 8 aangepast, 0
+afgewezen. Alle toetspunten beginnen nu bij object of actor. Wat de reviewers
+nog vonden:
+
+- Bij inkorten valt een beperkend zinsdeel weg: *van de financiële entiteit*
+  (drie keer), het werkwoord van een verantwoordelijkheid (*verantwoordelijk voor
+  het bepalen van het niveau*, niet *voor het niveau*).
+- Inkorten mag een kwalificatie niet naar een kleinere groep verschuiven:
+  *de configuratie van de informatie- en ICT-activa* is niet *de configuratie
+  van de cruciale activa*.
+- Schrijf je een verwijzing uit (*de in lid 3 bedoelde …*), noem dan de inhoud
+  zelf en verzin geen herkomst (*de bevindingen uit het proces*).
+- Een verwijzing *overeenkomstig artikel X* geeft vaak een dubbel toetspunt;
+  markeer het als dubbel en splits het niet nog eens.
+- Een splitsdeel bevat alleen toetspunttekst, geen relevantie tussen haakjes.
+- Een bron die alleen zegt waarmee de entiteit rekening houdt bij het bepalen
+  van iets, maakt van dat bepalen geen aparte plicht.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
