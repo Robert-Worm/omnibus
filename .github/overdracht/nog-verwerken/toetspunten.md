@@ -58,3 +58,12 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 4. **Termen gelijktrekken:** NOREA deel 8 en 9 naar de regel van deel 11 (*ICT-assets*); de inspanningszin bij GL36 in één vorm.
 5. **Code:** veld `relevance` in materiaal, viewer (icoon rechtsboven met uitleg bij aanwijzen, klik en toetsenbord), kolom *Relevantie* in de Excel- en MD-export; tests.
 6. **Controle en release:** `check:toetspunten`, `check:passages`, `npm test`; database v0.1.5 klaarzetten voor upload door de beheerder; panelronde in de browser.
+
+### Stand 7 november, avond
+
+- Ontbrekende toetspunten: 20 voorstellen gereviewd (`work/toetspunten-auditor/ontbrekend/review-ontbrekend.json`); RES-P05-N1 wacht op de geconsolideerde BRRD-tekst.
+- NOREA-werkbladen v3.2 aangeleverd door de beheerder en als bron vastgelegd (`wetteksten/NOREA-DORA-3-2-werkbladen.txt`, met de twee tekstvakken). Toetspunten 10.1 en 10.2 herschreven met de drempels (8 delen); 16.x en 18.x krijgen werkbladrijen als bronkoppeling (`werkbladen/review-werkbladen.json`).
+- Taalversies gecontroleerd op EUR-Lex (`EURLEX-CONTROLE.md`).
+- Gevonden bij het voorbereiden van de verwerking:
+  - de afgeleide release (`work/dora-leesbaar-20261106/build.mjs`) staat alleen vervanging van bestaande objecten toe; gesplitste en nieuwe toetspunten vragen een uitbreiding met nieuwe ID's;
+  - elke gewijzigde toetspunttekst vraagt een herbeoordeling van de gekoppelde interviewvragen (ongeveer 3 per toetspunt; bij #301: 2.123 vragen voor 654 toetspunten).
