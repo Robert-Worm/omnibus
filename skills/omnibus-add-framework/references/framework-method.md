@@ -647,6 +647,14 @@ overgenomen, 11 aangepast, 0 afgewezen. Lessen:
 - Neem de leestekens van de bron over waar ze de reikwijdte van een verwijzing
   bepalen.
 
+**Taalversies vergelijken (EUR-Lex):** gebruik de officiële tekst op EUR-Lex,
+niet een wegwijzer als springlex of regulation-dora.eu. De pagina's
+`eli/…/oj/eng` en `eli/…/oj/nld` laden de tekst pas in de browser; lees ze in de
+ingebouwde browser en zet harde spaties om voordat je zoekt. Een afwijking die
+in alle taalversies staat, is een redactiefout van de bron: lees wat bedoeld is
+en zet de letterlijke tekst tussen haakjes. Uitkomsten van 7 november 2026:
+`work/toetspunten-auditor/EURLEX-CONTROLE.md`.
+
 **Totaal DORA (14 delen, 1.337 toetspunten):** 1.127 overgenomen, 210
 aangepast, 0 afgewezen. 343 onvolledige bronpassages, 103 splitsvoorstellen en
 87 mogelijke dubbelingen gaan naar de beheerder.
