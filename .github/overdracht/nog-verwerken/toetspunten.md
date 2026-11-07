@@ -19,7 +19,7 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 10 | 901–1000 | NOREA DORA in Control (derden, onderaanneming, TLPT) | 79 | 21 | 0 | Aanhef *critical or important function* toegevoegd aan 19 toetspunten bij 18.1–18.3. Bronpassage C16-1 onvolledig (stopt bij *by reviewing*). Werkbladverwijzing staat bij 18.x in elk toetspunt, bij 16.x alleen in het eerste: gelijktrekken? (`DEEL10-OPEN.json`) |
 | 11 | 1001–1100 | NOREA (slot), Gedelegeerde Verordening 2024/1502 (begin) | 80 | 20 | 0 | NOREA-termen volgen nu de regeling van het subdomein (*ICT-assets* bij RTS 2024/1774). **Bij toepassen: deel 8 en 9 gelijktrekken** (daar staat nog *ICT-activa*). Bronpassages 1502-T01 en T03 tonen de aanhef in plaats van de punten. Drempel 10 % (2024/1502, artikel 2, lid 4) nagaan in deel 12 (`DEEL11-OPEN.json`) |
 | 12 | 1101–1200 | 2024/1502, oversight DORA artikel 31–42 | 93 | 7 | 0 | Veel onvolledige bronpassages (18 + 16), vooral aanhef in plaats van punt. Kop *Artikel 2(5)(b)* in de wettekst van 2024/1502 hoort bij artikel 7. Ter beoordeling met EUR-Lex: *bevoegde organen* (artikel 38, lid 5), onderwerp bij *formuleren* (artikel 35), *of een categorie* (2024/1502, artikel 5, lid 4, onder b) (`DEEL12-OPEN.json`) |
-| 13 | 1201–1300 | oversight (slot), vergoedingen, 295, gezamenlijke teams, GL36 | | | | |
+| 13 | 1201–1300 | oversight (slot), vergoedingen 2024/1505, uitvoering oversight 2025/295, gezamenlijke onderzoeksteams, richtsnoeren samenwerking | 89 | 11 | 0 | Bronpassages: bij veel opsommingen draagt de passage het label van het punt maar bevat alleen de aanhef (vermoedelijk een fout in de opbouw; bij de nieuwe database systematisch nagaan). Verwijzing *2022/2254* in 2025/295, artikel 3, lid 1, is kennelijk 2022/2554 (`DEEL13-OPEN.json`) |
 | 14 | 1301–1337 | GL36 (slot), sectorrichtlijn 2022/2556 | | | | |
 
 **Daarna, voor de nieuwe database**
@@ -41,4 +41,9 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | NOREA DORA in Control | 11.3: significante cyberdreigingen melden aan de toezichthouder | review deel 9 | Staat in de control; geen toetspunt. DORA artikel 19, lid 2, maakt deze melding vrijwillig |
 | Gedelegeerde Verordening 2024/1502 | artikel 2, lid 4: drempel van 10 % | review deel 11 en 12 | In geen toetspunt gedekt |
 | Gedelegeerde Verordening 2024/1502 | artikel 5, lid 4, onder b: drempel van 10 % voor subcriterium 4.2 | review deel 12 | Alleen punt a in een toetspunt |
+| Gedelegeerde Verordening 2024/1505 | artikel 2, lid 3: terugvalregels voor de omzet | review deel 13 | Geen toetspunt |
+| Gedelegeerde Verordening 2025/295 | artikel 1, lid 1, onder i (Nederlandse tekst wijkt af van de Engelse) | review deel 13 | Geen toetspunt |
+| Gedelegeerde Verordening 2025/295 | bijlage, overzicht van onderaannemingsovereenkomsten: twee overige elementen (soorten ICT-diensten, verwijzing naar bijlage IV ITS) | review deel 13 | Geen toetspunt |
+| DORA 2022/2554 | artikel 43, lid 2 (eis aan de Commissie) | review deel 13 | Geen toetspunt; mogelijk bewust buiten selectie |
+| Gezamenlijke onderzoeksteams (2025/420) | artikel 1, lid 1, onder c, f en g (bij c en f wijkt de Nederlandse tekst af van de Engelse) | review deel 13 | Geen toetspunt |
 | NOREA DORA in Control | werkbladen *DORA RTS IM (Major Incidents)*, *DORA RTS TPPM* en *DORA RTS SCM* | review deel 9 en 10 | Werkbladen niet in de bron opgenomen; ophalen of niet |

@@ -612,6 +612,25 @@ overgenomen, 20 aangepast, 0 afgewezen. Lessen:
 - Een splitsdeel krijgt de actor van dat deel in de relevantie (samenstelling:
   *alleen voor het oversightforum*).
 
+**Deel 13 (oversight slot, vergoedingen 2024/1505, uitvoering oversight
+2025/295, gezamenlijke onderzoeksteams, richtsnoeren samenwerking):** 89
+overgenomen, 11 aangepast, 0 afgewezen. Lessen:
+
+- Een bronpassage kan het label van een punt dragen maar alleen de aanhef
+  bevatten. Controleer bij elke opsomming of label en tekst bij elkaar horen.
+- Een taalafwijking die het object verandert (*kennisgeving aan* tegenover
+  *notification of*) en een verwijzing naar een bepaling die niet bestaat, meld
+  je kort in het toetspunt zelf. Een verschrijving zonder gevolg mag in de
+  twijfel blijven.
+- Een voorbehoud (*behoudens artikel 4*) geldt voor alles waar de bron het op
+  laat slaan, ook voor een minimumbedrag.
+- Richtsnoeren: de inspanningsplicht staat in de relevantie bij elk toetspunt
+  waarin de bevoegde autoriteit actor is, ook als er meer actoren zijn; niet bij
+  toetspunten met alleen de ETA's of de lead overseer.
+- Een strengere termijn uit de richtsnoeren blijft leidend; een kortere
+  verwijzing naar de DORA-termijn mag blijven staan als die het oordeel van de
+  auditor raakt.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
