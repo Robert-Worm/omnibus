@@ -11,3 +11,7 @@
 | 2026-11-07 | Kwaliteitstoets per toetspunt: volledig, betrouwbaar, neutraal, begrijpelijk, relevant (ISAE 3000) | Bron: ICAEW over ISAE 3000; IIA GIAS 13.4 en 13.6 |
 | 2026-11-07 | NOREA: relevantie noemt het een operationalisering van DORA door NOREA, niet rechtstreeks een wettelijke eis | NOREA baseert zich op DORA, maar is niet altijd direct herleidbaar |
 | 2026-11-07 | Eerst DORA (alle DORA-kaders en NOREA), later alle toetspunten in Omnibus; per deel van ongeveer 100, lessen terug in de skills | Zelflerend proces |
+| 2026-11-07 | Alle 103 splitsvoorstellen uit de DORA-herschrijving toepassen; elk deel een eigen ID | Keuze beheerder; past bij *niets weglaten, liever splitsen* |
+| 2026-11-07 | De 15 bepalingen zonder toetspunt (lijst in `toetspunten.md`) krijgen alle een toetspunt, geschreven en gereviewd volgens de auditorstandaard | Keuze beheerder |
+| 2026-11-07 | De NOREA-werkbladen *DORA RTS IM (Major Incidents)*, *DORA RTS TPPM* en *DORA RTS SCM* opnemen als ze op te halen zijn; anders blijft de verwijzing | Keuze beheerder |
+| 2026-11-07 | Richtlijn 2022/2556: luidt de bepaling *de lidstaten eisen dat [entiteit] …*, dan is de entiteit de actor | Besluit tijdens de review van deel 14 |
