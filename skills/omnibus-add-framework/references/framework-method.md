@@ -655,6 +655,13 @@ in alle taalversies staat, is een redactiefout van de bron: lees wat bedoeld is
 en zet de letterlijke tekst tussen haakjes. Uitkomsten van 7 november 2026:
 `work/toetspunten-auditor/EURLEX-CONTROLE.md`.
 
+**NOREA-werkbladen (versie 3.2):** een drempel uit een werkblad waarnaar de
+control verwijst, hoort letterlijk in het toetspunt, met de Nederlandse termen
+van de RTS; een verschil met de RTS kort erbij als het het oordeel raakt. Een
+leeshulp als *(zie RTS … in Omnibus)* is een vindplaats en hoort in de
+bronkoppeling, niet in het toetspunt. Tekstvakken in een werkblad zijn ook bron;
+lees ze uit `xl/drawings`.
+
 **Totaal DORA (14 delen, 1.337 toetspunten):** 1.127 overgenomen, 210
 aangepast, 0 afgewezen. 343 onvolledige bronpassages, 103 splitsvoorstellen en
 87 mogelijke dubbelingen gaan naar de beheerder.
