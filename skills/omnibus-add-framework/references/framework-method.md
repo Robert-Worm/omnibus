@@ -654,6 +654,14 @@ opzetbewijs dat letterlijk gelijk is aan het bestaansbewijs is bijna altijd
 fout (177 van 273 gevallen). Haal je gevallen bij opzet weg, kijk dan of
 bestaan ze nog noemt.
 
+**Splitsen (ronde 6, 7 november 2026):** deel 1 houdt het oude ID, volgende
+delen heten `<id>-S2`, `-S3` (niet `-D`: dat is bij NOREA al de doorvraag).
+Verdeel bij het splitsen ook de toetsen en de interviewvragen. Een doorvraag
+blijft bij zijn opening, maar wordt niet meer aangeboden als hij over een ander
+deel gaat (bij 80 van de ~360 gebeurde dat). Elk deel heeft minstens één
+opening; schrijf anders een nieuwe en laat die apart reviewen. Een nieuwe
+opening krijgt een eigen `scope`, niet die van een buurpunt.
+
 **Taalversies vergelijken (EUR-Lex):** gebruik de officiële tekst op EUR-Lex,
 niet een wegwijzer als springlex of regulation-dora.eu. De pagina's
 `eli/…/oj/eng` en `eli/…/oj/nld` laden de tekst pas in de browser; lees ze in de
