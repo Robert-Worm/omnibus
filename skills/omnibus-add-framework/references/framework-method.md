@@ -426,6 +426,25 @@ Lessen:
   vereenvoudigde kader van artikel 16 van DORA.* Binnen titel II is *artikel 28,
   lid 2, van DORA* gelijk aan *alleen als de entiteit geen micro-onderneming is*.
 
+**Deel 4 (RTS 2024/1774, titel II, artikelen 12 tot en met 22):** 92 overgenomen,
+8 aangepast, 0 afgewezen. De schrijvers vonden 84 bronfouten; alle klopten.
+Ook hier vooral een toestand (*Er zijn maatregelen*, *Klokken zijn
+gesynchroniseerd*) waar de bron eist dat een beleid of procedure iets bevat.
+Lessen:
+
+- Een reikwijdte uit de aanhef (*voor alle wijzigingen van …*) geldt voor elk
+  punt eronder. Neem hem bij elk toetspunt van die norm op, niet bij één.
+- Een verwijzend woord in een opsommingspunt (*die ICT-assets*, *dat actieplan*)
+  schrijf je uit naar het antecedent in de bron; laat het niet vallen.
+- Een eis aan de tests of de uitvoering zonder actor verplaats je niet naar een
+  document (*in de procedure is …*). Een zinsdeel dat bij de hele opsomming
+  hoort, staat vóór de opsomming.
+- Koppel een lid over de inrichting van het beleid niet aan een element dat de
+  entiteit bewaakt als de bron dat niet doet.
+- Bevat de wettekst een rectificatie, dan geldt de gerectificeerde tekst (RTS
+  2024/1774, artikel 22, onder d: *artikel 8, lid 2*, niet *artikel 15*), ook als
+  een leescontext of kopie nog de oude versie toont.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
