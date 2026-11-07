@@ -515,6 +515,31 @@ Lessen:
   aanbieders die kritieke of belangrijke functies ondersteunen.* (DORA artikel
   28, lid 2).
 
+**Deel 8 (slot ITS 2024/2956, RTS 2025/1190, richtsnoeren incidentkosten, begin
+NOREA):** 66 overgenomen, 34 aangepast, 0 afgewezen. 79 bronfouten gemeld; vier
+daarvan klopten niet. Lessen:
+
+- *Staat niet in de bronpassage* bewijst niet dat het niet in de bron staat.
+  Lees ook de inleiding van het model en het vervolg van een tabelveld voordat je
+  inhoud weghaalt.
+- Een verwijzing naar een bepaling die niet bestaat (en geen rectificatie):
+  schrijf wat kennelijk bedoeld is en noem de letterlijke verwijzing kort tussen
+  haakjes; meld het als twijfel.
+- Een afwijking die de auditor in het formulier ziet (*1 000 EUR* tegen
+  duizendtallen in lokale valuta), meld je kort in het toetspunt zelf.
+- Een uitzondering uit een naastgelegen lid hoort als korte verwijzing in het
+  toetspunt, niet als uitleg in de relevantie.
+- Een eis aan een andere partij dan de entiteit (TLPT-autoriteit, aanbieder van
+  dreigingsinformatie) krijgt *Geen eis aan de financiële entiteit: alleen voor
+  …*.
+- Richtsnoeren: de inspanningsplicht (*tot het uiterste inspannen*) ligt bij de
+  adressaten die de richtsnoeren zelf noemen; geen eigen uitleg als *het is geen
+  verordening*.
+- NOREA: een DORA- of RTS-eis die alleen op subdomeinniveau als verwijzing
+  staat, hoort niet in het control-toetspunt. Vertaal vaste termen met de
+  Nederlandse vakterm (*those charged with governance*: *de met governance
+  belaste personen*).
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |

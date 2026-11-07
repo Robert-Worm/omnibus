@@ -14,7 +14,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 5 | 401–500 | RTS 2024/1774 (titel II slot, titel III begin) | 96 | 4 | 0 | 78 bronfouten hersteld; panelpunt artikel 28, lid 2, onder i opgelost. Open: ontbrekende aanhef in ~70 bronpassages (`DEEL5-OPEN.json`) |
 | 6 | 501–600 | RTS 2024/1774 (titel III slot), RTS 2024/1772, RTS 2025/301, ITS 2025/302 (begin) | 79 | 21 | 0 | 69 bronfouten hersteld; 3 ontbrekende toetspunten (zie hieronder). Nog gelijktrekken: relevantiezin RTS 2024/1772 met die van DORA hoofdstuk III (`DEEL6-OPEN.json`) |
 | 7 | 601–700 | ITS 2025/302, RTS 2024/1773, RTS 2025/532, ITS 2024/2956 (begin) | 70 | 30 | 0 | 80 bronfouten hersteld. Ter beoordeling: afronding in velden 3.5, 3.7 en 3.10 gelezen als *rekenkundig, 5 naar boven* (Engelse tekst, via springlex; nog tegen EUR-Lex leggen). Veld B_02.01.0050 verwijst in de bron naar het verkeerde veld (`DEEL7-OPEN.json`) |
-| 8 | 701–800 | ITS 2024/2956, RTS 2025/1190, richtsnoeren incidentkosten, NOREA | | | | |
+| 8 | 701–800 | ITS 2024/2956 (slot), RTS 2025/1190, richtsnoeren incidentkosten, NOREA (begin) | 66 | 34 | 0 | 75 bronfouten hersteld; rectificatie 2025/90725 toegepast op registervelden. Ter beoordeling: attest TLPT verwijst naar niet-bestaand artikel 5, lid 3; gelezen als artikel 7, lid 2 (`DEEL8-OPEN.json`) |
+| 9 | 801–900 | NOREA DORA in Control | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.
@@ -30,3 +31,4 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | RTS 2024/1774 | artikel 40, lid 1 (jaarlijkse test bedrijfscontinuïteitsplannen, vereenvoudigd kader) | panel 6 november (P4) en review deel 6 | Geen toetspunt; alleen lid 2 en 3 gedekt. Voorsteltekst in `work/toetspunten-auditor/deel6/review6-a.json` |
 | RTS 2024/1774 | artikel 33, derde alinea (sterke authenticatie, vereenvoudigd kader) | review deel 6 | Eigen plicht (*gebruiken*), geen toetspunt |
 | RTS 2024/1774 | artikel 39, lid 2, onder j (plannen bijwerken) | review deel 6 | In geen toetspunt gedekt |
+| Richtsnoeren incidentkosten (GL34) | punt 5: geen kosten en verliezen van incidenten vóór of na het referentiejaar | review deel 8 | Geen eigen toetspunt |
