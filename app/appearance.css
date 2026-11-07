@@ -22,6 +22,9 @@ html[data-appearance=dark] .framework-app button.term-help-trigger:hover { color
 html[data-appearance=dark] [data-slot=popover-content].term-help-popup .term-help-close { background:transparent; color:#abd5f7; }
 html[data-appearance=dark] .glossary-dialog :is(button,input,[data-slot=dialog-title]):focus-visible,
 html[data-appearance=dark] .term-help-popup button:focus-visible { outline-color:#94c8f5; }
+html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup { background:#172330; color:#e0eaf5; }
+html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup .term-help-close { background:transparent; color:#abd5f7; }
+html[data-appearance=dark] :is(.framework-app,[data-slot=sheet-content]) button.relevance-help-trigger { background:transparent; color:#abd5f7; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger { width:auto; padding:0 .65rem; gap:.4rem; background:#e5eff8; border-color:#9bbbd9; color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#d5e6f5; border-color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger .guide-icon { width:1.125rem; height:1.125rem; flex-shrink:0; }

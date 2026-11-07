@@ -66,6 +66,7 @@ export type Point = {
   chapter: string;
   source_cross_references: string[];
   source_interpretation_notes: string[];
+  relevance?: string;
 };
 export type Criterion = {
   id: string;

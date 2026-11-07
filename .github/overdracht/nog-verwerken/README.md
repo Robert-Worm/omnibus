@@ -1,5 +1,7 @@
 # Nog verwerken na herstel van GitHub-toegang
 
+> **In het kort:** wat lokaal is veranderd terwijl het GitHub-account geblokkeerd was, en wat daarna op GitHub moet gebeuren.
+
 Op 6 november 2026 is het GitHub-account van de beheerder geblokkeerd. Het werk gaat lokaal door op de branch `toetspunten-auditor`. Deze map houdt bij wat er verandert en waarom, zodat alles daarna in één keer gestructureerd op GitHub kan worden verwerkt.
 
 | Bestand | Inhoud |

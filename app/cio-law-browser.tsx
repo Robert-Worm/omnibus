@@ -30,6 +30,7 @@ import {useLawOverview,type LawOverviewProps} from './law-overview-state';
 import {Approach} from './cio-law-workspace';
 import CioSourceAbout from './cio-source-about';
 import CioPointSource from './cio-point-source';
+import RelevanceHelp from './relevance-help';
 import CioNormSummary from './cio-norm-summary';
 import {TermText} from './term-help';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
@@ -177,7 +178,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
       <div className="law-points-heading"><label htmlFor="law-select-all"><Checkbox id="law-select-all" disabled={disabled||!state.total} checked={state.all} indeterminate={state.partial} onCheckedChange={value=>choose(children.map(p=>p.id),value===true)}/>Alle toetspunten</label><output>{state.selected} van {state.total} gekozen</output></div>
       <div className="law-choice-grid">{children.map(p=><article key={p.id} data-point={p.id} data-inspected={initialPointId===p.id||undefined} className={`law-choice-card${selected.has(p.id)?' is-chosen':''}`}>
        {viewerOnly&&initialPointId===p.id&&<small className="viewer-current-point">Bekeken bouwsteen</small>}
-       <label htmlFor={`law-${p.id}`}><Checkbox id={`law-${p.id}`} aria-label={`${p.title} selecteren`} disabled={disabled||p.selection_status!=='SELECTABLE'} checked={selected.has(p.id)} onCheckedChange={value=>choose([p.id],value===true)}/><strong>{p.title}</strong></label>
+       <label htmlFor={`law-${p.id}`}><Checkbox id={`law-${p.id}`} aria-label={`${p.title} selecteren`} disabled={disabled||p.selection_status!=='SELECTABLE'} checked={selected.has(p.id)} onCheckedChange={value=>choose([p.id],value===true)}/><strong>{p.title}</strong></label><RelevanceHelp text={p.relevance} title={p.title}/>
        <CollectionBadge kind="foundation" id={sourceId}/><p>{p.text}</p>{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">HOLD · {p.selection_reason}</p>}
        {(()=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id),text=material&&draft.overrides[material.id]?.criterion;return text!==undefined&&text!==p.text?<section className="viewer-own-wording"><strong>Eigen formulering in je kader</strong><p>{text}</p></section>:null;})()}
        <div className="law-choice-actions"><small>{p.id} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
