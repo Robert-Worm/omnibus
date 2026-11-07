@@ -540,6 +540,22 @@ daarvan klopten niet. Lessen:
   Nederlandse vakterm (*those charged with governance*: *de met governance
   belaste personen*).
 
+**Deel 9 (NOREA DORA in Control):** 87 overgenomen, 13 aangepast, 0 afgewezen.
+Lessen:
+
+- Een NOREA-term die DORA zelf gebruikt, krijgt de Nederlandse DORA-term:
+  *major change* is *belangrijke wijziging*, *senior management* is *hoger
+  leidinggevend personeel*, *restore test* is *terugzettest*.
+- *Ensuring that* maakt de entiteit de actor: *De entiteit zorgt ervoor dat …*.
+  Houd bij een dubbelzinnige termijn de zinsbouw van de bron aan.
+- De relevantie herhaalt de actor niet en verwijst niet naar *de eerste eis*.
+- Verwijst een control naar een werkblad dat niet in de bron staat, neem dan de
+  controltekst op met een exacte verwijzing naar het werkblad. Neem geen
+  drempels over die je niet kunt controleren.
+- Een eis uit de control die nog geen eigen toetspunt heeft, is een
+  selectiewijziging: niet stilzwijgend toevoegen, maar aan de beheerder
+  voorleggen.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
