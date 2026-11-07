@@ -6,7 +6,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 
 | Deel | Toetspunten | Bronnen | Overgenomen | Aangepast | Afgewezen | Lessen in skill |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1–100 van 1.337 | DORA 2022/2554 | | | | |
+| 1, ronde 1 | 1–100 van 1.337 | DORA 2022/2554 | 30 | 70 | 0 | 18 bronfouten hersteld; relevantie in vaste zinnen. Toetspunten bleven herschikte wetszinnen (48 woorden gemiddeld) |
+| 1, ronde 2 | 1–100 | DORA 2022/2554 | | | | Elementen eerst, dan de kortste bewering vanuit de auditor |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.

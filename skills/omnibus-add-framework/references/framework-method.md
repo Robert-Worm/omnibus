@@ -325,6 +325,38 @@ voordat het volgende deel begint. De lessen per deel staan hieronder.
   ICT-systemen*), een ontbrekende actor of aanhef, of *onder meer door* als
   losse plicht. Lees dus altijd de bron, nooit alleen de oude tekst.
 
+**Deel 1, na de review:** 26 + 4 voorstellen overgenomen, 70 aangepast, 0
+afgewezen. Alle 18 gemelde bronfouten klopten. Maar de toetspunten bleven
+herschikte wetszinnen: gemiddeld 48 woorden, tegen 46 eerst. Brontrouw ging
+voor, de vertaalslag naar de auditor bleef uit. Daarom:
+
+- **Eerst de elementen, dan de zin.** Noem per toetspunt de vaststelbare
+  elementen uit de bron (wie, welk object, welke eigenschap, voorwaarde,
+  termijn). Schrijf daarna de kortste bewering die elk element bevat. Een element
+  mag nooit wegvallen; een formulering wel.
+- **Vanuit wat je bekijkt.** Begin bij het object of de actor: *Het beleid …*,
+  *Het contract …*, *De entiteit heeft …*, *Het leidinggevend orgaan heeft …
+  goedgekeurd*. Geen *houdt toezicht op de uitvoering van alle regelingen met
+  betrekking tot* als *ziet toe op de uitvoering van het kader* hetzelfde zegt.
+- **Doelzinnen** (*om … te*, *met het oog op*) alleen als ze bepalen wat je
+  vaststelt. Een taakomschrijving die al in een ander toetspunt staat (*als
+  onderdeel van zijn taak om alle regelingen te bepalen …*) gaat weg.
+- **Dubbelzinnige bronzin:** kies geen lezing met een extra woord of komma; volg
+  de bron en meld de twijfel.
+- **Relevantie in vaste zinnen**, zodat dezelfde situatie overal hetzelfde
+  heet: *Entiteiten onder het volledige ICT-risicobeheerkader van DORA (artikelen
+  5 tot en met 15), niet onder het vereenvoudigde kader van artikel 16.* Daarna
+  alleen het verschil: *Alleen als de entiteit geen micro-onderneming is.*, *Ook
+  voor micro-ondernemingen.*, *Alleen bij centrale effectenbewaarinstellingen.*
+  Geen eigen inschatting (*speelt vooral bij …*).
+- **Bronpassage onvolledig?** Steunt het toetspunt op een alinea die niet in de
+  bronpassage staat, meld de bronpassage als fout en laat de inhoud staan.
+
+| Na deel 1 (te dicht bij de wet) | Beter |
+| --- | --- |
+| *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
+| *Het leidinggevend orgaan van de financiële entiteit heeft, als onderdeel van zijn taak om alle regelingen van het kader voor ICT-risicobeheer te bepalen, goed te keuren, toezicht te houden op de uitvoering ervan en ervoor verantwoordelijk te zijn, beleidslijnen ingevoerd die erop gericht zijn de handhaving van hoge normen inzake beschikbaarheid, authenticiteit, integriteit en vertrouwelijkheid van gegevens te waarborgen.* | *Het leidinggevend orgaan heeft beleidslijnen ingevoerd die gericht zijn op het handhaven van hoge normen voor beschikbaarheid, authenticiteit, integriteit en vertrouwelijkheid van gegevens.* |
+
 ### Over dit kader: vergelijken met CIO
 
 De opbouw ligt vast in `LawAboutPage` en wordt getest
