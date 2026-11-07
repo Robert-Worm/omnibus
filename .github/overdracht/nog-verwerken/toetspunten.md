@@ -20,3 +20,11 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 - [ ] Export: kolom *Relevantie* in Excel en Markdown.
 - [ ] `check:toetspunten`: vormregels (geen gebiedende wijs, een actor, geen gewone vindplaats in de tekst).
 - [ ] Panelronde in de browser.
+
+**Ontbrekende toetspunten (selectiewijziging, besluit beheerder nodig)**
+
+| Bron | Bepaling | Gevonden in | Toelichting |
+| --- | --- | --- | --- |
+| RTS 2024/1774 | artikel 40, lid 1 (jaarlijkse test bedrijfscontinuïteitsplannen, vereenvoudigd kader) | panel 6 november (P4) en review deel 6 | Geen toetspunt; alleen lid 2 en 3 gedekt. Voorsteltekst in `work/toetspunten-auditor/deel6/review6-a.json` |
+| RTS 2024/1774 | artikel 33, derde alinea (sterke authenticatie, vereenvoudigd kader) | review deel 6 | Eigen plicht (*gebruiken*), geen toetspunt |
+| RTS 2024/1774 | artikel 39, lid 2, onder j (plannen bijwerken) | review deel 6 | In geen toetspunt gedekt |
