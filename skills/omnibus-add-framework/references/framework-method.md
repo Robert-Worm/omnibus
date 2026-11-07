@@ -445,6 +445,29 @@ Lessen:
   2024/1774, artikel 22, onder d: *artikel 8, lid 2*, niet *artikel 15*), ook als
   een leescontext of kopie nog de oude versie toont.
 
+**Deel 5 (RTS 2024/1774, artikelen 23 tot en met 32, met titel III):** 96
+overgenomen, 4 aangepast, 0 afgewezen. 78 bronfouten, alle bevestigd. Het
+panelpunt over artikel 28, lid 2, onder i (vereenvoudigd kader: het leidinggevend
+orgaan stelt de rapportageregelingen vast en ontvangt de rapportage) is opgelost.
+Lessen:
+
+- Schrijf bij *overeenkomstig artikel X* de inhoud van X niet tussen haakjes
+  uit: dat maakt het toetspunt dubbel en laat licht een beperking vallen. Laat de
+  verwijzing staan en markeer als dubbel.
+- De relevantie legt *in voorkomend geval* of *voor zover relevant* niet uit.
+  Noem hoogstens de situatie als noodzakelijke voorwaarde (*Alleen als …*).
+- Een gebeurtenis die uit een ander artikel komt (*op verzoek* uit DORA artikel
+  6, lid 5), hoort in de relevantie, niet in het toetspunt.
+- Een zin die niet in het artikel staat, kan uit een overweging komen; een
+  overweging is uitleg, geen eis, en hoort niet in het toetspunt.
+- *Voor het geval* is niet *wanneer*: het eerste maakt van een voorwaarde vaste
+  inhoud.
+- Een evidente verschrijving in de bron (*ITC-protocollen*) mag je lezen als wat
+  bedoeld is, met een twijfelmelding; laat het woord niet weg.
+- Vaste zin titel III: *Alleen entiteiten onder het vereenvoudigde
+  ICT-risicobeheerkader van artikel 16, lid 1, van DORA (titel III van RTS
+  2024/1774).*
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
