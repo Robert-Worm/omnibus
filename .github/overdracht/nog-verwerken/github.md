@@ -30,3 +30,11 @@ Bevat alles van v0.1.5. Klaar, nog niet gepubliceerd. Pakket: `D:\Rijksmap-rappo
 - Publiceer bij voorkeur alleen v0.1.6 als `database-2026-11-07-splitsingen` (titel *Database 7 november 2026 · splitsingen en nieuwe toetspunten · v0.1.6*); v0.1.5 is dan een tussenstap.
 - Bouwbestanden: `work/dora-ronde6-20261107/` (apply6, renew6, build6: nieuwe ID's direct na hun buur; extra bronresources per kader).
 - Open: bij 2 nieuwe toetspunten is de bronkoppeling die van het naastgelegen toetspunt (geen eigen bronrecord gevonden); BRRD artikel 7 (groepsherstelplan) wacht op de geconsolideerde tekst; NOREA-werkbladrijen als bronpassage (nieuw brondocument nodig).
+
+## Database v0.1.7 · bronkoppelingen en NOREA-werkbladen (7 november 2026)
+
+Bevat v0.1.5 en v0.1.6. Publiceer bij voorkeur alleen deze als `database-2026-11-07-bronkoppelingen` (titel *Database 7 november 2026 · bronkoppelingen en NOREA-werkbladen · v0.1.7*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-bronkoppelingen-2026-11-07\`. Release `ed3cf48f…f9b7c`, publicatie `bf24ff5c…8a0d6`, catalogue.sqlite `06e4ccc4…0efa52`. Bouwbestanden: `work/dora-ronde7-20261107/`.
+
+- Van de 343 meldingen *onvolledige bronpassage* waren er 326 al gedekt: de herschrijvers kregen alleen de primaire passage te zien; viewer en export tonen alle koppelingen. 17 aangevuld.
+- 26 werkbladrecords (NOREA v3.2) op bestaande werkboekpagina's; 62 koppelingen. Niet gekoppeld: 5 verwijzingen naar de twee tekstvakken op *Major Incidents* (staan niet in het bronwerkboek).
+- Open: BRRD artikel 7 (groepsherstelplan) vraagt een nieuw brondocument.

@@ -662,6 +662,12 @@ deel gaat (bij 80 van de ~360 gebeurde dat). Elk deel heeft minstens één
 opening; schrijf anders een nieuwe en laat die apart reviewen. Een nieuwe
 opening krijgt een eigen `scope`, niet die van een buurpunt.
 
+**Geef reviewers alle bronkoppelingen (ronde 7):** toon bij een herschrijving
+niet alleen de primaire passage, maar alle gekoppelde records (aanhef, context,
+voorwaarde). Anders melden reviewers *onvolledige bronpassage* waar niets
+ontbreekt: 326 van 343 meldingen bleken zo te ontstaan. Viewer en export tonen
+alle koppelingen.
+
 **Taalversies vergelijken (EUR-Lex):** gebruik de officiële tekst op EUR-Lex,
 niet een wegwijzer als springlex of regulation-dora.eu. De pagina's
 `eli/…/oj/eng` en `eli/…/oj/nld` laden de tekst pas in de browser; lees ze in de
