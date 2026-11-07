@@ -468,6 +468,31 @@ Lessen:
   ICT-risicobeheerkader van artikel 16, lid 1, van DORA (titel III van RTS
   2024/1774).*
 
+**Deel 6 (RTS 2024/1774 titel III slot, RTS 2024/1772, RTS 2025/301, begin ITS
+2025/302):** 79 overgenomen, 21 aangepast, 0 afgewezen. 69 bronfouten, alle
+bevestigd; vaak viel *financiële* vóór *tegenpartijen* weg. Drie ontbrekende
+toetspunten gevonden (zie `nog-verwerken/toetspunten.md`). Lessen:
+
+- Controleer per artikel of elke plicht een toetspunt heeft. Een alinea *Voor de
+  toepassing van punt x)* met een eigen werkwoord is een eigen plicht.
+- Inhoud uit DORA die niet in de bronpassage staat, mag alleen weg als een
+  DORA-toetspunt haar al dekt. Dekt niets haar, laat haar dan kort staan. Een
+  uitzondering uit een naastgelegen lid (andere meldtermijn voor bepaalde
+  entiteiten) blijft als korte verwijzing staan; anders keurt de auditor iets
+  verkeerds goed.
+- *Op verzoek* hoort alleen bij het toetspunt over de indiening, niet bij de
+  inhoudspunten van hetzelfde verslag.
+- Bij een opsomming van te beoordelen vragen staat *of* bij elk onderdeel; bij
+  alternatieven *ofwel … ofwel*. Anders leest het als één samengestelde
+  voorwaarde.
+- Wijkt de Nederlandse tekst evident af van de andere taalversies en is er geen
+  rectificatie, schrijf dan wat bedoeld is en meld de afwijking kort in het
+  toetspunt of de twijfel. Noem de bron van de vergelijking.
+- Een eis aan een toezichthouder krijgt als relevantie *Geen eis aan de
+  financiële entiteit: alleen voor …*.
+- Eigen uitleg (*een maand is geen 30 dagen*, *beoordeel afzonderlijk*) hoort
+  niet in het toetspunt, ook als ze klopt.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |

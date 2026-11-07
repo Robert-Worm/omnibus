@@ -12,7 +12,8 @@ Werkwijze per deel van ~100: twee schrijvers (elk de helft), twee tweede reviewe
 | 3 | 201–300 | RTS 2024/1774 (titel II) | 95 | 5 | 0 | 43 bronfouten hersteld, vooral ontbrekende actor of aanhef; toetspunten werden langer (31 naar 39 woorden) doordat de actor terugkwam. Open: 1 splitsing, 6 dubbels (`DEEL3-OPEN.json`) |
 | 4 | 301–400 | RTS 2024/1774 (titel II) | 92 | 8 | 0 | 84 bronfouten hersteld (vooral toestand in plaats van eis aan beleid of procedure). Database: leescontext van artikel 22, onder d, toont nog de tekst van vóór rectificatie 2025/90420 (`DEEL4-OPEN.json`) |
 | 5 | 401–500 | RTS 2024/1774 (titel II slot, titel III begin) | 96 | 4 | 0 | 78 bronfouten hersteld; panelpunt artikel 28, lid 2, onder i opgelost. Open: ontbrekende aanhef in ~70 bronpassages (`DEEL5-OPEN.json`) |
-| 6 | 501–600 | RTS 2024/1774 (titel III), RTS 2024/1772 | | | | |
+| 6 | 501–600 | RTS 2024/1774 (titel III slot), RTS 2024/1772, RTS 2025/301, ITS 2025/302 (begin) | 79 | 21 | 0 | 69 bronfouten hersteld; 3 ontbrekende toetspunten (zie hieronder). Nog gelijktrekken: relevantiezin RTS 2024/1772 met die van DORA hoofdstuk III (`DEEL6-OPEN.json`) |
+| 7 | 601–700 | ITS 2025/302, RTS 2024/1773, RTS 2025/532, ITS 2024/2956 | | | | |
 
 **Daarna, voor de nieuwe database**
 - [ ] Relevantie als nieuw veld in het datamodel (`relevance` bij een toetspunt), met registratie in de afgeleide-releasepijplijn.
