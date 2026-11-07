@@ -631,6 +631,26 @@ overgenomen, 11 aangepast, 0 afgewezen. Lessen:
   verwijzing naar de DORA-termijn mag blijven staan als die het oordeel van de
   auditor raakt.
 
+**Deel 14 (slot richtsnoeren samenwerking, Richtlijn 2022/2556):** 26
+overgenomen, 11 aangepast, 0 afgewezen. Lessen:
+
+- Richtlijn 2022/2556: luidt de gewijzigde sectorbepaling *de lidstaten eisen
+  dat [entiteit] …*, dan is de entiteit de actor en bevat de relevantie alleen
+  de vaste sectorzin, zonder *de lidstaten eisen dit*. Alleen waar de autoriteit
+  zelf beoordeelt of evalueert, is zij de actor (*Geen eis aan de financiële
+  entiteit: alleen voor …*).
+- Een element uit een ander artikel dat bepaalt hoe de entiteit iets doet
+  (*rechtstreeks of via de bevoegde autoriteit*), blijft als korte verwijzing
+  met herkomst als het oordeel ervan afhangt.
+- Schrijf een verwijzend woord (*een dergelijk besluit*) in elk splitsdeel
+  uit.
+- Neem de leestekens van de bron over waar ze de reikwijdte van een verwijzing
+  bepalen.
+
+**Totaal DORA (14 delen, 1.337 toetspunten):** 1.127 overgenomen, 210
+aangepast, 0 afgewezen. 343 onvolledige bronpassages, 103 splitsvoorstellen en
+87 mogelijke dubbelingen gaan naar de beheerder.
+
 | Na deel 1 (te dicht bij de wet) | Beter |
 | --- | --- |
 | *De financiële entiteit monitort en controleert voortdurend de beveiliging en werking van de ICT-systemen en -instrumenten, en beperkt de effecten van ICT-risico op ICT-systemen door passende ICT-beveiligingsinstrumenten, -beleidslijnen en -procedures in te zetten, om ICT-systemen op passende wijze te beschermen en met het oog op de organisatie van responsmaatregelen.* | *De entiteit monitort en controleert de beveiliging en werking van haar ICT-systemen en -instrumenten voortdurend, en beperkt de effecten van ICT-risico daarop met passende beveiligingsinstrumenten, beleidslijnen en procedures.* |
