@@ -14,7 +14,7 @@ import type {InterviewSettingsValue} from './interview-settings';
 /** Immediate controls and validation inputs; never builds workbook worksheets. */
 export function exportInputs(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
   // Niets valt stil weg: niet-gekoppelde bouwstenen gaan mee onder de centrale vraag (alleen in de export).
-  const autoLink = linkUnlinkedForExport(draft) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null};
+  const autoLink = linkUnlinkedForExport(draft, framework) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null; placed: Record<string, string>};
   draft = autoLink.draft;
   const get = <T,>(key: string, fallback: T): T => (config[key] as T) ?? fallback;
   const selection = scopedExportSelection(framework, draft);
@@ -37,7 +37,7 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const exportedNormIds = selection.included.filter((id: string) => !excludedNorms.includes(id));
   const exportDraft = {...exportDraftForSelection(draft, exportedNormIds), title:exportTitle(draft)};
   const autoLinked = autoLink.autoLinked.filter((id: string) => exportedNormIds.includes(id));
-  if (autoLinked.length && exportDraft.exportSelection) exportDraft.exportSelection = {...exportDraft.exportSelection, autoLinked: autoLinked.length, central: autoLink.central?.text ?? ''};
+  if (autoLinked.length && exportDraft.exportSelection) exportDraft.exportSelection = {...exportDraft.exportSelection, autoLinked: autoLinked.length, central: autoLink.central?.text ?? '', underSub: autoLinked.filter((id: string) => autoLink.placed[id] !== autoLink.central?.id).length};
   const filename = get('filename', modelBasis ? modelTitle : exportDraft.title);
   const downloadName = exportFilename(filename, profile, meta.version);
   const pickedLines = framework.lines.filter(l => exportedNormIds.includes(l.id));
@@ -59,7 +59,7 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const planningIssues = planningReview(framework, draft, exportedNormIds);
   return {selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
-    modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', exportDraft, filename, downloadName, pickedLines, hasCriteria,
+    modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', autoLinkUnderSub: autoLinked.filter((id: string) => autoLink.placed[id] && autoLink.placed[id] !== autoLink.central?.id).length, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};
 }
 

@@ -1030,7 +1030,7 @@ export default function ResearchBuilder({
       {roots.length > 0 && <div className="research-toolbar">
         <span>{draft.included.length - free.length} van {countLabel(draft.included.length,'bouwstenen')} gekoppeld</span>
         {/* Niet-gekoppelde bouwstenen gaan in de export mee onder de centrale vraag (besluit 8 november 2026). */}
-        {!choosing && free.length>0 && <output className="research-unlinked-notice">{countLabel(free.length,'bouwstenen')} {free.length===1?'hoort':'horen'} nog bij geen vraag. In de export {free.length===1?'komt hij':'komen ze'} onder je centrale vraag.</output>}
+        {!choosing && free.length>0 && <output className="research-unlinked-notice">{countLabel(free.length,'bouwstenen')} {free.length===1?'hoort':'horen'} nog bij geen vraag. In de export {free.length===1?'komt hij':'komen ze'} bij een deelvraag met een verwant toetspunt, of anders onder je centrale vraag.</output>}
         {!choosing && <div className="research-route-actions">{roots.length===1&&<Button variant="outline" disabled={disabled} onClick={()=>chooseCentral(roots[0].id)}><ArrowLeft size={15}/>Terug naar mijn vraagopzet</Button>}<Button variant="outline" disabled={disabled || r.questions.length >= 200} onClick={() => chooseCentral()}><Plus size={16}/>Nieuwe vraagopzet</Button></div>}
       </div>}
       {(!roots.length || choosing) && startRoute==='choice' && <section className="question-entry" aria-label="Kies hoe je je vraag wilt maken">
