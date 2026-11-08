@@ -71,6 +71,14 @@ docker push <naam>/omnibus:<tag>
 
 De host draait daarna die image uit de registry in plaats van zelf te bouwen. Zet daar dezelfde omgevingsvariabelen als nu (`PUBLIC_ORIGIN`, `OMNIBUS_SLIPLANE_GATEWAY`).
 
+Op Windows met Docker Desktop doet `uitrol.ps1` dit in één keer. Zet `UITROLLEN.cmd` in de hoofdmap van de bouwmap en `uitrol.json` naast de database-zip:
+
+```json
+{"image":"<naam>/omnibus","tag":"<tag>","databaseSha256":"<hash>","codeRevision":"<commit>"}
+```
+
+Dubbelklik `UITROLLEN.cmd`. Het script controleert het controlegetal, start zo nodig Docker Desktop, bouwt, pusht en schrijft `uitrol-resultaat.json` (status, image, digest). Inloggen bij Docker Hub doe je eenmalig zelf met `docker login`; het script vraagt of bewaart geen inloggegevens. Zet daarna bij de host het image-label op de nieuwe tag en rol opnieuw uit.
+
 ## Controleren welke versie bezoekers krijgen
 
 `/api/v1/health` zegt alleen dat de server reageert. `/api/v1/version` toont daarnaast het controlegetal van de webbestanden en, apart daarvan, de twee database-identiteiten. Deze kleine, alleen-lezen reactie bevat geen lokale paden, broninhoud of instellingen. Ze beschrijft de bestanden bij het starten; wijzig een draaiende image niet achteraf.
