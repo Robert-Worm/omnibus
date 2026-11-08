@@ -4,6 +4,10 @@
 - [ ] `git push -u origin toetspunten-auditor`; daarna pull request naar `main` met verwijzing naar deze map.
 - [ ] Nieuwe database na de herschrijving: release maken (de beheerder uploadt), daarna `database-release.mjs` en Dockerfile omzetten.
 
+**Online versie draait nu zonder GitHub (8 november 2026)**
+- Sinds 8 november draait omnibus.rijksmap.nl op de Sliplane-service `omnibus-image`, image `docker.io/robertworm/omnibus:0.1.11` (digest `5e17794f…fd51e5587`), gebouwd met `hosting/container/Dockerfile.lokaal` uit commit 408c12c en database v0.1.11. De oude service `omnibus` (GitHub-bron) staat op pauze, niet verwijderd.
+- [ ] Als GitHub terug is: kiezen of de host weer vanuit GitHub bouwt (domein terug naar `omnibus`, `omnibus-image` pauzeren) of bij de image blijft.
+
 **Issues**
 - [ ] Nieuwe story onder epic #322: *Toetspunten vanuit de auditor* (besluit 7 november), met de checklist uit `toetspunten.md`. Bovenaan zetten in `.github/overdracht/volgorde.json`.
 - [ ] #322: link naar het voorstel (Claude-document *Toetspunten vanuit de auditor*) en de besluiten van 7 november.
@@ -44,6 +48,13 @@ Bevat v0.1.5 tot en met v0.1.9. Publiceer bij voorkeur alleen deze als `database
 Bevat v0.1.5 tot en met v0.1.8. Publiceer bij voorkeur alleen deze als `database-2026-11-08-normen` (titel *Database 8 november 2026 · normen hersteld · v0.1.9*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-normen-2026-11-08\`. Release `f341e916…098ce`, publicatie `e406b882…69f14`, catalogue.sqlite `e672b356…6f8ac`. Bouwbestanden: `work/dora-ronde9-20261108/`.
 
 - Zes normen en één beheersmaatregel: alleen fouten hersteld (besluit 8 november). Drie toetsen zonder werktaal. Misleidende afbakeningszin bij DORA vervangen.
+
+## Database v0.1.11 · werktaal (8 november 2026)
+
+Bevat v0.1.8 tot en met v0.1.10. Publiceer bij voorkeur alleen deze als `database-2026-11-08-werktaal` (titel *Database 8 november 2026 · werktaal · v0.1.11*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-werktaal-2026-11-08\`. Release `129c31b9…7de156`, publicatie `898d05f8…6daee`, zip `e96ca05a…dccc8731`. Bouwbestanden: `work/dora-ronde11-20261108/`. Draait al online via de image.
+
+- Werktaal uit alle zichtbare hulpvelden (985 zinnen), betekenis gecontroleerd door aparte reviewers; 45 correcties.
+- Eigen afbakening en voorwaarden voor de 21 nieuwe toetspunten; herhaald bewijs bij bestaan vervangen door een verwijzing naar opzet; vier normcitaten hersteld.
 
 ## Database v0.1.8 · herstel na panelronde 3 (8 november 2026)
 
