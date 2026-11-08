@@ -60,6 +60,17 @@ Deze keuze komt uitsluitend uit het ingestelde `PUBLIC_ORIGIN`, nooit uit proxyh
 
 Pas `DATABASE_URL` en `DATABASE_SHA256` aan in de Dockerfile én in `scripts/database-release.mjs` (de installatieopdracht); een test bewaakt dat ze gelijk zijn. Push, laat de host opnieuw bouwen en controleer de online versie. Het controlegetal van de zip staat in `SHA256SUMS.txt` van de release-assistent.
 
+### Bouwen zonder GitHub
+
+Is GitHub niet bereikbaar, gebruik dan `Dockerfile.lokaal`. Die haalt de database niet op, maar leest de zip uit de bouwmap: `hosting/container/database/omnibus-database.zip` (staat buiten Git). Het controlegetal is verplicht en wordt net zo gecontroleerd.
+
+```text
+docker build -f hosting/container/Dockerfile.lokaal --build-arg DATABASE_SHA256=<hash> --build-arg OMNIBUS_CODE_REVISION=<commit> -t <naam>/omnibus:<tag> .
+docker push <naam>/omnibus:<tag>
+```
+
+De host draait daarna die image uit de registry in plaats van zelf te bouwen. Zet daar dezelfde omgevingsvariabelen als nu (`PUBLIC_ORIGIN`, `OMNIBUS_SLIPLANE_GATEWAY`).
+
 ## Controleren welke versie bezoekers krijgen
 
 `/api/v1/health` zegt alleen dat de server reageert. `/api/v1/version` toont daarnaast het controlegetal van de webbestanden en, apart daarvan, de twee database-identiteiten. Deze kleine, alleen-lezen reactie bevat geen lokale paden, broninhoud of instellingen. Ze beschrijft de bestanden bij het starten; wijzig een draaiende image niet achteraf.
