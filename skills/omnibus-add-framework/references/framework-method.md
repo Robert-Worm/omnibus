@@ -299,6 +299,34 @@ de bronbeperkingen van een kader ziet de gebruiker ook. Lessen:
   nieuw toetspunt krijgt precieze koppelingen, en de bronbeslissing
   (dispositie) van zijn bronrecord gaat naar *uitgewerkt tot toetspunt*.
 
+### Lessen uit panelronde 4 (8 november 2026)
+
+- **Nieuw of verplaatst toetspunt: kopieer geen hulpvelden van de buur.** Toepassing
+  (`scope`), actoren (`addressees`), voorwaarden, uitzonderingen, notities en de
+  toetsgrens per fase horen bij de eigen bepaling. Schrijf ze opnieuw naast de
+  bronpassage. Bij verplaatsen naar een andere norm gaan `criterion_id`, `chapter`
+  én `objective_ids` mee, anders toont de export doel, risico en maatregel van de
+  oude norm.
+- **Actor in de toetspunttekst.** Geldt een bepaling alleen voor bepaalde
+  instellingen (zoals artikel 23 DORA), noem die in het toetspunt zelf, niet alleen
+  in de relevantie.
+- **Werktaal: scan álle velden die de gebruiker ziet**, niet een deel. Dat zijn ook
+  de titel, vindplaats en omschrijving (`assertion`) van een bronrecord, de
+  voorwaarde per actor, de uitleg bij een bronkoppeling, de afbakening van een
+  interviewvraag en de route van een vraagopzet. Herschrijf per zin. Pas kopieën van
+  bronrecords elders mee aan. Hoofdlettermarkeringen (*OF*, *EN*) worden gewone
+  woorden.
+- **Bewijs niet herhalen.** Het bewijs bij bestaan verwijst naar het bewijs bij opzet
+  ("toepassing in concrete gevallen van wat bij opzet staat") en noemt alleen wat
+  erbij komt.
+- **Toon het eigen toetspunt.** Een bronkoppeling die de tekst van een ander
+  (gesplitst) toetspunt toont, krijgt de tekst van het eigen toetspunt.
+- **Context gewijzigd, pin bijwerken.** `lib/framework-about-guidance.mjs` toont de
+  beoordeelde uitleg op *Over* alleen bij een ongewijzigde context; werk de pin bij
+  na een wijziging van beperkingen of toepassing.
+- **Controleer elke eigen wijziging ook in de export**, niet alleen in de viewer:
+  viewer en export lezen deels andere velden.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
