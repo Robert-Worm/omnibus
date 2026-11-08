@@ -281,6 +281,24 @@ de vertaling naar wat hij vaststelt. Herstel in een norm alleen fouten:
 werktaal, interne codes, plakfouten (*20-modellen*, *Alleen28(2)*), spelfouten
 en verminkte verwijzingen.
 
+### Hulpteksten zonder werktaal (ronde 8, 8 november 2026)
+
+Toepassing, notities, toetsgrens en -reden, uitleg bij een bronkoppeling,
+afbakening van een interviewvraag, voorwaarden en notities bij een bronrecord en
+de bronbeperkingen van een kader ziet de gebruiker ook. Lessen:
+
+- Herschrijf **per zin**, niet per veld: verzamel de unieke zinnen met een code,
+  label of plakfout en laat elke zin apart herschrijven met gelijke betekenis.
+  Zo blijft de rest van een lang veld exact gelijk.
+- Een interne procesnotitie (reviewronde, bestand, telling van ID's) vervalt.
+  Een open bronvraag blijft een open bronvraag, in gewone woorden.
+- Een bronrecord kan als kopie elders staan (bijv. `layeredParentRelations`).
+  Pas die kopie mee aan, anders klopt de publicatie niet met de inhoud.
+- Bij splitsen: geef elk deel alleen de bronkoppelingen van zijn eigen
+  brontekst, plus de aanhef en reikwijdte die ook voor dat deel gelden. Een
+  nieuw toetspunt krijgt precieze koppelingen, en de bronbeslissing
+  (dispositie) van zijn bronrecord gaat naar *uitgewerkt tot toetspunt*.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
