@@ -49,6 +49,14 @@ Bevat v0.1.5 tot en met v0.1.8. Publiceer bij voorkeur alleen deze als `database
 
 - Zes normen en één beheersmaatregel: alleen fouten hersteld (besluit 8 november). Drie toetsen zonder werktaal. Misleidende afbakeningszin bij DORA vervangen.
 
+## Database v0.1.12 · minder tekst (8 november 2026)
+
+Bevat v0.1.8 tot en met v0.1.11. Publiceer bij voorkeur alleen deze als `database-2026-11-08-minder-tekst` (titel *Database 8 november 2026 · minder tekst · v0.1.12*). Pakket: `D:\\Rijksmap-rapporten\\Project Omnibus\\release-package-minder-tekst-2026-11-08\\`. Release `81ffe097…61d3af`, publicatie `a5324b29…808997`, zip `ed939816…e4fd3ff`. Bouwbestanden: `work/dora-ronde12-20261108/`. Bouwmap voor de image: `omnibus-bouwmap-0.1.12` (commit 7babfe7).
+
+- Dubbele regels en zinnen binnen velden weg; kanttekeningen die bij bijna elk toetspunt stonden, staan één keer bij het kader.
+- 219 zinnen met Engels of interne codes herschreven (betekenisreview: 207 goed, 11 verbeterd); Engelse brontekst van GL34 blijft brontekst.
+- Normtekst 1502-C01-T01 zonder ingevoegde opmerking.
+
 ## Database v0.1.11 · werktaal (8 november 2026)
 
 Bevat v0.1.8 tot en met v0.1.10. Publiceer bij voorkeur alleen deze als `database-2026-11-08-werktaal` (titel *Database 8 november 2026 · werktaal · v0.1.11*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-werktaal-2026-11-08\`. Release `129c31b9…7de156`, publicatie `898d05f8…6daee`, zip `e96ca05a…dccc8731`. Bouwbestanden: `work/dora-ronde11-20261108/`. Draait al online via de image.
