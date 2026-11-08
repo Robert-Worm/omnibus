@@ -21,6 +21,7 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const selectedLines = framework.lines.filter(l => selection.included.includes(l.id));
   const profile = get('profile', suggestedExportProfile(selectedLines)), basis = get('basis', 'norms');
   const testScope = get<string[]>('testingAspects', []), testingTerminology = get('testingTerminology', 'obw');
+  const keyControl = get<boolean>('keyControl', false), riskProfile = String(profile) === 'risk';
   const storedMeta = get('meta', {version:'0.1', author:'', team:'', scope:exportScopeDefault(draft), change:'Eerste opzet'});
   const meta = {...storedMeta, scope:config.scopeFromInvestigation === true || !config.meta ? exportScopeDefault(draft) : storedMeta.scope};
   const focus = get('focus', researchSubjectDefault(draft).slice(0,160));
@@ -53,9 +54,10 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
     fontFamily, fontSize, focus, themeIds:selection.themeIds,
     excludedNorms:[...new Set([...selection.excludedNorms,...excludedNorms])], ...modelOptions,
     researchInterview:!modelBasis && profile === 'interview' ? interview : undefined,
-    testingAspects:!modelBasis && profile === 'testing' && hasCriteria ? testScope : undefined, testingTerminology};
+    testingAspects:!modelBasis && profile === 'testing' && hasCriteria ? testScope : undefined, testingTerminology,
+    ...(!modelBasis && riskProfile && keyControl ? {keyControl:true} : {})};
   const planningIssues = planningReview(framework, draft, exportedNormIds);
-  return {selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
+  return {selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};

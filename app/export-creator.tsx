@@ -70,7 +70,7 @@ export default function ExportCreator({
       };
   }
   const {
-    selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
+    selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
@@ -82,6 +82,7 @@ export default function ExportCreator({
   const questions = choices.questions;
   const setBasis = setting('basis', basis), setTestScope = setting('testingAspects', testScope);
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
+  const setKeyControl = setting('keyControl', keyControl);
   const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
   const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
   const setAccent = setting('accent', accent), setColorMode = setting('colorMode', colorMode);
@@ -219,6 +220,18 @@ export default function ExportCreator({
             <p>{testingAspectLabel("bestaan", testingTerminology)} veronderstelt een ingerichte maatregel;
               {" "}{testingAspectLabel("werking", testingTerminology)} bovendien een afgebakende periode. Je Excelbestand bevat één rij per bouwsteen.</p>
           </details>
+        </fieldset>
+      )}
+      {profile === "risk" && !modelBasis && hasCriteria && (
+        <fieldset className="creator-testing-aspects">
+          <legend>Extra kolom</legend>
+          <div>
+            <label data-selected={keyControl} htmlFor="risk-key-control">
+              <Checkbox id="risk-key-control" checked={keyControl} onCheckedChange={(v) => { setKeyControl(v === true); setSaved(false); setError(""); }}/>
+              <span>Key control (ja/nee)</span>
+            </label>
+          </div>
+          <p className="creator-help">Leeg om in te vullen: kies per beheersmaatregel of die op zichzelf het risico afdekt. De bron zegt daar niets over.</p>
         </fieldset>
       )}
             {(selectedModels.length > 0 || modelBasis) && (
