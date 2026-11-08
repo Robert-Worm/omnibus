@@ -12,3 +12,5 @@ agent-output/
 *.sqlite
 *.zip
 .env*
+# Uitzondering: de database voor Dockerfile.lokaal.
+!hosting/container/database/omnibus-database.zip

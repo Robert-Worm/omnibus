@@ -6,7 +6,7 @@
 //
 // Weigert bij een afwijkend controlegetal, vreemde paden in de zip of een bestaande map.
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { inflateRawSync } from "node:zlib";
@@ -149,10 +149,24 @@ export async function haalDatabase({ url, verwacht, out, haal = fetch }) {
   return bestanden.map((b) => b.naam);
 }
 
+/** Zelfde controle voor een zip die al lokaal staat (uitrol buiten GitHub om, 8 november 2026). */
+export function pakDatabaseUit({ zip, verwacht, out }) {
+  if (!/^[0-9a-f]{64}$/.test(verwacht)) throw new Error("verwacht controlegetal moet 64 hextekens zijn");
+  if (existsSync(out)) throw new Error(`de map bestaat al: ${out}`);
+  const buf = readFileSync(zip);
+  if (buf.length > MAX_ZIP) throw new Error('zip te groot');
+  const bestanden = controleerArchief(buf, verwacht);
+  mkdirSync(out, { recursive: true });
+  for (const b of bestanden) writeFileSync(path.join(out, b.naam), b.inhoud);
+  return bestanden.map((b) => b.naam);
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const a = process.argv.slice(2), w = (n) => a[a.indexOf(n) + 1];
   try {
-    const namen = await haalDatabase({ url: w("--url"), verwacht: w("--sha256"), out: path.resolve(w("--out")) });
+    const namen = a.includes("--zip")
+      ? pakDatabaseUit({ zip: path.resolve(w("--zip")), verwacht: w("--sha256"), out: path.resolve(w("--out")) })
+      : await haalDatabase({ url: w("--url"), verwacht: w("--sha256"), out: path.resolve(w("--out")) });
     console.log(`Database opgehaald en gecontroleerd: ${namen.join(", ")}`);
   } catch (fout) {
     console.error(`Database ophalen mislukt: ${fout.message}`);

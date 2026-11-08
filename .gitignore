@@ -982,3 +982,6 @@ __pycache__/
 /scripts/wwke-text-review.mjs
 /skills/omnibus-curate-themes/scripts/inventory.test.mjs
 /skills/omnibus-review-audit-quality/scripts/score.test.mjs
+
+# Database voor Dockerfile.lokaal; nooit in Git.
+hosting/container/database/

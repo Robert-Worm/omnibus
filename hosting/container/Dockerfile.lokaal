@@ -1,0 +1,48 @@
+# Omnibus als online versie, gebouwd zonder GitHub (8 november 2026).
+# Gelijk aan Dockerfile, maar de database-zip staat in de bouwmap:
+#   hosting/container/database/omnibus-database.zip
+# Het controlegetal wordt op dezelfde manier gecontroleerd. Gebruik dit als GitHub niet
+# bereikbaar is; zet de image dan in een registry en laat de host die image draaien.
+#
+#   docker build -f hosting/container/Dockerfile.lokaal --build-arg DATABASE_SHA256=<hash> --build-arg OMNIBUS_CODE_REVISION=<commit> -t <naam>/omnibus:<tag> .
+#
+# Op je eigen computer (alleen Docker nodig, geen kopie van de code):
+#   docker build -t omnibus -f hosting/container/Dockerfile https://github.com/Robert-Worm/omnibus.git#main
+#   docker run --rm -p 8080:8080 omnibus
+#   en open http://localhost:8080
+#
+# Online: geef PUBLIC_ORIGIN mee met het openbare https-adres, bijvoorbeeld
+#   docker run -p 8080:8080 -e PUBLIC_ORIGIN=https://omnibus.rijksmap.nl omnibus
+#
+# Een nieuwe database? Pas DATABASE_URL en DATABASE_SHA256 hieronder aan (of geef ze
+# mee als build-argument) en bouw opnieuw.
+
+# Official multi-platform index verified 2026-10-24; keep both stages identical.
+# Verification and recovery: docs/beheer/storingen-en-herstel.md
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS bouw
+WORKDIR /bron
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+COPY . .
+ARG DATABASE_SHA256
+ARG OMNIBUS_CODE_REVISION
+# Sliplane supplies this public build identifier; never use a runtime override.
+ARG SLIPLANE_COMMIT_HASH
+RUN test -n "$DATABASE_SHA256" \
+ && node scripts/fetch-release-database.mjs --zip hosting/container/database/omnibus-database.zip --sha256 "$DATABASE_SHA256" --out /database \
+ && node scripts/check-runtime-database.mjs --settings /database/local-build.json \
+ && OMNIBUS_CODE_REVISION="${OMNIBUS_CODE_REVISION:-$SLIPLANE_COMMIT_HASH}" npm run build:runtime -- --settings /database/local-build.json \
+ && npm run package:runtime -- --web-root runtime-build --database /database/catalogue.sqlite --out /pakket
+
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20
+ENV NODE_ENV=production
+# Standaard voor gebruik op je eigen computer; een host zet hier het openbare https-adres.
+# Een andere poort lokaal (-p 3000:8080)? Geef dan PUBLIC_ORIGIN=http://localhost:3000 mee.
+ENV PUBLIC_ORIGIN=http://localhost:8080
+COPY --from=bouw --chown=root:root --chmod=a-w /pakket /app/omnibus-runtime
+COPY --from=bouw --chown=root:root --chmod=a-w /database /var/lib/omnibus
+WORKDIR /app/omnibus-runtime
+USER 1000:1000
+EXPOSE 8080
+# PORT geeft de host door; PUBLIC_ORIGIN is het adres waarop bezoekers de app openen.
+CMD ["sh", "-c", "exec node --max-old-space-size=200 scripts/start-runtime-package.mjs --settings /var/lib/omnibus/local-build.json --public-origin \"$PUBLIC_ORIGIN\" --listen-host 0.0.0.0 --port \"${PORT:-8080}\""]
