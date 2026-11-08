@@ -31,6 +31,14 @@ Bevat alles van v0.1.5. Klaar, nog niet gepubliceerd. Pakket: `D:\Rijksmap-rappo
 - Bouwbestanden: `work/dora-ronde6-20261107/` (apply6, renew6, build6: nieuwe ID's direct na hun buur; extra bronresources per kader).
 - Open: bij 2 nieuwe toetspunten is de bronkoppeling die van het naastgelegen toetspunt (geen eigen bronrecord gevonden); BRRD artikel 7 (groepsherstelplan) wacht op de geconsolideerde tekst; NOREA-werkbladrijen als bronpassage (nieuw brondocument nodig).
 
+## Database v0.1.10 · artikel 23 en toepassing (8 november 2026)
+
+Bevat v0.1.5 tot en met v0.1.9. Publiceer bij voorkeur alleen deze als `database-2026-11-08-artikel23` (titel *Database 8 november 2026 · artikel 23 en toepassing · v0.1.10*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-artikel23-2026-11-08\`. Release `89598dde…cba37`, publicatie `3ec79d07…d4b85`, catalogue.sqlite `46d7eeaf…036c4`. Bouwbestanden: `work/dora-ronde10-20261108/`.
+
+- Nieuw toetspunt DORA-PILOT20-N01-P03-N1 (artikel 23), uitgewerkt en apart gereviewd; bronbeslissing van het record naar *uitgewerkt*.
+- Toepassing van DORA en RTS 2024/1774 noemt wie onder artikel 16, lid 1, valt.
+- Let op: `lib/framework-about-guidance.mjs` pint de context per kader; bij elke wijziging van context of beperkingen de pin bijwerken (zes kaders herpind in deze branch).
+
 ## Database v0.1.9 · normen hersteld (8 november 2026)
 
 Bevat v0.1.5 tot en met v0.1.8. Publiceer bij voorkeur alleen deze als `database-2026-11-08-normen` (titel *Database 8 november 2026 · normen hersteld · v0.1.9*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-normen-2026-11-08\`. Release `f341e916…098ce`, publicatie `e406b882…69f14`, catalogue.sqlite `e672b356…6f8ac`. Bouwbestanden: `work/dora-ronde9-20261108/`.

@@ -46,6 +46,6 @@ Besluiten van de beheerder: zie `besluiten.md` (8 november). Verwerkt in `work/d
 | 8 | Fouten in normen | Klaar in v0.1.9: zes normen en één beheersmaatregel hersteld, norm volgt de bron. |
 | 9 | Vindplaatsen RTS 1773, 301, 532 | Klaar in de app: artikel, lid en onder uit het record-ID; geen *artikel 1, 0(a)* meer. Alleen weergave; de bron blijft gelijk. |
 | 10 | Standaardzinnen, Markdown, tijd | Klaar in de app: algemene bewijszin één keer als toelichting; Toetsuitvoering in Markdown met echte koppen; datum in lokale tijd. |
-| 11 | Wensen | Deels: legenda bij *Grondslag* in het register. Open: velden populatie, steekproef, review, actie, eigenaar, deadline; koppeling NOREA- en RTS-toetspunt; artikel 23 DORA (nu alleen context; nieuw toetspunt vraagt besluit); uitleg wie onder artikel 16, lid 1 valt. |
+| 11 | Wensen | Klaar: legenda bij *Grondslag*; RCM met kolom *Eigenaar* en fasekoppen (advies van drie experts: geen deadline, populatie of steekproef in de RCM); NOREA- en RTS/ITS-normen verwijzen naar elkaar (161 koppelingen); artikel 23 DORA als toetspunt (v0.1.10); uitleg artikel 16, lid 1 op *Over*. |
 
 Controles: bronpassages letterlijk, vraagscan gelijk aan ronde 7, toetspuntcontrole gelijk aan ronde 7 op de toetspuntteksten.
