@@ -327,6 +327,50 @@ de bronbeperkingen van een kader ziet de gebruiker ook. Lessen:
 - **Controleer elke eigen wijziging ook in de export**, niet alleen in de viewer:
   viewer en export lezen deels andere velden.
 
+### Minder tekst en uitvoerbare toetspunten (besluiten 8 november 2026, ronde 12)
+
+Aanleiding: het panel over toetspunt 2024/1502-C01-T01. De beheerder vond de norm
+technisch, de afkortingen onbekend, de tekst afgekapt en het toetspunt niet
+uitvoerbaar.
+
+- **Eén toetspunt is één toetsbare eis, meestal één bronbepaling (splitsregel).**
+  Bundel geen reeks verwijzingen ("artikel 2, lid 1, artikel 3, lid 1, en artikel 5,
+  lid 1 …") of meerdere stappen of uitzonderingen in één toetspunt. Elke stap,
+  voorwaarde of uitzondering die je apart kunt vaststellen, wordt een eigen toetspunt
+  met een titel die zegt wat je vaststelt. Een lange opsomming van verwijzingen is
+  een signaal om te splitsen, niet om in te korten.
+- **Uitvoerbaar betekent:** wie of wat je onderzoekt, wat je opvraagt en bij wie, en
+  welk document het bewijs is. Begin de handeling met een werkwoord ("Vraag … op",
+  "Ga na dat …", "Kies …"). Een handeling zonder object of document is geen toets.
+- **Doelgroep per kader.** Beschrijft een kader taken van toezichthouders (2024/1502,
+  oversight, gezamenlijke onderzoeksteams), dan staat dat in `lib/source-scope.mjs`
+  (`role: 'toezichthouder'` of `'beide'`). De viewer en de catalogus tonen dan een
+  duidelijke melding. Schrijf de toetspunten voor wie zo'n onderzoek uitvoert. Doe
+  niet alsof een financiële instelling het kan toetsen.
+- **Norm blijft bronnorm, zonder ingevoegde opmerkingen.** Een opmerking als "(zo
+  staat het in de bron …)" hoort in een notitie, niet in de normtekst.
+- **Niets dubbel.** Dezelfde regel of zin staat maar één keer in een veld.
+  Kanttekeningen die bij (vrijwel) alle toetspunten van een kader gelden, staan één
+  keer bij het kader (*Over dit kader*), niet bij elk toetspunt. De eerste regel van
+  de toepassing (voor wie) blijft bij het toetspunt.
+- **Toetsaanpak: alleen handeling en verwacht bewijs.** De viewer toont de
+  bewijs- en interpretatiegrens en de reden niet meer; de export neemt de grens ook
+  niet op. Zet een grens die echt nodig is in de handeling zelf of in één
+  kanttekening bij het kader.
+- **Afkortingen** staan in `lib/afkortingen.mjs`. De viewer markeert ze en geeft de
+  betekenis bij aanwijzen. In hulpteksten staat de eerste keer ook de volledige
+  vorm erbij, in de normtekst niet. Zie je een nieuwe afkorting, voeg die dan toe.
+- **Werktaalscan breder dan codes:** zoek ook naar Engelse zinnen (veel Engelse
+  functiewoorden, weinig Nederlandse), labels als `Q2/Q4/Q8:`, `R-E03`,
+  `supp:`, `I44:I47`, `(HOLD)` en plakfouten als `De302-definitie`. Engelstalige
+  brondocumenten (records met `-EN-`) zijn brontekst en blijven staan. Zie
+  `work/dora-ronde12-20261108/zinnen12.mjs` voor de gebruikte controle.
+- **Status 'kandidaat, niet toegelaten'** geldt voor alle DORA-kaders. Gebruik die
+  status niet als kwaliteitsfilter. Beoordeel kiesbaarheid inhoudelijk: een concrete
+  handeling en concreet bewijs, en geen werktaal. Gebruik daarvoor de werktaalscan en
+  een steekproef op uitvoerbaarheid; een punt dat niet voldoet, wordt niet kiesbaar
+  (HOLD met reden) of wordt verbeterd.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
