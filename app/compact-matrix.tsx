@@ -65,7 +65,7 @@ export default function CompactMatrix({
   embedded = false,
   deferRows = true,
   showProvenance = true,
-  initialTextDensity = 'comfortable',
+  initialTextDensity = 'full',
   textDensity,
   combineIdentity = false,
   groupLines,

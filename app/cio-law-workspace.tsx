@@ -26,7 +26,8 @@ import {
 } from "@/lib/cio-law-adapter.mjs";
 import "./cio-law-workspace.css";
 import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
-import {lawTestPhases,lawPhaseContext} from '@/lib/law-test-phases.mjs';
+import {lawTestPhases} from '@/lib/law-test-phases.mjs';
+import {AfkortingText} from './term-help';
 
 type Actor = { label: string; role: string; condition?: string | null };
 type Phase = {
@@ -322,7 +323,7 @@ export function SourceReferences({ ids }: { ids: string[] }) {
 }
 
 export function Approach({ point }: { point: Point }) {
-  const {phases,shared}=lawTestPhases(point.phase_plans);
+  const {phases}=lawTestPhases(point.phase_plans);
   return (
     <div className="cio-approach">
       <p className="cio-muted">
@@ -331,47 +332,27 @@ export function Approach({ point }: { point: Point }) {
       </p>
       <div className="cio-phase-grid">
         {phases.map(({key,label,plan:p}) => {
-          const context=lawPhaseContext(p);
           return (
             <section key={key} className={`cio-phase cio-phase-${key}`}>
               <h4>{label}</h4>
-              <p className="cio-meta">
-                {p.status === "APPLICABLE" ? "Toepasselijke onderzoeksfase" : "Niet van toepassing"}
-              </p>
+              {p.status !== "APPLICABLE" && <p className="cio-meta">Niet van toepassing</p>}
               {p.action && (
                 <p className="cio-phase-action">
                   <strong>Handeling</strong>
                   <br />
-                  {p.action}
+                  <AfkortingText text={p.action} voluit/>
                 </p>
               )}
               {p.expected_evidence && (
                 <p className="cio-phase-evidence">
                   <strong>Verwacht bewijs</strong>
                   <br />
-                  {p.expected_evidence}
+                  <AfkortingText text={p.expected_evidence} voluit/>
                 </p>
               )}
-              {p.interpretation_boundary && !shared.some(b=>b.text===p.interpretation_boundary) && (
-                <p className="cio-phase-boundary">
-                  <strong>Bewijs- en interpretatiegrens</strong>
-                  <br />
-                  {p.interpretation_boundary}
-                </p>
-              )}
-              {shared.some(b=>b.text===p.interpretation_boundary) && <p className="cio-phase-boundary">De gezamenlijke bewijs- en interpretatiegrens staat hieronder.</p>}
-              {context&&<p className="cio-phase-reason">
-                <strong>Toepassing van de toets</strong>
-                <br />
-                {context}
-              </p>}
             </section>
           );
         })}
-        {shared.map(boundary=><section key={boundary.text} className="cio-phase" style={{gridColumn:'1 / -1'}}>
-          <h4>Bewijs- en interpretatiegrens · {boundary.labels.join(' en ')}</h4>
-          <p className="cio-phase-boundary whitespace-pre-line">{boundary.text}</p>
-        </section>)}
       </div>
     </div>
   );

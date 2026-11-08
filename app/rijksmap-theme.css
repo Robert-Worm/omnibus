@@ -491,3 +491,4 @@ body {
 .field-requirement { font-size:12px; font-weight:400; color:var(--rm-muted); margin-left:6px; }
 .link-scope-hint { display:block; font-size:13px; margin-top:4px; color:var(--rm-muted); }
 @media(max-width:480px) { [data-slot=sheet-content].project-recovery-sheet { padding:16px; } }
+.framework-app button.term-help-trigger.afkorting-trigger,[data-slot=sheet-content] button.term-help-trigger.afkorting-trigger{text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,currentColor 55%,transparent);text-underline-offset:3px}

@@ -489,7 +489,7 @@ export function FoundationCatalogue({
                   {frameworkTitle(s.title)}
                 </button>
                 </h4>
-                {scopeOfSource(s.id)&&<p className="catalogue-card-scope"><Users size={14} aria-hidden="true"/><span>Voor: <strong>{scopeOfSource(s.id)!.text}</strong></span></p>}
+                {scopeOfSource(s.id)&&<p className="catalogue-card-scope"><Users size={14} aria-hidden="true"/><span>Voor: <strong>{scopeOfSource(s.id)!.text}</strong>{scopeOfSource(s.id)!.role==='toezichthouder'&&<em className="catalogue-card-role"> · onderzoek bij een toezichthouder</em>}</span></p>}
                 <p>{s.usage}</p>
                 {search.contextSourceIds.includes(s.id) && <span className="source-meta">Gevonden via normen in deze bron</span>}
                 <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> groepen</span><span><strong>{lawCounts.norms}</strong> normen</span><span><strong>{selection.total}</strong> selecteerbare toetspunten</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>

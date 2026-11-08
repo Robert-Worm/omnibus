@@ -155,3 +155,4 @@ html[data-appearance=dark] .framework-app #main-workspace :is(.workflow-next,.la
  .viewer-heading-actions { flex-wrap:wrap; }
  .framework-app #main-workspace[data-viewer=true] .open-item-workspace { row-gap:.25rem; }
 }
+.afkorting-voluit{color:#5b6f83}

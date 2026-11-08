@@ -312,3 +312,4 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] .research-menu [data-highlighted] { background:#29455f; color:var(--foreground); }
   html[data-appearance=dark] .research-menu [data-variant=destructive] { color:#ffcfce; }
 }
+html[data-appearance=dark] .law-audience-notice{background:color-mix(in srgb,#e3c98b 14%,transparent);border-color:color-mix(in srgb,#e3c98b 45%,transparent);color:inherit}html[data-appearance=dark] .law-audience-beide{background:color-mix(in srgb,#9fb6cc 12%,transparent);border-color:color-mix(in srgb,#9fb6cc 40%,transparent)}html[data-appearance=dark] .catalogue-card-role{color:#e8c37a}

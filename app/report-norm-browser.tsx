@@ -20,7 +20,7 @@ const columns=[{id:'objective',title:'Doel'},{id:'risk',title:'Risico'},{id:'con
 type Counts=Record<string,{selected:number;total:number;legacySelected?:boolean}>;
 type Group={id:string;title:string;lines:Line[];allRows:Line[]};
 export default function ReportNormBrowser({title,lines,draft,viewDraft,counts,searchPoints=catalogue.points,viewKey,disabled,onChange,onOpen,onPrepare,onSelect,reveal,onRevealComplete,resetRequest,onResetComplete}:{title:string;lines:Line[];draft:Draft;viewDraft:Draft;counts:Counts;searchPoints?:{id:string;legacy_line_id:string;title:string;text:string}[];viewKey:string;disabled:boolean;onChange:(d:Draft)=>void;onOpen:(id:string,field?:ElementKey)=>void;onPrepare?:(id:string)=>void;onSelect:(ids:string[],value:boolean)=>void;reveal?:{id:string;nonce:number};onRevealComplete:()=>void;resetRequest:number;onResetComplete:()=>void}){
- const [view,setView,ready]=useBrowseState('report-browser-'+viewKey,{query:'',group:'',selectedOnly:false,columns:columns.map(c=>c.id),density:'comfortable'});
+ const [view,setView,ready]=useBrowseState('report-browser-'+viewKey,{query:'',group:'',selectedOnly:false,columns:columns.map(c=>c.id),density:'full'});
  const reset=()=>setView(v=>({...v,query:'',group:'',selectedOnly:false}));
  const revealHandled=useRef(0);
  useEffect(()=>{if(ready&&resetRequest){setView(v=>({...v,query:'',group:'',selectedOnly:false}));onResetComplete();}},[ready,resetRequest,setView,onResetComplete]);
@@ -34,7 +34,7 @@ export default function ReportNormBrowser({title,lines,draft,viewDraft,counts,se
  const visibleCounts=lawCountText(groups.flatMap(g=>g.lines.map(line=>({groupId:g.id,criterionId:line.id}))));
  const selection=reportSelection(lines,counts,draft.included);
  const visibleColumns=view.columns.filter(id=>columns.some(c=>c.id===id));
- const density=(['compact','comfortable','full'].includes(view.density)?view.density:'comfortable') as MatrixTextDensity;
+ const density=(['compact','comfortable','full'].includes(view.density)?view.density:'full') as MatrixTextDensity;
  return <section className="law-browser report-norm-browser" aria-label="Normen uit thema’s en processen">
   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{title}</h2><output aria-live="polite">{visibleCounts}</output></div><div className="law-selection-actions">
    <Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button>

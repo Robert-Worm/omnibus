@@ -149,3 +149,4 @@
 .catalogue-family-action button:hover{background:var(--rm-selected,var(--muted));text-decoration:underline}.catalogue-family-action button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .catalogue-card-scope{display:flex;align-items:baseline;gap:.4rem;margin:.15rem 0 .35rem;font-size:.8125rem;color:var(--muted-foreground)}.catalogue-card-scope strong{font-weight:600;color:var(--foreground)}.catalogue-card-scope svg{flex-shrink:0;align-self:center;color:var(--primary)}
 @media(max-width:700px){.directory-family-heading[data-action]{grid-template-columns:1fr}.catalogue-family-action{padding:0 1.2rem .6rem}}
+.catalogue-card-role{font-style:normal;color:#8a5a00}
