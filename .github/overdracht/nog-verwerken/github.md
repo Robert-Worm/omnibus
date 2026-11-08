@@ -31,6 +31,12 @@ Bevat alles van v0.1.5. Klaar, nog niet gepubliceerd. Pakket: `D:\Rijksmap-rappo
 - Bouwbestanden: `work/dora-ronde6-20261107/` (apply6, renew6, build6: nieuwe ID's direct na hun buur; extra bronresources per kader).
 - Open: bij 2 nieuwe toetspunten is de bronkoppeling die van het naastgelegen toetspunt (geen eigen bronrecord gevonden); BRRD artikel 7 (groepsherstelplan) wacht op de geconsolideerde tekst; NOREA-werkbladrijen als bronpassage (nieuw brondocument nodig).
 
+## Database v0.1.9 · normen hersteld (8 november 2026)
+
+Bevat v0.1.5 tot en met v0.1.8. Publiceer bij voorkeur alleen deze als `database-2026-11-08-normen` (titel *Database 8 november 2026 · normen hersteld · v0.1.9*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-normen-2026-11-08\`. Release `f341e916…098ce`, publicatie `e406b882…69f14`, catalogue.sqlite `e672b356…6f8ac`. Bouwbestanden: `work/dora-ronde9-20261108/`.
+
+- Zes normen en één beheersmaatregel: alleen fouten hersteld (besluit 8 november). Drie toetsen zonder werktaal. Misleidende afbakeningszin bij DORA vervangen.
+
 ## Database v0.1.8 · herstel na panelronde 3 (8 november 2026)
 
 Bevat v0.1.5 tot en met v0.1.7. Publiceer bij voorkeur alleen deze als `database-2026-11-08-herstel` (titel *Database 8 november 2026 · herstel na panelronde 3 · v0.1.8*). Pakket: `D:\Rijksmap-rapporten\Project Omnibus\release-package-herstel-2026-11-08\`. Release `e2659960…707e4`, publicatie `2c94dab8…d18e6`, catalogue.sqlite `8cd8e72f…12e58`. Bouwbestanden: `work/dora-ronde8-20261108/`.

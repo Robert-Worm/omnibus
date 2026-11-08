@@ -40,9 +40,12 @@ Besluiten van de beheerder: zie `besluiten.md` (8 november). Verwerkt in `work/d
 | 2, 8 | Werktaal in hulpteksten | Klaar voor toepassing, notities, toetsgrens en -reden, koppelingsuitleg, interviewafbakening, recordnotities en bronbeperkingen: 2.519 unieke zinnen per zin herschreven (zes agents), 121 bronbeperkingen leesbaar. Norm- en toetspuntteksten niet aangeraakt (besluit: norm blijft bronnorm). |
 | 3 | Uitsluiting, norm, brede koppeling | Klaar: 18 nieuwe toetspunten met precieze koppelingen; bronbeslissingen bijgewerkt; *Continuïteitsplannen actualiseren* staat nu onder norm N260. |
 | 4 | Plaatshouders | Klaar: één DORA-interviewvraag en één NOREA-route; beide vragen apart herbeoordeeld. |
-| 5 | Toetspunten vallen uit de export | Stap 3 toont nu hoeveel bouwstenen bij geen vraag horen en dat ze niet meegaan, met één klik *Koppel aan de centrale vraag*. Combineren van meerdere voorstellen blijft open. |
+| 5 | Toetspunten vallen uit de export | Klaar (besluit 8 november): niet-gekoppelde bouwstenen gaan in de export altijd mee onder de centrale vraag; stap 3, het exportscherm en de Markdown zeggen dat. Het project zelf verandert niet. Getest: 71 van 71. |
 | 6 | Interviewniveau | Geen standaard op alle niveaus (besluit). Wel: heeft een toetspunt geen vraag op het gekozen niveau maar wel op een ander, dan zegt de export welk niveau. |
 | 7 | Grote Excel | Klaar: werkboek wordt gecomprimeerd (deflate); inhoud gelijk. Voorbeeld: 27,6 MB → 3,5 MB. |
-| 9–11 | Overige | Open. |
+| 8 | Fouten in normen | Klaar in v0.1.9: zes normen en één beheersmaatregel hersteld, norm volgt de bron. |
+| 9 | Vindplaatsen RTS 1773, 301, 532 | Klaar in de app: artikel, lid en onder uit het record-ID; geen *artikel 1, 0(a)* meer. Alleen weergave; de bron blijft gelijk. |
+| 10 | Standaardzinnen, Markdown, tijd | Klaar in de app: algemene bewijszin één keer als toelichting; Toetsuitvoering in Markdown met echte koppen; datum in lokale tijd. |
+| 11 | Wensen | Deels: legenda bij *Grondslag* in het register. Open: velden populatie, steekproef, review, actie, eigenaar, deadline; koppeling NOREA- en RTS-toetspunt; artikel 23 DORA (nu alleen context; nieuw toetspunt vraagt besluit); uitleg wie onder artikel 16, lid 1 valt. |
 
 Controles: bronpassages letterlijk, vraagscan gelijk aan ronde 7, toetspuntcontrole gelijk aan ronde 7 op de toetspuntteksten.
