@@ -15,3 +15,7 @@
 | 2026-11-07 | De 15 bepalingen zonder toetspunt (lijst in `toetspunten.md`) krijgen alle een toetspunt, geschreven en gereviewd volgens de auditorstandaard | Keuze beheerder |
 | 2026-11-07 | De NOREA-werkbladen *DORA RTS IM (Major Incidents)*, *DORA RTS TPPM* en *DORA RTS SCM* opnemen als ze op te halen zijn; anders blijft de verwijzing | Keuze beheerder |
 | 2026-11-07 | Richtlijn 2022/2556: luidt de bepaling *de lidstaten eisen dat [entiteit] …*, dan is de entiteit de actor | Besluit tijdens de review van deel 14 |
+| 2026-11-08 | **Normtekst blijft bronnorm.** De norm geeft de norm uit het document weer, zo dicht mogelijk bij de brontekst, met precies wat de norm is. Niet herschrijven vanuit de auditor: de auditor moet de norm direct naast de bron kunnen leggen; de toetspunten zijn de vertaling. Alleen fouten herstellen (werktaal, interne codes, plakfouten, spelfouten, verminkte verwijzingen) | Beheerder na panelronde 3 |
+| 2026-11-08 | **Interviewniveaus blijven een keuze.** Geen standaard op alle niveaus. Wat de gebruiker op meerdere niveaus kiest, moet volledig in de export staan | Beheerder |
+| 2026-11-08 | **Export volledig door goede vragen.** Bij een combinatie van kaders zoveel mogelijk vragen voorstellen die de gekozen toetspunten dekken (overlap mag); toetspunten die echt niet passen, mogen buiten een vraag blijven, maar zichtbaar | Beheerder |
+| 2026-11-08 | **Excel kleiner zonder kwaliteitsverlies.** Verborgen bronbewijs dat de Excel niet gebruikt, verkleinen of weglaten | Beheerder |

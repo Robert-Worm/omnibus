@@ -272,6 +272,15 @@ meegeleverde bron door een tweede reviewer naast de volledige wettekst leggen: o
 6 november wees die 5 van de 65 voorgestelde correcties af omdat de eerste
 reviewer op een verkeerde herinnering steunde.
 
+### Norm blijft bronnorm (besluit 8 november 2026)
+
+De **norm** geeft de norm uit het document weer, zo dicht mogelijk bij de
+brontekst, met precies wat de norm is. Schrijf de norm niet om vanuit de
+auditor: de auditor legt de norm direct naast de bron, en de toetspunten zijn
+de vertaling naar wat hij vaststelt. Herstel in een norm alleen fouten:
+werktaal, interne codes, plakfouten (*20-modellen*, *Alleen28(2)*), spelfouten
+en verminkte verwijzingen.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
