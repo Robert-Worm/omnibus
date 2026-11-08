@@ -6,12 +6,16 @@ import {modelDisplayName} from '../lib/interview-structure.mjs';
 import {suggestedExportProfile, researchSubjectDefault, exportScopeDefault, exportTitle} from '../lib/workflow-defaults.mjs';
 import {exportFilename} from '../lib/export-design.mjs';
 import {planningReview} from '../lib/planning-review.mjs';
+import {linkUnlinkedForExport} from '../lib/export-autolink.mjs';
 import type {Framework, Draft} from '../lib/framework-types';
 import type {LibraryModel} from './model-library';
 import type {InterviewSettingsValue} from './interview-settings';
 
 /** Immediate controls and validation inputs; never builds workbook worksheets. */
 export function exportInputs(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
+  // Niets valt stil weg: niet-gekoppelde bouwstenen gaan mee onder de centrale vraag (alleen in de export).
+  const autoLink = linkUnlinkedForExport(draft) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null};
+  draft = autoLink.draft;
   const get = <T,>(key: string, fallback: T): T => (config[key] as T) ?? fallback;
   const selection = scopedExportSelection(framework, draft);
   const selectedLines = framework.lines.filter(l => selection.included.includes(l.id));
@@ -31,6 +35,8 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const themes = selection.themes;
   const exportedNormIds = selection.included.filter((id: string) => !excludedNorms.includes(id));
   const exportDraft = {...exportDraftForSelection(draft, exportedNormIds), title:exportTitle(draft)};
+  const autoLinked = autoLink.autoLinked.filter((id: string) => exportedNormIds.includes(id));
+  if (autoLinked.length && exportDraft.exportSelection) exportDraft.exportSelection = {...exportDraft.exportSelection, autoLinked: autoLinked.length, central: autoLink.central?.text ?? ''};
   const filename = get('filename', modelBasis ? modelTitle : exportDraft.title);
   const downloadName = exportFilename(filename, profile, meta.version);
   const pickedLines = framework.lines.filter(l => exportedNormIds.includes(l.id));
@@ -51,7 +57,7 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const planningIssues = planningReview(framework, draft, exportedNormIds);
   return {selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
-    modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
+    modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};
 }
 

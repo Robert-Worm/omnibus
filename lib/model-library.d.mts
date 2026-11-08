@@ -12,7 +12,7 @@ export function scopedExportSelection(framework:Framework,draft:Draft):{
   included:string[];
 };
 export function exportDraftForSelection(draft:Draft,included:string[]):Draft & {
-  exportSelection:{chosen:number;exported:number;unlinked:number;excluded:number};
+  exportSelection:{chosen:number;exported:number;unlinked:number;excluded:number;autoLinked?:number;central?:string};
 };
 export function selectedModelOptions(model:LibraryModel|null|undefined,interviewSettings?:{
   levels:string[];starr:boolean;triangulation:boolean;

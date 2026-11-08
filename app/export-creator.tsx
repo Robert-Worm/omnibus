@@ -72,7 +72,7 @@ export default function ExportCreator({
   const {
     selection, selectedLines, profile, basis, testScope, testingTerminology, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
-    modelBasis, modelTitle, themes, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
+    modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
   } = useMemo(() => exportInputs(framework, draft, config, models), [framework, draft, config, models]);
   const request=useMemo(()=>({framework,draft,config,models}),[framework,draft,config,models]);
@@ -325,9 +325,9 @@ export default function ExportCreator({
                   </div>
                   </>}
                   <a href="#mijn-kader">{emptyFramework ? 'Naar stap 3: Bouw je kader' : 'Onderzoeksvragen en koppelingen wijzigen'}</a>
-                  {!!selection.excludedNorms.length && (
-                    <p className="creator-help">
-                      {selection.excludedNorms.length} niet-gekoppelde bouwstenen gaan niet mee.
+                  {autoLinked.length > 0 && (
+                    <p className="creator-help creator-autolink">
+                      {countLabel(autoLinked.length,'bouwstenen')} {autoLinked.length===1?'hoort':'horen'} bij geen deelvraag. In de export {autoLinked.length===1?'staat hij':'staan ze'} onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}, zodat er niets wegvalt. Wil je ze bij een deelvraag, koppel ze dan in stap 3.
                     </p>
                   )}
                   {!emptyFramework && !selection.included.length && (
