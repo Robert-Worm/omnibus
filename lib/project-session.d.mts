@@ -17,3 +17,4 @@ export function guardedProjectStore(storage:Pick<Storage,'getItem'|'setItem'>,ke
   raw:()=>string|null;save:(project:Project)=>void;saveSerialized:(text:string)=>void;checkpoint:(preserve?:boolean)=>void;
   acceptProject:(opened:ProjectReadResult,originalText:string,options?:{replace?:boolean;preservePrevious?:boolean})=>ProjectOpenReceipt;
 };
+export function opslagfoutTekst(error: unknown): string;

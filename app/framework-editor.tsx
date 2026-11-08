@@ -56,7 +56,7 @@ import CompactMatrix from "./compact-matrix";
 import ReportNormBrowser from './report-norm-browser';
 import ReportFrameworkAbout from './report-framework-about';
 import { cleanScopeDraft, admittedLines } from "@/lib/product-scope.mjs";
-import {makeProject,readProject,acceptProjectFile,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
+import {opslagfoutTekst,makeProject,readProject,acceptProjectFile,projectView,guardedProjectStore,projectContentEqual,PROJECT_KEY,MAX_PROJECT_BYTES,type Project} from '@/lib/project-session.mjs';
 import {expandProject} from '@/lib/project-codec.mjs';
 import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
@@ -352,7 +352,7 @@ export default function FrameworkEditor() {
       return true;
     } catch(e) {
       storageBlocked.current=true;
-      projectStatus.update({problem:true,message:(e instanceof Error ? e.message : 'Automatisch bewaren is niet gelukt.')+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
+      projectStatus.update({problem:true,message:opslagfoutTekst(e)+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
       return false;
     }
   }, [projectStatus]);
@@ -368,7 +368,7 @@ export default function FrameworkEditor() {
       onSaved:()=>projectStatus.update({savedLocally:true,problem:false,message:'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'}),
       onError:error=>{
         storageBlocked.current=true;
-        projectStatus.update({savedLocally:false,problem:true,message:(error instanceof Error?error.message:'Automatisch bewaren is niet gelukt.')+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
+        projectStatus.update({savedLocally:false,problem:true,message:opslagfoutTekst(error)+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
       },
     });
     backgroundSave.current=saver;
