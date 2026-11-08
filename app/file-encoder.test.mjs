@@ -5,7 +5,7 @@ import {createFileEncoder} from './file-encoder.ts';
 import {parseProjectText,serializeProject} from '../lib/project-codec.mjs';
 import {workbookFileSnapshot} from '../lib/workbook-file-snapshot.mjs';
 import {workbookPreviewSnapshot} from '../lib/workbook-preview-snapshot.mjs';
-import {workbookPackage,zipStored} from '../lib/excel-package.mjs';
+import {workbookPackage,zipWorkbook} from '../lib/excel-package.mjs';
 
 register('data:text/javascript,'+encodeURIComponent(`
  export function resolve(specifier,context,next){
@@ -82,7 +82,7 @@ test('download snapshot is cloneable and retains exact OOXML, formulas and sourc
  assert.equal(book.meta.exportedAt,oldDate);
  const expected={...book,meta:{exportedAt:newDate},sheets:[{...book.sheets[0],rows:[book.sheets[0].rows[0],[book.sheets[0].rows[1][0],new Date(newDate)]]}]};
  assert.deepEqual(workbookPackage(structuredClone(snapshot)),workbookPackage(expected));
- assert.deepEqual(new Uint8Array(encodeFile({kind:'xlsx',model:structuredClone(snapshot)})),zipStored(workbookPackage(expected)));
+ assert.deepEqual(new Uint8Array(encodeFile({kind:'xlsx',model:structuredClone(snapshot)})),zipWorkbook(workbookPackage(expected)));
  assert.deepEqual(snapshot.evidence,book.evidence);assert.deepEqual(snapshot.applicability,book.applicability);
  assert.throws(()=>workbookFileSnapshot(book,'bad date'),/exportdatum/);
  assert.throws(()=>workbookFileSnapshot({...book,sheets:[{...book.sheets[0],exportedAtCell:{row:1,column:1}}]}),/exportdatum/);
