@@ -373,6 +373,12 @@ uitvoerbaar.
 
 - Detailvenster (besluit beheerder 9 november 2026): doel, risico, beheersdoelstelling en beheersmaatregel blijven altijd bovenaan en zichtbaar, boven de norm en de toetspunten. Niet inklappen en niet naar onderen verplaatsen.
 
+### Besluiten 9 november 2026 (na panel op DORA v0.1.12)
+
+- **Norm:** sluit zo dicht mogelijk aan bij de wet- of kadertekst. Is die tekst begrijpelijk, neem hem dan over. Is hij lastig te lezen, omschrijf hem dan tot een begrijpelijk geheel. Alle elementen van de bronnorm moeten erin blijven: wie, wat, voorwaarden, termijnen, uitzonderingen. Geen gebiedende wijs ("Houd … bij"), maar een bewering over de normadressaat.
+- **Geen filter "Mijn organisatie"** voorlopig. Voor wie een toetspunt geldt, blijkt uit de toepassing, de bronpassage en Over dit kader.
+- **Uitvoerbaar en zelfstandig:** één toetspunt moet met één antwoord te beantwoorden zijn, zonder nuanceverschillen binnen het punt. Alles wat nodig is om te toetsen staat in het toetspunt zelf (en dus in de Excel-export): de auditor hoeft niet naar andere passages of documenten te zoeken. Een punt mag niet zo groot worden dat het meerdere oordelen vraagt; dan splitsen. Bij twijfel over de indeling (bijv. registers en meldformulieren met veel velden) adviseert eerst een panel van auditors over de meest uitvoerbare aanpak.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
