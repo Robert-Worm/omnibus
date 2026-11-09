@@ -1555,3 +1555,6 @@
   padding: 2px 0 2px 10px;
 }
 .research-unlinked-notice button { padding-inline: 6px; height: auto; }
+/* Panel 9 november 2026: de hulpregel boven de deelvragen mag niet over een weggescrolde kaart vallen. */
+.composer-branches .composer-note { margin:0 0 10px; line-height:1.5; }
+.composer-branches .composer-subquestions { border-top:1px solid #dbe5ee; padding-top:8px; }
