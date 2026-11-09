@@ -324,6 +324,7 @@ export function SourceReferences({ ids }: { ids: string[] }) {
 
 export function Approach({ point }: { point: Point }) {
   const {phases}=lawTestPhases(point.phase_plans);
+  const werkingOpen=werkingUitleg(point.phase_plans);
   return (
     <div className="cio-approach">
       <p className="cio-muted">
@@ -353,9 +354,26 @@ export function Approach({ point }: { point: Point }) {
             </section>
           );
         })}
+        {werkingOpen && (
+          <section className="cio-phase cio-phase-werking cio-phase-open">
+            <h4>Werking</h4>
+            <p className="cio-meta">Niet uitgewerkt voor dit toetspunt.</p>
+            <p className="cio-phase-action"><AfkortingText text={werkingOpen} voluit/></p>
+          </section>
+        )}
       </div>
     </div>
   );
+}
+
+// Werking zonder uitwerking: laat zien dat dit zo is, met de aanwijzing uit de data als die bruikbaar is
+// (besluit beheerder 9 november 2026; panel: de fase verdween zonder uitleg).
+const WERKING_STANDAARD='Wil je de werking toetsen? Kies dan een periode en een aantal gevallen in die periode. Ga per geval na of de handeling bij Bestaan is uitgevoerd.';
+function werkingUitleg(plans:Point['phase_plans']){
+  const w=(plans as Record<string,{status?:string;reason?:string}|undefined>).werking;
+  if(!w||w.status==='APPLICABLE')return '';
+  const reden=String(w.reason||'').replace(/^(?:ANALYST_PROPOSAL|REVIEWED_PROPOSAL|REVIEWED)\s*:\s*/u,'').trim();
+  return /^(Bepaal|Kies|Neem|Toets)\b/u.test(reden)?reden:WERKING_STANDAARD;
 }
 
 type WorkspaceProps = {

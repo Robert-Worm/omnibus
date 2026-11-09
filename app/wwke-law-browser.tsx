@@ -4,7 +4,7 @@ import {catalogueDerived,catalogueRevision,onCatalogueChange} from '@/lib/catalo
 import {useId,useState,useRef,useEffect,useLayoutEffect,useSyncExternalStore} from 'react';
 import {foundationOverview,foundationOverviewSelection} from '@/lib/foundation-overviews.mjs';
 import {wwkeOverviewRows,wwkeOverviewExcluded} from '@/lib/wwke-overview.mjs';
-import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,X} from 'lucide-react';
+import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,Users,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Input} from '@/components/ui/input';
@@ -20,7 +20,6 @@ import DeferredViewerSection from './deferred-viewer-section';
 import CompactContextText from './compact-context-text';
 import LawReadingControls from './law-reading-controls';
 import {lawReaderText} from '@/lib/law-reader-language.mjs';
-import {lawPhaseContext} from '@/lib/law-test-phases.mjs';
 import {lawCountText} from '@/lib/law-view-counts.mjs';
 import FilterPicker from './filter-picker';
 import WwkeSourceAbout from './wwke-source-about';
@@ -28,7 +27,10 @@ import WwkeSource from './wwke-point-source';
 export {default as WwkeSource} from './wwke-point-source';
 import {wwkeRelatedContext} from '@/lib/wwke-about-view.mjs';
 import {wwkeAudiences} from '@/lib/wwke-audiences.mjs';
-import {TermText} from './term-help';
+import {TermText,AfkortingText} from './term-help';
+import RelevanceHelp from './relevance-help';
+import {Approach,type Point as CioPoint} from './cio-law-workspace';
+import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {wwkeBrowserRows,wwkeBrowserGroups,lawBrowserColumns as columns} from '@/lib/wwke-browser-view.mjs';
 import './control-objective-pilot.css';
 import './cio-law-browser.css';
@@ -106,7 +108,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  return <section className="law-browser wwke-browser" aria-label="WWKE">
  {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>{actionGeneration.current++;setAbout(false);}}>Normen</button><button aria-pressed={about} onClick={()=>withDetails(()=>setAbout(true))}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
  {about?<WwkeSourceAbout initialSector={view.sector} onPoint={id=>{openPoint(id);setTab('source');}}/>:<>
- <div className="law-browse-intro"><div className="law-viewer-heading"><h2>Wet weerbaarheid kritieke entiteiten</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(rows)}</output></div><div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled||!visibleSelection.total} title={visibleSelection.all?'Verwijder de normen binnen de huidige filters uit je selectie. Andere bronnen en bewerkingen blijven behouden.':'Voeg alle normen binnen de huidige filters direct toe aan je selectie. Toepasselijkheid blijft afzonderlijk te beoordelen; punten met open bronvragen blijven uitgesloten.'} onClick={selectAll}><ListChecks size={15}/>{visibleSelection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
+ <div className="law-browse-intro"><div className="law-viewer-heading"><h2>Wet weerbaarheid kritieke entiteiten</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(rows)}</output></div>{(()=>{const notice=sourceAudienceNotice(wwkeSourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled||!visibleSelection.total} title={visibleSelection.all?'Verwijder de normen binnen de huidige filters uit je selectie. Andere bronnen en bewerkingen blijven behouden.':'Voeg alle normen binnen de huidige filters direct toe aan je selectie. Toepasselijkheid blijft afzonderlijk te beoordelen; punten met open bronvragen blijven uitgesloten.'} onClick={selectAll}><ListChecks size={15}/>{visibleSelection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
  <div className="law-browse-filters" aria-label="Normen filteren">
  <label className="law-search-label" htmlFor="wwke-search">Zoeken in dit kader<div className="law-search"><Search size={16}/><Input id="wwke-search" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))} placeholder="Zoek op norm, onderwerp of artikel…"/></div></label>
  <label htmlFor="wwke-audience">Voor wie?<select id="wwke-audience" aria-label="Voor wie?" value={view.audience} onChange={e=>setView(v=>({...v,audience:e.target.value}))}>{wwkeAudiences.map(a=><option value={a.id} key={a.id}>{a.title}</option>)}</select></label>
@@ -126,23 +128,23 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  {row&&parent&&<div className="law-detail-body law-focused-body">
  {tab==='points'?<>
  {!rowSelection.total&&<section className="law-application"><h3>{children.some(p=>p.selection_status==='HOLD')?'Broncontext en open bronvragen':'Broncontext'}</h3><p>Deze onderdelen zijn geen selecteerbare uitvoeringsnormen. Ontbrekende analytische velden zijn hier niet ‘nog in te vullen’: de bron geeft daarvoor geen voldoende afgebakende grondslag.</p></section>}
- {(['objective','risk','controlObjective','control'] as const).some(key=>row[key]?.text)&&<section className="law-context law-flow"><div className="law-context-grid">{([['objective','Doel',Target],['risk','Risico',TriangleAlert],['controlObjective','Beheersdoelstelling',ShieldCheck],['control','Beheersmaatregel',Settings2]] as const).map(([id,title,Icon])=><section key={id} className={'law-context-card law-context-'+id}><h4><Icon size={15}/><TermText text={title}/></h4><small className="law-context-reason">{row[id]?.text?'Analytisch voorstel':'Niet verantwoord uit te werken'}</small><CompactContextText label={title} text={row[id]?.text||'Voor dit onderdeel staat de bronvraag nog open. Er wordt geen beheersmaatregel verondersteld zolang de norm niet voldoende is afgebakend.'}/></section>)}</div></section>}
- <section className="law-parent-criterion"><h3><ListChecks size={16}/>Norm</h3><p>{row.criterion.text}</p></section>
+ <section className="law-parent-criterion"><h3><ListChecks size={16}/> <TermText text="Norm"/></h3><p><AfkortingText text={row.criterion.text}/></p></section>
  {(wwkeRelatedContext[parent.id]||[]).map(id=>{const contextPoint=wwkePointMap.get(id)!;return <section className="law-application" key={id} data-related-context={id}><h3>{contextPoint.title}</h3><p>{contextPoint.text}</p><Button variant="ghost" onClick={()=>{openPoint(id);setTab('source');}}>Bronpassage · {id}</Button></section>;})}
  <div className="law-points-heading">{rowSelection.total>0?<label htmlFor={checkboxId+"-all"}><Checkbox id={checkboxId+"-all"} checked={rowSelection.all} indeterminate={rowSelection.partial} disabled={disabled||!rowSelection.total} onCheckedChange={v=>choose(row.pointIds,v===true)}/>Alle toetspunten</label>:<strong>Brononderdelen bekijken</strong>}<output>{rowSelection.total>0?rowSelection.selected+' van '+rowSelection.total+' gekozen':children.length+' niet-selecteerbare brononderdelen'}</output></div>
  <p className="law-browse-boundary">{detailAudience?'Toetspunten voor '+wwkeAudiences.find(a=>a.id===detailAudience)?.title.toLocaleLowerCase('nl')+'. De voorwaarden en bronpassages van ieder punt blijven volledig beschikbaar.':'Alle toetspunten en brononderdelen van deze norm.'}</p>
  <div className="law-choice-grid">{children.map(p=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id);const ownText=material&&draft.overrides[material.id]?.criterion;const excluded=wwkeExcludedForSector(p.id,view.sector);return <article key={p.id} data-point={p.id} data-inspected={pointId===p.id||undefined} className={'law-choice-card'+(selected.has(p.id)?' is-chosen':'')}>
- {viewerOnly&&initialPointId===p.id&&<small>Deze bouwsteen</small>}<label>{p.selection_status==='SELECTABLE'&&<Checkbox checked={selected.has(p.id)} disabled={disabled||p.selection_status!=='SELECTABLE'||(excluded&&!selected.has(p.id))} aria-label={'Selecteer toetspunt '+p.id} onCheckedChange={v=>choose([p.id],v===true)}/>}<strong>{p.title}</strong></label><p>{p.text}</p>
+ {viewerOnly&&initialPointId===p.id&&<small>Deze bouwsteen</small>}<label>{p.selection_status==='SELECTABLE'&&<Checkbox checked={selected.has(p.id)} disabled={disabled||p.selection_status!=='SELECTABLE'||(excluded&&!selected.has(p.id))} aria-label={'Selecteer toetspunt '+p.id} onCheckedChange={v=>choose([p.id],v===true)}/>}<strong><AfkortingText text={p.title}/></strong></label><RelevanceHelp text={(p as {relevance?:string}).relevance} title={p.title}/>{p.text.trim()!==row.criterion.text.trim()&&<p><AfkortingText text={p.text} voluit/></p>}
  <CollectionBadge kind="foundation" id={wwkeSourceId}/>
  {p.selection_status!=='SELECTABLE'&&<span className={'wwke-status '+p.selection_status.toLowerCase()}>{labels[p.selection_status]}</span>}
  {excluded&&<p className="wwke-warning">Artikel 23: uitgezonderd voor de sector in je overzichtsfilter.</p>}
  {ownText&&ownText!==p.text&&<details><summary>Jouw formulering</summary><p>{ownText}</p></details>}
  <div className="law-choice-actions"><small>{p.id}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage · voorwaarden</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
  </article>;})}</div>
+ {(['objective','risk','controlObjective','control'] as const).some(key=>row[key]?.text)&&<details className="law-context law-flow law-context-fold"><summary>Doel, risico en beheersing</summary><div className="law-context-grid">{([['objective','Doel',Target],['risk','Risico',TriangleAlert],['controlObjective','Beheersdoelstelling',ShieldCheck],['control','Beheersmaatregel',Settings2]] as const).map(([id,title,Icon])=><section key={id} className={'law-context-card law-context-'+id}><h4><Icon size={15}/><TermText text={title}/></h4><small className="law-context-reason">{row[id]?.text?'Analytisch voorstel':'Niet verantwoord uit te werken'}</small><CompactContextText label={title} text={row[id]?.text||'Voor dit onderdeel staat de bronvraag nog open. Er wordt geen beheersmaatregel verondersteld zolang de norm niet voldoende is afgebakend.'}/></section>)}</div></details>}
  </>:point&&<>
  {children.length>1&&<nav className="law-point-switcher" aria-label="Kies een toetspunt">{children.map(p=><button key={p.id} aria-pressed={point.id===p.id} onClick={()=>setPointId(p.id)}>{p.title}</button>)}</nav>}
- {tab==='approach'&&<section className="law-active-point"><div className="law-point-kind">{point.id} · {labels[point.selection_status]}</div><h2>{point.title}</h2><p>{point.text}</p></section>}
- {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<section className="cio-approach"><p className="cio-muted">Analytische toetsvoorstellen. Werking is niet geselecteerd; er zijn geen onderzoeksresultaten ingevuld.</p><div className="cio-phase-grid">{Object.entries(point.phase_plans).map(([key,plan])=>{const context=lawPhaseContext(plan);return <section className={'cio-phase cio-phase-'+key} key={key}><h4>{key==='opzet'?'Opzet':key==='bestaan'?'Bestaan':'Werking'}</h4><p className="cio-phase-action">{plan.action||context}</p>{plan.expected_evidence&&<p className="cio-phase-evidence"><strong>Verwacht bewijs</strong><br/>{plan.expected_evidence}</p>}</section>;})}</div></section>}
+ {tab==='approach'&&<section className="law-active-point"><div className="law-point-kind">{point.id} · {labels[point.selection_status]}</div><h2><AfkortingText text={point.title}/></h2><p><AfkortingText text={point.text} voluit/></p></section>}
+ {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<Approach point={point as unknown as CioPoint}/>}
  </>}
  </div>}
  <footer className="bd-footer"><span>{rowSelection.total>0?rowSelection.selected+' van '+countLabel(rowSelection.total,'toetspunten')+' gekozen':'Broncontext · geen normselectie'}</span><div><Button variant="outline" onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button><Button variant="outline" onClick={close}>Gereed</Button></div></footer>

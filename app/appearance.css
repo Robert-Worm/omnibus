@@ -316,3 +316,5 @@ html[data-appearance=dark] .law-audience-notice{background:color-mix(in srgb,#e3
 html[data-appearance=dark] button.related-norms-trigger{background:#1d2b3a;border-color:#35506b;color:#abd5f7}
 html[data-appearance=dark] .related-norms-link{color:#abd5f7}
 html[data-appearance=dark] .related-norms-popup small{color:#9fb3c8}
+html[data-appearance=dark] .law-context-fold{background:#172330;border-color:#35506b}html[data-appearance=dark] .law-context-fold>summary{color:#abd5f7}
+html[data-appearance=dark] .law-active-choice{background:#172330;border-color:#35506b}
