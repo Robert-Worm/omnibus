@@ -371,6 +371,8 @@ uitvoerbaar.
   een steekproef op uitvoerbaarheid; een punt dat niet voldoet, wordt niet kiesbaar
   (HOLD met reden) of wordt verbeterd.
 
+- Detailvenster (besluit beheerder 9 november 2026): doel, risico, beheersdoelstelling en beheersmaatregel blijven altijd bovenaan en zichtbaar, boven de norm en de toetspunten. Niet inklappen en niet naar onderen verplaatsen.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
