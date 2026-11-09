@@ -177,3 +177,20 @@
 @media(min-width:701px) and (max-width:1100px){.law-focused-body .law-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.law-flow .law-context-card:nth-child(2)::after{display:none}}
 .cio-phase-evidence,.cio-phase-action{white-space:pre-line}
 .law-audience-notice{display:flex;gap:.5rem;align-items:flex-start;margin:.5rem 0 .75rem;padding:.6rem .8rem;border:1px solid #e3c98b;border-radius:.4rem;background:#fff8e6;color:#4d3b12;font-size:.8125rem;line-height:1.5}.law-audience-notice svg{flex-shrink:0;margin-top:.15rem}.law-audience-beide{border-color:#c9d6e3;background:#f3f7fb;color:#2f4357}
+/* Verwante normen achter een knopje bij de norm (9 november 2026) */
+.law-parent-criterion h3{display:flex;align-items:center;gap:.35rem}
+.law-parent-criterion h3 .related-norms-trigger{margin-left:auto}
+button.related-norms-trigger{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border:1px solid #c9d6e3;border-radius:999px;background:#f5f8fb;color:#154273;font:500 .75rem/1.4 var(--font-ui);cursor:pointer}
+button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{background:#e8f0f8;border-color:#8fb0d0}
+.related-norms-count{min-width:1.1rem;padding:0 .3rem;border-radius:999px;background:#154273;color:#fff;font-size:.68rem;text-align:center}
+.related-norms-popup ul{margin:.5rem 0 0;padding:0;list-style:none;display:grid;gap:.55rem}
+.related-norms-popup li{display:grid;gap:.1rem}
+.related-norms-popup small{color:#5b6f83;font-size:.76rem;line-height:1.45}
+.related-norms-link{text-align:left;color:#154273;text-decoration:underline;text-underline-offset:2px;font-weight:550}
+/* Tip bij de tekstweergave, alleen de eerste keer */
+.law-reading-control{position:relative}
+.law-reading-control-tip select{animation:law-reading-pulse 1.6s ease-out 4;box-shadow:0 0 0 3px color-mix(in srgb,#e17000 45%,transparent)}
+@keyframes law-reading-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,#e17000 60%,transparent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 3px color-mix(in srgb,#e17000 45%,transparent)}}
+@media (prefers-reduced-motion:reduce){.law-reading-control-tip select{animation:none}}
+.law-reading-tip{position:absolute;top:calc(100% + .45rem);right:0;z-index:5;width:max-content;max-width:15rem;padding:.4rem .6rem;border-radius:.4rem;background:#154273;color:#fff;font:400 .76rem/1.4 var(--font-ui);box-shadow:0 4px 12px rgb(0 0 0/.15)}
+.law-reading-tip::before{content:"";position:absolute;top:-5px;right:1.2rem;border:5px solid transparent;border-top:0;border-bottom-color:#154273}

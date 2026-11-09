@@ -74,7 +74,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const excludedForSector=(id:string,sector:string)=>preview?wwkeOverviewExcluded(preview,id,sector):wwkeExcludedForSector(id,sector);
  const checkboxId=useId();
  const [openId,setOpenId]=useState(allRows.find(r=>r.pointIds.includes(initialPointId||''))?.id||'');
- const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('full');
+ const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('compact');
  const [pointId,setPointId]=useState(initialPointId||''),[tab,setTab]=useState<Tab>('points'),[error,setError]=useState('');
  const [overview,setOverview]=useLawOverview(overviewProps),about=overview==='source';
  const setAbout=(value:boolean)=>setOverview(value?'source':'norms');

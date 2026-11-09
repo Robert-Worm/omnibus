@@ -41,7 +41,9 @@ function AfkortingHelp({text,afkorting}:{text:string;afkorting:Afkorting}){
 
 /** Afkortingen in brontekst: uitleg bij aanwijzen. Met `voluit` staat de eerste keer ook de uitgeschreven vorm erbij; nooit in normtekst. De tekst zelf wijzigt niet. */
 export function AfkortingText({text,voluit=false}:{text:string;voluit?:boolean}){
-  return <>{afkortingDelen(text).map((deel,index)=>deel.afkorting
-    ? <span key={index}><AfkortingHelp text={deel.text} afkorting={deel.afkorting}/>{voluit&&deel.eerste&&!deel.koppel&&!deel.afkorting.bekend&&<span className="afkorting-voluit"> ({deel.afkorting.voluit})</span>}</span>
+  // Alleen het eerste voorkomen per tekst krijgt een stippellijn; bekende afkortingen (ICT, DORA, EU) nooit.
+  // Zo blijft de tekst rustig (besluit beheerder 9 november 2026: geen markering zonder reden).
+  return <>{afkortingDelen(text).map((deel,index)=>deel.afkorting&&deel.eerste&&!deel.afkorting.bekend
+    ? <span key={index}><AfkortingHelp text={deel.text} afkorting={deel.afkorting}/>{voluit&&!deel.koppel&&<span className="afkorting-voluit"> ({deel.afkorting.voluit})</span>}</span>
     : deel.text)}</>;
 }

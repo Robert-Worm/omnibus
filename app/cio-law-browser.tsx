@@ -31,6 +31,7 @@ import {Approach} from './cio-law-workspace';
 import CioSourceAbout from './cio-source-about';
 import CioPointSource from './cio-point-source';
 import RelevanceHelp from './relevance-help';
+import RelatedNormsHelp from './related-norms-help';
 import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
@@ -97,7 +98,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const [overview,setOverview]=useLawOverview(overviewProps);
  const [tab,setTab]=useState<Tab>('points');
  const [error,setError]=useState('');
- const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('full');
+ const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('compact');
  const [view,setView,viewReady]=useBrowseState(adapter?.viewKey||'cio-source-groups-v3',{query:'',group:'',selectedOnly:false,density:'compact',columns:columns.map(c=>c.id),columnsVersion:0});
  const currentGroup=remapTopicalGroup(view.group,sourceRows,groupsForSource);
  useEffect(()=>{if(viewReady&&currentGroup!==view.group)setView(v=>v.group===view.group?{...v,group:currentGroup}:v);},[viewReady,currentGroup,view.group,setView]);
@@ -174,7 +175,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
       <section className="law-context law-flow" aria-label="Samenhang van doel, risico en beheersing">{objectives.map(objective=><div className="law-context-grid" key={objective.id}>
        {[{label:'Doel',text:goalFor(objective.id)?.text||'Niet geformuleerd',field:'objective',Icon:Target},{label:'Risico',text:objective.risk||'Niet geformuleerd',field:'risk',Icon:TriangleAlert},{label:'Beheersdoelstelling',text:objective.text,field:'controlObjective',Icon:ShieldCheck},{label:'Beheersmaatregel',text:measure?.text||'Niet geformuleerd',field:'control',Icon:Settings2}].map(({label,text,field,Icon})=><section className={`law-context-card law-context-${field}`} key={field}><h4><Icon size={16}/><TermText text={label}/></h4><CompactContextText text={text} label={label}/></section>)}
       </div>)}</section>
-      <section className="law-parent-criterion"><h3><ListChecks size={16}/> <TermText text="Norm"/></h3><p><AfkortingText text={parent.text}/></p><SourceLinks lead="Verwant onderwerp" links={adapter?.relatedNorms?.(parent.id)} onOpen={onOpenSource}/></section>
+      <section className="law-parent-criterion"><h3><ListChecks size={16}/> <TermText text="Norm"/><RelatedNormsHelp links={adapter?.relatedNorms?.(parent.id)} onOpen={onOpenSource}/></h3><p><AfkortingText text={parent.text}/></p></section>
       <div className="law-points-heading"><label htmlFor="law-select-all"><Checkbox id="law-select-all" disabled={disabled||!state.total} checked={state.all} indeterminate={state.partial} onCheckedChange={value=>choose(children.map(p=>p.id),value===true)}/>Alle toetspunten</label><output>{state.selected} van {state.total} gekozen</output></div>
       <div className="law-choice-grid">{children.map(p=><article key={p.id} data-point={p.id} data-inspected={initialPointId===p.id||undefined} className={`law-choice-card${selected.has(p.id)?' is-chosen':''}`}>
        {viewerOnly&&initialPointId===p.id&&<small className="viewer-current-point">Bekeken bouwsteen</small>}
