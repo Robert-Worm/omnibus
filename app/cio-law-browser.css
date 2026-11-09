@@ -225,3 +225,6 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 .law-point-menu .law-point-option[data-highlighted]{background:#f3f7fb}
 .law-point-menu .law-point-option[data-selected]{background:var(--rm-selected,#e3ecf4);box-shadow:inset 3px 0 #668bae}
 @media(max-width:700px){.law-point-picker-row{gap:.35rem}.law-point-step{flex-direction:column;justify-content:center;gap:.25rem}.law-point-step [data-slot=button]{width:2rem;height:1.6rem}.law-point-select-title strong{-webkit-line-clamp:3}.law-point-select-count{display:none}}
+/* Ronde 14: toetspunten met een genummerde controlelijst (registers, meldingen) houden hun regels. */
+.law-choice-card>p,.law-focused-body .law-active-point>p,.law-parent-criterion p{white-space:pre-line}
+.law-choice-card>p{max-height:22rem}

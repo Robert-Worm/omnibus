@@ -950,3 +950,11 @@ zichtbare reikwijdte en specifieke reden, niet als heretikettering van een fout.
 Het handoff bevat manifest/status, bronbank, reconciliatie, catalogus, migratie,
 issues, reviewbasis en receipts. `PASS_FOR_TOOL_INTEGRATION_REVIEW` is niet
 hetzelfde als menselijke goedkeuring of een vrijgegeven webversie.
+
+## Registers en meldingen per model of meldblok (ronde 14, 9 november 2026)
+
+Auditorpanel (unaniem, optie C) en besluit beheerder: bij rapportage-ITS'en (informatieregister ITS 2024/2956, incidentmelding ITS 2025/302) één toetspunt per registermodel of meldblok, niet per veld. De velden en invulregels staan als genummerde controlelijst in het toetspunt ("Toets daarbij: 1. …"); één oordeel per punt, afwijkingen per veld in de bevindingen. Het nieuwe punt houdt het ID van het eerste oude punt in zijn groep (`groepen.json`); bronkoppelingen, doelen en fasen worden samengevoegd, interviewvragen alleen gekozen uit de bestaande. Werkwijze: schrijver per punt met volledige brontekst en veldmatrix in de invoer (niet afkappen), daarna een aparte reviewer op verlies en toevoeging; build accepteert opgegane punten alleen voor deze ITS'en. Meldtermijnen uit RTS 2025/301 staan uitgeschreven in het meldprocespunt.
+
+## Restjes werktaal (ronde 14)
+
+Mechanisch en begrensd (`werktaal.mjs`): spatie tussen woord en nummer, "artikel N(M)" als "artikel N, lid M", vaste methodezinnen schrappen of in gewone taal. Nooit in letterlijke brontekst (ook niet in kopieën met pdf-regelafbrekingen), nooit in titel, tekst of relevantie van een toetspunt. Export: kaderbrede open vragen, gebruik, licentie en bewerking één keer in 01 Versiebeheer ("Over de gekozen kaders"), niet per toetspunt; geen afbakening in de interviewcel. Viewer: Engelstalige werknotities verborgen, de betekenisregel op een bronkaart alleen bij de primaire bron.
