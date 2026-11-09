@@ -379,6 +379,15 @@ uitvoerbaar.
 - **Geen filter "Mijn organisatie"** voorlopig. Voor wie een toetspunt geldt, blijkt uit de toepassing, de bronpassage en Over dit kader.
 - **Uitvoerbaar en zelfstandig:** één toetspunt moet met één antwoord te beantwoorden zijn, zonder nuanceverschillen binnen het punt. Alles wat nodig is om te toetsen staat in het toetspunt zelf (en dus in de Excel-export): de auditor hoeft niet naar andere passages of documenten te zoeken. Een punt mag niet zo groot worden dat het meerdere oordelen vraagt; dan splitsen. Bij twijfel over de indeling (bijv. registers en meldformulieren met veel velden) adviseert eerst een panel van auditors over de meest uitvoerbare aanpak.
 
+### Uitvoerbare toetspunten herschrijven (ronde 13, 9 november 2026)
+
+Werkwijze die bij DORA (1.410 toetspunten) werkte; gebruik hem ook voor andere kaders:
+- Exporteer per toetspunt norm, tekst, huidige velden en de **volledige** bronpassages (niet inkorten: met ingekorte bron vielen onderdelen weg) in batches van 20.
+- Laat per batch een agent herschrijven: toepassing in max. 2 zinnen ("Geldt voor: … Alleen als: …"), alleen bronvoorwaarden en -uitzonderingen die nodig zijn om te toetsen (uitgeschreven, zonder verwijzing naar elders), relevantie zonder vaste aanloop, en per fase "Vraag [document] op bij [rol]. Ga na of …" met concreet bewijs, zonder ontkenningen of standaardzinnen. Norm en toetspunttekst blijven gelijk. Nooit inhoud uit de oude velden laten vallen alleen omdat de bron hem niet toont.
+- Mechanische controle per batch (vorm, standaardzinnen, getallen en termijnen die verdwijnen).
+- Aparte reviewer per batch naast oud en bron: verlies, toevoeging van eisen, fouten, uitvoerbaarheid. Ongeveer 7% van de punten kreeg een correctie; typisch: "en" waar de bron "of" zegt, een frequentie of goedkeuring die de bron niet eist, een vergeten regime (micro-onderneming, vereenvoudigd kader), "vóór" waar de bron "uiterlijk op" zegt, en eisen die al in een ander toetspunt staan (dubbel toetsen).
+- Splitskandidaten die schrijvers melden, verzamelen voor een aparte splitsronde.
+
 ### Toetspunt vanuit de auditor (besluit 7 november 2026)
 
 Een toetspunt zegt wat de auditor vaststelt, niet wat de wet eist. Schrijf het
