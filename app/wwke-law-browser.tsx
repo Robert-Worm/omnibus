@@ -29,6 +29,7 @@ import {wwkeRelatedContext} from '@/lib/wwke-about-view.mjs';
 import {wwkeAudiences} from '@/lib/wwke-audiences.mjs';
 import {TermText,AfkortingText} from './term-help';
 import RelevanceHelp from './relevance-help';
+import LawPointPicker from './law-point-picker';
 import {Approach,type Point as CioPoint} from './cio-law-workspace';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {wwkeBrowserRows,wwkeBrowserGroups,lawBrowserColumns as columns} from '@/lib/wwke-browser-view.mjs';
@@ -142,7 +143,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  <div className="law-choice-actions"><small>{p.id}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage · voorwaarden</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
  </article>;})}</div>
  </>:point&&<>
- {children.length>1&&<nav className="law-point-switcher" aria-label="Kies een toetspunt">{children.map(p=><button key={p.id} aria-pressed={point.id===p.id} onClick={()=>setPointId(p.id)}>{p.title}</button>)}</nav>}
+ <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={point.selection_status==='SELECTABLE'&&!(wwkeExcludedForSector(point.id,view.sector)&&!selected.has(point.id))?(id,value)=>choose([id],value):undefined}/>
  {tab==='approach'&&<section className="law-active-point"><div className="law-point-kind">{point.id} · {labels[point.selection_status]}</div><h2><AfkortingText text={point.title}/></h2><p><AfkortingText text={point.text} voluit/></p></section>}
  {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<Approach point={point as unknown as CioPoint}/>}
  </>}

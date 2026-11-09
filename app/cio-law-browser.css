@@ -155,9 +155,6 @@
 .law-detail .law-choice-card .law-choice-actions :is(small,button){font-size:.65rem}
 .law-choice-actions small{color:#556679;margin-right:auto}
 .law-choice-actions button{color:#385f80;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
-.law-point-switcher{display:flex;gap:.4rem;overflow-x:auto;margin:0 0 .75rem;padding-bottom:.2rem}
-.law-point-switcher button{flex:0 0 auto;max-width:24rem;padding:.45rem .7rem;border:1px solid #d3deea;border-radius:.4rem;font-size:.75rem;background:#fff}
-.law-point-switcher button[aria-pressed=true]{background:#e5eef6;border-color:#8daac3}
 .law-focused-body .law-active-point{padding:.8rem 1rem;margin-bottom:.8rem}
 .law-focused-body .law-active-point h2{font-size:.9rem}.law-focused-body .law-active-point>p{font-size:.8rem;line-height:1.55}
 .law-focused-body .cio-phase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -173,7 +170,7 @@
 .law-focused-body .cio-phase .cio-phase-boundary,.law-focused-body .cio-phase .cio-phase-reason{font-size:.74rem;color:#63768b;line-height:1.55}
 .law-focused-body .cio-approach>.cio-notice{background:transparent;border-left:2px solid #c6d2de;padding:.4rem .7rem;color:#63768b}
 .law-focused-body .cio-approach>.cio-notice h4{font-size:.76rem}.law-focused-body .cio-approach>.cio-notice p{font-size:.72rem}
-@media(max-width:700px){.law-focused-body .law-context-grid,.law-choice-grid,.law-focused-body .cio-phase-grid{grid-template-columns:1fr}.law-flow .law-context-card:not(:last-child)::after{display:none}.law-detail-body.law-focused-body{padding:.75rem}.law-point-switcher button{max-width:80vw;white-space:normal}.law-browser .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{max-height:330px}}
+@media(max-width:700px){.law-focused-body .law-context-grid,.law-choice-grid,.law-focused-body .cio-phase-grid{grid-template-columns:1fr}.law-flow .law-context-card:not(:last-child)::after{display:none}.law-detail-body.law-focused-body{padding:.75rem}.law-browser .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{max-height:330px}}
 @media(min-width:701px) and (max-width:1100px){.law-focused-body .law-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.law-flow .law-context-card:nth-child(2)::after{display:none}}
 .cio-phase-evidence,.cio-phase-action{white-space:pre-line}
 .law-audience-notice{display:flex;gap:.5rem;align-items:flex-start;margin:.5rem 0 .75rem;padding:.6rem .8rem;border:1px solid #e3c98b;border-radius:.4rem;background:#fff8e6;color:#4d3b12;font-size:.8125rem;line-height:1.5}.law-audience-notice svg{flex-shrink:0;margin-top:.15rem}.law-audience-beide{border-color:#c9d6e3;background:#f3f7fb;color:#2f4357}
@@ -199,3 +196,32 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 .law-active-choice span{display:grid;gap:.1rem}
 .law-active-choice strong{font-size:.9rem}
 .law-active-choice small{color:#5b6f83;font-size:.75rem}
+/* Keuzelijst voor het bekeken toetspunt (panelontwerp 9 november 2026) */
+.law-point-picker{margin:0 0 .9rem}
+.law-point-picker-row{display:flex;gap:.5rem;align-items:stretch}
+.law-point-picker .law-point-select{flex:1 1 auto;min-width:0;width:100%;height:auto;min-height:44px;padding:.5rem .7rem .5rem .8rem;border:1px solid #d3deea;border-radius:.5rem;background:#fff;white-space:normal;text-align:left;cursor:pointer}
+.law-point-picker .law-point-select:hover{border-color:#8daac3}
+.law-point-picker .law-point-select[data-popup-open]{border-color:var(--rm-accent,#154273);box-shadow:inset 0 0 0 1px var(--rm-accent,#154273)}
+.law-point-picker .law-point-select:focus-visible{outline:3px solid #6a9ac1;outline-offset:2px}
+.law-point-select-body{display:grid;gap:.2rem;flex:1;min-width:0}
+.law-point-select-body>small{font-size:.7rem;font-weight:600;color:#52677e}
+.law-point-select-count{font-weight:400}
+.law-point-select-title{display:flex;align-items:flex-start;gap:.55rem}
+.law-point-select-title strong{font-size:.875rem;line-height:1.4;color:#1f2f45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.law-point-num{flex-shrink:0;display:inline-grid;place-items:center;width:1.4rem;height:1.4rem;border-radius:999px;background:var(--rm-selected,#e3ecf4);color:#1f4568;font-size:.7rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.law-point-num.is-chosen{background:#e6f2ec;color:#2f6b4f}
+.law-point-step{display:flex;gap:.35rem;align-items:center}
+.law-point-step [data-slot=button]{width:2.25rem;height:2.25rem}
+.law-point-picker-row+.law-active-choice{margin-top:.5rem}
+.law-point-picker .law-active-choice{margin-bottom:0}
+.law-point-menu{max-height:min(22rem,60vh);padding:.3rem;border:1px solid #d9e3ec;border-radius:.5rem;background:#fff;box-shadow:0 1px 2px rgb(17 38 77/6%),0 8px 24px rgb(17 38 77/10%)}
+.law-point-menu .law-point-option{align-items:flex-start;padding:.55rem .7rem;border-radius:.35rem;font-size:.8rem;line-height:1.35;cursor:pointer}
+.law-point-menu .law-point-option>:first-child{white-space:normal;align-items:flex-start;gap:.6rem;min-width:0}
+.law-point-menu .law-point-option{padding-right:.7rem}.law-point-menu .law-point-option>:not(:first-child){display:none}
+.law-point-option-text{display:grid;gap:.15rem;min-width:0}.law-point-menu .law-point-option .law-point-option-text>span{color:#1f2f45}
+.law-point-option-text small{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;color:#5b6f83}
+.law-point-option-text small.is-chosen{color:#2f6b4f;font-weight:600}
+.law-point-option-text small.is-hold{color:#7a5a12}
+.law-point-menu .law-point-option[data-highlighted]{background:#f3f7fb}
+.law-point-menu .law-point-option[data-selected]{background:var(--rm-selected,#e3ecf4);box-shadow:inset 3px 0 #668bae}
+@media(max-width:700px){.law-point-picker-row{gap:.35rem}.law-point-step{flex-direction:column;justify-content:center;gap:.25rem}.law-point-step [data-slot=button]{width:2rem;height:1.6rem}.law-point-select-title strong{-webkit-line-clamp:3}.law-point-select-count{display:none}}

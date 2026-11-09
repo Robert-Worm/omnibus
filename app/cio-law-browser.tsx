@@ -32,6 +32,7 @@ import CioSourceAbout from './cio-source-about';
 import CioPointSource from './cio-point-source';
 import RelevanceHelp from './relevance-help';
 import RelatedNormsHelp from './related-norms-help';
+import LawPointPicker from './law-point-picker';
 import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
@@ -185,10 +186,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
        <div className="law-choice-actions"><small>{p.id} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
       </article>)}</div>
      </>:<>
-      {children.length>1&&<nav className="law-point-switcher" aria-label="Kies een toetspunt">{children.map(p=><button key={p.id} data-point={p.id} className="law-inspect-point" aria-pressed={point.id===p.id} onClick={()=>setPointId(p.id)}>{p.title}</button>)}</nav>}
-      <div className="law-active-choice"><label htmlFor={`law-active-${point.id}`}><Checkbox id={`law-active-${point.id}`} disabled={disabled||point.selection_status!=='SELECTABLE'} checked={selected.has(point.id)} onCheckedChange={value=>choose([point.id],value===true)}/><span><strong><AfkortingText text={point.title}/></strong><small>{point.id} · {selected.has(point.id)?'gekozen':'kies dit toetspunt'}</small></span></label></div>
+      <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={(id,value)=>choose([id],value)}/>
+      {point.selection_status!=='SELECTABLE'&&<p className="cio-source-caution">Nog niet selecteerbaar · {point.selection_reason}</p>}
       {tab==='source'?<Source key={point.id} point={point} parent={parent}/>:<>
-       {point.selection_status!=='SELECTABLE'&&<p className="cio-source-caution">Nog niet selecteerbaar · {point.selection_reason}</p>}
        <PointApproach point={point}/>
       </>}
      </>}
