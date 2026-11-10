@@ -1,4 +1,5 @@
 "use client";
+import {normId} from '@/lib/norm-navigation.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 
 import {useEffect,useLayoutEffect,useState,useRef,useSyncExternalStore,type ComponentType} from 'react';
@@ -168,7 +169,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   </>}
   <Sheet open={Boolean(row&&parent)} onOpenChange={value=>{if(!value)close();}}>
    <SheetContent className="audit-detail bd-pilot-detail law-detail" showCloseButton={false} aria-modal="true">
-    <SheetHeader className="bd-header"><div className="bd-heading-row"><div><SheetDescription>{row?.entity} · {row?.id}</SheetDescription><SheetTitle>{row?.title}</SheetTitle></div><SheetClose render={<Button variant="ghost" size="icon" aria-label="Sluiten"/>}><X size={20}/></SheetClose></div></SheetHeader>
+    <SheetHeader className="bd-header"><div className="bd-heading-row"><div><SheetDescription>{row?.entity} · {normId(row?.id)}</SheetDescription><SheetTitle>{row?.title}</SheetTitle></div><SheetClose render={<Button variant="ghost" size="icon" aria-label="Sluiten"/>}><X size={20}/></SheetClose></div></SheetHeader>
     <nav className="law-point-tabs law-main-tabs" aria-label="Kaderanalyse">{([{id:'points',label:'Toetspunten',Icon:ListChecks},{id:'source',label:'Bronpassage',Icon:BookOpen},{id:'approach',label:'Toetsaanpak',Icon:ClipboardCheck}] as const).map(({id,label,Icon})=><Button key={id} variant="ghost" aria-pressed={tab===id} onClick={()=>setTab(id)}><Icon size={16}/>{label}</Button>)}</nav>
     {row&&parent&&point&&<div className="law-detail-body law-focused-body">
      {tab==='points'?<>
@@ -181,9 +182,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
       <div className="law-choice-grid">{children.map(p=><article key={p.id} data-point={p.id} data-inspected={initialPointId===p.id||undefined} className={`law-choice-card${selected.has(p.id)?' is-chosen':''}`}>
        {viewerOnly&&initialPointId===p.id&&<small className="viewer-current-point">Bekeken bouwsteen</small>}
        <label htmlFor={`law-${p.id}`}><Checkbox id={`law-${p.id}`} aria-label={`${p.title} selecteren`} disabled={disabled||p.selection_status!=='SELECTABLE'} checked={selected.has(p.id)} onCheckedChange={value=>choose([p.id],value===true)}/><strong><AfkortingText text={p.title}/></strong></label><RelevanceHelp text={p.relevance} title={p.title}/>
-       <CollectionBadge kind="foundation" id={sourceId}/>{p.text.trim()!==parent.text.trim()&&<p><AfkortingText text={p.text} voluit/></p>}{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">HOLD · {p.selection_reason}</p>}
+       <CollectionBadge kind="foundation" id={sourceId}/>{p.text.trim()!==parent.text.trim()&&<p><AfkortingText text={p.text} voluit/></p>}{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">Nog niet vrijgegeven · {p.selection_reason}</p>}
        {(()=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id),text=material&&draft.overrides[material.id]?.criterion;return text!==undefined&&text!==p.text?<section className="viewer-own-wording"><strong>Eigen formulering in je kader</strong><p>{text}</p></section>:null;})()}
-       <div className="law-choice-actions"><small>{p.id} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
+       <div className="law-choice-actions"><small>{normId(p.id)} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
       </article>)}</div>
      </>:<>
       <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={(id,value)=>choose([id],value)}/>

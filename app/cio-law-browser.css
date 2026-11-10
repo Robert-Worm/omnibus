@@ -228,3 +228,6 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 /* Ronde 14: toetspunten met een genummerde controlelijst (registers, meldingen) houden hun regels. */
 .law-choice-card>p,.law-focused-body .law-active-point>p,.law-parent-criterion p{white-space:pre-line}
 .law-choice-card>p{max-height:22rem}
+
+/* Controlelijst in de samenvatting van een toetspunt: elke genummerde regel op een eigen regel (panel 10 november 2026). */
+.cio-norm-summary>p{white-space:pre-line}

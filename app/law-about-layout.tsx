@@ -31,7 +31,7 @@ export type LawAboutHistory={period:string;title:string;text:string};
 export type LawAboutLink={label:string;url:string};
 
 /** The standard text above source quality; identical for every law and framework. */
-export const LAW_ABOUT_QUALITY_INTRO='Normen en toetspunten zijn gekoppeld aan de oorspronkelijke bronpassages, zodat je de herkomst en uitwerking kunt controleren. Geautomatiseerde extractie en uitwerking kunnen onduidelijkheden opleveren; soms zit de onduidelijkheid al in de bron. Punten die nog onvoldoende onderbouwd zijn voor selectie, staan op HOLD. Hieronder staan de grenzen van de uitwerking en de open bronvragen.';
+export const LAW_ABOUT_QUALITY_INTRO='Normen en toetspunten zijn gekoppeld aan de oorspronkelijke bronpassages, zodat je de herkomst en uitwerking kunt controleren. Geautomatiseerde extractie en uitwerking kunnen onduidelijkheden opleveren; soms zit de onduidelijkheid al in de bron. Punten die nog onvoldoende onderbouwd zijn, zijn nog niet vrijgegeven; je kunt ze niet kiezen. Hieronder staan de grenzen van de uitwerking en de open bronvragen.';
 
 export function LawAboutLinks({links}:{links:LawAboutLink[]}){
  return links.length>0?<div className="law-about-references">{links.map(link=><a key={link.url+link.label} href={link.url} target="_blank" rel="noreferrer"><span>{link.label}</span><ExternalLink size={12} aria-hidden="true"/></a>)}</div>:null;

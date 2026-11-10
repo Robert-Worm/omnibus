@@ -958,3 +958,14 @@ Auditorpanel (unaniem, optie C) en besluit beheerder: bij rapportage-ITS'en (inf
 ## Restjes werktaal (ronde 14)
 
 Mechanisch en begrensd (`werktaal.mjs`): spatie tussen woord en nummer, "artikel N(M)" als "artikel N, lid M", vaste methodezinnen schrappen of in gewone taal. Nooit in letterlijke brontekst (ook niet in kopieën met pdf-regelafbrekingen), nooit in titel, tekst of relevantie van een toetspunt. Export: kaderbrede open vragen, gebruik, licentie en bewerking één keer in 01 Versiebeheer ("Over de gekozen kaders"), niet per toetspunt; geen afbakening in de interviewcel. Viewer: Engelstalige werknotities verborgen, de betekenisregel op een bronkaart alleen bij de primaire bron.
+
+## Teksten voor externe lezers (ronde 15, 10 november 2026)
+
+Panelronde 6 (acht rollen, oordeel "ja, na een paar punten") vond geen nieuwe juridische fouten in toetspunten, maar wel werktaal in alles eromheen. Regels die daaruit volgen:
+
+- **Kaderteksten** (kaart, *Over dit kader*, werkblad 01): gewone taal; aantallen normen en toetspunten komen uit de catalogus, niet uit de tekst van de schrijver (`apply15.mjs` controleert dat). Niet-uitgewerkte onderdelen worden bij naam genoemd of zonder getal beschreven.
+- **Opgenomen uitgave** (`context.edition`) is de vaste identiteit van een bron en verandert niet in de gegevens; de app toont haar via `leesbareEditie`.
+- **Normteksten:** besluit beheerder 9 november 2026: zo dicht mogelijk bij de bron; alleen duidelijker waar nodig, met behoud van alle elementen. Uitleg die geen eis is, gaat naar de voorwaarden van het toetspunt of vervalt.
+- **Kaartsamenvattingen** (`foundationSummaries`: groepen, normen, punt-ID's) horen bij elke afgeleide release te worden bijgewerkt (`build15.mjs`); anders toont de kaart oude aantallen en kiest "Selecteer alle normen" punten die niet meer bestaan.
+- **Viewer en export tonen geen werknotities:** geen parafrase per bronkaart, geen bestandsnamen als vindplaats, elke passage één keer (uit de oorspronkelijke publicatie), contextbepalingen op artikelniveau.
+- Een samengevoegd toetspunt kan tientallen vindplaatsen hebben; de lengtegrens van `location` is daarop afgestemd (`lib/investigation.mjs`).

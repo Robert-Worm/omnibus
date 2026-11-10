@@ -11,14 +11,14 @@ import {LawPointSourceLayout,LawSourceDocument,type LawPassage} from './law-poin
 import {LawAboutPage,LawAboutParagraphs} from './law-about-layout';
 import {frameworkBackgrounds,backgroundCheckedOn} from '@/lib/framework-backgrounds.mjs';
 import {frameworkPublication} from '@/lib/framework-publication-facts.mjs';
-import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle} from '@/lib/framework-source-labels.mjs';
+import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle,leesbareEditie} from '@/lib/framework-source-labels.mjs';
 import {frameworkContextText} from '@/lib/framework-context-wording.mjs';
 import {frameworkAboutLimitations} from '@/lib/framework-limitations-wording.mjs';
 import {frameworkAboutGuidance} from '@/lib/framework-about-guidance.mjs';
 import CatalogueContent from './catalogue-content';
 import {topicalPackage,topicalRows,topicalGroups,topicalGoal,topicalMeasure,type TopicalPoint} from '@/lib/topical-content.mjs';
 import {topicalRecordSources} from '@/lib/topical-source-reader.mjs';
-import {lezersnotities,pakketNotities,standaardzinnen} from '@/lib/reader-notes.mjs';
+import {pakketNotities,standaardzinnen} from '@/lib/reader-notes.mjs';
 import {topicalSourceFormat} from '@/lib/topical-document-identity.mjs';
 import {topicalSelection,chooseTopicalPoints} from '@/lib/topical-selection.mjs';
 import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
@@ -28,8 +28,6 @@ import {Approach} from './cio-law-workspace';
 import {auditReadingText,currentAuditGuidance,distinctAuditLimitations,sourceSnapshotStatus} from '@/lib/audit-reading.mjs';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
-// Interne Engelstalige werknotities (vooral NOREA) niet tonen in de viewer (panel 9 november 2026).
-const engelseNotitie=(t:string)=>(String(t).match(/\b(the|and|to|do|not|should|with|each|every|row|this|from|which)\b/gi)||[]).length>=4;
 
 type Package=NonNullable<ReturnType<typeof topicalPackage>>;
 function TopicalAbout({bundle}:{bundle:Package}){
@@ -48,27 +46,27 @@ function TopicalAbout({bundle}:{bundle:Package}){
  return <LawAboutPage label={'Achtergrond '+c.title} title={c.title} links={[{label:'Officiële publicatie',url:bundle.status.official_url}]}
   intro={<p>{background?.intro||c.intro}</p>}
   specifications={<>
-   <div><dt>Soort kader en opgenomen uitgave</dt><dd>{c.kind_label||'Brongebonden kader; raadpleeg de officiële publicatie'}<small>{c.edition}</small></dd></div>
+   <div><dt>Soort kader en opgenomen uitgave</dt><dd>{c.kind_label||'Brongebonden kader; raadpleeg de officiële publicatie'}<small>{leesbareEditie(c.edition)}</small></dd></div>
    {publication&&<div><dt>Uitgebracht door</dt><dd>{publication.issuer}{publication.adopted&&<small>Vastgesteld op {publication.adopted}</small>}</dd></div>}
    <div><dt>Officiële publicatie</dt><dd>{officialUrl?<a href={officialUrl} target="_blank" rel="noreferrer">{publication?.publication||c.title}</a>:publication?.publication||c.title}{publication&&<small>{publication.dateLabel}: {publication.published}</small>}</dd></div>
    <div><dt>{publication?.effective?'In werking vanaf':publication?'Toepassing':'Ingang volgens bronpakket'}</dt><dd>{publication?.effective||(!publication?sourceStatus.date:'')}{publication?.entryNote&&<small>{publication.entryNote}</small>}{publication?.application&&<small>{publication.application}</small>}{!publication&&<small>{sourceStatus.asOf}</small>}</dd></div>
-   <div><dt>Bronnen in deze viewer</dt><dd>{documents.length} brondocumenten<small>{sourceRoles.join('; ')}. Hieronder staan de afzonderlijke bronnen en links.</small></dd></div>
-   <div><dt>Omvang van de uitwerking</dt><dd>{bundle.catalogue.criteria.length} normen · {bundle.catalogue.points.length} toetspunten<small>{selectable} selecteerbaar{hold>0&&` · ${hold} op HOLD`}{contextOnly>0&&` · ${contextOnly} contextpunten`}</small></dd></div>
+   <div><dt>Bronnen in deze viewer</dt><dd>{documents.length} {documents.length===1?'brondocument':'brondocumenten'}<small>{sourceRoles.join('; ')}. Hieronder staan de afzonderlijke bronnen en links.</small></dd></div>
+   <div><dt>Omvang van de uitwerking</dt><dd>{bundle.catalogue.criteria.length} normen · {bundle.catalogue.points.length} toetspunten<small>{selectable} selecteerbaar{hold>0&&` · ${hold} nog niet vrijgegeven`}{contextOnly>0&&` · ${contextOnly} contextpunten`}</small></dd></div>
   </>}
   kind={{title:c.kind==='law'?'Wat voor regeling is dit?':'Wat voor kader is dit?',body:kind}}
   audience={<>{(guidance?.audience||c.audience).map(text=><p key={text}>{wording('audience',text)}</p>)}{!guidance&&c.use_cases.length>0&&<><h4>Waarvoor kun je het gebruiken?</h4><ul className="law-about-use-cases">{c.use_cases.map(text=><li key={text}>{wording('use_cases',text)}</li>)}</ul></>}</>}
-  history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. De broneditie, toepassingsvoorwaarden en genoemde bronbeperkingen blijven bepalend voor deze uitwerking.`}}
+  history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. Voor de toetspunten zelf geldt de opgenomen uitgave van de bron.`}}
   application={<><LawAboutParagraphs text={guidance?.application||wording('applicability',c.applicability)}/>{background&&!guidance&&<ol className="law-about-practice">{background.practice.map(text=><li key={text}>{text}</li>)}</ol>}</>}
   related={background?.related}
   sources={documents}
   sourceExplanation={<><h4>Hoe zijn deze bronnen gebruikt?</h4><LawAboutParagraphs text={wording('source_explanation',c.source_explanation||(['TR-CYBER','TR-BEHAV','TR-RESIL','TR-THIRD'].includes(bundle.id)?'De vereisten vormen de normatieve basis voor de audit. De gebruikershandleiding licht het gebruik toe en geeft voorbeelden; die voorbeelden zijn geen aanvullende verplichtingen.':'Raadpleeg de genoemde brondocumenten voor de oorspronkelijke eisen en hun toelichting.'))}/>
    {guidance?.sourceExplanationExtra&&<LawAboutParagraphs text={guidance.sourceExplanationExtra}/>}
    {background&&!guidance&&<><h4>Onderwerp van deze uitwerking</h4><LawAboutParagraphs text={c.intro}/></>}</>}
-  quality={{meta:[`${bundle.catalogue.criteria.length} normen · ${selectable} selecteerbare toetspunten${hold>0?` · ${hold} op HOLD`:''}${contextOnly>0?` · ${contextOnly} contextpunten`:''}`,`${sourceStatus.asOf}. ${sourceStatus.qualification}`,'AI-review op brontrouw, betekenis en bruikbaarheid; geen menselijke audit- of juridische goedkeuring.'],
+  quality={{meta:[`${bundle.catalogue.criteria.length} normen · ${selectable} selecteerbare toetspunten${hold>0?` · ${hold} nog niet vrijgegeven`:''}${contextOnly>0?` · ${contextOnly} contextpunten`:''}`,`${sourceStatus.asOf}. ${sourceStatus.qualification}`,'AI-review op brontrouw, betekenis en bruikbaarheid; geen menselijke audit- of juridische goedkeuring.'],
    checks:[...(guidance?.qualityNotes?[{title:guidance.qualityTitle,body:<LawAboutParagraphs text={guidance.qualityNotes}/>}]:[]),
     ...limitations.map(reading=>({title:reading.title,status:reading.guide||undefined,body:<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/>})),
     ...(contextOnly>0?[{title:'Contextpunten',status:'Geen zelfstandige normen',body:<p>Contextpunten geven uitleg bij de bron en zijn niet selecteerbaar als norm.</p>}]:[])],
-   note:'De broncontrole vernieuwt de achtergrondinformatie, niet de bewaarde bronextractie of eerdere projectselecties.'}}/>;
+   note:''}}/>;
 }
 function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:Criterion}){
  const recordFor=(id:string)=>bundle.bank.records.find(r=>r.id===id);
@@ -85,9 +83,8 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  const standard=useMemo(()=>standaardzinnen([...pakketNotities(bundle.catalogue.points,bundle.bank.records),...bundle.catalogue.points.flatMap(p=>p.addressees.map(a=>a.condition))]),[bundle]);
  const sourceGroups=cioSourceGroups(point.source_links) as {id:string;title:string;entries:{link:Point['source_links'][number];index:number}[]}[];
  const criterion=<div className="cio-source-explanation"><h3>Hoe is dit toetspunt onderbouwd?</h3>
-  <div className="cio-source-links">{sourceGroups.map(group=><section key={group.id} aria-label={group.title}><h4>{group.title}</h4>{group.entries.map(({link,index:i})=>{const r=recordFor(link.record_id);return <article key={link.record_id} className={`cio-source-link-card${i===index?' is-active':''}`} data-record-id={link.record_id} data-contribution={link.contribution}><button onClick={()=>selectLink(i)} aria-pressed={i===index}><strong>{leesbareAlinea(r?.title)}</strong><BookOpen size={16}/><span>{r?leesbareVindplaats(r):''} · {labels[link.contribution]}</span></button><p>{r?.assertion}</p>{link.contribution==='PRIMARY'&&link.supported_clause!==r?.assertion&&<p>{link.supported_clause}</p>}{r?.source_status==='EXPLANATORY_CONTEXT'&&<small>Toelichting — geen zelfstandige nieuwe plicht</small>}</article>;})}</section>)}</div>
+  <div className="cio-source-links">{sourceGroups.map(group=><section key={group.id} aria-label={group.title}><h4>{group.title}</h4>{group.entries.map(({link,index:i})=>{const r=recordFor(link.record_id);return <article key={link.record_id} className={`cio-source-link-card${i===index?' is-active':''}`} data-record-id={link.record_id} data-contribution={link.contribution}><button onClick={()=>selectLink(i)} aria-pressed={i===index}><strong>{leesbareAlinea(r?.title)}</strong><BookOpen size={16}/><span>{r?leesbareVindplaats(r):''} · {labels[link.contribution]}</span></button>{r?.source_status==='EXPLANATORY_CONTEXT'&&<small>Toelichting — geen zelfstandige nieuwe plicht</small>}</article>;})}</section>)}</div>
   <section className="cio-source-text"><h4>Toepassing van dit toetspunt</h4><p>{point.scope}</p><dl className="cio-source-actors">{point.addressees.map((a,i)=><div key={i}><dt>{a.label}</dt><dd>{roles[a.role]}{a.condition&&!standard.has(a.condition)&&<p>{a.condition}</p>}</dd></div>)}</dl>{[{title:'Voorwaarden',items:point.conditions},{title:'Uitzonderingen',items:point.exceptions}].map(g=>g.items.length>0&&<section key={g.title}><h4>{g.title}</h4><ul>{g.items.map((t,i)=><li key={i}>{t}</li>)}</ul></section>)}</section>
-  {record&&<section className="cio-source-text"><h4>Context van de gekozen bepaling</h4>{[...record.conditions,...record.exceptions,...lezersnotities(record.interpretation_notes,standard).filter(t=>!engelseNotitie(t))].map((t,i)=><p key={i}>{t}</p>)}</section>}
   <div className="law-about-checks">{distinctAuditLimitations(bundle.context.limitations).map(l=><details key={l.title}><summary>{l.title}</summary><div><p>{currentAuditGuidance(l.text)}</p></div></details>)}</div>
  </div>;
  const source=chosen&&record?<><nav aria-label="Brondocument">{choices.length>1&&choices.map((c,i)=><button key={c.document.id} aria-pressed={i===documentIndex} onClick={()=>{setDocumentIndex(i);setPage(c.passages[0]?.page||1);setTarget(c.passages[0]?.start);setFocus(n=>n+1);}}>{docLabel(c.document)}</button>)}</nav><LawSourceDocument recordId={record.id} title={leesbareAlinea(record.title)} locator={leesbareVindplaats(record)} sourceKind={record.source_status==='EXPLANATORY_CONTEXT'?'Toelichting':'Hoofdtekst'} document={chosen.document} passages={chosen.passages} page={page} target={target} focusRequest={focus}

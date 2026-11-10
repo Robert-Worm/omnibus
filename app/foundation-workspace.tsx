@@ -1,4 +1,5 @@
 "use client";
+import {leesbareEditie} from '@/lib/framework-source-labels.mjs';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 import {useCollectionScope,CollectionBadge} from './collection-choice';
@@ -406,7 +407,7 @@ function LegacyFoundationWorkspace({
                   {view.coverage.map((c) => (
                     <TableRow key={c.source.id}>
                       <TableCell>
-                        {frameworkTitle(c.source.title)}<span className="criterion-reference">{c.source.id} · {c.source.edition}</span>
+                        {frameworkTitle(c.source.title)}<span className="criterion-reference">{c.source.id} · {leesbareEditie(c.source.edition)}</span>
                       </TableCell>
                       <TableCell>{c.available}</TableCell>
                       <TableCell>{c.reviewed}</TableCell>
@@ -629,7 +630,7 @@ function LegacyFoundationWorkspace({
               {current.testOperation && <><h3>Werking</h3><p>{current.testOperation}</p></>}
               {current.documents && <><h3>Bewijsmateriaal · suggesties</h3><p>{current.documents}</p></>}
               <p>
-                {current.source.edition} · {current.location}
+                {leesbareEditie(current.source.edition)} · {current.location}
               </p>
               <a
                 className="external-source"

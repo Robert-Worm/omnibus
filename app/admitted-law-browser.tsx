@@ -23,7 +23,7 @@ function About({source,items}:{source:Source;items:Item[]}){
   specifications={<><div><dt>Uitgave</dt><dd>{source.edition}</dd></div><div><dt>Omvang</dt><dd>{norms} normen · {context.length} afbakeningspunten</dd></div></>}
   kind={{title:source.kind==='law'?'Wat voor regeling is dit?':'Wat voor kader is dit?',body:<p>{background?.meaning||source.usage}</p>}}
   audience={<p>{source.context}</p>}
-  history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. De broneditie, toepassingsvoorwaarden en genoemde bronbeperkingen blijven bepalend voor deze uitwerking.`}}
+  history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. Voor de toetspunten zelf geldt de opgenomen uitgave van de bron.`}}
   application={<>{background&&<p>{source.usage}</p>}{background&&<ol className="law-about-practice">{background.practice.map(text=><li key={text}>{text}</li>)}</ol>}{context.map(p=><div key={p.id}><h4>{p.title}</h4><p>{p.auditNorm}</p><p>{p.sourceContext}</p></div>)}</>}
   related={background?.related}
   sources={[{id:source.id,title:source.title,role:source.edition,url:source.url}]}

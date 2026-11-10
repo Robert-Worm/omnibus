@@ -463,7 +463,7 @@ function CioLawWorkspaceContent({
           <p className="cio-eyebrow">Wetten en kaders · {source.official_publication}</p>
           <h1>{source.title}</h1>
           <p>
-            14 beheersdoelstellingen · 72 normen · 148 selecteerbare punten · 2 punten op HOLD
+            14 beheersdoelstellingen · 72 normen · 148 selecteerbare punten · 2 punten nog niet vrijgegeven
           </p>
         </div>
         <Button onClick={() => navigate("framework")} variant="outline">
@@ -738,7 +738,7 @@ function CioLawWorkspaceContent({
                         </small>
                       </button>
                       {child.selection_status !== "SELECTABLE" && (
-                        <span className="cio-hold">HOLD · niet selecteerbaar</span>
+                        <span className="cio-hold">Nog niet vrijgegeven</span>
                       )}
                     </div>
                   ))}
@@ -765,7 +765,7 @@ function CioLawWorkspaceContent({
                     </nav>
                     {p.selection_status !== "SELECTABLE" && (
                       <div className="cio-notice cio-hold-notice">
-                        <strong>HOLD — geen selectie mogelijk</strong>
+                        <strong>Nog niet vrijgegeven — geen selectie mogelijk</strong>
                         <p>{p.selection_reason}</p>
                       </div>
                     )}
