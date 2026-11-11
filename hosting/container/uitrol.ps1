@@ -30,6 +30,12 @@ try {
   }
   if ($info.databaseSha256 -notmatch '^[0-9a-f]{64}$') { throw 'databaseSha256 is geen geldig controlegetal.' }
   if ($info.codeRevision -notmatch '^[0-9a-f]{40}$') { throw 'codeRevision is geen volledige commit-hash.' }
+  # De tag moet gelijk zijn aan de versie die de app zelf toont (lib/product-release.mjs).
+  $bron = Get-Content -Raw -ErrorAction Stop (Join-Path $root 'lib\product-release.mjs')
+  if ($bron -notmatch 'PRODUCT_RELEASE_NUMBER\s*=\s*(\d+)') { throw 'Versienummer niet gevonden in lib/product-release.mjs.' }
+  $nummer = [int]$Matches[1]
+  $appVersie = "0.$([math]::Floor($nummer / 100)).$($nummer % 100)"
+  if ($info.tag -ne $appVersie) { throw "De tag ($($info.tag)) is niet gelijk aan de versie in de app ($appVersie)." }
   $naam = "$($info.image):$($info.tag)"
 
   Write-Host "Controlegetal van de database controleren..."
