@@ -20,7 +20,6 @@ export function ResearchEntry({route,onChoose,disabled}:{route:string;onChoose:(
    <Button disabled={disabled} onClick={()=>onChoose('risk')}>{route==='risk'?'Verder vanuit je signalen':'Start vanuit signalen'}<ArrowRight size={16}/></Button>
   </article>
   <WorkflowOutcome title={<>Beide routes → jouw <TermText text="referentiekader"/></>}><TermText text="Combineer normen, variabelen en onderzoeksvragen en exporteer je referentiekader naar Excel. Je kunt stappen herhalen en van route wisselen; je werk blijft behouden."/></WorkflowOutcome>
-  <p className="entry-status"><strong>Wat je hier vindt.</strong> Wetten en kaders als toetspunten, met de bronpassage ernaast. Voor de financiële sector zijn dat DORA, de bijbehorende technische normen (RTS en ITS) en NOREA DORA in Control. <strong>Status van de inhoud:</strong> toetspunten, toetsaanpak en vragen zijn met AI opgesteld en door AI beoordeeld op trouw aan de bron; er is geen menselijke audit- of juridische goedkeuring. Controleer een toetspunt aan de bronpassage voordat je erop steunt.</p>
  </section>;
 }
 export function RiskIntake({draft,onChange,disabled}:{draft:Draft;onChange:(draft:Draft)=>void;disabled:boolean}){
