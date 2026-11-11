@@ -332,7 +332,9 @@ export function Approach({ point }: { point: Point }) {
         voldaan. Bevat een toetspunt meerdere aspecten? Leg de uitkomst per aspect vast en benoem wat ontbreekt of niet beoordeelbaar is.
       </p>
       <div className="cio-phase-grid">
-        {phases.map(({key,label,plan:p}) => {
+        {phases.map(({key,label,plan:p},phaseIndex) => {
+          // Een afkorting staat op dit scherm één keer voluit: bij de handeling van de eerste fase (panel ronde 8).
+          const eerste = phaseIndex === phases.findIndex(x => x.plan.action);
           return (
             <section key={key} className={`cio-phase cio-phase-${key}`}>
               <h4>{label}</h4>
@@ -341,14 +343,14 @@ export function Approach({ point }: { point: Point }) {
                 <p className="cio-phase-action">
                   <strong>Handeling</strong>
                   <br />
-                  <AfkortingText text={p.action} voluit/>
+                  <AfkortingText text={p.action} voluit={eerste}/>
                 </p>
               )}
               {p.expected_evidence && (
                 <p className="cio-phase-evidence">
                   <strong>Verwacht bewijs</strong>
                   <br />
-                  <AfkortingText text={p.expected_evidence} voluit/>
+                  <AfkortingText text={p.expected_evidence}/>
                 </p>
               )}
             </section>
@@ -358,7 +360,7 @@ export function Approach({ point }: { point: Point }) {
           <section className="cio-phase cio-phase-werking cio-phase-open">
             <h4>Werking</h4>
             <p className="cio-meta">Niet uitgewerkt voor dit toetspunt.</p>
-            <p className="cio-phase-action"><AfkortingText text={werkingOpen} voluit/></p>
+            <p className="cio-phase-action"><AfkortingText text={werkingOpen}/></p>
           </section>
         )}
       </div>

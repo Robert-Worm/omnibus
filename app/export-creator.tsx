@@ -1,4 +1,5 @@
 "use client";
+import { materialInterviewLevels } from "@/lib/investigation.mjs";
 import {countLabel} from '@/lib/display-count.mjs';
 import LegacyCioNotice from "./legacy-cio-notice";
 import { useState, useEffect, useMemo } from "react";
@@ -95,9 +96,10 @@ export default function ExportCreator({
     const opgenomen = new Set(exportedNormIds), perLevel: Record<string, number> = {};
     let total = 0;
     for (const m of draft.investigation?.materials ?? []) {
-      if (!opgenomen.has(m.id) || !Array.isArray(m.interviewPlan)) continue;
+      const levels = opgenomen.has(m.id) ? (materialInterviewLevels(m) as string[] | null) : null;
+      if (!levels) continue;
       total++;
-      for (const level of new Set((m.interviewPlan as { level?: string }[]).map((o) => o.level))) if (level) perLevel[level] = (perLevel[level] ?? 0) + 1;
+      for (const level of levels) perLevel[level] = (perLevel[level] ?? 0) + 1;
     }
     return { total, perLevel };
   }, [draft.investigation?.materials, exportedNormIds]);
