@@ -21,6 +21,7 @@ import {topicalRecordSources} from '@/lib/topical-source-reader.mjs';
 import {pakketNotities,standaardzinnen} from '@/lib/reader-notes.mjs';
 import {topicalSourceFormat} from '@/lib/topical-document-identity.mjs';
 import {topicalSelection,chooseTopicalPoints} from '@/lib/topical-selection.mjs';
+import {relatedPassages,relatedSourceIds} from '@/lib/related-passages.mjs';
 import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
 import {cioSourceGroups} from '@/lib/cio-source-groups.mjs';
 import type {Point,Criterion} from './cio-law-workspace';
@@ -90,7 +91,8 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  const sourceGroups=(cioSourceGroups(point.source_links) as {id:string;title:string;entries:{link:Point['source_links'][number];index:number}[]}[])
   .map(group=>({...group,entries:group.entries.filter(({link,index:i})=>{if(link.contribution==='SCOPE'&&zusterBepalingen.has(link.record_id)&&i!==index)return false;const r=recordFor(link.record_id),k=r?leesbareAlinea(r.title)+'|'+leesbareVindplaats(r):link.record_id;if(kaartGezien.has(k)&&i!==index)return false;kaartGezien.add(k);return true;})})).filter(group=>group.entries.length);
  const criterion=<div className="cio-source-explanation"><h3>Hoe is dit toetspunt onderbouwd?</h3>
-  <div className="cio-source-links">{sourceGroups.map(group=><section key={group.id} aria-label={group.title}><h4>{group.title}</h4>{group.entries.map(({link,index:i})=>{const r=recordFor(link.record_id);return <article key={link.record_id} className={`cio-source-link-card${i===index?' is-active':''}`} data-record-id={link.record_id} data-contribution={link.contribution}><button onClick={()=>selectLink(i)} aria-pressed={i===index}><strong>{leesbareAlinea(r?.title)}</strong><BookOpen size={16}/><span>{r?leesbareVindplaats(r):''} · {labels[link.contribution]}</span></button>{r?.source_status==='EXPLANATORY_CONTEXT'&&<small>Toelichting — geen zelfstandige nieuwe plicht</small>}</article>;})}</section>)}</div>
+  <div className="cio-source-links">{sourceGroups.map(group=><section key={group.id} aria-label={group.title}><h4>{group.title}</h4>{group.entries.map(({link,index:i})=>{const r=recordFor(link.record_id);return <article key={link.record_id} className={`cio-source-link-card${i===index?' is-active':''}`} data-record-id={link.record_id} data-contribution={link.contribution}><button onClick={()=>selectLink(i)} aria-pressed={i===index}><strong>{leesbareAlinea(r?.title)}</strong><BookOpen size={16}/><span>{r?leesbareVindplaats(r):''} · {labels[link.contribution]}</span></button>{r?.source_status==='EXPLANATORY_CONTEXT'&&<small>Toelichting — geen zelfstandige nieuwe plicht</small>}</article>;})}</section>)}
+   {relatedSourceIds(point).map(id=><CatalogueContent key={id} resource={'foundation:'+id}>{()=><RelatedPassages point={point} sourceId={id}/>}</CatalogueContent>)}</div>
   <section className="cio-source-text"><h4>Toepassing van dit toetspunt</h4><p>{point.scope}</p><dl className="cio-source-actors">{point.addressees.filter((a,i,all)=>all.findIndex(b=>b.label===a.label&&b.role===a.role&&(standard.has(b.condition||'')?'':b.condition||'')===(standard.has(a.condition||'')?'':a.condition||''))===i).map((a,i)=><div key={i}><dt>{a.label.replace(ROL_IN_NAAM,'')}</dt><dd>{a.label.match(ROL_IN_NAAM)?.[1]==='wie de plicht heeft'?'Verantwoordelijk volgens het kader':a.label.match(ROL_IN_NAAM)?'Uitvoerder volgens eigen taakverdeling':a.role==='OTHER'&&bundle.context.kind==='framework'?'Genoemd in het kader':roles[a.role]}{a.condition&&!standard.has(a.condition)&&<p>{a.condition}</p>}</dd></div>)}</dl>{[{title:'Voorwaarden',items:point.conditions},{title:'Uitzonderingen',items:point.exceptions}].map(g=>g.items.length>0&&<section key={g.title}><h4>{g.title}</h4><ul>{g.items.map((t,i)=><li key={i}>{t}</li>)}</ul></section>)}</section>
  </div>;
  const source=chosen&&record?<><nav aria-label="Brondocument">{choices.length>1&&choices.map((c,i)=><button key={c.document.id} aria-pressed={i===documentIndex} onClick={()=>{setDocumentIndex(i);setPage(c.passages[0]?.page||1);setTarget(c.passages[0]?.start);setFocus(n=>n+1);}}>{docLabel(c.document)}</button>)}</nav><LawSourceDocument recordId={record.id} title={leesbareAlinea(record.title)} locator={leesbareVindplaats(record)} sourceKind={record.source_status==='EXPLANATORY_CONTEXT'?'Toelichting':'Hoofdtekst'} document={chosen.document} passages={chosen.passages} page={page} target={target} focusRequest={focus}
@@ -109,6 +111,17 @@ export function TopicalSavedSource({serialized}:{serialized:string}){
  const trace=JSON.parse(serialized),bundle=topicalPackage(trace.sourceId);
  if(!bundle)return <p role="alert">Dit bronpakket is niet beschikbaar.</p>;
  return <CatalogueContent resource={'source:'+bundle.id}>{()=> <SourceContent key={trace.point.id} bundle={bundle} point={trace.point} parent={trace.criterion}/>}</CatalogueContent>;
+}
+/** Passages die in een ander kader staan en bij dit toetspunt horen (bijvoorbeeld de meldtermijnen van RTS 2025/301). */
+function RelatedPassages({point,sourceId}:{point:TopicalPoint;sourceId:string}){
+ const group=(relatedPassages(point) as {sourceId:string;sourceTitle:string;url:string;passages:{id:string;title:string;location:string;pages:string[];text:string}[]}[]).find(g=>g.sourceId===sourceId);
+ if(!group)return null;
+ return <section aria-label={'Bepalingen uit een ander kader: '+group.sourceTitle} data-source-group="related"><h4>Bepalingen uit een ander kader</h4>
+  <p className="cio-related-source">{group.sourceTitle} · <a href={group.url} target="_blank" rel="noreferrer">Officiële publicatie ↗</a></p>
+  {group.passages.map(passage=><article key={passage.id} className="cio-source-link-card cio-related-passage" data-record-id={passage.id}>
+   <details><summary><strong>{leesbareAlinea(passage.title)}</strong><span>{[passage.location,...passage.pages].join(' · ')}</span></summary><p>{passage.text}</p></details>
+  </article>)}
+ </section>;
 }
 // NOREA zet de rol achter de naam: "Financiële instelling (wie de plicht heeft)". De viewer toont de rol één keer, eronder.
 const ROL_IN_NAAM=/ \((wie de plicht heeft|uitvoerder volgens eigen taakverdeling)\)$/u;
