@@ -13,11 +13,14 @@ export default function InterviewSettings({
   value,
   onChange,
   fixedSelection = false,
+  levelCounts,
 }: {
   model: LibraryModel;
   value: InterviewSettingsValue;
   onChange: (value: InterviewSettingsValue) => void;
   fixedSelection?: boolean;
+  /** Per gespreksniveau het aantal gekozen toetspunten met een interviewvraag, en het totaal (panel ronde 8). */
+  levelCounts?: { total: number; perLevel: Record<string, number> };
 }) {
   const selected = model.items
     .filter((i) => i.included)
@@ -48,6 +51,7 @@ export default function InterviewSettings({
               }
             />
             {l.label}
+            {levelCounts && levelCounts.total > 0 && <small className="creator-level-count"> · vraag bij {levelCounts.perLevel[l.id] ?? 0} van {levelCounts.total} toetspunten</small>}
           </label>
         ))}
       </fieldset>}

@@ -194,7 +194,8 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 .law-reading-tip::before{content:"";position:absolute;top:-5px;right:1.2rem;border:5px solid transparent;border-top:0;border-bottom-color:#154273}
 .law-active-choice{margin:0 0 .9rem;padding:.6rem .8rem;border:1px solid #dbe4ec;border-radius:.5rem;background:#fff}
 .law-active-choice label{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer}
-.law-active-choice span{display:grid;gap:.1rem}
+/* Alleen de buitenste span is een raster; een afkorting met uitleg in de titel is zelf ook een span en brak anders de titel in drie regels. */
+.law-active-choice label>span{display:grid;gap:.1rem}
 .law-active-choice strong{font-size:.9rem}
 .law-active-choice small{color:#5b6f83;font-size:.75rem}
 /* Keuzelijst voor het bekeken toetspunt (panelontwerp 9 november 2026) */

@@ -116,13 +116,14 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const measure=row?measureFor(row.criterionId,row.groupId):null;
  const objectives=catalogue.objectives.filter(o=>point?.objective_ids.includes(o.id));
  const state=select(draft,children.map(p=>p.id));
- const query=view.query.trim().toLocaleLowerCase('nl');
+ // Zoeken op de code zoals de gebruiker die ziet (DORA-G10-N02-P01); een oud voorvoegsel "TP-" uit een eerdere export mag ervoor staan.
+ const query=view.query.trim().toLocaleLowerCase('nl').replace(/^tp-(?=[a-z])/u,'');
  const matches=rows.filter(r=>{
   if(view.group&&r.groupId!==view.group)return false;
   if(view.selectedOnly&&!r.pointIds.some(id=>selected.has(id)))return false;
   if(!query)return true;
-  const content=[r.id,r.title,r.entity,...(r.articleReferences||[]),r.objective.text,r.risk.text,r.controlObjective?.text,r.control.text,r.criterion.text,...r.pointIds.flatMap(id=>{
-   const p=pointMap.get(id);return p?[p.id,p.title,p.text,p.chapter,...p.addressees.map(a=>a.label),...p.conditions,...p.exceptions,sourceLocations(p.source_links.map(l=>l.record_id),recordMap)]:[];
+  const content=[r.id,normId(r.id),r.title,r.entity,...(r.articleReferences||[]),r.objective.text,r.risk.text,r.controlObjective?.text,r.control.text,r.criterion.text,...r.pointIds.flatMap(id=>{
+   const p=pointMap.get(id);return p?[p.id,normId(p.id),p.title,p.text,p.chapter,...p.addressees.map(a=>a.label),...p.conditions,...p.exceptions,sourceLocations(p.source_links.map(l=>l.record_id),recordMap)]:[];
   })].join(' ').toLocaleLowerCase('nl');
   return content.includes(query);
  });

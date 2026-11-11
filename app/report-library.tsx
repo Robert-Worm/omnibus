@@ -344,11 +344,6 @@ export default function ReportLibrary({
           consolidatiemarkeringen blijven staan. De inhoud is niet herschreven of aangevuld. Een paginagrens kan midden in
           een alinea vallen.
         </p>
-        {report.pdf_hash && (
-          <p className="hash">
-            Controlegetal oorspronkelijke PDF (SHA-256): {report.pdf_hash}
-          </p>
-        )}
       </details>
     </section>
   );

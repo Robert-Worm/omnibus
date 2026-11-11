@@ -88,3 +88,4 @@
 .cio-point-source .cio-related-passage summary::-webkit-details-marker{display:none}
 .cio-point-source .cio-related-passage summary span{font-size:.78rem;color:#596c80}
 .cio-point-source .cio-related-passage p{white-space:pre-line}
+.cio-point-source .cio-source-more>summary{cursor:pointer;font-size:.82rem;color:#3f5670;padding:.3rem 0}

@@ -90,6 +90,17 @@ export default function ExportCreator({
   const setFilename = setting('filename', filename);
   const count = preview?.selection.norms ?? exportedNormIds.length;
   const hasResearchQuestions = Boolean(draft.research?.questions.length);
+  // Hoeveel van de opgenomen toetspunten hebben een interviewvraag per gespreksniveau? Zo kies je bewust (panel ronde 8).
+  const interviewLevelCounts = useMemo(() => {
+    const opgenomen = new Set(exportedNormIds), perLevel: Record<string, number> = {};
+    let total = 0;
+    for (const m of draft.investigation?.materials ?? []) {
+      if (!opgenomen.has(m.id) || !Array.isArray(m.interviewPlan)) continue;
+      total++;
+      for (const level of new Set((m.interviewPlan as { level?: string }[]).map((o) => o.level))) if (level) perLevel[level] = (perLevel[level] ?? 0) + 1;
+    }
+    return { total, perLevel };
+  }, [draft.investigation?.materials, exportedNormIds]);
   const emptyFramework = !modelBasis && count === 0 && !hasResearchQuestions;
   const missingInput = [
     validation === 'Kies het niveau van de geïnterviewde.' || validation === 'Kies het niveau van de geïnterviewde' ? {id:'interview-level-operational',label:'Kies het gespreksniveau'} : null,
@@ -320,6 +331,7 @@ export default function ExportCreator({
                       draft.investigation?.materials.some(m => m.id === id && m.interviewLevel))}
                     value={interview}
                     onChange={setInterview}
+                    levelCounts={interviewLevelCounts}
                   />
                 )}
                 <div className="creator-selection-summary">
