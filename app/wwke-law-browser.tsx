@@ -1,7 +1,7 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
 import {catalogueDerived,catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
-import {useId,useState,useRef,useEffect,useLayoutEffect,useSyncExternalStore} from 'react';
+import {useId,useState,useRef,useEffect,useLayoutEffect,useSyncExternalStore,startTransition} from 'react';
 import {foundationOverview,foundationOverviewSelection} from '@/lib/foundation-overviews.mjs';
 import {wwkeOverviewRows,wwkeOverviewExcluded} from '@/lib/wwke-overview.mjs';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,Users,X} from 'lucide-react';
@@ -107,7 +107,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  function openPoint(id:string){const row=allRows.find(r=>r.pointIds.includes(id));if(row)open(row.id,id,true);}
  function close(){setOpenId('');setPointId('');onClose?.();}
  return <section className="law-browser wwke-browser" aria-label="WWKE">
- {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>{actionGeneration.current++;setAbout(false);}}>Normen</button><button aria-pressed={about} onClick={()=>withDetails(()=>setAbout(true))}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
+ {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>{actionGeneration.current++;startTransition(()=>setAbout(false));}}>Normen</button><button aria-pressed={about} onClick={()=>withDetails(()=>startTransition(()=>setAbout(true)))}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
  {about?<WwkeSourceAbout initialSector={view.sector} onPoint={id=>{openPoint(id);setTab('source');}}/>:<>
  <div className="law-browse-intro"><div className="law-viewer-heading"><h2>Wet weerbaarheid kritieke entiteiten</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(rows)}</output></div>{(()=>{const notice=sourceAudienceNotice(wwkeSourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled||!visibleSelection.total} title={visibleSelection.all?'Verwijder de normen binnen de huidige filters uit je selectie. Andere bronnen en bewerkingen blijven behouden.':'Voeg alle normen binnen de huidige filters direct toe aan je selectie. Toepasselijkheid blijft afzonderlijk te beoordelen; punten met open bronvragen blijven uitgesloten.'} onClick={selectAll}><ListChecks size={15}/>{visibleSelection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
  <div className="law-browse-filters" aria-label="Normen filteren">

@@ -2,7 +2,8 @@
 .law-view-actions{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:1rem 0 1.4rem;flex-wrap:wrap}
 .law-overview-tabs{display:flex;gap:.3rem;border-bottom:1px solid #d7e1ed}
 .law-overview-tabs button{padding:.6rem 1rem;cursor:pointer;color:#63768b;border-bottom:2px solid transparent}
-.law-overview-tabs button[aria-pressed=true]{color:#173d65;border-bottom-color:#173d65;font-weight:600}
+/* Geen vetter lettergewicht voor de actieve tab: dat maakt de tekst breder en laat de tabs verspringen. */
+.law-overview-tabs button[aria-pressed=true]{color:#173d65;border-bottom-color:#173d65;text-shadow:.35px 0 0 currentColor,-.35px 0 0 currentColor}
 .law-browse-intro h2{font-size:1.3rem;font-weight:650;line-height:1.4}
 .law-browse-intro p{margin:.35rem 0 1rem;color:#607286;max-width:65rem}
 .law-browse-filters{display:flex;align-items:end;gap:.8rem;flex-wrap:wrap;padding:1rem;background:#f5f8fb;border:1px solid #dce5ed;border-radius:.65rem}

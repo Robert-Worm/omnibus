@@ -136,6 +136,9 @@ export function CollectionNavigation({page,navigate,discoveryAxis='themes',openC
   discoveryAxis?:'themes'|'processes';
   openCounts:{foundations:number;models:number;topics:number};
 }) {
+  // De aangeklikte tab licht direct op; de inhoud volgt als overgang (zie navigate in framework-editor).
+  const [target,setTarget]=useState<{from:string;to:string}|null>(null);
+  const shown=target&&target.from===page?target.to:page;
   if(workflowStage(page)!==1)return null;
   const categories:{label:string;items:{id:string;label:string;hash:string;count?:number;hint?:string}[]}[] = [
     {label:'Verkennen',items:[
@@ -163,14 +166,15 @@ export function CollectionNavigation({page,navigate,discoveryAxis='themes',openC
                 aria-label={opened===undefined?undefined:`Open ${label.toLocaleLowerCase('nl')}, ${opened} geopend`}
                 title={opened===undefined?undefined:(hint||`${opened} geopend in deze viewer. Dit is niet het aantal geselecteerde bouwstenen.`)}
                 aria-current={
-                  page === id ||
-                  (['catalogue','processes'].includes(id) && ['catalogue','processes'].includes(page)) ||
-                  (id === "reports" && page === "reader")
+                  shown === id ||
+                  (['catalogue','processes'].includes(id) && ['catalogue','processes'].includes(shown)) ||
+                  (id === "reports" && shown === "reader")
                     ? "page"
                     : undefined
                 }
                 onClick={(e) => {
                   e.preventDefault();
+                  setTarget({from:page,to:id});
                   navigate(id);
                 }}
               >

@@ -4,9 +4,10 @@ import {useViewerVisibility} from './use-viewer-visibility';
 import './deferred-viewer.css';
 
 /** Only defer presentation. Counts, filtering and selection retain the full group. */
-export default function DeferredViewerSection({children,immediate=false,count=1,label}:{children:ReactNode;immediate?:boolean;count?:number;label?:string}){
+/** `estimate` is de verwachte hoogte in pixels; klopt die, dan verspringt de pagina niet als de inhoud verschijnt. */
+export default function DeferredViewerSection({children,immediate=false,count=1,label,estimate}:{children:ReactNode;immediate?:boolean;count?:number;label?:string;estimate?:number}){
  const {visible,placeholder,reveal}=useViewerVisibility<HTMLDivElement>(immediate);
- return visible?children:<div ref={placeholder} className="viewer-section-placeholder">
+ return visible?children:<div ref={placeholder} className="viewer-section-placeholder" style={estimate?{minHeight:estimate,height:estimate}:undefined}>
   <Button variant="ghost" onClick={reveal}>{label||`${count} ${count===1?'norm':'normen'} tonen`}</Button>
  </div>;
 }

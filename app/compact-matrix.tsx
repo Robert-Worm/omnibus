@@ -316,7 +316,10 @@ export default function CompactMatrix({
     });
     observer.observe(element);
     if(element.firstElementChild)observer.observe(element.firstElementChild);
-    element.addEventListener("scroll",update,{passive:true});update();
+    // Geen directe update() bij het opbouwen: scrollLeft/scrollWidth lezen dwingt de browser midden in het opbouwen
+    // de hele pagina op te maken, en dat per tabel (gemeten 10 november 2026: het grootste deel van de hapering bij
+    // het wisselen van tab). De ResizeObserver meldt zich na de eerste opmaak vanzelf, zonder extra werk.
+    element.addEventListener("scroll",update,{passive:true});
     return ()=>{observer.disconnect();element.removeEventListener("scroll",update);};
   },[columnLayoutKey,rowLayoutKey,viewKey,rememberScroll,ownsScroll]);
   const names: Record<string, string> = labels;

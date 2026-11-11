@@ -22,7 +22,7 @@ import {modelAdoptionPlan,applyModelAdoption,syncModelLibrarySelection} from '@/
 import {download} from '@/lib/browser-download.mjs';
 import {newProject,clearProjectBrowsePreferences} from '@/lib/new-project.mjs';
 import ProductFooter from './product-footer';
-import { useCallback, useEffect, useEffectEvent, useRef, useState, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState, useMemo, useSyncExternalStore, startTransition } from "react";
 import {createProjectStatus} from '@/lib/project-status.mjs';
 import {createBackgroundProjectSave} from '@/lib/background-project-save.mjs';
 import {createProjectEncoder} from './project-encoder';
@@ -661,6 +661,9 @@ export default function FrameworkEditor() {
     if(next==='model-workspace')prepareModelLibrary(projectModelIds(projectRef.current));
     if(next==='export')setExportOpened(true);
     contentRequest.current++;contentAction.current=null;setContentNotice('');setContentFailure(false);
+    // Wisselen van pagina of tab is een overgang: het huidige scherm blijft staan en reageert, terwijl React het
+    // nieuwe scherm in stukjes opbouwt. Zo blokkeert een zware viewer de browser niet en is er geen leeg tussenbeeld.
+    startTransition(()=>{
     if(next==='start')setResearchRoute('question');
     if(next==='risk-start')setResearchRoute('risk');
     setPage(next);
@@ -669,6 +672,7 @@ export default function FrameworkEditor() {
     setTab("framework");
     setDetail("chain");
     setActiveEvidence(null);
+    });
     const hash =
       next === 'model-workspace' ? '#open-modellen' : next === 'entry' ? '#begin' : next === 'risk-start' ? '#risicoverkenning' : next === 'report-themes' ? '#rapportthemas' : next === "processes"
         ? "#processen"
@@ -1116,7 +1120,7 @@ export default function FrameworkEditor() {
         {fileDownload.error && <p className="project-import-feedback" role="alert">{fileDownload.error}</p>}
         {importFeedback && <div className="project-import-feedback" role="alert"><span>{importFeedback}</span><Button variant="ghost" aria-label="Importmelding sluiten" onClick={()=>setImportFeedback('')}><X size={18}/></Button></div>}
         <main id="main-workspace" tabIndex={-1} data-viewer={['foundation-workspace','model-workspace','topics'].includes(page)}>
-          {contentNotice&&<div className="project-notice" role={contentFailure?'alert':'status'}>
+          {contentNotice&&<div className={contentFailure?'project-notice':'project-notice is-loading'} role={contentFailure?'alert':'status'}>
             <p>{contentNotice}</p>{contentFailure&&<Button variant="outline" onClick={()=>contentAction.current?.()}>Opnieuw proberen</Button>}
           </div>}
           {scopeNotice && (

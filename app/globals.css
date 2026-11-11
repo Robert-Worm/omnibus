@@ -2862,6 +2862,14 @@ button.readable-reference[data-slot="button"] {
 .compact-app .theme-card .theme-search-matches { color: #24558a; }
 .project-notice { display: block; }
 .project-notice p { margin: 0 0 10px; overflow-wrap: anywhere; }
+/* De laadmelding staat los van de pagina (onderaan in beeld), zodat de inhoud niet omlaag en weer omhoog schuift
+   bij het wisselen van tab. Ze verschijnt pas na een kwart seconde; een snelle wissel toont dus geen melding. */
+.project-notice.is-loading { position: fixed; z-index: 60; left: 50%; bottom: 1.25rem; transform: translateX(-50%); max-width: min(34rem, calc(100vw - 2rem));
+  padding: .6rem 1rem; border-radius: 999px; background: #17324d; color: #fff; box-shadow: 0 6px 20px rgb(15 35 55 / .25);
+  font-size: .875rem; pointer-events: none; opacity: 0; animation: project-notice-in .15s ease-out .25s forwards; }
+.project-notice.is-loading p { margin: 0; }
+@keyframes project-notice-in { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .project-notice.is-loading { animation-duration: .01s; } }
 .project-notice-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 @media (max-width: 1000px) {
   .compact-app .theme-card.selectable-theme { grid-template-columns: 56px minmax(0,1fr); gap: 8px 16px; padding: 0 16px 12px 0; }

@@ -3,7 +3,7 @@ import {leesbareEditie} from '@/lib/framework-source-labels.mjs';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 import {useCollectionScope,CollectionBadge} from './collection-choice';
-import { Fragment, useState, useRef, useLayoutEffect, useEffect } from "react";
+import {startTransition, Fragment, useState, useRef, useLayoutEffect, useEffect } from "react";
 import type {FoundationBrowse} from '@/lib/project-session.mjs';
 import { X, Eye, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
     if(props.initialSource)setActive(props.initialSource);
   }
   const current=known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active?opened[0]?.id:undefined);
-  if(current){const onActivate=(id:string)=>{const apply=()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});};if(props.prepareSource)props.prepareSource(id,apply);else apply();};return <>
+  if(current){const onActivate=(id:string)=>{const apply=()=>startTransition(()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});});if(props.prepareSource)props.prepareSource(id,apply);else apply();};return <>
    <OpenItemStrip id="reviewed-law-open" items={opened.map(s=>({id:s.id,title:frameworkTitle(s.title)}))} activeId={current} onActivate={onActivate} onClose={id=>{props.onChange(closeFoundation(props.draft,id) as Draft);const next=opened.find(s=>s.id!==id);if(next)onActivate(next.id);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Wet of kader openen" disabled={props.disabled}/>
    {admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId} onOpenSource={known.includes('DORA-2022-2554')?(id:string)=>{if(!known.includes(id))return;const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}:undefined} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
   </>;}
