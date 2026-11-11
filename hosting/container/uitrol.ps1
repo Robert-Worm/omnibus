@@ -59,11 +59,12 @@ try {
   }
 
   Write-Host "Bouwen: $naam"
-  docker build --platform linux/amd64 -f hosting/container/Dockerfile.lokaal `
-    --build-arg "DATABASE_SHA256=$($info.databaseSha256)" `
-    --build-arg "OMNIBUS_CODE_REVISION=$($info.codeRevision)" `
-    -t $naam .
-  if ($LASTEXITCODE -ne 0) { throw 'De build is mislukt; zie de meldingen hierboven.' }
+  # De meldingen van de build staan ook in uitrol-log.txt, zodat ze na een mislukte build na te lezen zijn.
+  # cmd voegt de foutuitvoer samen met de gewone uitvoer; zo ziet PowerShell alleen gewone regels.
+  $log = Join-Path $root 'uitrol-log.txt'
+  $bouw = "docker build --progress=plain --platform linux/amd64 -f hosting/container/Dockerfile.lokaal --build-arg DATABASE_SHA256=$($info.databaseSha256) --build-arg OMNIBUS_CODE_REVISION=$($info.codeRevision) -t $naam . 2>&1"
+  & cmd /c $bouw | Tee-Object -FilePath $log
+  if ($LASTEXITCODE -ne 0) { throw 'De build is mislukt; de meldingen staan hierboven en in uitrol-log.txt.' }
 
   Write-Host "Naar Docker Hub zetten: $naam"
   docker push $naam

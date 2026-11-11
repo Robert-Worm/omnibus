@@ -986,3 +986,4 @@ __pycache__/
 # Database voor Dockerfile.lokaal; nooit in Git.
 hosting/container/database/
 /uitrol-resultaat.json
+/uitrol-log.txt
