@@ -140,7 +140,6 @@ export default function ReportLibrary({
         <p>{document.selectionNotice} Dit is geen volledige spreadsheetweergave. Bronfragmentnummers zijn navigatie, geen oorspronkelijke paginanummers.</p>
         <p>{document.attribution} · <a href={document.licenseUrl} target="_blank" rel="noreferrer">Licentie</a>. Selectie en presentatie aangepast; celinhoud niet herschreven. Oorspronkelijke werkmap niet lokaal meegeleverd.</p>
         <p>Alleen expliciet vrijgegeven celposities zijn opgenomen. Niet meegeleverde cellen worden niet gereconstrueerd. Markeringen verwijzen naar de letterlijke waarden van deze bronversie; ze bevestigen geen actuele wettelijke juistheid.</p>
-        <p>Interne broncode: {document.id}</p><p className="hash">Controlegetal publieke fragmenttekst (SHA-256): {source.source_sha256}</p>
         <p className="hash">Controlegetal oorspronkelijke XLSX (niet meegeleverd): {document.source_file_hash}</p>
       </details>
     </section>;
@@ -345,8 +344,6 @@ export default function ReportLibrary({
           consolidatiemarkeringen blijven staan. De inhoud is niet herschreven of aangevuld. Een paginagrens kan midden in
           een alinea vallen.
         </p>
-        <p>Interne broncode: {report.id}</p>
-        <p className="hash">Controlegetal uitgelezen tekst (SHA-256): {source.source_sha256}</p>
         {report.pdf_hash && (
           <p className="hash">
             Controlegetal oorspronkelijke PDF (SHA-256): {report.pdf_hash}

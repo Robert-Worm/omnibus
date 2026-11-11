@@ -30,10 +30,10 @@ export default function InterviewSettings({
   return (
     <section className="interview-settings" aria-label="Interview instellen">
       {fixedLevels ? <p className="creator-help">De gekozen vragen behouden hun gespreksniveau en formulering uit Modellen.</p> : <fieldset>
-        <legend>Met wie spreekt u?</legend>
+        <legend>Met wie spreek je?</legend>
         <p className="creator-help">
           Kies niveaus voor vragen zonder vast gespreksniveau. Modelvragen die per niveau zijn gekozen behouden die keuze. Eigen vragen
-          behouden uw formulering; pas ze zo nodig aan voor uw gesprekspartner.
+          behouden je formulering; pas ze zo nodig aan voor je gesprekspartner.
         </p>
         {interviewLevels.map((l) => (
           <label className="creator-check" key={l.id} htmlFor={"interview-level-" + l.id}>

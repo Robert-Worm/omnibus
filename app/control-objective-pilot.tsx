@@ -237,7 +237,7 @@ export default function ControlObjectivePilot({
                     Boolean(materials.get(block.id + "/TC-ALL") &&
                       draft.included.includes(materials.get(block.id + "/TC-ALL")!.id))) && (
                     <p className="bd-legacy-note">
-                      Eerdere selectie van het volledige item. Bij het aanpassen kiest u voortaan
+                      Eerdere selectie van het volledige item. Bij het aanpassen kies je voortaan
                       afzonderlijke toetspunten; bestaande vraagkoppelingen worden niet overgezet.
                     </p>
                   )}

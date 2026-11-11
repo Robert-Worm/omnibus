@@ -2,7 +2,7 @@
 import {useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
-import {normId} from '@/lib/norm-navigation.mjs';
+import {lineCode} from '@/lib/norm-navigation.mjs';
 import {groupBuildingBlocks} from '@/lib/workflow-readability.mjs';
 import type {Framework} from '@/lib/framework-types';
 import {ResearchMaterialList} from './research-material-list';
@@ -43,7 +43,7 @@ export default function QuestionBuildingBlocks({lines,attached,linkedElsewhere,d
           </Button>
           <ResearchMaterialList lines={group.lines} renderItem={l=><label key={l.id}>
           <Checkbox disabled={disabled} checked={chosen.includes(l.id)} onCheckedChange={v=>setChosen(previous=>v ? [...new Set([...previous,l.id])] : previous.filter(id=>id!==l.id))}/>
-          <span>{normId(l.id)} · {l.title}{linkedElsewhere.includes(l.id)&&<small>Ook gekoppeld aan een andere vraag</small>}</span>
+          <span>{lineCode(l)} · {l.title}{linkedElsewhere.includes(l.id)&&<small>Ook gekoppeld aan een andere vraag</small>}</span>
         </label>}/></fieldset></DeferredViewerSection>)}</div>
         <Button disabled={disabled||!targetId||!ids.length} onClick={()=>{if(onLink(ids))setChosen([]);}}>Koppel {ids.length} {ids.length===1 ? 'bouwsteen' : 'bouwstenen'} aan de gekozen vraag</Button>
       </> : <p>{lines.length ? 'Alle gekozen bouwstenen zijn al aan deze vraag gekoppeld.' : 'Verzamel eerst bouwstenen in stap 2.'}</p>}

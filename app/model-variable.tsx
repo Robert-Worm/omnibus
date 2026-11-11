@@ -137,7 +137,7 @@ export default function ModelVariable({
               />
             </label>
             <label htmlFor={indicator.id + "-definition"}>
-              Wat wilt u onderzoeken?
+              Wat wil je onderzoeken?
               <Textarea
                 id={indicator.id + "-definition"}
                 value={indicator.definition}
@@ -149,7 +149,7 @@ export default function ModelVariable({
               />
             </label>
             <label htmlFor={indicator.id + "-documents"}>
-              Documenten / cijfers die u kunt opvragen
+              Documenten / cijfers die je kunt opvragen
               <Textarea
                 id={indicator.id + "-documents"}
                 value={indicator.documents}

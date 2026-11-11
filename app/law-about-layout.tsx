@@ -2,7 +2,7 @@ import type {ReactNode} from 'react';
 import {BookOpen,CalendarDays,ExternalLink,History,Landmark,ListChecks,Scale,ShieldCheck,Users} from 'lucide-react';
 import './cio-source-about.css';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
-import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle} from '@/lib/framework-source-labels.mjs';
+import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle,leesbareDocumentTitel} from '@/lib/framework-source-labels.mjs';
 
 // Shared source-background layout. New laws/frameworks use the CIO presentation,
 // while their reviewed content, scope and source limitations remain independent.
@@ -20,8 +20,8 @@ export function LawAboutParagraphs({text}:{text:string}){
 export function LawAboutSources({documents,children}:{documents:{id:string;title:string;role:string;url?:string}[];children?:ReactNode}){
  return <section className="law-about-card law-about-sources"><h3><BookOpen size={18} aria-hidden="true"/>Gebruikte bronnen</h3>
   <ul className="law-about-document-list">{documents.map(document=>{const url=frameworkSourceLink(document.url);return <li key={document.id}>
-   <h4>{frameworkTitle(frameworkDocumentTitle(document.title,document.role))}</h4>{frameworkDocumentTitle(document.title,document.role)===document.title&&document.title!==document.role&&<p>{frameworkSourceRole(document.role)}</p>}
-   {url&&<a href={url} target="_blank" rel="noreferrer" aria-label={`Bekijk bij de uitgever: ${frameworkTitle(frameworkDocumentTitle(document.title,document.role))}`}><span>Bekijk bij de uitgever</span><ExternalLink size={13} aria-hidden="true"/></a>}
+   <h4>{leesbareDocumentTitel(frameworkTitle(frameworkDocumentTitle(document.title,document.role)))}</h4>{frameworkDocumentTitle(document.title,document.role)===document.title&&document.title!==document.role&&<p>{frameworkSourceRole(document.role)}</p>}
+   {url&&<a href={url} target="_blank" rel="noreferrer" aria-label={`Bekijk bij de uitgever: ${leesbareDocumentTitel(frameworkTitle(frameworkDocumentTitle(document.title,document.role)))}`}><span>Bekijk bij de uitgever</span><ExternalLink size={13} aria-hidden="true"/></a>}
   </li>;})}</ul>{children&&<div className="law-about-source-explanation">{children}</div>}
  </section>;
 }
@@ -66,7 +66,8 @@ export function LawAboutPage({label,title,intro,links,specifications,kind,audien
   {(application||related)&&<section className="law-about-card"><h3><ListChecks size={18} aria-hidden="true"/>Toepassing in je onderzoek</h3>{application}{related&&<><h4>Samenhang met andere kaders</h4><p>{related}</p></>}</section>}
   {sources&&sources.length>0&&<LawAboutSources documents={sources}>{sourceExplanation}</LawAboutSources>}
   <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en open punten</h3>
-   <p>{LAW_ABOUT_QUALITY_INTRO}</p>
+   {/* De zin over niet-vrijgegeven punten alleen als dit kader zulke punten heeft (panel 11 november 2026). */}
+   <p>{quality.meta.some(line=>typeof line==='string'&&/nog niet vrijgegeven/u.test(line))||quality.holds?LAW_ABOUT_QUALITY_INTRO:LAW_ABOUT_QUALITY_INTRO.replace(' Punten die nog onvoldoende onderbouwd zijn, zijn nog niet vrijgegeven; je kunt ze niet kiezen.','')}</p>
    {quality.meta.length>0&&<p className="law-about-quality-meta">{quality.meta.map((line,index)=><span key={index}>{index>0&&<br/>}{line}</span>)}</p>}
    {quality.holds}
    {quality.checks.length>0&&<div className="law-about-checks">{quality.checks.map(item=><details key={item.title+(item.status||'')}><summary><span>{item.title}</span>{item.status&&<small>{item.status}</small>}</summary><div>{item.body}</div></details>)}</div>}

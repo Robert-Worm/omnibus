@@ -2,6 +2,7 @@
 // Ontwerp van een panel (interactie, visueel, auditor/toegankelijkheid): één blok met daarboven "welk punt bekijk je"
 // (Select met nummer, titel en status, plus vorige/volgende) en daaronder "neem je het op" (checkbox).
 // Bekijken en kiezen blijven gescheiden: de lijst wisselt alleen het bekeken punt, de checkbox kiest.
+import {normId} from '@/lib/norm-navigation.mjs';
 import {useState} from 'react';
 import {Check,ChevronLeft,ChevronRight,Lock} from 'lucide-react';
 import {Button} from '@/components/ui/button';
@@ -42,7 +43,7 @@ export default function LawPointPicker({points,currentId,selected,disabled,onVie
     <Button variant="outline" size="icon" aria-label="Volgend toetspunt" disabled={index===total-1} onClick={()=>view(points[index+1].id)}><ChevronRight size={16}/></Button>
    </div>
   </div>}
-  {onChoose&&<div className="law-active-choice"><label htmlFor={`law-active-${point.id}`}><Checkbox id={`law-active-${point.id}`} disabled={disabled||!selectable} checked={selected.has(point.id)} onCheckedChange={value=>onChoose(point.id,value===true)}/><span><strong>{total>1?(selected.has(point.id)?'Opgenomen in je kader':'Neem dit toetspunt op in je kader'):<AfkortingText text={point.title}/>}</strong><small>{point.id} · {selectable?(selected.has(point.id)?'gekozen':'nog niet gekozen'):'nog niet vrijgegeven'}</small></span></label></div>}
+  {onChoose&&<div className="law-active-choice"><label htmlFor={`law-active-${point.id}`}><Checkbox id={`law-active-${point.id}`} disabled={disabled||!selectable} checked={selected.has(point.id)} onCheckedChange={value=>onChoose(point.id,value===true)}/><span><strong>{total>1?(selected.has(point.id)?'Opgenomen in je kader':'Neem dit toetspunt op in je kader'):<AfkortingText text={point.title}/>}</strong><small>{normId(point.id)} · {selectable?(selected.has(point.id)?'gekozen':'nog niet gekozen'):'nog niet vrijgegeven'}</small></span></label></div>}
   <p className="sr-only" aria-live="polite">{melding}</p>
  </section>;
 }

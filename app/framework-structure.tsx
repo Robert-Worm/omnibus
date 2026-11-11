@@ -150,7 +150,7 @@ export default function FrameworkStructure({
                   <strong>
                     Koppeling:{" "}
                     {relationChanged
-                      ? "herbeoordelen na uw aanpassing"
+                      ? "herbeoordelen na je aanpassing"
                       : provenance[relation.basis]}
                     .
                   </strong>{" "}

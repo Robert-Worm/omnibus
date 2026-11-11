@@ -1,7 +1,7 @@
 "use client";
 import {NormCollection} from './collection-choice';
 import {countLabel} from '@/lib/display-count.mjs';
-import { normId } from "@/lib/norm-navigation.mjs";
+import { normId, lineCode } from "@/lib/norm-navigation.mjs";
 import LegacyCioNotice from "./legacy-cio-notice";
 import TermHelp from './term-help';
 import QuestionCountHelp from './question-count-help';
@@ -583,16 +583,16 @@ export default function ResearchBuilder({
                 ? "Modelvraag"
                 : line.materialKind === "audit-coverage"
                   ? "Auditdekking"
-                  : line.sourcePointId || line.sourceControlId || "Eigen norm"}
+                  : normId(line.sourcePointId || line.sourceControlId || "") || "Eigen norm"}
             </span>
           )}
           <FullTextPreview
-            text={normId(id) + " · " + buildingBlockHeading(line).title}
-            label={"Bekijk " + id + ": " + line.title}
+            text={(line.sourcePointId ? "" : normId(id) + " · ") + buildingBlockHeading(line).title}
+            label={"Bekijk " + (line.sourcePointId ? normId(line.sourcePointId) : id) + ": " + line.title}
             onOpen={() => onOpen(id)}
             suspended={Boolean(drag)}
             preview={preview}
-            eyeLabel={"Bekijk inhoud van " + id}
+            eyeLabel={"Bekijk inhoud van " + (line.sourcePointId ? normId(line.sourcePointId) : id)}
           />
           <NormCollection line={line} draft={draft}/>
           {buildingBlockHeading(line).context && <small className="building-block-context">{buildingBlockHeading(line).context}</small>}
@@ -604,7 +604,7 @@ export default function ResearchBuilder({
             data-no-drag
             variant="ghost"
             disabled={disabled || !roots.length}
-            aria-label={"Koppel " + id + " aan een vraag"}
+            aria-label={"Koppel " + (line.sourcePointId ? normId(line.sourcePointId) : id) + " aan een vraag"}
             title="Koppelen zonder slepen"
             onClick={() => openPicker(id, null)}
           >
@@ -802,7 +802,7 @@ export default function ResearchBuilder({
               maxLength={2000}
               rows={2}
               disabled={disabled}
-              placeholder="Welke vraag wilt u beantwoorden?"
+              placeholder="Welke vraag wil je beantwoorden?"
               onChange={(e) => commit(() => editQuestion(draft, q.id, e.target.value) as Draft)}
             />
             <Button
@@ -1227,7 +1227,7 @@ export default function ResearchBuilder({
             <div className="norm-link-picker">
               <div className="inline-panel-heading">
                 <strong>
-                  {picker.from ? "Verplaats" : "Koppel"} {normId(picker.lineId)}
+                  {picker.from ? "Verplaats" : "Koppel"} {lineCode(framework.lines.find((l) => l.id === picker.lineId) ?? {id: picker.lineId})}
                 </strong>
                 <Button
                   variant="ghost"
@@ -1242,7 +1242,7 @@ export default function ResearchBuilder({
                 const line = framework.lines.find((l) => l.id === picker.lineId);
                 if (!line) return null;
                 return (
-                  <section className="link-norm-context" aria-label="Bouwsteen die u koppelt">
+                  <section className="link-norm-context" aria-label="Bouwsteen die je koppelt">
                     <h3>{line.title}</h3>
                     <details open>
                       <summary>Inhoud van deze bouwsteen</summary>

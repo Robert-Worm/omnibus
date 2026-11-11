@@ -11,7 +11,7 @@ import {LawPointSourceLayout,LawSourceDocument,type LawPassage} from './law-poin
 import {LawAboutPage,LawAboutParagraphs} from './law-about-layout';
 import {frameworkBackgrounds,backgroundCheckedOn} from '@/lib/framework-backgrounds.mjs';
 import {frameworkPublication} from '@/lib/framework-publication-facts.mjs';
-import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle,leesbareEditie} from '@/lib/framework-source-labels.mjs';
+import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle,leesbareDocumentTitel,leesbareEditie} from '@/lib/framework-source-labels.mjs';
 import {frameworkContextText} from '@/lib/framework-context-wording.mjs';
 import {frameworkAboutLimitations} from '@/lib/framework-limitations-wording.mjs';
 import {frameworkAboutGuidance} from '@/lib/framework-about-guidance.mjs';
@@ -25,7 +25,7 @@ import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
 import {cioSourceGroups} from '@/lib/cio-source-groups.mjs';
 import type {Point,Criterion} from './cio-law-workspace';
 import {Approach} from './cio-law-workspace';
-import {auditReadingText,currentAuditGuidance,distinctAuditLimitations,sourceSnapshotStatus} from '@/lib/audit-reading.mjs';
+import {auditReadingText,currentAuditGuidance,sourceSnapshotStatus} from '@/lib/audit-reading.mjs';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
 
@@ -79,13 +79,16 @@ function SourceContent({bundle,point}:{bundle:Package;point:TopicalPoint;parent:
  function selectLink(i:number){const r=recordFor(point.source_links[i].record_id),choice=r?topicalRecordSources(bundle,r)[0]:null;setIndex(i);setDocumentIndex(0);setPage(choice?.passages[0]?.page||1);setTarget(choice?.passages[0]?.start);setFocus(n=>n+1);setActive('source');}
  const labels=cioContributionLabels as Record<string,string>,roles=cioRoleLabels as Record<string,string>;
  // Standard sentences of the elaboration and review notes stay in the evidence trail, not in the reader (B-035).
- const docLabel=(d:{title:string;packageDocumentId:string})=>frameworkDocumentTitle(d.title,bundle.context.documents.find(x=>x.id===d.packageDocumentId)?.role||'');
+ const docLabel=(d:{title:string;packageDocumentId:string})=>leesbareDocumentTitel(frameworkDocumentTitle(d.title,bundle.context.documents.find(x=>x.id===d.packageDocumentId)?.role||''));
  const standard=useMemo(()=>standaardzinnen([...pakketNotities(bundle.catalogue.points,bundle.bank.records),...bundle.catalogue.points.flatMap(p=>p.addressees.map(a=>a.condition))]),[bundle]);
- const sourceGroups=cioSourceGroups(point.source_links) as {id:string;title:string;entries:{link:Point['source_links'][number];index:number}[]}[];
+ // Elke bepaling één keer als kaart: dezelfde titel en vindplaats stond soms twee keer (uit twee tekstversies) of nog eens onder
+ // "Reikwijdte en uitzonderingen" (panel 11 november 2026). De eerste kaart blijft; de actieve kaart blijft altijd staan.
+ const kaartGezien=new Set<string>();
+ const sourceGroups=(cioSourceGroups(point.source_links) as {id:string;title:string;entries:{link:Point['source_links'][number];index:number}[]}[])
+  .map(group=>({...group,entries:group.entries.filter(({link,index:i})=>{const r=recordFor(link.record_id),k=r?leesbareAlinea(r.title)+'|'+leesbareVindplaats(r):link.record_id;if(kaartGezien.has(k)&&i!==index)return false;kaartGezien.add(k);return true;})})).filter(group=>group.entries.length);
  const criterion=<div className="cio-source-explanation"><h3>Hoe is dit toetspunt onderbouwd?</h3>
   <div className="cio-source-links">{sourceGroups.map(group=><section key={group.id} aria-label={group.title}><h4>{group.title}</h4>{group.entries.map(({link,index:i})=>{const r=recordFor(link.record_id);return <article key={link.record_id} className={`cio-source-link-card${i===index?' is-active':''}`} data-record-id={link.record_id} data-contribution={link.contribution}><button onClick={()=>selectLink(i)} aria-pressed={i===index}><strong>{leesbareAlinea(r?.title)}</strong><BookOpen size={16}/><span>{r?leesbareVindplaats(r):''} · {labels[link.contribution]}</span></button>{r?.source_status==='EXPLANATORY_CONTEXT'&&<small>Toelichting — geen zelfstandige nieuwe plicht</small>}</article>;})}</section>)}</div>
-  <section className="cio-source-text"><h4>Toepassing van dit toetspunt</h4><p>{point.scope}</p><dl className="cio-source-actors">{point.addressees.map((a,i)=><div key={i}><dt>{a.label}</dt><dd>{roles[a.role]}{a.condition&&!standard.has(a.condition)&&<p>{a.condition}</p>}</dd></div>)}</dl>{[{title:'Voorwaarden',items:point.conditions},{title:'Uitzonderingen',items:point.exceptions}].map(g=>g.items.length>0&&<section key={g.title}><h4>{g.title}</h4><ul>{g.items.map((t,i)=><li key={i}>{t}</li>)}</ul></section>)}</section>
-  <div className="law-about-checks">{distinctAuditLimitations(bundle.context.limitations).map(l=><details key={l.title}><summary>{l.title}</summary><div><p>{currentAuditGuidance(l.text)}</p></div></details>)}</div>
+  <section className="cio-source-text"><h4>Toepassing van dit toetspunt</h4><p>{point.scope}</p><dl className="cio-source-actors">{point.addressees.filter((a,i,all)=>all.findIndex(b=>b.label===a.label&&b.role===a.role&&(standard.has(b.condition||'')?'':b.condition||'')===(standard.has(a.condition||'')?'':a.condition||''))===i).map((a,i)=><div key={i}><dt>{a.label}</dt><dd>{roles[a.role]}{a.condition&&!standard.has(a.condition)&&<p>{a.condition}</p>}</dd></div>)}</dl>{[{title:'Voorwaarden',items:point.conditions},{title:'Uitzonderingen',items:point.exceptions}].map(g=>g.items.length>0&&<section key={g.title}><h4>{g.title}</h4><ul>{g.items.map((t,i)=><li key={i}>{t}</li>)}</ul></section>)}</section>
  </div>;
  const source=chosen&&record?<><nav aria-label="Brondocument">{choices.length>1&&choices.map((c,i)=><button key={c.document.id} aria-pressed={i===documentIndex} onClick={()=>{setDocumentIndex(i);setPage(c.passages[0]?.page||1);setTarget(c.passages[0]?.start);setFocus(n=>n+1);}}>{docLabel(c.document)}</button>)}</nav><LawSourceDocument recordId={record.id} title={leesbareAlinea(record.title)} locator={leesbareVindplaats(record)} sourceKind={record.source_status==='EXPLANATORY_CONTEXT'?'Toelichting':'Hoofdtekst'} document={chosen.document} passages={chosen.passages} page={page} target={target} focusRequest={focus}
  onFocus={p=>{setPage(p.page);setTarget(p.start);setFocus(n=>n+1);}} onPage={p=>{setPage(p);setTarget(undefined);}} onReturn={()=>setActive('criterion')}

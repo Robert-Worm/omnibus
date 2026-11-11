@@ -46,7 +46,7 @@ export default function FrameworkFields({
           {!readOnly && sourceFields(line, kind).length > 1 && (
             <p className="field-choice-note">
               Kies één of meer passende onderdelen. Niet gekozen tekst blijft in de bron
-              beschikbaar; controleer de samenhang van uw selectie.
+              beschikbaar; controleer de samenhang van je selectie.
             </p>
           )}
           {sourceFields(line, kind).map((field) => {

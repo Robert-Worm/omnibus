@@ -393,7 +393,7 @@ export default function CevWorkbench({
                         maxLength={1000} onChange={e => editQuestion(q.id,{purpose:e.target.value})} />
                     </label>
                     <p className="cev-note">
-                      Gebruik {"{{onderwerp}}"} waar uw onderzoekscontext hoort. Alleen dit niveau
+                      Gebruik {"{{onderwerp}}"} waar je onderzoekscontext hoort. Alleen dit niveau
                       wordt aangepast.
                     </p>
                     <label htmlFor={q.id + "-probe-edit"}>

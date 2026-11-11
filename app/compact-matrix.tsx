@@ -35,7 +35,7 @@ export type MatrixTextDensity = 'compact' | 'comfortable' | 'full';
 function SubjectExplanation({id,text}:{id:string;text:string}){
   const [open,setOpen]=useState(false);
   const tooltipId=useId();
-  return <div className="matrix-subject-explanation"><p className="matrix-item-context">{text}</p><TooltipProvider delay={250}><Tooltip open={open} onOpenChange={setOpen}><TooltipTrigger className="matrix-subject-info" aria-label={`Toelichting bij ${id}`} aria-describedby={open?tooltipId:undefined} onClick={()=>setOpen(true)}><Info size={15}/></TooltipTrigger><TooltipContent id={tooltipId} role="tooltip" className="full-text-popup matrix-subject-popup" side="bottom" align="start"><span>{text}</span></TooltipContent></Tooltip></TooltipProvider></div>;
+  return <div className="matrix-subject-explanation"><p className="matrix-item-context">{text}</p><TooltipProvider delay={250}><Tooltip open={open} onOpenChange={setOpen}><TooltipTrigger className="matrix-subject-info" aria-label={`Toelichting bij ${normId(id)}`} aria-describedby={open?tooltipId:undefined} onClick={()=>setOpen(true)}><Info size={15}/></TooltipTrigger><TooltipContent id={tooltipId} role="tooltip" className="full-text-popup matrix-subject-popup" side="bottom" align="start"><span>{text}</span></TooltipContent></Tooltip></TooltipProvider></div>;
 }
 export default function CompactMatrix({
   lines,
@@ -341,7 +341,7 @@ export default function CompactMatrix({
         setView((v) => ({ ...v, lastId: line.id }));
         onOpen(line.id);
       }}
-      aria-label={`Bekijk ${line.id}: ${line.title}`}
+      aria-label={`Bekijk ${normId(line.id)}: ${line.title}`}
       className="compact-title"
     >
       <span>{line.title}</span>
@@ -516,7 +516,7 @@ export default function CompactMatrix({
                       checked={rowAll(l.id)}
                       indeterminate={rowSome(l.id) && !rowAll(l.id)}
                       disabled={disabled || pointChoices?.counts[l.id]?.total===0}
-                      aria-label={pointChoices?.counts[l.id] ? `Selecteer alle toetspunten van ${l.id}` : `Neem ${l.id} op in mijn referentiekader`}
+                      aria-label={pointChoices?.counts[l.id] ? `Selecteer alle toetspunten van ${normId(l.id)}` : `Neem ${normId(l.id)} op in mijn referentiekader`}
                       onCheckedChange={() => selectRows([l.id],!rowAll(l.id))}
                     />}
                     {onOpenReport ? (
@@ -533,14 +533,14 @@ export default function CompactMatrix({
                     )}
                     {pointChoices?.counts[l.id]&&<Button variant="ghost" className="point-choice-button bd-row-choice matrix-point-chip" disabled={disabled}
                       title={`${pointChoices.counts[l.id].selected} van ${countLabel(pointChoices.counts[l.id].total,'toetspunten')} gekozen`}
-                      aria-label={`Kies toetspunten voor ${l.id}`} onClick={()=>pointChoices.onChoose(l.id)}>
+                      aria-label={`Kies toetspunten voor ${normId(l.id)}`} onClick={()=>pointChoices.onChoose(l.id)}>
                       <span>Bekijk toetspunten</span><span className="matrix-count-label">{pointChoices.counts[l.id].selected}/{pointChoices.counts[l.id].total} gekozen</span>
                     </Button>}
                   </div>
                   <NormCollection line={l} draft={draft} sourceId={collectionSource}/>
                   {combineIdentity && <div className="matrix-identity-title">{renderTitle(l)}</div>}
                   {pointSelection && <Button variant="outline" className="point-choice-button" disabled={disabled}
-                    aria-label={`Kies toetspunten voor ${l.id}`}
+                    aria-label={`Kies toetspunten voor ${normId(l.id)}`}
                     onClick={()=>pointSelection.onChoose(l.id)}>
                     Bekijk toetspunten · {pointSelection.counts[l.id]?.selected??0}/{pointSelection.counts[l.id]?.total??0} gekozen
                   </Button>}
@@ -562,7 +562,7 @@ export default function CompactMatrix({
                       {(showProvenance || basis==='USER_PROPOSAL' || basis==='NOT_ESTABLISHED') && basis!==columnBasis?.[k]&&<span className={"basis-tag " + basis}>{provenance[basis]}</span>}
                       <FullTextPreview
                         text={draftValue(l, first.id, viewDraft)}
-                        label={`Bekijk ${names[k]} van ${l.id}`}
+                        label={`Bekijk ${names[k]} van ${normId(l.id)}`}
                         onOpen={() => onOpenField ? onOpenField(l.id, k) : onOpen(l.id)}
                       />
                       {(extra > 0 || own > 0) && (
@@ -586,7 +586,7 @@ export default function CompactMatrix({
         </Table>
       </div>}
       {!filtered.length && (
-        <p className="matrix-empty">Geen onderdelen gevonden. Pas uw zoekopdracht of filter aan.</p>
+        <p className="matrix-empty">Geen onderdelen gevonden. Pas je zoekopdracht of filter aan.</p>
       )}
       {!embedded && !groupLines && <div className="matrix-bottom">
         <span>{density==='full' ? 'Volledige tekst' : 'Verkorte weergave'} · open een onderdeel voor toelichting en bronnen.</span>

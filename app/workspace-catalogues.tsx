@@ -149,7 +149,7 @@ export function ThemeCatalogue({
         <article className="theme-card selectable-theme" key={t.id}>
           <label
             className="theme-selection-cell"
-            title="Thema openen of sluiten; uw normselectie blijft bewaard"
+            title="Thema openen of sluiten; je normselectie blijft bewaard"
           >
             <Checkbox
               aria-label={"Open thema " + t.title}
@@ -382,7 +382,7 @@ export function ReportCatalogue({
                 normen verborgen
               </output>
               <span>
-                Filtert alleen dit thema. Uw verzamelde en gekoppelde normen blijven behouden, ook
+                Filtert alleen dit thema. Je verzamelde en gekoppelde normen blijven behouden, ook
                 in de export.
               </span>
             </>

@@ -74,7 +74,7 @@ import {
   browseThemeLines,
   reportNormImpact,
 } from "@/lib/report-choices.mjs";
-import { normId, classification, subjects } from "@/lib/norm-navigation.mjs";
+import { normId, lineCode, classification, subjects } from "@/lib/norm-navigation.mjs";
 import ResearchBuilder from "./research-builder";
 import { recordRecovery } from "@/lib/recovery-history.mjs";
 import { personalDraft } from "@/lib/research-flow.mjs";
@@ -352,7 +352,7 @@ export default function FrameworkEditor() {
       return true;
     } catch(e) {
       storageBlocked.current=true;
-      projectStatus.update({problem:true,message:opslagfoutTekst(e)+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
+      projectStatus.update({problem:true,message:opslagfoutTekst(e)+' Je werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
       return false;
     }
   }, [projectStatus]);
@@ -368,7 +368,7 @@ export default function FrameworkEditor() {
       onSaved:()=>projectStatus.update({savedLocally:true,problem:false,message:'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'}),
       onError:error=>{
         storageBlocked.current=true;
-        projectStatus.update({savedLocally:false,problem:true,message:opslagfoutTekst(error)+' Uw werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
+        projectStatus.update({savedLocally:false,problem:true,message:opslagfoutTekst(error)+' Je werk blijft in deze sessie beschikbaar: kies Bewaar project.'});
       },
     });
     backgroundSave.current=saver;
@@ -402,10 +402,10 @@ export default function FrameworkEditor() {
       storeRef.current=resumeStoreRef.current;
       storageBlocked.current=false;setProblem(false);setRecoveryOriginal('');
       setStorageHelpOpen(false);setScopeNotice('');
-      setResetNotice('Uw huidige werk is opgeslagen. Automatisch bewaren is weer ingeschakeld.');
+      setResetNotice('Je huidige werk is opgeslagen. Automatisch bewaren is weer ingeschakeld.');
     } catch(e) {
       storageBlocked.current=true;setProblem(true);
-      setMessage((e instanceof Error ? e.message : 'Opslaan is niet gelukt.')+' Bewaar uw huidige werk als projectbestand voordat u herlaadt.');
+      setMessage((e instanceof Error ? e.message : 'Opslaan is niet gelukt.')+' Bewaar je huidige werk als projectbestand voordat je herlaadt.');
     }
   }
   function applyProject(project:Project, resume=true) {
@@ -577,7 +577,7 @@ export default function FrameworkEditor() {
         storageBlocked.current=true;setProblem(true);
         setMessage(event.newValue===null
           ? 'De lokale projectopslag is in een ander tabblad gewist. Je huidige werk blijft in deze sessie beschikbaar. Bewaar je versie als bestand voordat je herlaadt.'
-          : 'Het project is in een ander tabblad gewijzigd. Bewaar uw versie als bestand of herlaad voor de opgeslagen versie.');
+          : 'Het project is in een ander tabblad gewijzigd. Bewaar je versie als bestand of herlaad voor de opgeslagen versie.');
       }
     };
     window.addEventListener('storage',changed);
@@ -814,7 +814,7 @@ export default function FrameworkEditor() {
         ? 'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'
         : 'Project geopend. Automatisch bewaren is niet gelukt; gebruik Bewaar project. De eerdere opslag is niet overschreven.'});
       setScopeNotice(accepted.notice);
-      setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; uw huidige modellen blijven behouden.' : 'Project geopend, inclusief modellen en werkplek.');
+      setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; je huidige modellen blijven behouden.' : 'Project geopend, inclusief modellen en werkplek.');
     } catch (e) {
       if(request!==importRequest.current)return;
       setImportFeedback(e instanceof SyntaxError ? "Dit bestand is geen leesbaar projectbestand. Kies een JSON-bestand dat met Bewaar project is gemaakt. Je huidige onderzoek is behouden."
@@ -1206,7 +1206,7 @@ export default function FrameworkEditor() {
           </Sheet>
           <Sheet open={reloadOpen} onOpenChange={setReloadOpen}>
             <SheetContent className="project-recovery-sheet"><SheetHeader><SheetTitle>Opgeslagen project herladen?</SheetTitle>
-              <SheetDescription>Niet-opgeslagen werk uit dit tabblad gaat bij herladen verloren. Bewaar eerst uw versie als u die wilt behouden.</SheetDescription></SheetHeader>
+              <SheetDescription>Niet-opgeslagen werk uit dit tabblad gaat bij herladen verloren. Bewaar eerst je versie als je die wilt behouden.</SheetDescription></SheetHeader>
               <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-mijn-versie.json')}>Bewaar mijn versie</Button>
               {fileDownload.error && <p role="alert">{fileDownload.error}</p>}
               <Button disabled={fileDownload.busy} onClick={()=>window.location.reload()}>Herlaad opgeslagen project</Button>
@@ -1491,7 +1491,7 @@ export default function FrameworkEditor() {
                       >
                         <SheetHeader>
                           <SheetTitle>
-                            {normId(line.id)} · {line.title}
+                            {lineCode(line)} · {line.title}
                             {line.provisionStatus && <span className="provision-status" title={line.provisionStatusDetails}>{line.provisionStatus}</span>}
                           </SheetTitle>
                           <SheetDescription>
@@ -1717,7 +1717,7 @@ export default function FrameworkEditor() {
                                 <TabsContent value="chain">
                                   <p className="edit-note">
                                     {editable
-                                      ? "Pas de basisvelden aan voor uw audit. Uw wijzigingen blijven voorstellen; de bronanalyse verandert niet mee."
+                                      ? "Pas de basisvelden aan voor je audit. Je wijzigingen blijven voorstellen; de bronanalyse verandert niet mee."
                                       : "Lees de oorspronkelijke thema-analyse en volg de bronverwijzingen. Selecteer dit onderdeel om het in Mijn referentiekader te configureren."}
                                   </p>
                                   <FrameworkFields
@@ -1733,14 +1733,14 @@ export default function FrameworkEditor() {
                                   {editable && (
                                     <>
                                       <label htmlFor="audit-notes" className="notes-label">
-                                        Uw auditnotities / aanvullende benodigde bronnen
+                                        Je auditnotities / aanvullende benodigde bronnen
                                       </label>
                                       <Textarea
                                         id="audit-notes"
                                         value={draft.notes[line.id] ?? ""}
                                         disabled={!loaded}
                                         maxLength={20000}
-                                        placeholder="Welke aanvullende informatie of actuele norm heeft u nodig?"
+                                        placeholder="Welke aanvullende informatie of actuele norm heb je nodig?"
                                         onChange={(e) =>
                                           commit({
                                             ...draft,
@@ -1774,7 +1774,7 @@ export default function FrameworkEditor() {
                                               }
                                             >
                                               {changed
-                                                ? "Herbeoordelen na uw wijziging"
+                                                ? "Herbeoordelen na je wijziging"
                                                 : provenance[r.basis]}
                                             </span>
                                           </div>
@@ -1787,7 +1787,7 @@ export default function FrameworkEditor() {
                                   </div>
                                   <h2>Wat is in het rapport over de maatregel vastgesteld?</h2>
                                   <p className="edit-note">
-                                    Deze beoordeling betreft de oorspronkelijke broncontext, niet uw
+                                    Deze beoordeling betreft de oorspronkelijke broncontext, niet je
                                     aangepaste maatregel. Aanwezigheid bewijst geen werking; werking
                                     bewijst niet automatisch doelbereik.
                                   </p>

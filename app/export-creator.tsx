@@ -18,7 +18,7 @@ import { exportPresets } from "@/lib/export-profiles.mjs";
 import type { LibraryModel } from "./model-library";
 import InterviewSettings from "./interview-settings";
 import { modelDisplayName, selectedQuestionCount } from "@/lib/interview-structure.mjs";
-import { normId } from "@/lib/norm-navigation.mjs";
+import { lineCode } from "@/lib/norm-navigation.mjs";
 import type { Framework, Draft } from "@/lib/framework-types";
 import { testingAspects, testingTerminologies, testingAspectLabel, testingTerminologyHelp } from "@/lib/testing-aspects.mjs";
 import { exportFonts, exportFontSizes, exportPalettes, exportPhasePalette } from '@/lib/export-design.mjs';
@@ -340,7 +340,7 @@ export default function ExportCreator({
                   <a href="#mijn-kader">{emptyFramework ? 'Naar stap 3: Bouw je kader' : 'Onderzoeksvragen en koppelingen wijzigen'}</a>
                   {autoLinked.length > 0 && (
                     <p className="creator-help creator-autolink">
-                      {countLabel(autoLinked.length,'bouwstenen')} {autoLinked.length===1?'was':'waren'} niet aan een vraag gekoppeld. Ze gaan toch mee, zodat er niets wegvalt: {autoLinkUnderSub>0?<>{autoLinkUnderSub} bij een deelvraag waar al een toetspunt over dezelfde norm of een verwante norm hangt, {autoLinked.length-autoLinkUnderSub} onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>:<>onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}. Wil je het anders, koppel ze dan zelf in stap 3.
+                      {countLabel(autoLinked.length,'bouwstenen')} {autoLinked.length===1?'was':'waren'} niet aan een vraag gekoppeld. Ze gaan toch mee, zodat er niets wegvalt: {autoLinkUnderSub>0?<>{autoLinkUnderSub} bij een deelvraag waar al een toetspunt over dezelfde norm of een verwante norm hangt{autoLinked.length-autoLinkUnderSub>0&&<>, {autoLinked.length-autoLinkUnderSub} onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}</>:<>onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}. Wil je het anders, koppel ze dan zelf in stap 3.
                     </p>
                   )}
                   {!emptyFramework && !selection.included.length && (
@@ -362,7 +362,7 @@ export default function ExportCreator({
                         }
                       />
                       <span>
-                        <small>{normId(l.id)}</small>
+                        <small>{lineCode(l)}</small>
                         {l.title}
                       </span>
                     </label>
@@ -639,7 +639,7 @@ export default function ExportCreator({
             </p>
             <p>
               Het IIA onderscheidt standaarden, thematische vereisten en praktische richtlijnen.
-              Controleer toepasselijkheid, publicatieversie en gebruiksrechten voordat u een model
+              Controleer toepasselijkheid, publicatieversie en gebruiksrechten voordat je een model
               overneemt.
             </p>
             <a

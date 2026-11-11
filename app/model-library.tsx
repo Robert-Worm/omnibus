@@ -192,7 +192,7 @@ export default function ModelLibrary({
                 />
               </label>
               <label htmlFor="model-usage">
-                Waarvoor gebruikt u dit model?
+                Waarvoor gebruik je dit model?
                 <Textarea
                   id="model-usage"
                   value={current.usage ?? ""}
@@ -306,7 +306,7 @@ export default function ModelLibrary({
                   {current.kind === "kaptein" && i.id === "SC003" && (
                     <p className="creator-help">
                       Hoger management: de leidinggevende niveaus boven de direct leidinggevende.
-                      Spreek af welke niveaus u onderzoekt.
+                      Spreek af welke niveaus je onderzoekt.
                     </p>
                   )}
                   {i.questions ? (
@@ -314,7 +314,7 @@ export default function ModelLibrary({
                       <details>
                         <summary>Onderwerp aanpassen</summary>
                         <label htmlFor={"library-title-" + i.id}>
-                          Onderwerp in uw leidraad
+                          Onderwerp in je leidraad
                           <Input
                             id={"library-title-" + i.id}
                             disabled={!ready}
@@ -329,7 +329,7 @@ export default function ModelLibrary({
                       )}
                       {i.questions.length > 0 && !i.included && (
                         <p className="creator-help">
-                          Selecteer deze dimensie om vragen te kiezen. Uw eerdere keuzes blijven
+                          Selecteer deze dimensie om vragen te kiezen. Je eerdere keuzes blijven
                           bewaard.
                         </p>
                       )}
