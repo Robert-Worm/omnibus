@@ -8,9 +8,6 @@ on:
   push:
     branches: [main]
     paths: ['.github/overdracht/**', '.github/scripts/overdracht*.mjs']
-  workflow_run:
-    workflows: ["Alle tests"]
-    types: [completed]
   schedule:
     - cron: '23 6 * * *'
   workflow_dispatch:

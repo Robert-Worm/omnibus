@@ -59,7 +59,7 @@ export function overdrachtTekst(issues, tests, { nu = new Date(), repoUrl = "htt
   const groen = tests?.conclusie === "success";
   r.push(tests?.conclusie
     ? `**Tests op main:** ${groen ? "✅ groen" : "❌ rood — eerst herstellen, vóór nieuw werk"} (${tests.commit?.slice(0, 7) ?? "?"}${tests.url ? `, [run](${tests.url})` : ""})`
-    : "**Tests op main:** nog geen run bekend", "");
+    : "**Tests:** draaien lokaal vóór elke versie, niet meer op GitHub", "");
   for (const wie of ASSISTENTEN) {
     if (volgorde?.[wie]) {
       const lijst = volgordeVoor(wie, issues, volgorde[wie]);
