@@ -67,6 +67,8 @@ export type Point = {
   chapter: string;
   source_cross_references: string[];
   source_interpretation_notes: string[];
+  /** Notities bij het toetspunt; regels die met "Let op: " beginnen, ziet de lezer bij de toetsaanpak. */
+  interpretation_notes?: string[];
   relevance?: string;
 };
 export type Criterion = {
@@ -325,12 +327,19 @@ export function SourceReferences({ ids }: { ids: string[] }) {
 export function Approach({ point }: { point: Point }) {
   const {phases}=lawTestPhases(point.phase_plans);
   const werkingOpen=werkingUitleg(point.phase_plans);
+  // Een onduidelijke of afwijkende passage in de bron: één regel per onderwerp (besluit beheerder 12 november 2026).
+  const letOp=(point.interpretation_notes??[]).filter(n=>n.startsWith('Let op: ')).map(n=>n.slice(8));
   return (
     <div className="cio-approach">
       <p className="cio-muted">
         Toetsvoorstellen, geen voorgeschreven bewijsformat en geen bewijs dat aan het punt is
         voldaan. Bevat een toetspunt meerdere aspecten? Leg de uitkomst per aspect vast en benoem wat ontbreekt of niet beoordeelbaar is.
       </p>
+      {letOp.map(tekst => (
+        <p key={tekst} className="law-audience-notice cio-point-warning">
+          <span><strong>Let op.</strong> {tekst}</span>
+        </p>
+      ))}
       <div className="cio-phase-grid">
         {phases.map(({key,label,plan:p},phaseIndex) => {
           // Een afkorting staat op dit scherm één keer voluit: bij de handeling van de eerste fase (panel ronde 8).
