@@ -258,3 +258,9 @@ h3.is-jump-target{animation:norm-jump 3.2s ease-out;border-radius:.3rem}
 @keyframes law-skeleton{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.law-skeleton-row span{animation:none}}
 html[data-appearance=dark] .law-skeleton-row span{background:#243445}
+/* Balk "voor wie is dit kader": over de volle breedte, onder de titel en de knoppen (besluit beheerder 12 november 2026). */
+.law-browse-intro .law-audience-notice{order:3;flex:1 0 100%;max-width:none;margin:0;color:#4d3b12}
+.law-browse-intro .law-audience-beide,.law-browse-intro .law-audience-organisatie,.law-browse-intro .law-audience-auditfunctie{color:#2f4357}
+.law-audience-organisatie,.law-audience-auditfunctie{border-color:#c9d6e3;background:#f3f7fb;color:#2f4357}
+html[data-appearance=dark] .law-audience-organisatie,html[data-appearance=dark] .law-audience-auditfunctie{background:color-mix(in srgb,#9fb6cc 12%,transparent);border-color:color-mix(in srgb,#9fb6cc 40%,transparent);color:inherit}
+html[data-appearance=dark] .law-browse-intro .law-audience-notice{color:inherit}
