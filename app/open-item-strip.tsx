@@ -7,12 +7,14 @@ type Item={id:string;title:string};
 export function OpenWorkspaceEmpty({prompt}:{prompt:string}){
  return <p className="empty-framework">{prompt} Je eerdere selecties blijven bewaard bij Bouw je kader.</p>;
 }
-export default function OpenItemStrip({id,items,activeId,onActivate,onClose,onExplore,exploreLabel,disabled=false,onAll,allActive=false}:{id:string;items:Item[];activeId:string|null;onActivate:(id:string)=>void;onClose:(id:string)=>void;onExplore:()=>void;exploreLabel:string;disabled?:boolean;onAll?:()=>void;allActive?:boolean}){
+export default function OpenItemStrip({id,items,activeId,onActivate,onIntent,onClose,onExplore,exploreLabel,disabled=false,onAll,allActive=false}:{onIntent?:(id:string)=>void;id:string;items:Item[];activeId:string|null;onActivate:(id:string)=>void;onClose:(id:string)=>void;onExplore:()=>void;exploreLabel:string;disabled?:boolean;onAll?:()=>void;allActive?:boolean}){
  const strip=useRef<HTMLDivElement>(null);
  // De aangeklikte tab licht direct op; het wisselen van de inhoud is een overgang, zodat de browser blijft reageren.
  const [target,setTarget]=useState<{from:string|null;to:string}|null>(null);
  const shownId=target&&target.from===activeId?target.to:activeId;
- const activate=(itemId:string)=>{if(itemId===activeId&&!allActive)return;setTarget({from:activeId,to:itemId});startTransition(()=>onActivate(itemId));};
+ // Vergelijk met het kader dat de gebruiker het laatst koos, niet met het kader dat nog in beeld staat: zo werkt snel
+ // doorklikken, ook terug naar het vorige kader terwijl het nieuwe nog wordt opgebouwd.
+ const activate=(itemId:string)=>{if(itemId===shownId&&!allActive)return;setTarget(itemId===activeId?null:{from:activeId,to:itemId});onIntent?.(itemId);startTransition(()=>onActivate(itemId));};
  const key=useCallback((value:string)=>id+'-item-'+value,[id]);
  useEffect(()=>{const container=strip.current,active=document.getElementById(key(activeId||''));if(!container||!active)return;const a=active.getBoundingClientRect(),c=container.getBoundingClientRect();if(a.left<c.left)container.scrollLeft-=c.left-a.left;else if(a.right>c.right)container.scrollLeft+=a.right-c.right;},[activeId,key]);
  const close=(itemId:string)=>{const index=items.findIndex(i=>i.id===itemId),next=items[index+1]||items[index-1];onClose(itemId);if(itemId===activeId&&next)onActivate(next.id);if(typeof requestAnimationFrame!=='undefined')requestAnimationFrame(()=>document.getElementById(next?key(next.id):id+'-open')?.focus());};

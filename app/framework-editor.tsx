@@ -170,7 +170,10 @@ export default function FrameworkEditor() {
       setContentNotice((error instanceof Error?error.message:'Laden is niet gelukt.')+' Je onderzoek en selecties zijn behouden.');setContentFailure(true);
     });
   }
-  const prefetchFoundation=useCallback((id:string)=>{void prefetchCatalogue(['foundation:'+id]);},[]);
+  // prefetchCatalogue doet één ronde tegelijk; is er al een bezig, dan volgt deze erna.
+  const warmUp=useCallback((keys:string[])=>{void prefetchCatalogue(keys).then(()=>prefetchCatalogue(keys)).catch(()=>{});},[]);
+  const prefetchOverviews=useCallback((ids:string[])=>warmUp(ids.map(id=>foundationOverviewKey(id,false))),[warmUp]);
+  const prefetchFoundation=useCallback((id:string)=>warmUp(['foundation:'+id]),[warmUp]);
   const [modelLibrary, setModelLibrary] = useState<ModelLibraryState>(() => initialModelLibrary());
   const publishedModels=publishedModelDirectory();
   const modelDirectoryEntries=useMemo(()=>modelDirectory(modelLibrary,publishedModels),[modelLibrary,publishedModels]);
@@ -1297,6 +1300,7 @@ export default function FrameworkEditor() {
               prepareSource={(id,action,about)=>withContent([foundationOverviewKey(id,about??aboutViews.laws)],action)}
               prepareDetails={(id,action)=>withContent(['foundation:'+id],action)}
               onSourceShown={prefetchFoundation}
+              onSourcesOpened={prefetchOverviews}
               overview={aboutViews.laws?'source':'norms'}
               onOverviewChange={value=>setAboutViews(v=>({...v,laws:value==='source'}))}
               key={builderGeneration}

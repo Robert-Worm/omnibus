@@ -245,3 +245,16 @@ h3.is-jump-target{animation:norm-jump 3.2s ease-out;border-radius:.3rem}
 .law-about-related li{display:grid;gap:.1rem}
 .law-about-related button{justify-self:start;padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--primary,#154273);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .law-about-related span{font-size:.9rem;color:var(--muted-foreground,#596c80)}
+/* Geraamte tijdens het wisselen van kader: zelfde indeling als de viewer, zodat het scherm niet verspringt. */
+.law-viewer-skeleton{display:grid;gap:.9rem;min-height:38rem;align-content:start}
+.law-skeleton-tabs{display:flex;gap:1.4rem;border-bottom:1px solid var(--rm-line,#d5dbe1);font-size:.9rem;color:var(--muted-foreground,#596c80)}
+.law-skeleton-tabs span{padding:.55rem .1rem}
+.law-skeleton-tabs .is-active{color:var(--foreground,#10243a);box-shadow:inset 0 -2px 0 var(--primary,#154273);text-shadow:.02em 0 0 currentColor}
+.law-viewer-skeleton h2{margin:.2rem 0 0;font-family:var(--font-serif,Georgia,serif);font-size:1.35rem;color:var(--primary,#154273)}
+.law-skeleton-bar{height:4.4rem;border:1px solid var(--rm-line,#d5dbe1);border-radius:.6rem;background:var(--muted,#f3f6f9)}
+.law-skeleton-table{border:1px solid var(--rm-line,#d5dbe1);border-radius:.6rem;overflow:hidden}
+.law-skeleton-row{display:grid;grid-template-columns:8rem 1.4fr 1fr 1fr 1fr;gap:1rem;padding:1.1rem 1rem;border-bottom:1px solid var(--rm-line,#e3e8ee)}
+.law-skeleton-row span{height:.8rem;border-radius:.4rem;background:linear-gradient(90deg,#e9eef3 25%,#f5f8fa 50%,#e9eef3 75%);background-size:200% 100%;animation:law-skeleton 1.2s linear infinite}
+@keyframes law-skeleton{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.law-skeleton-row span{animation:none}}
+html[data-appearance=dark] .law-skeleton-row span{background:#243445}
