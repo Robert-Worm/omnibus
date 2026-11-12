@@ -104,9 +104,7 @@ Open bij [Sliplane](https://docs.sliplane.io/services/logging/) de dienst van Om
 
 Je kunt filteren op tijd en zoeken op tekst. Sliplane bewaart hooguit 15.000 regels van de laatste 7 dagen.
 
-Daarnaast controleert GitHub elk kwartier of de online versie gezond is (`.github/workflows/gezondheid.yml`). Na drie mislukte pogingen komt er een issue met het label `storing`, en GitHub mailt je. Dat issue sluit vanzelf zodra de site weer gezond is. Handmatig controleren: `node .github/scripts/gezondheid.mjs`.
-
-**Let op:** GitHub zet geplande workflows stil als er 60 dagen niets in de repository is gebeurd. Dan komt er ook geen storingsmelding meer. Kijk na een rustige periode onder *Actions → Online versie controleren* of de controle nog loopt; zet hem zo nodig weer aan met **Enable workflow**.
+Sinds 12 november 2026 controleert GitHub de online versie niet meer automatisch ([B-044](besluiten.md#b-044)); er komt dus geen storingsmelding vanzelf. Handmatig controleren: `node .github/scripts/gezondheid.mjs`.
 
 | Regel in de runtime-log | Betekenis | Wat je doet |
 | --- | --- | --- |
@@ -157,8 +155,8 @@ Vergelijk de bovenste `Digest` met de pin en controleer de Node-versie in de pla
 ### Herstellen door opnieuw te bouwen
 
 1. **Zoek de foute commit.** Vergelijk `code.revision` uit `/api/v1/version` met `git log --oneline`. In de service events zie je welke uitrol het laatst lukte.
-2. **Zet hem terug** met `git revert --no-edit <commit>` en push naar `main`. Sliplane bouwt en rolt dan automatisch uit. Mislukt het bouwen, dan blijft de huidige versie draaien.
-3. **Volg de uitrol** in de service events, of op GitHub onder `Deployments`, tot die gelukt is.
+2. **Zet hem terug.** De snelste weg: zet in Sliplane de tag van de vorige image terug (bijvoorbeeld `docker.io/robertworm/omnibus:0.1.32`) en sla op; de images van eerdere versies staan nog op Docker Hub. Wil je de code herstellen, doe dan `git revert --no-edit <commit>`, bouw een nieuwe image met `hosting/container/uitrol.ps1` en zet die tag in Sliplane ([B-044](besluiten.md#b-044)). Een push naar `main` rolt niets meer uit.
+3. **Volg de uitrol** in de service events van Sliplane tot die gelukt is.
 4. **Controleer de versie** vanuit een schone checkout van de nieuwe revert-commit. Gebruik dezelfde Node-versie en lockfile als de container. Neem exact de database, releasehash en publicatiehash van de herstelde container over in een afzonderlijk instellingenbestand. Gebruik niet zomaar de huidige lokale database.
 
    Kies een nieuwe, nog niet bestaande uitvoermap. Vul beide plaatshouders zelf in; gebruik voor een volgende controle opnieuw een nieuwe map.

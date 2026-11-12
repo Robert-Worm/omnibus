@@ -4,7 +4,7 @@
 
 ## Hoe werkt het?
 
-1. **Bouwen.** De host haalt de code op uit deze openbare repository en bouwt met `hosting/container/Dockerfile`.
+1. **Bouwen.** Sinds 8 november 2026 bouwt de beheerder de image op de eigen computer en zet die op Docker Hub; de host draait die image ([B-044](../../docs/beheer/besluiten.md#b-044)). Wie zelf bouwt uit deze openbare repository gebruikt `hosting/container/Dockerfile`.
 2. **Database ophalen.** Tijdens het bouwen haalt `scripts/fetch-release-database.mjs` de database-zip uit de GitHub-release, controleert het controlegetal van de zip en van elk bestand erin, en pakt hem uit.
 3. **Controleren en verpakken.** De database wordt gecontroleerd (`VERIFIED_RUNTIME_DATABASE`), de app gebouwd en verpakt als runtimepakket.
 4. **Starten.** De image start als gewone gebruiker (UID 1000), met alle bestanden alleen-lezen, in openbare alleen-lezen modus.
@@ -26,13 +26,13 @@ Gewoon `http://` mag alleen voor `localhost` en `127.0.0.1`. Voor elk ander adre
 
 | Instelling | Waarde |
 | --- | --- |
-| Bron | `https://github.com/Robert-Worm/omnibus`, tak `main` |
-| Bouwen | Dockerfile `hosting/container/Dockerfile`, context `.` |
+| Bron | Image `docker.io/robertworm/omnibus:<versie>` uit Docker Hub; de tag is het versienummer onderaan in de tool |
+| Bouwen | Niet bij de host: de beheerder bouwt met `Dockerfile.lokaal` (zie [Bouwen en uitrollen](#bouwen-en-uitrollen)) |
 | Omgevingsvariabele | `PUBLIC_ORIGIN` = het openbare adres van de app, bijvoorbeeld `https://omnibus.rijksmap.nl` (zonder `/` aan het eind) |
 | Poort | `PORT`; standaard 8080 |
 | Geheugen | De server gebruikt rond 200 MB bij normaal gebruik |
 | Gezondheidscontrole | Vastgelegd pad `/api/v1/health`: alleen bereikbaarheid; zie hieronder |
-| Automatisch uitrollen | Aan: elke push naar `main` bouwt en rolt opnieuw uit (ongeveer een halve minuut) |
+| Uitrollen | Met de hand: zet de nieuwe tag bij de image en sla op. Een push naar `main` rolt niets uit |
 
 ### Overstappen naar een nieuw adres
 
@@ -58,11 +58,11 @@ Deze keuze komt uitsluitend uit het ingestelde `PUBLIC_ORIGIN`, nooit uit proxyh
 
 ## Een nieuwe database online zetten
 
-Pas `DATABASE_URL` en `DATABASE_SHA256` aan in de Dockerfile én in `scripts/database-release.mjs` (de installatieopdracht); een test bewaakt dat ze gelijk zijn. Push, laat de host opnieuw bouwen en controleer de online versie. Het controlegetal van de zip staat in `SHA256SUMS.txt` van de release-assistent.
+Pas `DATABASE_URL` en `DATABASE_SHA256` aan in de Dockerfile én in `scripts/database-release.mjs` (de installatieopdracht); een test bewaakt dat ze gelijk zijn. Bouw daarna een nieuwe image met die database en rol die uit, zoals hieronder; controleer de online versie. Het controlegetal van de zip staat in `SHA256SUMS.txt` van de release-assistent.
 
-### Bouwen zonder GitHub
+### Bouwen en uitrollen
 
-Is GitHub niet bereikbaar, gebruik dan `Dockerfile.lokaal`. Die haalt de database niet op, maar leest de zip uit de bouwmap: `hosting/container/database/omnibus-database.zip` (staat buiten Git). Het controlegetal is verplicht en wordt net zo gecontroleerd.
+De online versie wordt gebouwd met `Dockerfile.lokaal`. Die haalt de database niet op, maar leest de zip uit de bouwmap: `hosting/container/database/omnibus-database.zip` (staat buiten Git). Het controlegetal is verplicht en wordt net zo gecontroleerd.
 
 ```text
 docker build -f hosting/container/Dockerfile.lokaal --build-arg DATABASE_SHA256=<hash> --build-arg OMNIBUS_CODE_REVISION=<commit> -t <naam>/omnibus:<tag> .

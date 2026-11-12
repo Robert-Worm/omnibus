@@ -51,7 +51,7 @@ Twijfel je? Stop en vraag het na. Een uur wachten is beter dan een verkeerde dat
 
 ## Een GitHub-workflow faalt na een push
 
-- **Herkennen:** een rode regel bij *Documentatie en claimsysteem controleren* of een andere GitHub-workflow in Actions.
+- **Herkennen:** een rode regel bij een GitHub-workflow in Actions. Sinds 12 november 2026 draaien daar alleen nog de vier taken die issues bijwerken; tests en documentatiecontrole draaien lokaal ([B-044](besluiten.md#b-044)).
 - **Eerst doen:** open de run en lees de laatste regels: de controle noemt het bestand en het regelnummer.
 - **Herstellen:** draai dezelfde controle lokaal (`npm run check:docs`, `npm run test:voortgang` of `npm test`), pas de tekst of code aan en push opnieuw. Schakel nooit een controle uit om groen te krijgen.
 - **Nazorg:** kwam de fout van een wijziging die de controle had moeten tegenhouden? Breid de controle of de test uit.

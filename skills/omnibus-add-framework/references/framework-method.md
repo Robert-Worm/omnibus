@@ -587,7 +587,7 @@ Lessen:
 **Deel 6 (RTS 2024/1774 titel III slot, RTS 2024/1772, RTS 2025/301, begin ITS
 2025/302):** 79 overgenomen, 21 aangepast, 0 afgewezen. 69 bronfouten, alle
 bevestigd; vaak viel *financiële* vóór *tegenpartijen* weg. Drie ontbrekende
-toetspunten gevonden (zie `nog-verwerken/toetspunten.md`). Lessen:
+toetspunten gevonden (de lijst staat in de Git-geschiedenis: `.github/overdracht/nog-verwerken/toetspunten.md` in commit be7dde3). Lessen:
 
 - Controleer per artikel of elke plicht een toetspunt heeft. Een alinea *Voor de
   toepassing van punt x)* met een eigen werkwoord is een eigen plicht.

@@ -133,7 +133,7 @@ Of elke test het criterium echt dekt, is nog niet door een mens beoordeeld.
 | CO-5 #3 | `local-data/request-rate-limit.test.mjs` | Eén bezoeker wordt begrensd; anderen niet | ☑ |
 | CO-5 #4 | `local-data/local-privacy.test.mjs` | Uitgaande verbindingen falen vóór er netwerkverkeer is | ☑ |
 
-Alle tests behalve de MCP-protocolproef draaien in `npm test` en op GitHub bij elke wijziging. De protocolproef (`npm run test:agent:protocol`) vraagt een verse agentbuild met de actuele database. Met een verouderde build faalden op 31 oktober 3 van de 11 controles; na `npm run build:agent` met de database van 30 oktober slaagden alle 11.
+Alle tests behalve de MCP-protocolproef draaien in `npm test`. Sinds 12 november 2026 draaien ze lokaal vóór elke versie, niet meer op GitHub ([B-044](docs/beheer/besluiten.md#b-044)). De protocolproef (`npm run test:agent:protocol`) vraagt een verse agentbuild met de actuele database. Met een verouderde build faalden op 31 oktober 3 van de 11 controles; na `npm run build:agent` met de database van 30 oktober slaagden alle 11.
 
 Een eerste handmatige beoordeling tegen de twintig vaste criteria van SAAF Agent-Auditor staat in de [A2-zelfbeoordeling](docs/beheer/a2-zelfbeoordeling.md). De eigen auditor staat op [Omnibus-auditor](docs/beheer/agent-auditor.md).
 
@@ -148,7 +148,7 @@ Wat Omnibus vastlegt, en wat bewust niet:
 - **Wel:** technische fouten en weigeringen van de server, met een vaste melding en een verzoek-ID, maar zonder adres, verzoekinhoud of brontekst. Bij een onbruikbaar bezoekersadres één regel `visitor_address_fallback` met alleen de vorm van de header, hooguit eens per minuut. Bij het starten de controle die mislukte, zonder paden.
 - **Wel:** bij een databaserelease worden `check:passages` en `check:questions` gedraaid en de controlegetallen vastgelegd ([database publiceren](docs/beheer/database-publiceren.md)).
 - **Bewust niet:** wie wat bekeek, zocht of exporteerde. Projecten, vragen en notities blijven in de browser. Privacy gaat voor; hooguit komen er later geanonimiseerde totalen.
-- **Wel:** elk kwartier een gezondheidscontrole van de online versie vanuit GitHub. Na drie mislukte pogingen komt er een issue met het label `storing`; dat sluit vanzelf bij herstel ([B-028](docs/beheer/besluiten.md#b-028)).
+- **Ontbreekt sinds 12 november 2026:** een automatische gezondheidscontrole van de online versie. De controle vanuit GitHub is gestopt ([B-044](docs/beheer/besluiten.md#b-044)); de beheerder controleert na elke uitrol met de hand.
 - **Ontbreekt:** een vaste bewaartermijn van de serverlogs van de host.
 
 Getoetst aan de tien observability-vragen van SAAF (31 oktober 2026). Doel, gebruikers, werkstroom, beheersmaatregelen en faalwijzen staan in dit document en de README's. Drie vragen zijn nog niet beantwoord:
