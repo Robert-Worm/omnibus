@@ -15,8 +15,8 @@ export function ResearchEntry({route,onChoose,disabled}:{route:string;onChoose:(
    <Button disabled={disabled} onClick={()=>onChoose('question')}>{route==='question'?'Verder met de behoefte':'Start vanuit deze behoefte'}<ArrowRight size={16}/></Button>
   </article>
   <article className={route==='risk'?'entry-card is-current':'entry-card'}><div className="entry-card-top"><span className="discovery-icon"><ScanSearch aria-hidden="true" size={25}/></span><span><TermText text="Risk-based"/>{route==='risk'?' · huidige route':''}</span></div><h2>Er zijn signalen en/of zorgen</h2>
-   <p><TermText text="Je intake, gesprekken of eerder onderzoek wijzen op een thema of proces. Verken de risico’s en kies passende normen en/of modelvariabelen voor je onderzoeksvragen."/></p>
-   <div className="entry-path"><span><TermText text="Thema of proces"/></span><ArrowRight size={14} aria-hidden="true"/><span><TermText text="Risico’s, normen / variabelen"/></span><ArrowRight size={14} aria-hidden="true"/><span><TermText text="Onderzoeksvragen"/></span></div>
+   <p><TermText text="Je intake, gesprekken of eerder onderzoek wijzen op een onderwerp. Begin bij een wet, kader of model, of verken de risico’s via thema’s en processen. Kies daarna passende normen en/of modelvariabelen voor je onderzoeksvragen."/></p>
+   <div className="entry-path"><span><TermText text="Wet, kader, model, thema of proces"/></span><ArrowRight size={14} aria-hidden="true"/><span><TermText text="Risico’s, normen / variabelen"/></span><ArrowRight size={14} aria-hidden="true"/><span><TermText text="Onderzoeksvragen"/></span></div>
    <Button disabled={disabled} onClick={()=>onChoose('risk')}>{route==='risk'?'Verder vanuit je signalen':'Start vanuit signalen'}<ArrowRight size={16}/></Button>
   </article>
   <WorkflowOutcome title={<>Beide routes → jouw <TermText text="referentiekader"/></>}><TermText text="Combineer normen, variabelen en onderzoeksvragen en exporteer je referentiekader naar Excel. Je kunt stappen herhalen en van route wisselen; je werk blijft behouden."/></WorkflowOutcome>
