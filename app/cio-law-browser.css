@@ -233,3 +233,15 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 
 /* Controlelijst in de samenvatting van een toetspunt: elke genummerde regel op een eigen regel (panel 10 november 2026). */
 .cio-norm-summary>p{white-space:pre-line}
+/* Sprong vanuit "Verwant": de norm (of de groepskop) licht kort op, zodat te zien is waar de verwijzing over gaat. */
+@keyframes norm-jump{0%,55%{background-color:#ffe9a8}100%{background-color:transparent}}
+tr.is-jump-target>td{animation:norm-jump 3.2s ease-out}
+tr.is-jump-target>td:first-child,tr.is-jump-target>td:nth-child(2){box-shadow:inset 3px 0 0 #d99a00}
+h3.is-jump-target{animation:norm-jump 3.2s ease-out;border-radius:.3rem}
+@media (prefers-reduced-motion:reduce){tr.is-jump-target>td,h3.is-jump-target{animation:none;background-color:#ffe9a8}}
+.related-norms-popup .related-norms-intro{margin:0 0 .5rem;font-size:.78rem;color:#596c80}
+/* Over dit kader: samenhang met andere kaders, kort en met de reden. */
+.law-about-related{list-style:none;margin:.4rem 0 .5rem;padding:0;display:grid;gap:.5rem}
+.law-about-related li{display:grid;gap:.1rem}
+.law-about-related button{justify-self:start;padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--primary,#154273);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.law-about-related span{font-size:.9rem;color:var(--muted-foreground,#596c80)}

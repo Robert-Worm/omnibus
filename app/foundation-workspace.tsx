@@ -59,10 +59,14 @@ import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
 import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
 
-export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void)=>void;prepareDetails?:(id:string,action:()=>void)=>void}) {
-  const [overview,setOverview]=useLawOverview(props);
+export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void,about?:boolean)=>void;prepareDetails?:(id:string,action:()=>void)=>void;onSourceShown?:(id:string)=>void}) {
+  const [sharedOverview,setSharedOverview]=useLawOverview(props);
+  // Een kader dat je voor het eerst opent, begint bij de normen. Daarna onthoudt elk kader zijn eigen weergave
+  // (besluit beheerder 12 november 2026: wisselen naar een nieuw kader bleef op "Over dit kader" staan).
+  const [perSource,setPerSource]=useState<Record<string,'norms'|'source'>>(()=>props.initialSource||props.initialBrowse.sourceId?{[props.initialSource||props.initialBrowse.sourceId||'']:sharedOverview}:{});
   const allows=useCollectionScope();
-  const overviewProps={overview,onOverviewChange:setOverview,prepareDetails:(action:()=>void)=>props.prepareDetails?props.prepareDetails(current||'',action):action()};
+  const overviewVan=(id:string)=>perSource[id]??'norms';
+  const overviewProps={overview:'norms' as 'norms'|'source',onOverviewChange:(_:'norms'|'source')=>{},prepareDetails:(action:()=>void)=>props.prepareDetails?props.prepareDetails(current||'',action):action()};
   const admitted=foundations.filter(isAdmittedFoundation).map(s=>s.id);
   const known=[cioSourceId,wwkeSourceId,...topicalIds,...admitted].filter(id=>allows('foundation',id)),opened=foundations.filter(s=>known.includes(s.id)&&props.draft.investigation?.sourceIds.includes(s.id));
   const [active,setActive]=useState(props.initialSource||props.initialBrowse.sourceId||opened[0]?.id||'');
@@ -72,7 +76,18 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
     if(props.initialSource)setActive(props.initialSource);
   }
   const current=known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active?opened[0]?.id:undefined);
-  if(current){const onActivate=(id:string)=>{const apply=()=>startTransition(()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});});if(props.prepareSource)props.prepareSource(id,apply);else apply();};return <>
+  overviewProps.overview=overviewVan(current||'');
+  overviewProps.onOverviewChange=value=>{if(current)setPerSource(v=>({...v,[current]:value}));setSharedOverview(value);};
+  // Zodra een kader in beeld is, haalt de app op de achtergrond ook de toetspunten op; een toetspunt openen hoeft dan niet te wachten.
+  const shown=props.onSourceShown;
+  useEffect(()=>{
+    if(!current||!shown)return;
+    const idle=window.requestIdleCallback??((run:()=>void)=>window.setTimeout(run,400));
+    const cancel=window.cancelIdleCallback??window.clearTimeout;
+    const handle=idle(()=>shown(current));
+    return ()=>cancel(handle as number);
+  },[current,shown]);
+  if(current){const onActivate=(id:string)=>{const apply=()=>startTransition(()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});});if(props.prepareSource)props.prepareSource(id,apply,overviewVan(id)==='source');else apply();};return <>
    <OpenItemStrip id="reviewed-law-open" items={opened.map(s=>({id:s.id,title:frameworkTitle(s.title)}))} activeId={current} onActivate={onActivate} onClose={id=>{props.onChange(closeFoundation(props.draft,id) as Draft);const next=opened.find(s=>s.id!==id);if(next)onActivate(next.id);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Wet of kader openen" disabled={props.disabled}/>
    {admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId} onOpenSource={known.includes('DORA-2022-2554')?(id:string)=>{if(!known.includes(id))return;const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}:undefined} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
   </>;}

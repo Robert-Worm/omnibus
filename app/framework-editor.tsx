@@ -170,6 +170,7 @@ export default function FrameworkEditor() {
       setContentNotice((error instanceof Error?error.message:'Laden is niet gelukt.')+' Je onderzoek en selecties zijn behouden.');setContentFailure(true);
     });
   }
+  const prefetchFoundation=useCallback((id:string)=>{void prefetchCatalogue(['foundation:'+id]);},[]);
   const [modelLibrary, setModelLibrary] = useState<ModelLibraryState>(() => initialModelLibrary());
   const publishedModels=publishedModelDirectory();
   const modelDirectoryEntries=useMemo(()=>modelDirectory(modelLibrary,publishedModels),[modelLibrary,publishedModels]);
@@ -1293,8 +1294,9 @@ export default function FrameworkEditor() {
             renderFoundations()
           ) : page === "foundation-workspace" ? (
             <FoundationWorkspace
-              prepareSource={(id,action)=>withContent([foundationOverviewKey(id,aboutViews.laws)],action)}
+              prepareSource={(id,action,about)=>withContent([foundationOverviewKey(id,about??aboutViews.laws)],action)}
               prepareDetails={(id,action)=>withContent(['foundation:'+id],action)}
+              onSourceShown={prefetchFoundation}
               overview={aboutViews.laws?'source':'norms'}
               onOverviewChange={value=>setAboutViews(v=>({...v,laws:value==='source'}))}
               key={builderGeneration}

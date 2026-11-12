@@ -22,6 +22,7 @@ import {pakketNotities,standaardzinnen} from '@/lib/reader-notes.mjs';
 import {topicalSourceFormat} from '@/lib/topical-document-identity.mjs';
 import {topicalSelection,chooseTopicalPoints} from '@/lib/topical-selection.mjs';
 import {relatedPassages,relatedSourceIds} from '@/lib/related-passages.mjs';
+import {frameworkRelations} from '@/lib/framework-relations.mjs';
 import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
 import {cioSourceGroups} from '@/lib/cio-source-groups.mjs';
 import type {Point,Criterion} from './cio-law-workspace';
@@ -31,7 +32,7 @@ import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
 
 type Package=NonNullable<ReturnType<typeof topicalPackage>>;
-function TopicalAbout({bundle}:{bundle:Package}){
+function TopicalAbout({bundle,onOpenSource}:{bundle:Package;onOpenSource?:(id:string)=>void}){
  const c=bundle.context,sourceStatus=sourceSnapshotStatus(c);
  const guidance=useMemo(()=>frameworkAboutGuidance(bundle.id,c),[bundle.id,c]);
  const limitations=frameworkAboutLimitations(bundle.id,c.limitations);
@@ -59,6 +60,8 @@ function TopicalAbout({bundle}:{bundle:Package}){
   history={background&&{items:background.history,links:background.references,note:`Aanvullende achtergrond · geraadpleegd op ${backgroundCheckedOn}. Voor de toetspunten zelf geldt de opgenomen uitgave van de bron.`}}
   application={<><LawAboutParagraphs text={guidance?.application||wording('applicability',c.applicability)}/>{background&&!guidance&&<ol className="law-about-practice">{background.practice.map(text=><li key={text}>{text}</li>)}</ol>}</>}
   related={background?.related}
+  relatedLinks={frameworkRelations(bundle.id) as {id:string;label:string;reason:string}[]}
+  onOpenRelated={onOpenSource}
   sources={documents}
   sourceExplanation={<><h4>Hoe zijn deze bronnen gebruikt?</h4><LawAboutParagraphs text={wording('source_explanation',c.source_explanation||(['TR-CYBER','TR-BEHAV','TR-RESIL','TR-THIRD'].includes(bundle.id)?'De vereisten vormen de normatieve basis voor de audit. De gebruikershandleiding licht het gebruik toe en geeft voorbeelden; die voorbeelden zijn geen aanvullende verplichtingen.':'Raadpleeg de genoemde brondocumenten voor de oorspronkelijke eisen en hun toelichting.'))}/>
    {guidance?.sourceExplanationExtra&&<LawAboutParagraphs text={guidance.sourceExplanationExtra}/>}
@@ -136,11 +139,12 @@ const ROL_IN_NAAM=/ \((wie de plicht heeft|uitvoerder volgens eigen taakverdelin
 export default function TopicalLawBrowser({sourceId,...props}:Props){
  const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const bundle=topicalPackage(sourceId)!;
+ const openSource=props.onOpenSource;
  const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),relatedNorms:(id:string)=>verwanteNormen(sourceId,id),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
   catalogue:{...bundle.catalogue,criteria:bundle.catalogue.criteria.map(c=>({...c,text:auditReadingText(c.text)}))},points:bundle.catalogue.points,records:bundle.bank.records,rows:topicalRows(bundle),groups:topicalGroups(bundle),
   goalFor:(id:string)=>topicalGoal(bundle,id),measureFor:(id:string)=>topicalMeasure(bundle,id),
   selection:(draft:Draft,ids?:string[])=>topicalSelection(draft,sourceId,ids),choose:(draft:Draft,ids:string[],include:boolean)=>chooseTopicalPoints(draft,sourceId,ids,include),
-  About:()=> <TopicalAbout bundle={bundle}/>,Approach:TopicalApproach,Source:(sourceProps:{point:Point;parent:Criterion})=><CatalogueContent resource={'source:'+sourceId}>{()=> <SourceContent bundle={bundle} {...sourceProps}/>}</CatalogueContent>,
- }) as unknown as LawBrowserAdapter,[bundle,sourceId,revision]);
+  About:()=> <TopicalAbout bundle={bundle} onOpenSource={openSource}/>,Approach:TopicalApproach,Source:(sourceProps:{point:Point;parent:Criterion})=><CatalogueContent resource={'source:'+sourceId}>{()=> <SourceContent bundle={bundle} {...sourceProps}/>}</CatalogueContent>,
+ }) as unknown as LawBrowserAdapter,[bundle,sourceId,revision,openSource]);
  return <CioLawBrowser {...props} hideOpenStrip adapter={adapter}/>;
 }

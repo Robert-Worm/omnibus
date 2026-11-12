@@ -32,7 +32,8 @@ import {Approach} from './cio-law-workspace';
 import CioSourceAbout from './cio-source-about';
 import CioPointSource from './cio-point-source';
 import RelevanceHelp from './relevance-help';
-import RelatedNormsHelp from './related-norms-help';
+import RelatedNormsHelp,{type Verwant} from './related-norms-help';
+import {requestNormJump,takeNormJump} from '@/lib/norm-jump.mjs';
 import LawPointPicker from './law-point-picker';
 import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
@@ -40,7 +41,7 @@ import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
 import './control-objective-pilot.css';
 import './cio-law-browser.css';
 
-export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;relatedNorms?:(criterionId:string)=>{id:string;label:string;grondslag:string}[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
+export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void;onOpenSource?:(id:string)=>void};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[];navigationSubjects?:string[]};
 type Tab='points'|'source'|'approach';
@@ -140,6 +141,41 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const resetFilters=()=>setView(v=>({...v,query:'',group:'',selectedOnly:false}));
  // De aangeklikte tab (Normen / Over dit kader) licht direct op; de inhoud volgt als overgang.
  const [wantedOverview,setWantedOverview]=useState<{from:string;to:string}|null>(null);
+ // Alle verwijzingen naar andere kaders staan bij de norm, onder "Verwant", elk met de reden (besluit beheerder
+ // 12 november 2026: de regels "Werkt DORA uit" en "Uitgewerkt in" in het hoofdscherm leidden af).
+ const verwantBij=(criterionId:string,groupId:string):Verwant[]=>{
+  const groep=groupsForSource.find(g=>g.id===groupId)?.title||'';
+  return [
+   ...(adapter?.relatedNorms?.(criterionId)||[]),
+   ...(adapter?.groupLinks?.(groep)||[]).map(l=>({id:l.id,label:l.label,grondslag:`Werkt de eisen van de groep ‘${groep}’ verder uit. Grondslag: ${l.grondslag} van DORA.`})),
+   ...(adapter?.sourceLinks||[]).map(l=>({id:l.id,groep:l.label,label:`DORA · ${l.label}`,grondslag:`Dit kader werkt deze groep van DORA verder uit. Grondslag: ${l.grondslag} van DORA.`})),
+  ];
+ };
+ // Sprong vanuit "Verwant" in een ander kader: naar de norm of groep, die kort oplicht.
+ const jumpDone=useRef(false);
+ const jumpContext=useRef({overview,setOverview,groupsForSource,rows});
+ useLayoutEffect(()=>{jumpContext.current={overview,setOverview,groupsForSource,rows};});
+ useEffect(()=>{
+  if(jumpDone.current||!adapter?.sourceId||!viewReady)return;
+  const {overview,setOverview,groupsForSource,rows}=jumpContext.current;
+  const jump=takeNormJump(adapter.sourceId) as null|{norm?:string;groep?:string};
+  jumpDone.current=true;
+  if(!jump)return;
+  if(overview!=='norms')setOverview('norms');
+  const doelGroep=jump.norm?groupsForSource.find(g=>rows.some(r=>r.groupId===g.id&&r.id===jump.norm)):groupsForSource.find(g=>g.title===jump.groep);
+  let pogingen=0,timer=0;
+  const zoek=()=>{
+   const kop=doelGroep?document.getElementById('law-group-'+doelGroep.id):null;
+   const knop=jump.norm?[...document.querySelectorAll<HTMLElement>('button[aria-label^="Bekijk "]')].find(b=>b.getAttribute('aria-label')?.startsWith('Bekijk '+normId(jump.norm||'')+':')):null;
+   const doel=(knop?.closest('tr') as HTMLElement|null)||(jump.norm?null:kop);
+   if(doel){doel.scrollIntoView({block:'center'});doel.classList.add('is-jump-target');window.setTimeout(()=>doel.classList.remove('is-jump-target'),3200);return;}
+   // De rij staat nog niet in beeld: eerst naar de groep, dan verschijnen de rijen vanzelf.
+   if(kop&&pogingen%4===0)kop.scrollIntoView({block:'start'});
+   if(++pogingen<40)timer=window.setTimeout(zoek,150);
+  };
+  timer=window.setTimeout(zoek,120);
+  return ()=>window.clearTimeout(timer);
+ },[adapter?.sourceId,viewReady]);
  const shownOverview=wantedOverview&&wantedOverview.from===overview?wantedOverview.to:overview;
  return <section className="law-browser" aria-label={title}>
   {!viewerOnly&&<>
@@ -148,7 +184,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}
   {overview==='norms'&&<>
-   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Normen van het CIO-stelsel')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div><SourceLinks lead="Werkt DORA uit" links={adapter?.sourceLinks} onOpen={onOpenSource}/>{(()=>{const notice=sourceAudienceNotice(sourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
+   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Normen van het CIO-stelsel')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div>{(()=>{const notice=sourceAudienceNotice(sourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
    <div className="law-browse-filters" aria-label="Normen filteren">
     <label className="law-search-label" htmlFor="law-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="law-search" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>
     <label htmlFor="law-group-filter">Groep binnen het kader<select id="law-group-filter" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupsForSource.map(group=><option key={group.id} value={group.id}>{group.title}</option>)}</select></label>
@@ -159,7 +195,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
    <div className="law-group-stack">{groups.map((group,index)=>{
     const ids=unique(group.allRows.flatMap(r=>r.pointIds)),groupState=select(draft,ids),hold=ids.length-groupState.total;
     return <section className="law-group" key={group.id} data-law-group={group.id} aria-labelledby={`law-group-${group.id}`}>
-     <header className="law-group-heading"><div><p className="law-group-location">{adapter?'':groupLocation(group.allRows,pointMap,recordMap)}</p><h3 id={`law-group-${group.id}`}>{group.title}</h3><SourceLinks lead="Uitgewerkt in" links={adapter?.groupLinks?.(group.title)} onOpen={onOpenSource}/><p className="law-group-count">{groupState.selected} van {countLabel(groupState.total,'toetspunten')} gekozen{hold>0&&` · ${hold} nog niet selecteerbaar`}{group.visibleRows.length<group.allRows.length&&` · ${group.visibleRows.length} van ${countLabel(group.allRows.length,'normen')} zichtbaar`}</p></div><label className="law-select-group" htmlFor={`law-group-all-${group.id}`}><Checkbox id={`law-group-all-${group.id}`} checked={groupState.all} indeterminate={groupState.partial} disabled={disabled||!groupState.total} aria-label={`Selecteer hele groep ${group.title}, ${countLabel(groupState.total,'toetspunten')}`} onCheckedChange={value=>choose(ids,value===true)}/><span>Selecteer hele groep<small>{countLabel(groupState.total,'toetspunten')}</small></span></label></header>
+     <header className="law-group-heading"><div><p className="law-group-location">{adapter?'':groupLocation(group.allRows,pointMap,recordMap)}</p><h3 id={`law-group-${group.id}`}>{group.title}</h3><p className="law-group-count">{groupState.selected} van {countLabel(groupState.total,'toetspunten')} gekozen{hold>0&&` · ${hold} nog niet selecteerbaar`}{group.visibleRows.length<group.allRows.length&&` · ${group.visibleRows.length} van ${countLabel(group.allRows.length,'normen')} zichtbaar`}</p></div><label className="law-select-group" htmlFor={`law-group-all-${group.id}`}><Checkbox id={`law-group-all-${group.id}`} checked={groupState.all} indeterminate={groupState.partial} disabled={disabled||!groupState.total} aria-label={`Selecteer hele groep ${group.title}, ${countLabel(groupState.total,'toetspunten')}`} onCheckedChange={value=>choose(ids,value===true)}/><span>Selecteer hele groep<small>{countLabel(groupState.total,'toetspunten')}</small></span></label></header>
      <DeferredViewerSection count={group.visibleRows.length} immediate={index===0} estimate={Math.min(364,45+group.visibleRows.length*109)}>
      <CompactMatrix lines={group.visibleRows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={`${adapter?.sourceId||'cio'}-group-${group.id}-v2`} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity}
       collectionSource={sourceId} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]}
@@ -181,7 +217,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
       <section className="law-context law-flow" aria-label="Samenhang van doel, risico en beheersing">{objectives.map(objective=><div className="law-context-grid" key={objective.id}>
        {[{label:'Doel',text:goalFor(objective.id)?.text||'Niet geformuleerd',field:'objective',Icon:Target},{label:'Risico',text:objective.risk||'Niet geformuleerd',field:'risk',Icon:TriangleAlert},{label:'Beheersdoelstelling',text:objective.text,field:'controlObjective',Icon:ShieldCheck},{label:'Beheersmaatregel',text:measure?.text||'Niet geformuleerd',field:'control',Icon:Settings2}].map(({label,text,field,Icon})=><section className={`law-context-card law-context-${field}`} key={field}><h4><Icon size={16}/><TermText text={label}/></h4><CompactContextText text={text} label={label}/></section>)}
       </div>)}</section>
-      <section className="law-parent-criterion"><h3><ListChecks size={16}/> <TermText text="Norm"/><RelatedNormsHelp links={adapter?.relatedNorms?.(parent.id)} onOpen={onOpenSource}/></h3><p><AfkortingText text={parent.text}/></p></section>
+      <section className="law-parent-criterion"><h3><ListChecks size={16}/> <TermText text="Norm"/><RelatedNormsHelp links={verwantBij(parent.id,row.groupId)} onOpen={onOpenSource?link=>{requestNormJump(link.id,link);onOpenSource(link.id);}:undefined}/></h3><p><AfkortingText text={parent.text}/></p></section>
       <div className="law-points-heading"><label htmlFor="law-select-all"><Checkbox id="law-select-all" disabled={disabled||!state.total} checked={state.all} indeterminate={state.partial} onCheckedChange={value=>choose(children.map(p=>p.id),value===true)}/>Alle toetspunten</label><output>{state.selected} van {state.total} gekozen</output></div>
       <div className="law-choice-grid">{children.map(p=><article key={p.id} data-point={p.id} data-inspected={initialPointId===p.id||undefined} className={`law-choice-card${selected.has(p.id)?' is-chosen':''}`}>
        {viewerOnly&&initialPointId===p.id&&<small className="viewer-current-point">Bekeken bouwsteen</small>}
@@ -205,7 +241,3 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
 }
 
 /** Links naar uitvoeringsregelingen of de verordening die een groep uitwerken (#312). Zonder onOpen alleen tekst. */
-function SourceLinks({lead,links,onOpen}:{lead:string;links?:{id:string;label:string;grondslag:string}[];onOpen?:(id:string)=>void}){
- if(!links?.length)return null;
- return <p className="law-group-links text-sm text-muted-foreground">{lead}: {links.map((l,i)=><span key={l.id+l.grondslag}>{i>0&&'; '}{onOpen?<button type="button" className="underline underline-offset-2 text-foreground hover:text-primary" onClick={()=>onOpen(l.id)}>{l.label}</button>:l.label} ({l.grondslag})</span>)}</p>;
-}

@@ -44,11 +44,13 @@ export function LawAboutLinks({links}:{links:LawAboutLink[]}){
  * HOLD cards and collapsible open points. New laws and frameworks fill these
  * slots; they cannot add, drop or reorder sections.
  */
-export function LawAboutPage({label,title,intro,links,specifications,kind,audience,history,application,related,sources,sourceExplanation,quality}:{
+export function LawAboutPage({label,title,intro,links,specifications,kind,audience,history,application,related,relatedLinks,onOpenRelated,sources,sourceExplanation,quality}:{
  label:string;title:string;intro:ReactNode;links:LawAboutLink[];specifications:ReactNode;
  kind:{title:string;body:ReactNode};audience:ReactNode;
  history?:{title?:string;items:LawAboutHistory[];links:LawAboutLink[];note?:string};
  application?:ReactNode;related?:string;
+ /** Andere kaders die hierbij horen, elk met de reden; klikbaar als het kader in deze omgeving te openen is. */
+ relatedLinks?:{id:string;label:string;reason:string}[];onOpenRelated?:(id:string)=>void;
  sources?:{id:string;title:string;role:string;url?:string}[];sourceExplanation?:ReactNode;
  quality:{meta:ReactNode[];holds?:ReactNode;checks:LawAboutCheck[];note?:string};
 }){
@@ -63,7 +65,9 @@ export function LawAboutPage({label,title,intro,links,specifications,kind,audien
    <ol className="law-about-timeline">{history.items.map(item=><li key={item.period+item.title}><span>{item.period}</span><div><h4>{item.title}</h4><p>{item.text}</p></div></li>)}</ol>
    <LawAboutLinks links={history.links}/>{history.note&&<p className="law-about-quality-meta">{history.note}</p>}
   </section>}
-  {(application||related)&&<section className="law-about-card"><h3><ListChecks size={18} aria-hidden="true"/>Toepassing in je onderzoek</h3>{application}{related&&<><h4>Samenhang met andere kaders</h4><p>{related}</p></>}</section>}
+  {(application||related||relatedLinks?.length)&&<section className="law-about-card"><h3><ListChecks size={18} aria-hidden="true"/>Toepassing in je onderzoek</h3>{application}{(related||Boolean(relatedLinks?.length))&&<><h4>Samenhang met andere kaders</h4>{related&&<p>{related}</p>}
+   {Boolean(relatedLinks?.length)&&<ul className="law-about-related">{relatedLinks!.map(l=><li key={l.id}>{onOpenRelated?<button type="button" onClick={()=>onOpenRelated(l.id)}>{l.label}</button>:<strong>{l.label}</strong>}<span>{l.reason}</span></li>)}</ul>}
+   {Boolean(relatedLinks?.length)&&<p className="law-about-quality-meta">Per norm vind je de precieze verwijzing onder ‘Verwant’, op het tabblad Toetspunten van een geopende norm.</p>}</>}</section>}
   {sources&&sources.length>0&&<LawAboutSources documents={sources}>{sourceExplanation}</LawAboutSources>}
   <section className="law-about-card law-about-quality"><h3><ShieldCheck size={18} aria-hidden="true"/>Bronkwaliteit en open punten</h3>
    {/* De zin over niet-vrijgegeven punten alleen als dit kader zulke punten heeft (panel 11 november 2026). */}
