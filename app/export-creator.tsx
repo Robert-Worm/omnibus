@@ -71,7 +71,7 @@ export default function ExportCreator({
       };
   }
   const {
-    selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, storedMeta, meta, focus, interview,
+    selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral, autoLinkUnderSub, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
@@ -84,6 +84,7 @@ export default function ExportCreator({
   const setBasis = setting('basis', basis), setTestScope = setting('testingAspects', testScope);
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
   const setKeyControl = setting('keyControl', keyControl);
+  const setAccountability = setting('accountability', accountability);
   const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
   const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
   const setAccent = setting('accent', accent), setColorMode = setting('colorMode', colorMode);
@@ -233,6 +234,18 @@ export default function ExportCreator({
             <p>{testingAspectLabel("bestaan", testingTerminology)} veronderstelt een ingerichte maatregel;
               {" "}{testingAspectLabel("werking", testingTerminology)} bovendien een afgebakende periode. Je Excelbestand bevat één rij per bouwsteen.</p>
           </details>
+        </fieldset>
+      )}
+      {!modelBasis && hasCriteria && (
+        <fieldset className="creator-testing-aspects">
+          <legend>Extra blad</legend>
+          <div>
+            <label data-selected={accountability} htmlFor="export-accountability">
+              <Checkbox id="export-accountability" checked={accountability} onCheckedChange={(v) => { setAccountability(v === true); setSaved(false); setError(""); }}/>
+              <span>Verantwoording referentiekader</span>
+            </label>
+          </div>
+          <p className="creator-help">Vier vragen om in te vullen: welke criteria de organisatie zelf had, waarom dit kader adequaat is, met wie het is afgestemd en wie het heeft goedgekeurd. Bij elke vraag staat de eis uit de Global Internal Audit Standards (13.4 en 13.6).</p>
         </fieldset>
       )}
       {profile === "risk" && !modelBasis && hasCriteria && (

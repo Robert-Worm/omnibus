@@ -22,6 +22,8 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const profile = get('profile', suggestedExportProfile(selectedLines)), basis = get('basis', 'norms');
   const testScope = get<string[]>('testingAspects', []), testingTerminology = get('testingTerminology', 'obw');
   const keyControl = get<boolean>('keyControl', false), riskProfile = String(profile) === 'risk';
+  // Verantwoording van het referentiekader (GIAS 13.4 en 13.6): staat aan tot de gebruiker het blad uitzet.
+  const accountability = get<boolean>('accountability', true);
   const storedMeta = get('meta', {version:'0.1', author:'', team:'', scope:exportScopeDefault(draft), change:'Eerste opzet'});
   const meta = {...storedMeta, scope:config.scopeFromInvestigation === true || !config.meta ? exportScopeDefault(draft) : storedMeta.scope};
   const focus = get('focus', researchSubjectDefault(draft).slice(0,160));
@@ -55,9 +57,10 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
     excludedNorms:[...new Set([...selection.excludedNorms,...excludedNorms])], ...modelOptions,
     researchInterview:!modelBasis && profile === 'interview' ? interview : undefined,
     testingAspects:!modelBasis && profile === 'testing' && hasCriteria ? testScope : undefined, testingTerminology,
-    ...(!modelBasis && riskProfile && keyControl ? {keyControl:true} : {})};
+    ...(!modelBasis && riskProfile && keyControl ? {keyControl:true} : {}),
+    ...(!modelBasis && hasCriteria && accountability ? {accountability:true} : {})};
   const planningIssues = planningReview(framework, draft, exportedNormIds);
-  return {selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, storedMeta, meta, focus, interview,
+  return {selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', autoLinkUnderSub: autoLinked.filter((id: string) => autoLink.placed[id] && autoLink.placed[id] !== autoLink.central?.id).length, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};
