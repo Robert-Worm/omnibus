@@ -69,11 +69,14 @@ function ViewerSkeleton({title}:{title:string}){
   </section>;
 }
 
+const overviewMemory:Record<string,'norms'|'source'>={};
 export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void,about?:boolean)=>void;prepareDetails?:(id:string,action:()=>void)=>void;onSourceShown?:(id:string)=>void;onSourcesOpened?:(ids:string[])=>void}) {
-  const [sharedOverview,setSharedOverview]=useLawOverview(props);
+  const [,setSharedOverview]=useLawOverview(props);
   // Een kader dat je voor het eerst opent, begint bij de normen. Daarna onthoudt elk kader zijn eigen weergave
   // (besluit beheerder 12 november 2026: wisselen naar een nieuw kader bleef op "Over dit kader" staan).
-  const [perSource,setPerSource]=useState<Record<string,'norms'|'source'>>(()=>props.initialSource||props.initialBrowse.sourceId?{[props.initialSource||props.initialBrowse.sourceId||'']:sharedOverview}:{});
+  // Een kader dat je in deze sessie voor het eerst opent, begint bij Normen; daarna onthoudt de app per kader waar je was
+  // (besluit beheerder 11 november 2026). Het geheugen leeft buiten het onderdeel, zodat het ook geldt als je via de catalogus terugkomt.
+  const [perSource,setPerSource]=useState<Record<string,'norms'|'source'>>(()=>({...overviewMemory}));
   const allows=useCollectionScope();
   const overviewVan=(id:string)=>perSource[id]??'norms';
   const overviewProps={overview:'norms' as 'norms'|'source',onOverviewChange:(_:'norms'|'source')=>{},prepareDetails:(action:()=>void)=>props.prepareDetails?props.prepareDetails(current||'',action):action()};
@@ -88,7 +91,7 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   }
   const current=known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active?opened[0]?.id:undefined);
   overviewProps.overview=overviewVan(current||'');
-  overviewProps.onOverviewChange=value=>{if(current)setPerSource(v=>({...v,[current]:value}));setSharedOverview(value);};
+  overviewProps.onOverviewChange=value=>{if(current){overviewMemory[current]=value;setPerSource(v=>({...v,[current]:value}));}setSharedOverview(value);};
   // Zodra een kader in beeld is, haalt de app op de achtergrond ook de toetspunten op; een toetspunt openen hoeft dan niet te wachten.
   const shown=props.onSourceShown;
   useEffect(()=>{

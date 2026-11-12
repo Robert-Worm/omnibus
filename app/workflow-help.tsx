@@ -82,7 +82,7 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
       <p>Je kunt Omnibus ook gebruiken om bronnen te verkennen, normen te begrijpen en te combineren, zonder direct een volledig referentiekader te maken.</p>
       <h3>Zo werkt Omnibus</h3>
       <ol className="workflow-help-steps">
-        <li><strong>Onderzoeksrichting of Verken je onderwerp</strong><p>Begin vraaggestuurd bij de behoefte van je opdrachtgever, of verken vanuit signalen een thema, proces, wet, kader of model. Wisselen van route wist je werk niet.</p></li>
+        <li><strong>Onderzoeksrichting of Verken je onderwerp</strong><p>Begin vraaggestuurd bij de behoefte van je opdrachtgever, of verken vanuit signalen een wet, kader, model, thema of proces. Wisselen van route wist je werk niet.</p></li>
         <li><strong>Verzamel</strong><p>Open inhoud in de viewers en kies relevante toetspunten of modelvragen. De mapjes met aantallen tonen je geopende inhoud. Wetten, kaders en onderwerpen kun je ook in hun geheel selecteren; modelvragen kies je afzonderlijk.</p></li>
         <li><strong>Bouw je kader</strong><p>Bouw je eigen vraag of begin met een voorstel vanuit je selectie. Koppel passende bouwstenen, los of per groep. Deelvragen zijn optioneel; alleen selecteren maakt nog geen koppeling.</p></li>
         <li><strong>Exporteer</strong><p>Kies normtoetsing, een risico-controlmatrix of interviewleidraad. Controleer welke gekoppelde bouwstenen meegaan en bekijk de bronverantwoording. Een losse modelleidraad kies je apart.</p></li>

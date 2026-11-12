@@ -93,7 +93,7 @@ export default function ProductFooter() {
         <h2>Over Omnibus</h2>
         <Glossary />
       <details><summary><Info aria-hidden="true"/>Gebruik en bronnen<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Omnibus helpt bij het voorbereiden van onderzoek; het geeft geen auditoordeel of juridisch advies. Met AI ondersteunde bewerkingen kunnen fouten bevatten. Controleer de oorspronkelijke bron, toepasselijkheid, reikwijdte en actualiteit voordat u normen gebruikt. De auditor bepaalt de onderzoeksaanpak en trekt de conclusies.</p>
+        <p>Omnibus helpt bij het voorbereiden van onderzoek; het geeft geen auditoordeel of juridisch advies. Met AI ondersteunde bewerkingen kunnen fouten bevatten. Controleer de oorspronkelijke bron, toepasselijkheid, reikwijdte en actualiteit voordat je normen gebruikt. De auditor bepaalt de onderzoeksaanpak en trekt de conclusies.</p>
         <p>De rechten en gebruiksvoorwaarden van de oorspronkelijke bronnen blijven gelden. Een verwijzing of eigen bewerking maakt de bron niet vrij beschikbaar.</p>
       </details>
       <details><summary><LockKeyhole aria-hidden="true"/>Lokale opslag en privacy<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>

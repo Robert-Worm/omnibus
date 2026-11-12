@@ -156,7 +156,8 @@ export function ThemeCatalogue({
               checked={openIds.includes(t.id)}
               onCheckedChange={(v) => onToggle(t.id, Boolean(v))}
             />
-            <span className="theme-reference">{themeReference(t.id)}</span>
+            {/* Alleen een echte code tonen (T05, CIBGBIO24-T01); een interne naam zoals "risk-control" zegt de lezer niets. */}
+            {/^[A-Z0-9-]+$/.test(themeReference(t.id)) && <span className="theme-reference">{themeReference(t.id)}</span>}
           </label>
           <div>
             <div className="theme-summary">

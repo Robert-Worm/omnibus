@@ -237,8 +237,15 @@ button.related-norms-trigger:hover,button.related-norms-trigger:focus-visible{ba
 @keyframes norm-jump{0%,55%{background-color:#ffe9a8}100%{background-color:transparent}}
 tr.is-jump-target>td{animation:norm-jump 3.2s ease-out}
 tr.is-jump-target>td:first-child,tr.is-jump-target>td:nth-child(2){box-shadow:inset 3px 0 0 #d99a00}
-h3.is-jump-target{animation:norm-jump 3.2s ease-out;border-radius:.3rem}
-@media (prefers-reduced-motion:reduce){tr.is-jump-target>td,h3.is-jump-target{animation:none;background-color:#ffe9a8}}
+:is(h2,h3).is-jump-target{animation:norm-jump-kop 3.2s ease-out;border-radius:.3rem}
+@keyframes norm-jump-kop{0%,55%{background-color:#ffe9a8;box-shadow:-.4rem 0 0 #ffe9a8,.4rem 0 0 #ffe9a8}100%{background-color:transparent;box-shadow:-.4rem 0 0 transparent,.4rem 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){tr.is-jump-target>td,:is(h2,h3).is-jump-target{animation:none;background-color:#ffe9a8}}
+/* Donkere weergave: een gedempt geel, zodat de lichte tekst leesbaar blijft. */
+@keyframes norm-jump-dark{0%,55%{background-color:rgb(217 154 0/.32)}100%{background-color:transparent}}
+@keyframes norm-jump-kop-dark{0%,55%{background-color:rgb(217 154 0/.32);box-shadow:-.4rem 0 0 rgb(217 154 0/.32),.4rem 0 0 rgb(217 154 0/.32)}100%{background-color:transparent;box-shadow:-.4rem 0 0 transparent,.4rem 0 0 transparent}}
+html[data-appearance=dark] tr.is-jump-target>td{animation-name:norm-jump-dark}
+html[data-appearance=dark] :is(h2,h3).is-jump-target{animation-name:norm-jump-kop-dark}
+@media (prefers-reduced-motion:reduce){html[data-appearance=dark] tr.is-jump-target>td,html[data-appearance=dark] :is(h2,h3).is-jump-target{background-color:rgb(217 154 0/.32)}}
 .related-norms-popup .related-norms-intro{margin:0 0 .5rem;font-size:.78rem;color:#596c80}
 /* Over dit kader: samenhang met andere kaders, kort en met de reden. */
 .law-about-related{list-style:none;margin:.4rem 0 .5rem;padding:0;display:grid;gap:.5rem}

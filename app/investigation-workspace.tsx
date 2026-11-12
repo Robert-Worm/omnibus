@@ -319,13 +319,7 @@ export function InvestigationStart({
       </details>}
       <div className="entry-grid">
         {[
-          {
-            id: "catalogue",
-            title: "Thema of proces",
-            description: "Verken praktijkinzichten en normen rond je onderwerp.",
-            icon: Layers,
-            action: "Verken thema’s en processen",
-          },
+          // Van wat moet, via wat wordt aangeraden en wat de wetenschap zegt, naar thema’s en processen (besluit beheerder 12 november 2026).
           {
             id: "foundations",
             title: "Wet of kader",
@@ -339,6 +333,13 @@ export function InvestigationStart({
             description: "Onderzoek een probleem met indicatoren en interviewvragen.",
             icon: MessageSquare,
             action: "Verken modellen",
+          },
+          {
+            id: "catalogue",
+            title: "Thema of proces",
+            description: "Verken praktijkinzichten en normen rond je onderwerp.",
+            icon: Layers,
+            action: "Verken thema’s en processen",
           },
           {
             id: "reports",

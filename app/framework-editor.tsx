@@ -247,7 +247,7 @@ export default function FrameworkEditor() {
   const [discoveryView,setDiscoveryView]=useState<{axis:'themes'|'processes';category:string}>({axis:'themes',category:''});
   const [directoryViews,setDirectoryViews]=useState({themes:emptyDirectoryView(),processes:emptyDirectoryView()});
   const [catalogueGroups,setCatalogueGroups]=useState({models:'',foundations:''});
-  const [riskArea,setRiskArea]=useState<'themes'|'processes'|'laws'|'frameworks'|'models'>('themes');
+  const [riskArea,setRiskArea]=useState<'themes'|'processes'|'laws'|'frameworks'|'models'>('laws');
   const [riskBrowseGeneration,setRiskBrowseGeneration]=useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [showSources, setShowSources] = useState(false);
@@ -415,7 +415,7 @@ export default function FrameworkEditor() {
   function applyProject(project:Project, resume=true) {
     setDirectoryViews({themes:emptyDirectoryView(),processes:emptyDirectoryView()});
     setCatalogueGroups({models:'',foundations:''});
-    setRiskArea(project.view.discoveryAxis);
+    setRiskArea('laws');
     projectRef.current=project;
     draftRef.current=project.draft;
     setDraftState({draft:project.draft});setModelLibrary(project.modelLibrary);setWorkspace(project.workspace);

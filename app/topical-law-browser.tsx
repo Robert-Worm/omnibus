@@ -27,7 +27,8 @@ import {cioContributionLabels,cioRoleLabels} from '@/lib/cio-law-data.mjs';
 import {cioSourceGroups} from '@/lib/cio-source-groups.mjs';
 import type {Point,Criterion} from './cio-law-workspace';
 import {Approach} from './cio-law-workspace';
-import {auditReadingText,currentAuditGuidance,sourceSnapshotStatus} from '@/lib/audit-reading.mjs';
+import {auditReadingText,currentAuditGuidance,sourceSnapshotStatus,zonderHold} from '@/lib/audit-reading.mjs';
+import {requestNormJump} from '@/lib/norm-jump.mjs';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
 
@@ -61,14 +62,14 @@ function TopicalAbout({bundle,onOpenSource}:{bundle:Package;onOpenSource?:(id:st
   application={<><LawAboutParagraphs text={guidance?.application||wording('applicability',c.applicability)}/>{background&&!guidance&&<ol className="law-about-practice">{background.practice.map(text=><li key={text}>{text}</li>)}</ol>}</>}
   related={background?.related}
   relatedLinks={frameworkRelations(bundle.id) as {id:string;label:string;reason:string}[]}
-  onOpenRelated={onOpenSource}
+  onOpenRelated={onOpenSource?id=>{requestNormJump(id);onOpenSource(id);}:undefined}
   sources={documents}
   sourceExplanation={<><h4>Hoe zijn deze bronnen gebruikt?</h4><LawAboutParagraphs text={wording('source_explanation',c.source_explanation||(['TR-CYBER','TR-BEHAV','TR-RESIL','TR-THIRD'].includes(bundle.id)?'De vereisten vormen de normatieve basis voor de audit. De gebruikershandleiding licht het gebruik toe en geeft voorbeelden; die voorbeelden zijn geen aanvullende verplichtingen.':'Raadpleeg de genoemde brondocumenten voor de oorspronkelijke eisen en hun toelichting.'))}/>
    {guidance?.sourceExplanationExtra&&<LawAboutParagraphs text={guidance.sourceExplanationExtra}/>}
    {background&&!guidance&&<><h4>Onderwerp van deze uitwerking</h4><LawAboutParagraphs text={c.intro}/></>}</>}
   quality={{meta:[`${bundle.catalogue.criteria.length} normen · ${selectable} selecteerbare toetspunten${hold>0?` · ${hold} nog niet vrijgegeven`:''}${contextOnly>0?` · ${contextOnly} contextpunten`:''}`,`${sourceStatus.asOf}. ${sourceStatus.qualification}`,'AI-review op brontrouw, betekenis en bruikbaarheid; geen menselijke audit- of juridische goedkeuring.'],
    checks:[...(guidance?.qualityNotes?[{title:guidance.qualityTitle,body:<LawAboutParagraphs text={guidance.qualityNotes}/>}]:[]),
-    ...limitations.map(reading=>({title:reading.title,status:reading.guide||undefined,body:<LawAboutParagraphs text={currentAuditGuidance(reading.text)}/>})),
+    ...limitations.map(reading=>({title:reading.title,status:reading.guide?zonderHold(reading.guide):undefined,body:<LawAboutParagraphs text={zonderHold(currentAuditGuidance(reading.text))}/>})),
     ...(contextOnly>0?[{title:'Contextpunten',status:'Geen zelfstandige normen',body:<p>Contextpunten geven uitleg bij de bron en zijn niet selecteerbaar als norm.</p>}]:[])],
    note:''}}/>;
 }

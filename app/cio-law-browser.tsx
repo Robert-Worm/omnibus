@@ -153,28 +153,39 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  };
  // Sprong vanuit "Verwant" in een ander kader: naar de norm of groep, die kort oplicht.
  const jumpDone=useRef(false);
- const jumpContext=useRef({overview,setOverview,groupsForSource,rows});
- useLayoutEffect(()=>{jumpContext.current={overview,setOverview,groupsForSource,rows};});
+ const jumpContext=useRef({overview,setOverview,groupsForSource,rows,view,resetFilters});
+ useLayoutEffect(()=>{jumpContext.current={overview,setOverview,groupsForSource,rows,view,resetFilters};});
  useEffect(()=>{
   if(jumpDone.current||!adapter?.sourceId||!viewReady)return;
-  const {overview,setOverview,groupsForSource,rows}=jumpContext.current;
+  const {overview,setOverview,groupsForSource,rows,view,resetFilters}=jumpContext.current;
   const jump=takeNormJump(adapter.sourceId) as null|{norm?:string;groep?:string};
   jumpDone.current=true;
   if(!jump)return;
   if(overview!=='norms')setOverview('norms');
+  // Een zoekopdracht of groepsfilter van een eerder bezoek kan het doel verbergen.
+  if(view.query||view.group||view.selectedOnly)resetFilters();
   const doelGroep=jump.norm?groupsForSource.find(g=>rows.some(r=>r.groupId===g.id&&r.id===jump.norm)):groupsForSource.find(g=>g.title===jump.groep);
-  let pogingen=0,timer=0;
+  let pogingen=0,timer=0;const nazorg:number[]=[];
   const zoek=()=>{
    const kop=doelGroep?document.getElementById('law-group-'+doelGroep.id):null;
    const knop=jump.norm?[...document.querySelectorAll<HTMLElement>('button[aria-label^="Bekijk "]')].find(b=>b.getAttribute('aria-label')?.startsWith('Bekijk '+normId(jump.norm||'')+':')):null;
-   const doel=(knop?.closest('tr') as HTMLElement|null)||(jump.norm?null:kop);
-   if(doel){doel.scrollIntoView({block:'center'});doel.classList.add('is-jump-target');window.setTimeout(()=>doel.classList.remove('is-jump-target'),3200);return;}
+   // Verwijst de regel naar het hele kader (geen norm, geen groep), dan licht de titel van het kader op.
+   const titel=!jump.norm&&!jump.groep?document.querySelector<HTMLElement>('.law-viewer-heading h2'):null;
+   // Een norm die (nog) niet gevonden wordt, valt na twee seconden terug op de kop van haar groep.
+   const doel=(knop?.closest('tr') as HTMLElement|null)||titel||(jump.norm&&pogingen<14?null:kop);
+   if(doel){
+    // In een groot kader verschijnen de rijen erboven nog terwijl we springen; dan schuift het doel weg. Zet het een paar keer terug in beeld.
+    const inBeeld=()=>{const r=doel.getBoundingClientRect();if(r.top<innerHeight*.15||r.bottom>innerHeight*.75)doel.scrollIntoView({block:titel?'nearest':'center'});};
+    doel.scrollIntoView({block:titel?'nearest':'center'});doel.classList.add('is-jump-target');
+    for(const ms of [250,600,1100,1800])nazorg.push(window.setTimeout(inBeeld,ms));
+    nazorg.push(window.setTimeout(()=>doel.classList.remove('is-jump-target'),3200));return;}
    // De rij staat nog niet in beeld: eerst naar de groep, dan verschijnen de rijen vanzelf.
    if(kop&&pogingen%4===0)kop.scrollIntoView({block:'start'});
    if(++pogingen<40)timer=window.setTimeout(zoek,150);
   };
   timer=window.setTimeout(zoek,120);
-  return ()=>window.clearTimeout(timer);
+  // De markering haalt zichzelf weg; alleen het zoeken stopt als de viewer sluit.
+  return ()=>{window.clearTimeout(timer);nazorg.slice(0,-1).forEach(t=>window.clearTimeout(t));};
  },[adapter?.sourceId,viewReady]);
  const shownOverview=wantedOverview&&wantedOverview.from===overview?wantedOverview.to:overview;
  return <section className="law-browser" aria-label={title}>
@@ -184,7 +195,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}
   {overview==='norms'&&<>
-   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Normen van het CIO-stelsel')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div>{(()=>{const notice=sourceAudienceNotice(sourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
+   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Besluit CIO-stelsel Rijksdienst 2026')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div>{(()=>{const notice=sourceAudienceNotice(sourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button><Button variant="outline" disabled={disabled} title="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onClick={()=>choose(points.map(p=>p.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button></div></div>
    <div className="law-browse-filters" aria-label="Normen filteren">
     <label className="law-search-label" htmlFor="law-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="law-search" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>
     <label htmlFor="law-group-filter">Groep binnen het kader<select id="law-group-filter" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupsForSource.map(group=><option key={group.id} value={group.id}>{group.title}</option>)}</select></label>
