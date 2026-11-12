@@ -1,7 +1,7 @@
 // Werkt het issue "Overdracht" bij uit de labels van de open issues en de laatste testrun op main.
 // Draait in .github/workflows/overdracht.yml.
 import { readFileSync } from "node:fs";
-import { MARKERING, laatsteTestrun, overdrachtTekst, overbodigeStatussen } from "./overdracht-lib.mjs";
+import { MARKERING, overdrachtTekst, overbodigeStatussen } from "./overdracht-lib.mjs";
 
 const repo = process.env.GITHUB_REPOSITORY, token = process.env.GITHUB_TOKEN;
 if (!repo || !token) throw new Error("GITHUB_REPOSITORY en GITHUB_TOKEN zijn nodig.");
@@ -30,7 +30,9 @@ for (const i of issues) {
   }
 }
 
-const tests = laatsteTestrun((await gh(`/actions/workflows/code-only.yml/runs?branch=main&event=push&status=completed&per_page=10`)).workflow_runs);
+// Sinds 12 november 2026 draaien de tests niet meer op GitHub (uitrol via Docker Hub en Sliplane; tests lokaal vóór elke versie).
+// De regel over de tests valt dan weg uit de overdracht.
+const tests = null;
 
 // De vaste volgorde per assistent; zie docs/beheer/samenwerking-ai.md.
 const volgorde = JSON.parse(readFileSync(new URL("../overdracht/volgorde.json", import.meta.url), "utf8"));

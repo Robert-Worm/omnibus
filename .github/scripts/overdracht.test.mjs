@@ -33,7 +33,7 @@ test("wat op de beheerder wacht en wat nog niet is ingedeeld, staat apart", () =
 test("de testuitslag van main staat bovenaan; rood betekent eerst herstellen", () => {
   assert.match(tekst, /✅ groen \(879ffa5/);
   assert.match(overdrachtTekst([], { conclusie: "failure", commit: "abc1234", url: null }), /❌ rood — eerst herstellen/);
-  assert.match(overdrachtTekst([], null), /nog geen run bekend/);
+  assert.match(overdrachtTekst([], null), /draaien lokaal vóór elke versie/);
 });
 
 test("een rode test gaat voor, en alle P1-taken staan erin", () => {
