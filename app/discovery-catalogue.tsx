@@ -10,14 +10,15 @@ import DirectorySearch from './directory-search';
 import {TermText} from './term-help';
 import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueSelection} from '@/lib/catalogue-selection.mjs';
-import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import CatalogueTable,{CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import {modelProcessIds} from '@/lib/catalogue-filters.mjs';
 
 type View=Theme&{axis:string;categoryId:string;description:string};
 export type DirectoryView={query:string;expanded:string[];closedSearchGroups:string[];limits:Record<string,number>};
 export const emptyDirectoryView=():DirectoryView=>({query:'',expanded:[],closedSearchGroups:[],limits:{}});
 const familyIcons:Record<string,typeof Layers>={public:Landmark,organisation:Users,operations:Monitor,security:ShieldCheck,technology:Monitor,policy:Landmark,information:Database,governance:Network,integrity:ShieldCheck,service:HandHeart,resources:Package};
 
-export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onPrepare,onToggle,onWorkspace,view,onViewChange,guided=false,onSources,onFrameworks,onModels,area=axis,children,included=[],onSelect,disabled=false}:{views:View[];axis:'themes'|'processes';onAxis:(axis:'themes'|'processes')=>void;openIds:string[];onOpen:(id:string)=>void;onPrepare?:(id:string)=>void;onToggle:(id:string,open:boolean)=>void;onWorkspace:()=>void;view:DirectoryView;onViewChange:(patch:Partial<DirectoryView>)=>void;guided?:boolean;onSources?:()=>void;onFrameworks?:()=>void;onModels?:()=>void;area?:'themes'|'processes'|'laws'|'frameworks'|'models';children?:ReactNode;included?:string[];onSelect?:(ids:string[],include:boolean)=>void;disabled?:boolean}){
+export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onPrepare,onToggle,onWorkspace,view,onViewChange,guided=false,onSources,onFrameworks,onModels,area=axis,children,included=[],onSelect,disabled=false,reports=[],modelNames={}}:{reports?:{id:string;title:string;year:number}[];modelNames?:Record<string,string>;views:View[];axis:'themes'|'processes';onAxis:(axis:'themes'|'processes')=>void;openIds:string[];onOpen:(id:string)=>void;onPrepare?:(id:string)=>void;onToggle:(id:string,open:boolean)=>void;onWorkspace:()=>void;view:DirectoryView;onViewChange:(patch:Partial<DirectoryView>)=>void;guided?:boolean;onSources?:()=>void;onFrameworks?:()=>void;onModels?:()=>void;area?:'themes'|'processes'|'laws'|'frameworks'|'models';children?:ReactNode;included?:string[];onSelect?:(ids:string[],include:boolean)=>void;disabled?:boolean}){
  const {query,expanded,closedSearchGroups,limits}=view;
  const groups=groupedDiscovery(views,axis,query);
  const selectedGroup=!query&&groups.find(g=>g.id===expanded.at(-1));
@@ -28,13 +29,30 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  // Lijstweergave: alle thema's of processen in één tabel, als alternatief voor de tegels per groep.
  const catalogueView=useCatalogueView('discovery'),listMode=!guided&&catalogueView.list;
  const seen=new Set<string>(),groupLabel=axis==='themes'?'Themagroep':'Procesfamilie';
+ // Samenhang tussen thema's en processen: welke delen bouwstenen met elkaar. Alleen berekend voor de lijst.
+ const other=listMode?views.filter(v=>v.axis!==axis&&v.lineIds.length).map(v=>({title:v.title,lines:new Set(v.lineIds)})):[];
+ const reportById=new Map(reports.map(r=>[r.id,r]));
  const listRows=listMode?groups.flatMap(group=>group.children.filter((item:View)=>!seen.has(item.id)&&Boolean(seen.add(item.id))).map((item:View)=>{const selection=catalogueSelection({included},item.lineIds);
-  return {id:item.id,title:item.title,opened:openIds.includes(item.id),selected:selection.selected,total:item.lineIds.length,all:selection.all,partial:selection.partial,group:group.title,description:item.description||'',lines:item.lineIds.length,reports:item.reportIds.length,lineIds:item.lineIds};})):[];
+  const related=other.map(o=>({title:o.title,shared:item.lineIds.filter(id=>o.lines.has(id)).length})).filter(o=>o.shared>0).sort((a,b)=>b.shared-a.shared||a.title.localeCompare(b.title,'nl'));
+  const sources=item.reportIds.map(id=>reportById.get(id)).filter((r):r is {id:string;title:string;year:number}=>Boolean(r)).sort((a,b)=>b.year-a.year||a.title.localeCompare(b.title,'nl')),years=sources.map(r=>r.year);
+  const process=item.categoryId.replace(/^report-/,''),models=axis==='processes'?Object.entries(modelProcessIds as Record<string,string[]>).filter(([id,ids])=>ids.includes(process)&&modelNames[id]).map(([id])=>modelNames[id]):[];
+  return {id:item.id,title:item.title,opened:openIds.includes(item.id),selected:selection.selected,total:item.lineIds.length,all:selection.all,partial:selection.partial,group:group.title,description:item.description||'',lines:item.lineIds.length,reports:item.reportIds.length,lineIds:item.lineIds,
+   related,sources,period:years.length?(Math.min(...years)===Math.max(...years)?String(years[0]):Math.min(...years)+'–'+Math.max(...years)):'',models};})):[];
  type ListRow=typeof listRows[number];
+ const otherNoun=axis==='themes'?['proces','processen']:['thema','thema’s'];
+ const described=listRows.some((r:ListRow)=>r.description);
  const listColumns:CatalogueColumn<ListRow>[]=[
-  {key:'group',label:groupLabel,width:'16%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
-  {key:'description',label:'Waar het over gaat',width:'44%',hideBelow:900,title:r=>r.description,render:r=>r.description?<span className="catalogue-clamp">{r.description}</span>:<small>–</small>},
-  {key:'reports',label:'Bronrapporten',width:'7.6rem',numeric:true,sort:r=>r.reports,render:r=>r.reports||<small>–</small>},
+  {key:'group',label:groupLabel,width:'14%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
+  // Processen hebben (nog) geen eigen omschrijving; een lege kolom laten we weg.
+  ...(described?[{key:'description',label:'Waar het over gaat',width:'30%',hideBelow:1000,title:(r:ListRow)=>r.description,render:(r:ListRow)=>r.description?<span className="catalogue-clamp">{r.description}</span>:<small>–</small>}]:[]),
+  {key:'related',label:axis==='themes'?'Bijbehorende processen':'Hoort bij thema',width:axis==='themes'?'10.5rem':'24%',hideBelow:860,sort:r=>axis==='themes'?r.related.length:r.related[0]?.title||'zzz',
+   render:r=>!r.related.length?<small>–</small>:<CellTip label={`${r.title} deelt bouwstenen met ${r.related.length} ${r.related.length===1?otherNoun[0]:otherNoun[1]}`}
+    tip={<><strong>Deelt bouwstenen met</strong>{r.related.slice(0,8).map((o:{title:string;shared:number})=><span key={o.title}>{o.title}: {o.shared} van {r.lines}</span>)}{r.related.length>8&&<span>en {r.related.length-8} andere</span>}<em>Kies je beide, dan telt een gedeelde bouwsteen één keer.</em></>}>
+    {axis==='themes'?<>{r.related.length} {r.related.length===1?'proces':'processen'}</>:<>{r.related[0].title}{r.related.length>1&&<span className="catalogue-more">+{r.related.length-1} meer</span>}</>}</CellTip>},
+  {key:'reports',label:'Onderbouwing',width:described?'9.4rem':'30%',sort:r=>r.reports,
+   render:r=>!r.reports?<small>–</small>:<CellTip label={`${r.reports} ${r.reports===1?'rapport':'rapporten'}${r.period?', '+r.period:''}`}
+    tip={<><strong>{r.reports===1?'Uit één rapport':`Uit ${r.reports} rapporten`}</strong>{r.sources.slice(0,8).map((o:{id:string;title:string;year:number})=><span key={o.id}>{o.year} · {o.title}</span>)}{r.sources.length>8&&<span>en {r.sources.length-8} andere</span>}<em>{r.reports===1?'Eén rapport is een voorbeeld uit de praktijk, geen patroon.':'Meer rapporten wijzen op een breder beeld, niet op een zwaarder risico.'}</em></>}>
+    {r.reports} {r.reports===1?'rapport':'rapporten'}{!described&&r.period&&` · ${r.period}`}<span className="catalogue-sub">{described?(r.reports===1?'één casus · ':'')+r.period:r.reports===1?<span className="catalogue-clamp">Eén casus: {r.sources[0]?.title}</span>:<span className="catalogue-clamp">Meest recent: {r.sources[0]?.title}</span>}</span></CellTip>},
  ];
  const familyHeading=useRef<HTMLHeadingElement>(null);
  const focusRequest=useRef(false);
@@ -62,7 +80,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
    filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]}]}
    groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''}]}
-   nameLabel={axis==='themes'?'Thema':'Proces'} nameMeta={()=>null} countLabel="Gekozen bouwstenen" hint={`Een vinkje kiest alle bouwstenen van dat ${axis==='themes'?'thema':'proces'}. Open het om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} bouwstenen van ${r.title}`} chosenUnique={new Set(listRows.flatMap(r=>r.lineIds).filter(id=>included.includes(id))).size}
+   nameLabel={axis==='themes'?'Thema':'Proces'} nameMeta={r=>r.models.length?<span title={'Onderzoeksmodellen die bij dit proces passen: '+r.models.join(', ')}>Modellen: {r.models.slice(0,2).join(', ')}{r.models.length>2&&` +${r.models.length-2}`}</span>:null} countLabel="Gekozen bouwstenen" hint={`Een vinkje kiest alle bouwstenen van dat ${axis==='themes'?'thema':'proces'}. Open het om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} bouwstenen van ${r.title}`} chosenUnique={new Set(listRows.flatMap(r=>r.lineIds).filter(id=>included.includes(id))).size}
    onOpen={onOpen} onSelect={onSelect?(ids,checked)=>onSelect([...new Set(listRows.filter(r=>ids.includes(r.id)).flatMap(r=>r.lineIds))],checked):undefined}
    empty={<p>Geen passend onderdeel gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>:<>
   {!query&&!selectedGroup&&!showAll&&<div className="directory-family-cards" ref={cards}>{groups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <button type="button" key={group.id} data-family={group.id} className="directory-family-card" onClick={()=>{focusRequest.current=true;onViewChange({expanded:[group.id]});}}>

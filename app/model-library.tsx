@@ -127,7 +127,7 @@ export default function ModelLibrary({
   return (
     <section className={`export-creator models-workspace${mode==='catalogue'?' catalogue-explorer':''}`} data-mode={mode}>
       {error && <p role="alert">{error}</p>}
-      {!guided&&mode==='catalogue'&&<><CatalogueHeader title="Verken modellen" description="Open een model om de begrippen, variabelen en bijbehorende interviewvragen te bekijken."/>{catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?'Alle modellen in één lijst.':'Blader per categorie, of kies Lijst om alles in één overzicht te zien.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/></div>}{!listMode&&<ModelChoice onReset={()=>{setSubject('');setQuery('');setProcessId('');setSelectedOnly(false);}}/>}</>}
+      {!guided&&mode==='catalogue'&&<><CatalogueHeader title="Verken modellen" description="Open een model om de begrippen, variabelen en bijbehorende interviewvragen te bekijken."/>{catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?'Alle modellen in één lijst.':'Blader per categorie, of kies Lijst om alles in één overzicht te zien.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/></div>}{<ModelChoice onReset={()=>{setSubject('');setQuery('');setProcessId('');setSelectedOnly(false);}}/>}</>}
       {!guided&&mode==='workspace'&&<div className="model-open-navigation">
         {mode==='workspace'&&<OpenItemStrip id="models" items={openModels.map((model:LibraryModel)=>({id:model.id,title:modelDisplayName(model)}))} activeId={current?.id||null} onActivate={setActive} onClose={id=>{onCloseModel(id);if(id===current?.id)setActive(openIds.find(other=>other!==id)||null);}} onExplore={onCatalogue} exploreLabel="Terug naar alle modellen" disabled={!ready}/>}
       </div>}
@@ -140,7 +140,7 @@ export default function ModelLibrary({
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
         filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects}]}
         groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''}]}
-        nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
+        gutter nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}

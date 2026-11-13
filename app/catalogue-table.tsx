@@ -5,6 +5,7 @@ import {useEffect,useRef,useState,type ReactNode} from 'react';
 import {ArrowDown,ArrowRight,ArrowUp,ChevronDown,ChevronRight,ChevronsUpDown,FolderOpen,LayoutGrid,List,Search,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
+import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/select';
 import {useBrowseState} from './browse-state';
 import './catalogue-table.css';
 
@@ -30,17 +31,28 @@ export function CatalogueViewToggle({mode,onChange}:{mode:'tiles'|'list';onChang
  </fieldset>;
 }
 
-/** Keuzelijst als compacte knop: het label staat erin, de gekozen waarde ernaast. */
-function ToolSelect({label,value,onChange,children,active=false}:{label:string;value:string;onChange:(value:string)=>void;children:ReactNode;active?:boolean}){
- return <label className="catalogue-tool" data-active={active||undefined}><span>{label}</span><select value={value} onChange={e=>onChange(e.target.value)}>{children}</select><ChevronDown size={14} aria-hidden="true"/></label>;
+/** Celinhoud met uitleg bij aanwijzen of focus; dezelfde vorm als de uitleg bij de symbolen in "Voor wie". */
+export function CellTip({label,tip,children}:{label:string;tip:ReactNode;children:ReactNode}){
+ return <button type="button" className="catalogue-cell-tip" aria-label={label}><span className="catalogue-cell-tip-text">{children}</span><span className="audience-tip" aria-hidden="true">{tip}</span></button>;
 }
 
-export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
+/** Keuzelijst als compacte knop: het label staat erin, de gekozen waarde ernaast. Het menu is het gedeelde Select-onderdeel
+ * van de app, zodat het er in elke browser hetzelfde uitziet. */
+const none='__geen';
+function ToolSelect({label,value,onChange,options,active=false}:{label:string;value:string;onChange:(value:string)=>void;options:{value:string;label:string}[];active?:boolean}){
+ const current=options.find(o=>o.value===value)?.label??value;
+ return <Select value={value||none} onValueChange={next=>{if(typeof next==='string')onChange(next===none?'':next);}}>
+  <SelectTrigger className="catalogue-tool" data-active={active||undefined} aria-label={`${label} ${current}`}><span className="catalogue-tool-label">{label}</span><span className="catalogue-tool-value">{current}</span></SelectTrigger>
+  <SelectContent className="catalogue-tool-menu" alignItemWithTrigger={false} align="start">{options.map(o=><SelectItem key={o.value||none} value={o.value||none} className="catalogue-tool-option">{o.label}</SelectItem>)}</SelectContent>
+ </Select>;
+}
+
+export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
  groups:CatalogueGroup<Row>[];
  nameLabel?:string;nameMeta:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
- onOpen:(id:string)=>void;onSelect?:(ids:string[],checked:boolean)=>void;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string}){
+ onOpen:(id:string)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
  useEffect(()=>{const el=box.current;if(!el)return;const observer=new ResizeObserver(entries=>setWidth(Math.round(entries[0].contentRect.width)));observer.observe(el);return()=>observer.disconnect();},[]);
@@ -61,7 +73,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const setSort=(key:string,numeric=false)=>setView(v=>({...v,sort:key,dir:v.sort===key?(v.dir==='asc'?'desc':'asc'):numeric?'desc':'asc'}));
  const head=(key:string,label:string,numeric=false,sortable=true,width?:string)=><th key={key} scope="col" data-column={key} data-numeric={numeric||undefined} style={width?{width}:undefined} aria-sort={view.sort===key?(view.dir==='asc'?'ascending':'descending'):undefined}>
   {sortable?<button type="button" onClick={()=>setSort(key,numeric)}>{label}{view.sort===key?(view.dir==='asc'?<ArrowUp size={13} aria-hidden="true"/>:<ArrowDown size={13} aria-hidden="true"/>):<ChevronsUpDown size={13} aria-hidden="true" data-idle=""/>}</button>:<span>{label}</span>}</th>;
- const span=columns.length+(onSelect?4:3);
+ const lead=Boolean(onSelect)||gutter,span=columns.length+(lead?4:3);
  const filtered=active.length>0;
  const closedKeys=sections.filter(s=>s.name).map(s=>view.group+':'+s.name),allClosed=closedKeys.length>0&&closedKeys.every(k=>view.closed.includes(k));
  const chosenRows=shown.filter(r=>r.selected>0).length,chosenTotal=shown.reduce((sum,r)=>sum+r.selected,0);
@@ -71,11 +83,11 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
     {filters.map(f=>{const chosen=view.filters[f.key]||'',options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
-     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))}><option value="">alle</option>{options.map(o=><option key={o} value={o}>{o}</option>)}</ToolSelect>;})}
+     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
     {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>{search?.value?'Wis zoeken en filters':'Filters wissen'}</button>}
    </div>
    {groups.length>0&&<div className="catalogue-table-grouping">
-    <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))}>{groups.map(g=><option key={g.key} value={g.key}>{g.label.toLowerCase()}</option>)}<option value="">niet groeperen</option></ToolSelect>
+    <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label.toLowerCase()})),{value:'',label:'niet groeperen'}]}/>
     {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Groepen uitklappen':'Groepen inklappen'}</button>}
    </div>}
   </div>
@@ -85,6 +97,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
    <thead><tr>
     {onSelect&&<th scope="col" className="catalogue-table-check">{(()=>{const pickable=shown.filter(r=>r.total>0),all=pickable.length>0&&pickable.every(r=>r.all),some=pickable.some(r=>r.selected>0);
      return <span className="catalogue-check-area" title={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${noun[1]}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${shown.length===1?noun[0]:noun[1]}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span>;})()}</th>}
+    {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
     {head('title',nameLabel)}
     {columns.map(c=>head(c.key,c.label,c.numeric,Boolean(c.sort),c.width))}
     {head('selected',countLabel,true,true,'10.4rem')}
@@ -94,9 +107,11 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
     return <tbody key={section.name||'all'}>
     {section.name&&<tr className="catalogue-table-group" data-closed={closed||undefined}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={`Kies alle ${unit[1]} in ${section.name}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} in ${section.name}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span></td>}
-     <th colSpan={span-(onSelect?1:0)} scope="rowgroup" aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}><span>{section.name}</span>{closed?<ChevronRight size={16} aria-hidden="true"/>:<ChevronDown size={16} aria-hidden="true"/>}</button><small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small>{describe&&<p id={`${id}-group-${index}`}>{describe}</p>}{chosen>0&&<em>keuze in {chosen} {chosen===1?noun[0]:noun[1]}</em>}</div></th></tr>}
+     {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
+     <th colSpan={span-(lead?1:0)} scope="rowgroup" aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}><span>{section.name}</span>{closed?<ChevronRight size={16} aria-hidden="true"/>:<ChevronDown size={16} aria-hidden="true"/>}</button><small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small>{describe&&<p id={`${id}-group-${index}`}>{describe}</p>}{chosen>0&&<em>keuze in {chosen} {chosen===1?noun[0]:noun[1]}</em>}</div></th></tr>}
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id);}}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
+     {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
      <th scope="row" className="catalogue-table-name"><button type="button" onClick={()=>onOpen(row.id)}>{row.title}</button><span>{nameMeta(row)}{row.opened&&<em><FolderOpen size={12} aria-hidden="true"/>Geopend</em>}</span></th>
      {columns.map(c=><td key={c.key} data-numeric={c.numeric||undefined} data-column={c.key} title={c.title?.(row)}>{c.render(row)}</td>)}
      <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.total?<><span><strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
