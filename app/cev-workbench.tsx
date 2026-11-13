@@ -30,6 +30,7 @@ export default function CevWorkbench({
   onChange,
   onAbout,
   onClose,
+  hideClose = false,
   activeId,
   onActiveChange,
   suggestedSubject = "",
@@ -39,6 +40,8 @@ export default function CevWorkbench({
   onChange: (patch: Partial<LibraryModel>) => void;
   onAbout: () => void;
   onClose: () => void;
+  /** De balk Geopend heeft al een knop terug naar alle modellen. */
+  hideClose?: boolean;
   activeId:string;
   onActiveChange:(id:string)=>void;
   suggestedSubject?: string;
@@ -125,7 +128,7 @@ export default function CevWorkbench({
           <h2>{modelDisplayName(model)}</h2>
           <output>{model.items.length} {model.items.length===1?'onderdeel':'onderdelen'}</output>
         </div>
-        <div className="cev-heading-actions"><ModelInformation model={model} onAbout={onAbout}/><Button variant="outline" onClick={onClose}>Terug naar modellen</Button></div>
+        <div className="cev-heading-actions"><ModelInformation model={model} onAbout={onAbout}/>{!hideClose&&<Button variant="outline" onClick={onClose}>Terug naar alle modellen</Button>}</div>
       </header>
       <div className="cev-setup">
       <div className="cev-context">

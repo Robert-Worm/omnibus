@@ -158,7 +158,7 @@ export default function ModelLibrary({
               : 'Geen modellen gevonden.'}</p>}
         </div></CatalogueFamily>}
         {mode==='workspace'&&!current&&<OpenWorkspaceEmpty prompt="Open een model om de inhoud te bekijken en vragen uit te werken."/>}
-        {current && usesQuestionWorkbench(current) ? <CevWorkbench key={current.id} model={current} suggestedSubject={suggestedSubject} activeId={view.modelDimension} onActiveChange={modelDimension=>onViewChange({modelDimension})} disabled={!ready} onChange={patch => edit(current.id, patch)} onAbout={()=>setOverview('about')} onClose={onCatalogue}/> : current ? (
+        {current && usesQuestionWorkbench(current) ? <CevWorkbench key={current.id} model={current} suggestedSubject={suggestedSubject} activeId={view.modelDimension} onActiveChange={modelDimension=>onViewChange({modelDimension})} disabled={!ready} onChange={patch => edit(current.id, patch)} onAbout={()=>setOverview('about')} onClose={onCatalogue} hideClose={!guided&&mode==='workspace'}/> : current ? (
           <section className="creator-card model-question-browser">
             <div className="cev-heading law-browse-intro"><div className="law-viewer-heading"><h2>{modelDisplayName(current)}</h2><output>{current.items.length} {current.items.length===1?'onderdeel':'onderdelen'}</output></div><div className="cev-heading-actions"><ModelInformation model={current} onAbout={()=>setOverview('about')}/><Button variant="outline" onClick={onCatalogue}>Terug naar catalogus</Button></div></div>
             <p className="creator-help">
