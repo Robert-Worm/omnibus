@@ -58,7 +58,9 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table tbody td,.catalogue-table tbody th{padding:.7rem .6rem;overflow-wrap:break-word;hyphens:manual;border-bottom:1px solid var(--ct-line);vertical-align:top;text-align:left;font-weight:400;transition:background-color .1s}
 .catalogue-table tbody [data-numeric]{text-align:right}
 .catalogue-table tbody:last-child tr:last-child>*{border-bottom:0}
-.catalogue-table tbody tr:not(.catalogue-table-group):hover>*{background:color-mix(in srgb,var(--primary) 4%,var(--card))}
+/* Om en om een lichte tint, zodat je een regel makkelijker volgt */
+.catalogue-table tbody tr[data-row]:nth-child(even)>*{background:color-mix(in srgb,var(--muted) 60%,var(--card))}
+.catalogue-table tbody tr:not(.catalogue-table-group):hover>*{background:color-mix(in srgb,var(--primary) 7%,var(--card))}
 .catalogue-table tbody tr[data-chosen]>:first-child{box-shadow:inset 3px 0 0 var(--primary)}
 .catalogue-table tbody tr[data-chosen]>*{background:color-mix(in srgb,var(--primary) 5%,var(--card))}
 .catalogue-table tbody tr[data-row]{cursor:pointer}
@@ -173,3 +175,5 @@ section.discovery-directory>.directory-family-cards{padding-top:.8125rem}
 .catalogue-meter>i:nth-child(1){height:40%}.catalogue-meter>i:nth-child(2){height:60%}.catalogue-meter>i:nth-child(3){height:80%}.catalogue-meter>i:nth-child(4){height:100%}
 .catalogue-meter[data-level="1"]>i:nth-child(-n+1),.catalogue-meter[data-level="2"]>i:nth-child(-n+2),.catalogue-meter[data-level="3"]>i:nth-child(-n+3),.catalogue-meter[data-level="4"]>i{background:var(--primary)}
 .catalogue-meter-count{font-variant-numeric:tabular-nums;color:var(--muted-foreground)}
+/* Modellen: waar het model bij helpt */
+.audience-icon[data-symbol=gedrag]{--tone:#7a4fa3}.audience-icon[data-symbol=cultuur]{--tone:#1f6f8b}.audience-icon[data-symbol=veiligheid]{--tone:#2f7d4f}.audience-icon[data-symbol=integriteit]{--tone:#a23b72}.audience-icon[data-symbol=risico]{--tone:#b0640f}.audience-icon[data-symbol=verandering]{--tone:#5b5fa8}.audience-icon[data-symbol=dienstverlening]{--tone:#154273}

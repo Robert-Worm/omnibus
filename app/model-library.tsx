@@ -14,6 +14,11 @@ import {catalogueDescription} from '@/lib/catalogue-directory.mjs';
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
 import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import {SymbolRow} from './audience-icons';
+import {modelUses,modelUsesOf} from '@/lib/model-uses.mjs';
+import {Compass,HandHeart,LifeBuoy,MessagesSquare,ShieldAlert,TriangleAlert,Users as UsersIcon} from 'lucide-react';
+type UseId=keyof typeof modelUses;
+const useIcons:Record<UseId,typeof Compass>={gedrag:UsersIcon,cultuur:MessagesSquare,veiligheid:LifeBuoy,integriteit:ShieldAlert,risico:TriangleAlert,verandering:RefreshCw,dienstverlening:HandHeart,sturing:Compass};
 import DirectorySearch from './directory-search';
 import {TermText} from './term-help';
 import {CatalogueHeader,ModelChoice} from './catalogue-navigation';
@@ -95,11 +100,11 @@ export default function ModelLibrary({
   // Lijstweergave: alle modellen in één tabel, als alternatief voor de tegels per categorie.
   const catalogueView=useCatalogueView('models'),listMode=!guided&&mode==='catalogue'&&catalogueView.list;
   const listRows=listMode?directory.filter(m=>m.searchText.includes(query.trim().toLowerCase())).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
-    summary:m.summary,items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
+    summary:m.summary,uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
-    {key:'description',label:'Waar het model bij helpt',hideBelow:900,title:r=>r.summary,render:r=>r.summary?<span className="catalogue-clamp" data-lines="3">{r.summary}</span>:<small>–</small>},
+    {key:'uses',label:'Helpt bij',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
     {key:'items',label:'Onderdelen',width:'7rem',numeric:true,sort:r=>r.items,render:r=>r.items||<small>–</small>},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
@@ -138,7 +143,7 @@ export default function ModelLibrary({
       {!guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek op model, auteur of vraagstuk…"/>}
       {listMode&&<CatalogueTable id="models" noun={['model','modellen']} unit={['vraag','vragen']}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
-        filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects}]}
+        filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)}]}
         groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''}]}
         gutter nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}

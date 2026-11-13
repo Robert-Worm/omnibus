@@ -14,7 +14,7 @@ import CatalogueTable,{CatalogueViewToggle,CellTip,useCatalogueView,type Catalog
 import {processClasses,processKinds,processClassesOf} from '@/lib/process-taxonomy.mjs';
 import {organisationsOf,reportOrganisations} from '@/lib/report-organisations.mjs';
 import {SymbolRow} from './audience-icons';
-import {Building,Compass,Euro,Gavel,Globe,ScrollText,Server,ShoppingCart} from 'lucide-react';
+import {Building,Compass,Euro,Gavel,ScrollText,Server,ShoppingCart} from 'lucide-react';
 type ClassId=keyof typeof processClasses;
 
 type View=Theme&{axis:string;categoryId:string;description:string};
@@ -45,24 +45,16 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    classes,kind:classes.some(c=>c.kind==='primair')?'Primair':classes.length?'Ondersteunend':'',
    orgs:(organisationsOf(item.reportIds) as {id:string;label:string;name:string;reports:string[]}[])};})):[];
  type ListRow=typeof listRows[number];
- const described=listRows.some((r:ListRow)=>r.description);
  const strength=(n:number)=>n>=10?4:n>=5?3:n>=2?2:n?1:0;
  const reportLine=(id:string)=>{const r=reportById.get(id),at=(reportOrganisations as Record<string,{at:string}>)[id]?.at;return r?`${r.year} · ${at?at+': ':''}${r.title}`:id;};
  const listColumns:CatalogueColumn<ListRow>[]=[
   {key:'group',label:groupLabel,width:'14%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
-  // Processen hebben (nog) geen eigen omschrijving; een lege kolom laten we weg.
-  ...(described?[{key:'description',label:'Waar het over gaat',hideBelow:1000,title:(r:ListRow)=>r.description,render:(r:ListRow)=>r.description?<span className="catalogue-clamp">{r.description}</span>:<small>–</small>}]:[]),
-  {key:'kind',label:'Soort proces',width:described?'7.2rem':undefined,groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
+  {key:'kind',label:'Soort proces',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
    render:r=>r.classes.length?<SymbolRow items={r.classes.map((c:{id:ClassId;kind:'primair'|'ondersteunend';label:string;description:string})=>({id:c.id,Icon:classIcons[c.id],label:c.label,active:true,solid:c.kind==='primair',
-    lines:[processKinds[c.kind].label+': '+processKinds[c.kind].description.toLowerCase(),c.description]}))} text={described?undefined:r.classes.map((c:{label:string})=>c.label).join(' · ')}/>:<small>–</small>},
-  {key:'orgs',label:'Onderzocht bij',width:'14rem',hideBelow:820,sort:r=>r.orgs[0]?.id==='RIJK'?'0':r.orgs.map((o:{label:string})=>o.label).join(' ')||'zzz',
-   render:r=>r.orgs.length?<span className="org-chips">{r.orgs.slice(0,3).map((o:{id:string;label:string;name:string;reports:string[]})=><CellTip plain key={o.id} label={`${o.name}: ${o.reports.length} ${o.reports.length===1?'rapport':'rapporten'}`}
-     tip={<><strong>{o.name}</strong>{o.reports.slice(0,6).map(reportLine).map(line=><span key={line}>{line}</span>)}{o.reports.length>6&&<span>en {o.reports.length-6} andere</span>}</>}>
-     <span className="org-chip" data-wide={o.id==='RIJK'||undefined}>{o.id==='RIJK'&&<Globe size={12} aria-hidden="true"/>}{o.label}</span></CellTip>)}
-    {r.orgs.length>3&&<CellTip plain label={`En ${r.orgs.length-3} andere ministeries`} tip={<><strong>Ook onderzocht bij</strong>{r.orgs.slice(3).map((o:{id:string;name:string;reports:string[]})=><span key={o.id}>{o.name} ({o.reports.length})</span>)}</>}><span className="org-chip" data-more="">+{r.orgs.length-3}</span></CellTip>}</span>:<small>–</small>},
+    lines:[processKinds[c.kind].label+': '+processKinds[c.kind].description.toLowerCase(),c.description]}))}/>:<small>–</small>},
   {key:'reports',label:'Rapporten',width:'6.6rem',sort:r=>r.reports,
    render:r=>!r.reports?<small>–</small>:<CellTip plain label={`${r.reports} ${r.reports===1?'rapport':'rapporten'}${r.period?', '+r.period:''}`}
-    tip={<><strong>{r.reports===1?'Uit één rapport':`Uit ${r.reports} rapporten`}{r.period&&` (${r.period})`}</strong>{r.sources.slice(0,8).map((o:{id:string;title:string;year:number})=><span key={o.id}>{o.year} · {o.title}</span>)}{r.sources.length>8&&<span>en {r.sources.length-8} andere</span>}<em>{r.reports===1?'Eén rapport is een voorbeeld uit de praktijk, geen patroon.':'Meer rapporten wijzen op een breder beeld, niet op een zwaarder risico.'}</em></>}>
+    tip={<><strong>{r.reports===1?'Uit één rapport':`Uit ${r.reports} rapporten`}{r.period&&` (${r.period})`}</strong>{r.orgs.length>0&&<span>Onderzocht bij: {r.orgs.map((o:{label:string})=>o.label).join(', ')}</span>}{r.sources.slice(0,8).map((o:{id:string})=><span key={o.id}>{reportLine(o.id)}</span>)}{r.sources.length>8&&<span>en {r.sources.length-8} andere</span>}<em>{r.reports===1?'Eén rapport is een voorbeeld uit de praktijk, geen patroon.':'Meer rapporten wijzen op een breder beeld, niet op een zwaarder risico.'}</em></>}>
     <span className="catalogue-meter" data-level={strength(r.reports)} aria-hidden="true"><i/><i/><i/><i/></span><span className="catalogue-meter-count">{r.reports}</span></CellTip>},
  ];
  const familyHeading=useRef<HTMLHeadingElement>(null);
@@ -89,7 +81,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>}
   {listMode?<CatalogueTable id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
-   filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)},{key:'orgs',label:'Onderzocht bij',all:'Alle',value:r=>r.orgs.map((o:{label:string})=>o.label)}]}
+   filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)}]}
    groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''},{key:'kind',label:'Primair of ondersteunend',plural:'soorten',value:r=>r.kind,describe:name=>name==='Primair'?processKinds.primair.description:name==='Ondersteunend'?processKinds.ondersteunend.description:''}]}
    nameLabel={axis==='themes'?'Thema':'Proces'} nameMeta={()=>null} countLabel="Gekozen bouwstenen" hint={`Een vinkje kiest alle bouwstenen van dat ${axis==='themes'?'thema':'proces'}. Open het om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} bouwstenen van ${r.title}`} chosenUnique={new Set(listRows.flatMap(r=>r.lineIds).filter(id=>included.includes(id))).size}
    onOpen={onOpen} onSelect={onSelect?(ids,checked)=>onSelect([...new Set(listRows.filter(r=>ids.includes(r.id)).flatMap(r=>r.lineIds))],checked):undefined}
