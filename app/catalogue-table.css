@@ -8,7 +8,7 @@
 .catalogue-view-bar>p{margin:0;color:var(--muted-foreground);font-size:.875rem;max-width:60rem}
 
 /* Eén kader: zoeken, filters en tabel horen bij elkaar */
-.catalogue-table{margin:1rem 0 0;--ct-line:color-mix(in srgb,var(--border) 80%,transparent);--ct-soft:color-mix(in srgb,var(--muted) 80%,var(--card));--ct-control:var(--rm-control-border,#a9bacb);--ct-pad:1rem}
+.catalogue-table{margin:1rem 0 0;--ct-line:color-mix(in srgb,var(--border) 55%,transparent);--ct-soft:color-mix(in srgb,var(--muted) 80%,var(--card));--ct-control:var(--rm-control-border,#a9bacb);--ct-pad:1rem}
 .catalogue-table-frame{border:1px solid var(--border);border-radius:14px;background:var(--card);overflow:clip;box-shadow:0 1px 2px color-mix(in srgb,var(--foreground) 5%,transparent)}
 .catalogue-table-tools{display:flex;align-items:center;gap:.6rem .75rem;flex-wrap:wrap;padding:.75rem var(--ct-pad)}
 .catalogue-table .catalogue-table-search{position:relative;display:inline-flex;align-items:center;flex:0 1 17rem;min-width:12rem;height:2.5rem;box-sizing:border-box;border:1px solid var(--ct-control)!important;border-radius:8px;background:var(--card);margin:0;padding:0}
@@ -57,17 +57,19 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table [data-numeric]{text-align:right;font-variant-numeric:tabular-nums}
 .catalogue-table tbody td,.catalogue-table tbody th{padding:.7rem .6rem;overflow-wrap:break-word;hyphens:manual;border-bottom:1px solid var(--ct-line);vertical-align:top;text-align:left;font-weight:400;transition:background-color .1s}
 .catalogue-table tbody [data-numeric]{text-align:right}
-.catalogue-table tbody:last-child tr:last-child>*{border-bottom:0}
+.catalogue-table tbody tr:last-child>*{border-bottom:0}
 /* Om en om een lichte tint, zodat je een regel makkelijker volgt */
-.catalogue-table tbody tr[data-row]:nth-child(even)>*{background:color-mix(in srgb,var(--muted) 60%,var(--card))}
-.catalogue-table tbody tr:not(.catalogue-table-group):hover>*{background:color-mix(in srgb,var(--primary) 7%,var(--card))}
+.catalogue-table tbody tr[data-row]:nth-child(odd)>*{background:color-mix(in srgb,var(--muted) 55%,var(--card))}
+.catalogue-table tbody:not(:has(.catalogue-table-group)) tr[data-row]:nth-child(odd)>*{background:var(--card)}
+.catalogue-table tbody:not(:has(.catalogue-table-group)) tr[data-row]:nth-child(even)>*{background:color-mix(in srgb,var(--muted) 55%,var(--card))}
+.catalogue-table tbody tr[data-row]:hover>*{background:color-mix(in srgb,var(--primary) 9%,var(--card))!important}
 .catalogue-table tbody tr[data-chosen]>:first-child{box-shadow:inset 3px 0 0 var(--primary)}
-.catalogue-table tbody tr[data-chosen]>*{background:color-mix(in srgb,var(--primary) 5%,var(--card))}
+.catalogue-table tbody tr[data-row][data-chosen]>*{background:color-mix(in srgb,var(--primary) 9%,var(--card))!important}
 .catalogue-table tbody tr[data-row]{cursor:pointer}
 .catalogue-table :is(thead,tbody) tr>:last-child{padding-right:var(--ct-pad)}
 
 /* Groepskop: zelfde taal als de tegels, met de donkerblauwe rand links */
-.catalogue-table-group>*{background:var(--ct-soft);border-bottom:1px solid var(--ct-line)!important;padding:0!important}
+.catalogue-table-group>*{background:color-mix(in srgb,var(--primary) 7%,var(--muted));border-bottom:1px solid var(--ct-line)!important;padding:0!important}
 .catalogue-table-group>:first-child{box-shadow:inset 3px 0 0 color-mix(in srgb,var(--primary) 65%,var(--card))}
 .catalogue-table tbody+tbody .catalogue-table-group>*{border-top:1px solid var(--border)}
 .catalogue-table-group th>div{display:flex;align-items:center;gap:.25rem .75rem;flex-wrap:wrap;min-height:3rem;padding:.5rem var(--ct-pad) .5rem var(--ct-pad)}
@@ -88,8 +90,8 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table-check .catalogue-check-area{display:flex;align-items:flex-start;justify-content:center;min-height:2.75rem;padding:.8rem 0 0 .35rem}
 .catalogue-table thead .catalogue-table-check .catalogue-check-area{align-items:center;padding:0 0 0 .35rem;min-height:2.3rem}
 .catalogue-check-area [role=checkbox]{position:relative;border-color:var(--ct-control)}.catalogue-check-area [role=checkbox]::after{content:'';position:absolute;inset:-11px}
-.catalogue-table-open{width:3rem;padding-left:0!important;padding-top:.4rem!important;text-align:right!important}
-.catalogue-table-open button{height:2rem;width:2rem;padding:0;color:var(--muted-foreground);border-radius:99px}
+.catalogue-table-open{width:3rem;padding-left:0!important;padding-top:.5rem!important;text-align:right!important}
+.catalogue-table-open button{height:1.75rem;width:1.75rem;padding:0;color:var(--muted-foreground);border-radius:99px}
 .catalogue-table tbody tr:hover .catalogue-table-open button{color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,transparent)}
 
 /* Naam met vaste ID */
@@ -135,7 +137,7 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 
 /* Voor wie: één symbool per doelgroep, uitleg bij aanwijzen of focus */
 .audience-icons{display:inline-flex;gap:.3rem;flex-wrap:wrap}
-.catalogue-table .audience-icon{all:unset;box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border-radius:99px;border:1px solid color-mix(in srgb,var(--tone,var(--primary)) 35%,var(--card));background:color-mix(in srgb,var(--tone,var(--primary)) 10%,var(--card));color:color-mix(in srgb,var(--tone,var(--primary)) 85%,var(--foreground));cursor:help}
+.catalogue-table .audience-icon{all:unset;box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.6rem;height:1.6rem;border-radius:99px;border:1px solid color-mix(in srgb,var(--tone,var(--primary)) 35%,var(--card));background:color-mix(in srgb,var(--tone,var(--primary)) 10%,var(--card));color:color-mix(in srgb,var(--tone,var(--primary)) 85%,var(--foreground));cursor:help}
 .catalogue-table .audience-icon:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
 .audience-icon[data-audience=rijk]{--tone:#154273}.audience-icon[data-audience=financieel]{--tone:#1f6f8b}.audience-icon[data-audience=ict]{--tone:#5b5fa8}.audience-icon[data-audience=kritiek]{--tone:#b0640f}.audience-icon[data-audience=toezicht]{--tone:#7a4fa3}.audience-icon[data-audience=audit]{--tone:#2f7d4f}
 .audience-tip{display:none;position:absolute;z-index:5;top:calc(100% + .4rem);right:-.5rem;width:max-content;max-width:17rem;padding:.55rem .7rem;border-radius:8px;background:var(--foreground);color:var(--card);font:400 .75rem/1.45 var(--font-ui);text-align:left;white-space:normal;box-shadow:0 6px 18px color-mix(in srgb,var(--foreground) 25%,transparent);pointer-events:none}
@@ -156,11 +158,11 @@ section.discovery-directory>.directory-family-cards{padding-top:.8125rem}
 
 /* Soort proces: gevuld = primair, open = ondersteunend */
 .catalogue-table .audience-icon[data-off]{border-color:var(--ct-line);background:transparent;color:color-mix(in srgb,var(--muted-foreground) 45%,var(--card))}
-.catalogue-table .audience-icon[data-solid]{background:var(--tone,var(--primary));border-color:var(--tone,var(--primary));color:#fff}
+.catalogue-table .audience-icon[data-solid]{background:color-mix(in srgb,var(--tone,var(--primary)) 18%,var(--card));border:1.5px solid var(--tone,var(--primary));color:var(--tone,var(--primary))}
 .audience-icon:is([data-symbol=beleid],[data-symbol=uitvoering],[data-symbol=toezicht]){--tone:#154273}
 .audience-icon[data-symbol=sturing]{--tone:#5b5fa8}.audience-icon[data-symbol=financien]{--tone:#2f7d4f}.audience-icon[data-symbol=inkoop]{--tone:#b0640f}
 .audience-icon[data-symbol=informatie]{--tone:#1f6f8b}.audience-icon[data-symbol=ict]{--tone:#7a4fa3}.audience-icon[data-symbol=personeel]{--tone:#a23b72}.audience-icon[data-symbol=facilitair]{--tone:#5d7a1f}
-.audience-icons{align-items:center}
+.audience-icons{align-items:center;margin-top:-.16rem;vertical-align:top}
 .audience-icons-text{margin-left:.35rem;color:var(--muted-foreground);font-size:.8125rem}
 /* Onderzocht bij: ministeries als vaste afkorting */
 .org-chips{display:inline-flex;flex-wrap:nowrap;gap:.3rem;align-items:center}
@@ -177,3 +179,9 @@ section.discovery-directory>.directory-family-cards{padding-top:.8125rem}
 .catalogue-meter-count{font-variant-numeric:tabular-nums;color:var(--muted-foreground)}
 /* Modellen: waar het model bij helpt */
 .audience-icon[data-symbol=gedrag]{--tone:#7a4fa3}.audience-icon[data-symbol=cultuur]{--tone:#1f6f8b}.audience-icon[data-symbol=veiligheid]{--tone:#2f7d4f}.audience-icon[data-symbol=integriteit]{--tone:#a23b72}.audience-icon[data-symbol=risico]{--tone:#b0640f}.audience-icon[data-symbol=verandering]{--tone:#5b5fa8}.audience-icon[data-symbol=dienstverlening]{--tone:#154273}
+/* Lijsten zonder tekstkolommen: de naam krijgt de ruimte, symbolen en cijfers staan als één blok rechts */
+.catalogue-table table[data-wide-name] thead th[data-column=title]{width:auto}
+.catalogue-table table[data-wide-name] tbody :is(td,th){padding-top:.6rem;padding-bottom:.6rem}
+.catalogue-table table[data-wide-name] tbody tr[data-row] .catalogue-table-check .catalogue-check-area{padding-top:.7rem}
+.catalogue-table table[data-wide-name] .catalogue-table-open{padding-top:.4rem!important}
+.catalogue-meter{vertical-align:middle}

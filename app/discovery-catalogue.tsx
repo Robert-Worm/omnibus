@@ -49,7 +49,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const reportLine=(id:string)=>{const r=reportById.get(id),at=(reportOrganisations as Record<string,{at:string}>)[id]?.at;return r?`${r.year} · ${at?at+': ':''}${r.title}`:id;};
  const listColumns:CatalogueColumn<ListRow>[]=[
   {key:'group',label:groupLabel,width:'14%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
-  {key:'kind',label:'Soort proces',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
+  {key:'kind',label:'Soort proces',width:'9rem',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
    render:r=>r.classes.length?<SymbolRow items={r.classes.map((c:{id:ClassId;kind:'primair'|'ondersteunend';label:string;description:string})=>({id:c.id,Icon:classIcons[c.id],label:c.label,active:true,solid:c.kind==='primair',
     lines:[processKinds[c.kind].label+': '+processKinds[c.kind].description.toLowerCase(),c.description]}))}/>:<small>–</small>},
   {key:'reports',label:'Rapporten',width:'6.6rem',sort:r=>r.reports,
@@ -79,7 +79,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
   {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>}
-  {listMode?<CatalogueTable id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
+  {listMode?<CatalogueTable wideName id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
    filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)}]}
    groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''},{key:'kind',label:'Primair of ondersteunend',plural:'soorten',value:r=>r.kind,describe:name=>name==='Primair'?processKinds.primair.description:name==='Ondersteunend'?processKinds.ondersteunend.description:''}]}

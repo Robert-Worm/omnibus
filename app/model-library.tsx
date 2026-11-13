@@ -104,7 +104,7 @@ export default function ModelLibrary({
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
-    {key:'uses',label:'Helpt bij',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
+    {key:'uses',label:'Helpt bij',width:'9rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
     {key:'items',label:'Onderdelen',width:'7rem',numeric:true,sort:r=>r.items,render:r=>r.items||<small>–</small>},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
@@ -145,7 +145,7 @@ export default function ModelLibrary({
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
         filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)}]}
         groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''}]}
-        gutter nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
+        gutter wideName nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}
