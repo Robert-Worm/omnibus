@@ -101,7 +101,7 @@ async function main() {
       await pagina.getByRole("button", { name: /Start vanuit deze behoefte/ }).click(); await meet("stap 1");
       await pagina.getByRole("button", { name: /Naar stap 2/ }).first().click(); await pagina.waitForTimeout(800);
       await pagina.evaluate(() => { location.hash = "grondslagen"; }); await pagina.waitForTimeout(800);
-      await pagina.getByRole("button", { name: "Toon alle bronnen" }).click(); await meet("alle bronnen");
+      await pagina.getByRole("button", {name:/^Toon alle (wetten|kaders)$/}).click(); await meet("alle bronnen");
       await pagina.getByRole("button", { name: "Open in viewer" }).first().click(); await pagina.waitForTimeout(1500); await meet("normtabel");
       // Een toetspunt van een kader, met de drie tabbladen van de kaderviewer.
       await ga("open-grondslagen");

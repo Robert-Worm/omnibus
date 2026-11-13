@@ -93,7 +93,7 @@ try {
   try {
     await saved(page);await go(page,'grondslagen');
     await page.getByRole('group',{name:'Bronnen verkennen',exact:true}).getByRole('button',{name:/^Wetten/}).click();
-    const all=page.getByRole('button',{name:'Toon alle bronnen',exact:true});
+    const all=page.getByRole('button',{name:/^Toon alle (wetten|kaders)$/});
     const open=page.getByRole('button',{name:'Open in viewer: Besluit CIO-stelsel Rijksdienst 2026',exact:true}).first();
     await Promise.race([all.waitFor(),open.waitFor()]);if(await all.isVisible())await all.click();
     await open.click();await page.locator('.point-choice-button').first().click();

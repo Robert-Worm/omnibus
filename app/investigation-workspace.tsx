@@ -471,7 +471,7 @@ export function FoundationCatalogue({
           </fieldset>}
         </div>}
       </>}
-      <CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" value={directoryGroup} searching={Boolean(query.trim())}
+      <CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" allNoun={scope==='frameworks'?'kaders':'wetten'} value={directoryGroup} searching={Boolean(query.trim())}
         groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
         onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>
       {showList&&<>

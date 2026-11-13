@@ -20,7 +20,9 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const {query,expanded,closedSearchGroups,limits}=view;
  const groups=groupedDiscovery(views,axis,query);
  const selectedGroup=!query&&groups.find(g=>g.id===expanded.at(-1));
- const detailGroups=query?groups:selectedGroup?[selectedGroup]:[];
+ // 'all' toont elke groep onder elkaar, zoals 'Toon alle modellen' bij modellen.
+ const showAll=!query&&expanded.at(-1)==='all';
+ const detailGroups=query||showAll?groups:selectedGroup?[selectedGroup]:[];
  const noun=axis==='themes'?'thema’s':'processen';
  const familyHeading=useRef<HTMLHeadingElement>(null);
  const focusRequest=useRef(false);
@@ -43,10 +45,13 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
   <DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>
-  {!query&&!selectedGroup&&<div className="directory-family-cards" ref={cards}>{groups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <button type="button" key={group.id} data-family={group.id} className="directory-family-card" onClick={()=>{focusRequest.current=true;onViewChange({expanded:[group.id]});}}>
+  {!query&&!selectedGroup&&!showAll&&<div className="directory-family-cards" ref={cards}>{groups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <button type="button" key={group.id} data-family={group.id} className="directory-family-card" onClick={()=>{focusRequest.current=true;onViewChange({expanded:[group.id]});}}>
    <Icon size={24} aria-hidden="true"/><strong>{group.title}</strong><span>{group.description}</span><small>Verken {countLabel(group.children.length,noun)}<ArrowRight size={16} aria-hidden="true"/></small>
   </button>;})}</div>}
-  {selectedGroup&&<Button variant="ghost" className="directory-back" onClick={()=>{returnCard.current=selectedGroup.id;onViewChange({expanded:[]});}}><ArrowLeft size={15} aria-hidden="true"/>Alle {axis==='themes'?'themagroepen':'procesfamilies'}</Button>}
+  {!query&&<div className="directory-view-actions">
+   {(selectedGroup||showAll)&&<Button variant="ghost" className="directory-back" onClick={()=>{returnCard.current=selectedGroup?selectedGroup.id:'';onViewChange({expanded:[]});}}><ArrowLeft size={15} aria-hidden="true"/>Alle {axis==='themes'?'themagroepen':'procesfamilies'}</Button>}
+   {!showAll&&<Button variant="outline" onClick={()=>onViewChange({expanded:['all'],limits:{}})}>Toon alle {noun}</Button>}
+  </div>}
   {query&&<output className="directory-result-count" data-status-block="">{countLabel(groups.reduce((sum,g)=>sum+g.children.length,0),noun)} gevonden in {countLabel(groups.length,'groepen')}</output>}
   <div className="directory-families">{detailGroups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <section className="directory-family" key={group.id} id={'family-'+axis+'-'+group.id}>
    <header className="directory-family-heading"><h3 ref={selectedGroup?familyHeading:undefined} tabIndex={-1}>{query?<button type="button" aria-expanded={!closedSearchGroups.includes(group.id)} aria-controls={'children-'+axis+'-'+group.id} onClick={()=>onViewChange({closedSearchGroups:closedSearchGroups.includes(group.id)?closedSearchGroups.filter(id=>id!==group.id):[...closedSearchGroups,group.id]})}><span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{group.title}</span><span aria-hidden="true">{closedSearchGroups.includes(group.id)?'+':'−'}</span></button>:<span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{group.title}</span>}</h3>{selectedGroup&&<p>{group.description}</p>}</header>

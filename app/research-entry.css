@@ -151,3 +151,4 @@
 @media(max-width:700px){.directory-family-heading[data-action]{grid-template-columns:1fr}.catalogue-family-action{padding:0 1.2rem .6rem}}
 .catalogue-card-role{font-style:normal;color:#8a5a00}
 
+.directory-view-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:0 0 .6rem}.directory-view-actions .directory-back{margin:0}

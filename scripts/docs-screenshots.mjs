@@ -121,7 +121,7 @@ async function richting(p) {
 async function verzamel(p) {
   await p.getByRole("button", { name: /Naar stap 2/ }).first().click(); await wacht(p, 1200);
   await p.evaluate(() => { location.hash = "grondslagen"; }); await wacht(p, 1200);
-  await p.getByRole("button", { name: "Toon alle bronnen" }).click(); await wacht(p);
+  await p.getByRole("button", {name:/^Toon alle (wetten|kaders)$/}).click(); await wacht(p);
   await p.getByRole("button", { name: "Open in viewer" }).first().click(); await wacht(p, 2500);
 }
 async function selecteer(p) {

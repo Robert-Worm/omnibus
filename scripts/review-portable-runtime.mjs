@@ -37,7 +37,7 @@ async function sourceAndSelection(page,title,{select=true,category='laws'}={}) {
   await go(page,'grondslagen');
   await page.getByRole('group',{name:'Bronnen verkennen',exact:true})
     .getByRole('button',{name:category==='frameworks'?/^Kaders/:/^Wetten/}).click();
-  const all=page.getByRole('button',{name:'Toon alle bronnen',exact:true});
+  const all=page.getByRole('button',{name:/^Toon alle (wetten|kaders)$/});
   const open=page.getByRole('button',{name:'Open in viewer: '+title,exact:true}).first();
   try {
     await Promise.race([all.waitFor(),open.waitFor()]);
