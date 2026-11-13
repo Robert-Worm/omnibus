@@ -49,7 +49,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const reportLine=(id:string)=>{const r=reportById.get(id),at=(reportOrganisations as Record<string,{at:string}>)[id]?.at;return r?`${r.year} · ${at?at+': ':''}${r.title}`:id;};
  const listColumns:CatalogueColumn<ListRow>[]=[
   {key:'group',label:groupLabel,width:'14%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
-  {key:'kind',label:'Soort proces',width:'9rem',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
+  {key:'kind',label:'Soort proces',width:'11.5rem',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
    render:r=>r.classes.length?<SymbolRow items={r.classes.map((c:{id:ClassId;kind:'primair'|'ondersteunend';label:string;description:string})=>({id:c.id,Icon:classIcons[c.id],label:c.label,active:true,solid:c.kind==='primair',
     lines:[processKinds[c.kind].label+': '+processKinds[c.kind].description.toLowerCase(),c.description]}))}/>:<small>–</small>},
   {key:'reports',label:'Rapporten',width:'6.6rem',sort:r=>r.reports,
@@ -68,7 +68,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   if(returnCard.current){cards.current?.querySelector<HTMLButtonElement>('[data-family="'+returnCard.current+'"]')?.focus();returnCard.current='';}
  },[selectedGroup]);
  return <section className="catalogue-explorer discovery-directory foundation-catalogue" aria-label="Thema’s en processen openen">
-  <header className="directory-heading"><div><h2>{guided?'Waar wil je beginnen?':'Verken thema’s en processen'}</h2><p className="directory-lead"><TermText text={guided?'Begin bij een wet, kader of model, of verken eerdere risico’s via thema’s of processen.':'Open een thema of proces om de inzichten uit eerdere onderzoeken te bekijken.'}/></p></div><div className="directory-heading-actions">{guided&&openIds.length>0&&<Button variant="outline" onClick={onWorkspace}><FolderOpen size={16} aria-hidden="true"/>Geopend ({openIds.length})</Button>}{catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/>}</div></header>
+  <header className="directory-heading" data-below-tabs={!guided||undefined}><div><h2>{guided?'Waar wil je beginnen?':'Verken thema’s en processen'}</h2><p className="directory-lead"><TermText text={guided?'Begin bij een wet, kader of model, of verken eerdere risico’s via thema’s of processen.':'Open een thema of proces om de inzichten uit eerdere onderzoeken te bekijken.'}/></p></div><div className="directory-heading-actions">{guided&&openIds.length>0&&<Button variant="outline" onClick={onWorkspace}><FolderOpen size={16} aria-hidden="true"/>Geopend ({openIds.length})</Button>}{catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/>}</div></header>
   <fieldset className="directory-axis" data-guided={guided}  aria-label="Bladeren op">
    {/* Van wat moet, via wat wordt aangeraden en wat de wetenschap zegt, naar thema’s en processen (besluit beheerder 12 november 2026). */}
    {guided&&onSources&&<button type="button" aria-pressed={area==='laws'} onClick={onSources}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Verken wettelijke eisen</small></span></button>}
@@ -78,7 +78,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    <button type="button" aria-pressed={area==='processes'} onClick={()=>onAxis('processes')}><ListFilter size={22} aria-hidden="true"/><span><strong>Processen</strong><small>Gericht zoeken · één activiteit</small></span></button>
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
-  {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>}
+  {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Zoek thema…':'Zoek proces…'}/>}
   {listMode?<CatalogueTable dense id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
    filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)}]}

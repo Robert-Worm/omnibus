@@ -104,8 +104,8 @@ export default function ModelLibrary({
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
-    {key:'uses',label:'Helpt bij',width:'9rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
-    {key:'items',label:'Variabelen',width:'7rem',numeric:true,sort:r=>r.items,render:r=>r.items||<small>–</small>},
+    {key:'uses',label:'Helpt bij',width:'11.5rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
+    {key:'items',label:'Variabelen',width:'7rem',sort:r=>r.items,render:r=>r.items||<small>–</small>},
     {key:'spacer',label:'',render:()=>null},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
@@ -140,8 +140,8 @@ export default function ModelLibrary({
       {mode==='workspace'&&<div className="law-view-actions model-view-actions"><nav className="law-overview-tabs" aria-label="Modelweergave"><button aria-pressed={overview==='questions'} onClick={()=>setOverview('questions')}>Vragen</button><button disabled={!current} aria-pressed={overview==='about'&&Boolean(current)} onClick={()=>setOverview('about')}>Over dit model</button></nav><Button onClick={onBuilder}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>}
       {mode==='workspace'&&current&&overview==='about'&&<ModelAbout model={current}/>}
       {mode==='catalogue' && <>
-      {guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model of modelcategorie" value={query} onChange={setQuery} placeholder="Bijvoorbeeld: gedrag of verandering"/>}
-      {!guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek op model, auteur of vraagstuk…"/>}
+      {guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}
+      {!guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}
       {listMode&&<CatalogueTable id="models" noun={['model','modellen']} unit={['vraag','vragen']}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
         filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)}]}

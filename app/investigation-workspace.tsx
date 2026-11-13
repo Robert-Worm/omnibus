@@ -475,7 +475,7 @@ export function FoundationCatalogue({
   // Zachte afbreekpunten alleen in de weergave: de registertekst zelf blijft doorzoekbaar.
   const soft=(text:string)=>text.replace(/(uitvoerings|Beroeps)(?=[a-z])/g,'$1­'),glue=(text:string)=>text.replace(/ & /g,' & ');
   const listColumns:CatalogueColumn<ListRow>[]=[
-   {key:'instrument',label:'Soort',width:'14%',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>{const text=r.record.instrument||r.kindLabel,parts=/^(.+?)\s*\((.+)\)$/.exec(text);return text?parts?<>{soft(parts[1])}<span className="catalogue-sub">{parts[2]}</span></>:soft(text):<small>–</small>;}},
+   {key:'instrument',label:'Soort',width:'11.5rem',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>{const text=r.record.instrument||r.kindLabel,parts=/^(.+?)\s*\((.+)\)$/.exec(text);return text?parts?<>{soft(parts[1])}<span className="catalogue-sub">{parts[2]}</span></>:soft(text):<small>–</small>;}},
    {key:'family',label:'Familie',width:'11%',groupKey:'family',sort:r=>r.record.familyTitle,render:r=>r.record.familyTitle?<span className="catalogue-pill" data-tone={r.record.family}>{r.record.familyTitle}</span>:<small>–</small>},
    {key:'category',label:'Categorie',hideBelow:860,groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
    {key:'audience',label:'Voor wie',hideBelow:900,width:'6.6rem',sort:r=>r.audiences.map(a=>audienceGroups[a].label).join(' ')||'zzz',render:r=>r.audiences.length?<AudienceIcons groups={r.audiences} text={r.audience}/>:<small>–</small>},
@@ -489,9 +489,9 @@ export function FoundationCatalogue({
     <section className="catalogue-explorer foundation-catalogue">
       {!guided&&<CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken." action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
-      {guided&&!listMode&&<DirectorySearch id="foundation-search" label={scope==='laws'?'Zoek wet of wetscategorie':scope==='frameworks'?'Zoek kader of kadercategorie':'Zoek wet, kader of categorie'} value={query} onChange={changeSearch} placeholder="Bijvoorbeeld: privacy of inkoop"/>}
+      {guided&&!listMode&&<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>}
       {!guided&&<>
-        {!listMode&&<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen, bijvoorbeeld toegangsrechten…"/>}
+        {!listMode&&<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>}
         {query.trim() && <div className="catalogue-search-tools">
           {search.suggestions.length>0 && <fieldset className="catalogue-search-suggestions"  aria-label="Zoeksuggesties">
             <span>Zoeksuggesties:</span>
