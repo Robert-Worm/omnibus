@@ -93,9 +93,9 @@ try {
   try {
     await saved(page);await go(page,'grondslagen');
     await page.getByRole('group',{name:'Bronnen verkennen',exact:true}).getByRole('button',{name:/^Wetten/}).click();
-    const all=page.getByRole('button',{name:/^Toon alle (wetten|kaders)$/});
+    const all=page.locator('#foundation-search');
     const open=page.getByRole('button',{name:'Open in viewer: Besluit CIO-stelsel Rijksdienst 2026',exact:true}).first();
-    await Promise.race([all.waitFor(),open.waitFor()]);if(await all.isVisible())await all.click();
+    await Promise.race([all.waitFor(),open.waitFor()]);if(!(await open.isVisible()))await all.fill('Besluit CIO-stelsel');
     await open.click();await page.locator('.point-choice-button').first().click();
     await page.locator('.law-detail .law-choice-card').first().getByRole('checkbox').click();
     await page.keyboard.press('Escape');await go(page,'mijn-kader');

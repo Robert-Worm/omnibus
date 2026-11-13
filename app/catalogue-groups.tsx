@@ -13,7 +13,7 @@ export function CatalogueFamily({title,groupId,noun,children,action}:{title:stri
  return <section className="directory-family catalogue-family"><header className="directory-family-heading" data-action={action?true:undefined}><h3><span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{title}</span></h3>{action&&<div className="catalogue-family-action">{action}</div>}{description&&<p>{description}</p>}</header><div className="directory-children">{children}</div></section>;
 }
 // Navigation only: selecting a category must never select criteria or model questions.
-export default function CatalogueGroups({groups,value,onChange,noun,allNoun=noun,searching=false,compact=false,query='',hideTitle=false}:{groups:Group[];value:string;onChange:(id:string)=>void;noun:string;allNoun?:string;searching?:boolean;compact?:boolean;query?:string;hideTitle?:boolean}){
+export default function CatalogueGroups({groups,value,onChange,noun,searching=false,compact=false,query='',hideTitle=false}:{groups:Group[];value:string;onChange:(id:string)=>void;noun:string;searching?:boolean;compact?:boolean;query?:string;hideTitle?:boolean}){
  const root=useRef<HTMLDivElement>(null),focus=useRef('');
  const cards:Group[]=compact&&searching?searchCatalogueGroups(groups,noun,query):!value&&!searching?groups:[];
  const change=(next:string)=>{focus.current=next?'heading':value||'first';onChange(next);};
@@ -21,7 +21,6 @@ export default function CatalogueGroups({groups,value,onChange,noun,allNoun=noun
  return <div className="catalogue-groups discovery-directory" data-compact={compact} ref={root}>
   {(!compact||value||searching)&&<div className="catalogue-group-heading">{!compact&&!hideTitle&&<h2 tabIndex={-1}>{searching?'Zoekresultaten':'Verken '+noun}</h2>}<div>
    {(value||searching)&&<Button variant="ghost" onClick={()=>change('')}><ArrowLeft size={15} aria-hidden="true"/>Alle categorieën</Button>}
-   {!compact&&value!=='all'&&<Button variant="outline" onClick={()=>change('all')}>Toon alle {allNoun}</Button>}
   </div></div>}
   {cards.length>0&&<div className="directory-family-cards">{cards.filter(g=>g.count>0).map(group=>{const Icon=icons[group.id]||(noun==='modellen'?Brain:BookOpen),description=group.description||catalogueDescription(noun,group.id);return <button key={group.id} type="button" data-group={group.id} className="directory-family-card" onClick={()=>change(group.id)}><Icon size={24} aria-hidden="true"/><strong>{group.title}</strong>{description&&<span>{description}</span>}<small>Verken {countLabel(group.count,noun)}<ArrowRight size={16} aria-hidden="true"/></small></button>;})}</div>}
  </div>;

@@ -37,11 +37,11 @@ async function sourceAndSelection(page,title,{select=true,category='laws'}={}) {
   await go(page,'grondslagen');
   await page.getByRole('group',{name:'Bronnen verkennen',exact:true})
     .getByRole('button',{name:category==='frameworks'?/^Kaders/:/^Wetten/}).click();
-  const all=page.getByRole('button',{name:/^Toon alle (wetten|kaders)$/});
+  const all=page.locator('#foundation-search');
   const open=page.getByRole('button',{name:'Open in viewer: '+title,exact:true}).first();
   try {
     await Promise.race([all.waitFor(),open.waitFor()]);
-    if(await all.isVisible())await all.click();
+    if(!(await open.isVisible()))await all.fill(title);
     await open.click();
   }
   catch(error){
@@ -83,7 +83,7 @@ try {
     await detail.locator('.report-library mark').first().waitFor();
     fixtures.report=await detail.locator('.report-library mark').allTextContents();
     await page.keyboard.press('Escape');
-    await go(page,'modellen');await page.getByRole('button',{name:'Toon alle modellen',exact:true}).click();
+    await go(page,'modellen');await page.locator('.directory-family-card').first().click();
     await page.getByRole('button',{name:/^Open in viewer:/}).first().click();
     await page.locator('.cev-question [role=checkbox]').first().click();
     assert.equal((await read(page)).draft.included.length,frameworkCases.length+2);

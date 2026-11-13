@@ -60,6 +60,8 @@ Blader door de bronnen en kies wat je nodig hebt:
 - **Wetten en kaders:** wettelijke eisen en normenkaders.
 - **Onderzoeksmodellen:** bekende modellen, zoals COM-B of de Fraud Diamond, met interviewvragen.
 - **Thema's en processen:** normen uit alle bronnen, geordend per onderwerp.
+
+Elk overzicht heeft twee weergaven. Met **Tegels** blader je per categorie. Met **Lijst** zie je alles in één tabel: je kunt zoeken, filteren, groeperen en sorteren op een kolomkop. Bij wetten en kaders zie je in de lijst ook de familie (bronnen die bij elkaar horen, zoals DORA), de soort, de vaste ID, de uitgever en vanaf wanneer de bron geldt. Een vinkje kiest alle toetspunten van een bron; open de bron als je er een paar wilt kiezen. Op een smal scherm, zoals een telefoon, zie je alleen de tegels.
 - **Rapportbibliotheek:** de oorspronkelijke rapporten, met hun normen en toetspunten.
 
 Bij elke norm zie je de samenhang tussen doel, risico, beheersdoelstelling en beheersmaatregel. Je kiest losse toetspunten, een hele norm of een hele groep.

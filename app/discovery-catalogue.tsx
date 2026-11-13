@@ -10,6 +10,7 @@ import DirectorySearch from './directory-search';
 import {TermText} from './term-help';
 import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueSelection} from '@/lib/catalogue-selection.mjs';
+import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
 
 type View=Theme&{axis:string;categoryId:string;description:string};
 export type DirectoryView={query:string;expanded:string[];closedSearchGroups:string[];limits:Record<string,number>};
@@ -20,10 +21,21 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const {query,expanded,closedSearchGroups,limits}=view;
  const groups=groupedDiscovery(views,axis,query);
  const selectedGroup=!query&&groups.find(g=>g.id===expanded.at(-1));
- // 'all' toont elke groep onder elkaar, zoals 'Toon alle modellen' bij modellen.
+ // 'all' kan nog in een bewaarde weergave staan en toont dan elke groep onder elkaar; de lijstweergave vervangt de knop.
  const showAll=!query&&expanded.at(-1)==='all';
  const detailGroups=query||showAll?groups:selectedGroup?[selectedGroup]:[];
  const noun=axis==='themes'?'thema’s':'processen';
+ // Lijstweergave: alle thema's of processen in één tabel, als alternatief voor de tegels per groep.
+ const catalogueView=useCatalogueView('discovery'),listMode=!guided&&catalogueView.list;
+ const seen=new Set<string>(),groupLabel=axis==='themes'?'Themagroep':'Procesfamilie';
+ const listRows=listMode?groups.flatMap(group=>group.children.filter((item:View)=>!seen.has(item.id)&&Boolean(seen.add(item.id))).map((item:View)=>{const selection=catalogueSelection({included},item.lineIds);
+  return {id:item.id,title:item.title,opened:openIds.includes(item.id),selected:selection.selected,total:item.lineIds.length,all:selection.all,partial:selection.partial,group:group.title,description:item.description||'',lines:item.lineIds.length,reports:item.reportIds.length,lineIds:item.lineIds};})):[];
+ type ListRow=typeof listRows[number];
+ const listColumns:CatalogueColumn<ListRow>[]=[
+  {key:'group',label:groupLabel,width:'16%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
+  {key:'description',label:'Waar het over gaat',width:'44%',hideBelow:900,title:r=>r.description,render:r=>r.description?<span className="catalogue-clamp">{r.description}</span>:<small>–</small>},
+  {key:'reports',label:'Bronrapporten',width:'7.6rem',numeric:true,sort:r=>r.reports,render:r=>r.reports||<small>–</small>},
+ ];
  const familyHeading=useRef<HTMLHeadingElement>(null);
  const focusRequest=useRef(false);
  const returnCard=useRef('');
@@ -35,6 +47,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  },[selectedGroup]);
  return <section className="catalogue-explorer discovery-directory foundation-catalogue" aria-label="Thema’s en processen openen">
   <header className="directory-heading"><div><h2>{guided?'Waar wil je beginnen?':'Verken thema’s en processen'}</h2><p className="directory-lead"><TermText text={guided?'Begin bij een wet, kader of model, of verken eerdere risico’s via thema’s of processen.':'Open een thema of proces om de inzichten uit eerdere onderzoeken te bekijken.'}/></p></div>{guided&&openIds.length>0&&<Button variant="outline" onClick={onWorkspace}><FolderOpen size={16} aria-hidden="true"/>Geopend ({openIds.length})</Button>}</header>
+  {!guided&&catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?`Alle ${noun} in één lijst.`:'Blader per groep, of kies Lijst om alles in één overzicht te zien.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/></div>}
   <fieldset className="directory-axis" data-guided={guided}  aria-label="Bladeren op">
    {/* Van wat moet, via wat wordt aangeraden en wat de wetenschap zegt, naar thema’s en processen (besluit beheerder 12 november 2026). */}
    {guided&&onSources&&<button type="button" aria-pressed={area==='laws'} onClick={onSources}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Verken wettelijke eisen</small></span></button>}
@@ -44,13 +57,19 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    <button type="button" aria-pressed={area==='processes'} onClick={()=>onAxis('processes')}><ListFilter size={22} aria-hidden="true"/><span><strong>Processen</strong><small>Gericht zoeken · één activiteit</small></span></button>
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
-  <DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>
+  {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>}
+  {listMode?<CatalogueTable id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
+   search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
+   filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]}]}
+   groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''}]}
+   nameLabel={axis==='themes'?'Thema':'Proces'} nameMeta={()=>null} countLabel="Gekozen bouwstenen" hint={`Een vinkje kiest alle bouwstenen van dat ${axis==='themes'?'thema':'proces'}. Open het om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} bouwstenen van ${r.title}`} chosenUnique={new Set(listRows.flatMap(r=>r.lineIds).filter(id=>included.includes(id))).size}
+   onOpen={onOpen} onSelect={onSelect?(ids,checked)=>onSelect([...new Set(listRows.filter(r=>ids.includes(r.id)).flatMap(r=>r.lineIds))],checked):undefined}
+   empty={<p>Geen passend onderdeel gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>:<>
   {!query&&!selectedGroup&&!showAll&&<div className="directory-family-cards" ref={cards}>{groups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <button type="button" key={group.id} data-family={group.id} className="directory-family-card" onClick={()=>{focusRequest.current=true;onViewChange({expanded:[group.id]});}}>
    <Icon size={24} aria-hidden="true"/><strong>{group.title}</strong><span>{group.description}</span><small>Verken {countLabel(group.children.length,noun)}<ArrowRight size={16} aria-hidden="true"/></small>
   </button>;})}</div>}
-  {!query&&<div className="directory-view-actions">
+  {!query&&(selectedGroup||showAll)&&<div className="directory-view-actions">
    {(selectedGroup||showAll)&&<Button variant="ghost" className="directory-back" onClick={()=>{returnCard.current=selectedGroup?selectedGroup.id:'';onViewChange({expanded:[]});}}><ArrowLeft size={15} aria-hidden="true"/>Alle {axis==='themes'?'themagroepen':'procesfamilies'}</Button>}
-   {!showAll&&<Button variant="outline" onClick={()=>onViewChange({expanded:['all'],limits:{}})}>Toon alle {noun}</Button>}
   </div>}
   {query&&<output className="directory-result-count" data-status-block="">{countLabel(groups.reduce((sum,g)=>sum+g.children.length,0),noun)} gevonden in {countLabel(groups.length,'groepen')}</output>}
   <div className="directory-families">{detailGroups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <section className="directory-family" key={group.id} id={'family-'+axis+'-'+group.id}>
@@ -62,6 +81,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    </article>)}{group.children.length>(limits[group.id]||12)&&<Button variant="link" onClick={()=>onViewChange({limits:{...limits,[group.id]:(limits[group.id]||12)+12}})}>Toon meer onderdelen</Button>}</div>}
   </section>;})}</div>
   {!groups.length&&<output data-status-block="">Geen passend onderdeel gevonden. <Button variant="link" onClick={()=>{onViewChange({query:'',expanded:[]});focusSearch();}}>Toon alle groepen</Button></output>}
+  </>}
   <p className="directory-note"><TermText text="Risico’s uit eerdere onderzoeken zijn aanknopingspunten, geen oordeel over jouw organisatie."/></p>
  </>}
  </section>;

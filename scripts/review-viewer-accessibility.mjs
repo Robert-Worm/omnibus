@@ -167,9 +167,9 @@ try{
  for(const [key,title] of [['cio','Besluit CIO-stelsel Rijksdienst 2026'],['wwke','Wet weerbaarheid kritieke entiteiten']]){
   await go('grondslagen');
   await page.getByRole('group',{name:'Bronnen verkennen',exact:true}).getByRole('button',{name:/^Wetten/}).click();
-  const all=page.getByRole('button',{name:/^Toon alle (wetten|kaders)$/});
+  const all=page.locator('#foundation-search');
   const open=page.getByRole('button',{name:'Open in viewer: '+title,exact:true}).first();
-  await Promise.race([all.waitFor(),open.waitFor()]);if(await all.isVisible())await all.click();await open.click();
+  await Promise.race([all.waitFor(),open.waitFor()]);if(!(await open.isVisible()))await all.fill(title);await open.click();
   const opener=page.locator('.point-choice-button').first();await opener.focus();await page.keyboard.press('Enter');
   const dialog=page.getByRole('dialog');await dialog.waitFor();await dialogChecks(dialog,key);
   const choice=dialog.locator('.law-choice-card').first();await choice.getByRole('checkbox').click();
