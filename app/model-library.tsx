@@ -99,7 +99,7 @@ export default function ModelLibrary({
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
-    {key:'description',label:'Waar het model bij helpt',width:'46%',hideBelow:900,title:r=>r.summary,render:r=>r.summary?<span className="catalogue-clamp" data-lines="3">{r.summary}</span>:<small>–</small>},
+    {key:'description',label:'Waar het model bij helpt',hideBelow:900,title:r=>r.summary,render:r=>r.summary?<span className="catalogue-clamp" data-lines="3">{r.summary}</span>:<small>–</small>},
     {key:'items',label:'Onderdelen',width:'7rem',numeric:true,sort:r=>r.items,render:r=>r.items||<small>–</small>},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);

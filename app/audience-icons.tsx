@@ -11,3 +11,13 @@ export function AudienceIcons({groups,text}:{groups:(keyof typeof audienceGroups
    <span className="audience-tip" aria-hidden="true"><strong>{info.label}</strong>{info.description}{text&&<em>Deze bron: {text}</em>}</span>
   </button>;})}</span>;
 }
+
+/** Rij symbolen met een vaste betekenis; de uitleg verschijnt bij aanwijzen of focus.
+ * Een gevuld symbool is een primair proces, een open symbool een ondersteunend proces. Een grijs symbool betekent: niet van toepassing. */
+export function SymbolRow({items,text}:{items:{id:string;Icon:typeof Landmark;label:string;lines:string[];active:boolean;solid?:boolean;count?:number}[];/** Korte tekst naast de symbolen, als er ruimte voor is. */text?:string}){
+ return <span className="audience-icons">{items.map(item=><button type="button" key={item.id} className="audience-icon" data-symbol={item.id} data-off={!item.active||undefined} data-solid={item.solid||undefined}
+   aria-label={item.label+': '+item.lines.join(' ')}>
+   <item.Icon size={15} aria-hidden="true"/>{item.active&&item.count?<b aria-hidden="true">{item.count}</b>:null}
+   <span className="audience-tip" aria-hidden="true"><strong>{item.label}</strong>{item.lines.map(line=><span key={line}>{line}</span>)}</span>
+  </button>)}{text&&<span className="audience-icons-text">{text}</span>}</span>;
+}

@@ -1277,7 +1277,7 @@ export default function FrameworkEditor() {
             />
           ) : ['risk-start','catalogue','processes'].includes(page) ? (
             <>
-            <DiscoveryCatalogue reports={catalogueSnapshot.framework.reports??[]} modelNames={Object.fromEntries(modelDirectoryEntries.map(m=>[m.id,m.title]))} views={collectionViews(discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)}
+            <DiscoveryCatalogue reports={catalogueSnapshot.framework.reports??[]} views={collectionViews(discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)}
               onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map(reportOverviewKey));}}
               included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
               guided={page==='risk-start'}

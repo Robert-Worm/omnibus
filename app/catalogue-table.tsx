@@ -32,8 +32,8 @@ export function CatalogueViewToggle({mode,onChange}:{mode:'tiles'|'list';onChang
 }
 
 /** Celinhoud met uitleg bij aanwijzen of focus; dezelfde vorm als de uitleg bij de symbolen in "Voor wie". */
-export function CellTip({label,tip,children}:{label:string;tip:ReactNode;children:ReactNode}){
- return <button type="button" className="catalogue-cell-tip" aria-label={label}><span className="catalogue-cell-tip-text">{children}</span><span className="audience-tip" aria-hidden="true">{tip}</span></button>;
+export function CellTip({label,tip,children,plain=false}:{label:string;tip:ReactNode;children:ReactNode;/** Zonder stippellijn, voor een symbool of meter. */plain?:boolean}){
+ return <button type="button" className="catalogue-cell-tip" data-plain={plain||undefined} aria-label={label}><span className="catalogue-cell-tip-text">{children}</span><span className="audience-tip" aria-hidden="true">{tip}</span></button>;
 }
 
 /** Keuzelijst als compacte knop: het label staat erin, de gekozen waarde ernaast. Het menu is het gedeelde Select-onderdeel
@@ -83,11 +83,11 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
     {filters.map(f=>{const chosen=view.filters[f.key]||'',options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
-     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
+     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
     {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>{search?.value?'Wis zoeken en filters':'Filters wissen'}</button>}
    </div>
    {groups.length>0&&<div className="catalogue-table-grouping">
-    <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label.toLowerCase()})),{value:'',label:'niet groeperen'}]}/>
+    <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label})),{value:'',label:'Niet groeperen'}]}/>
     {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Groepen uitklappen':'Groepen inklappen'}</button>}
    </div>}
   </div>

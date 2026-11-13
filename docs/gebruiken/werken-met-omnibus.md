@@ -62,6 +62,8 @@ Blader door de bronnen en kies wat je nodig hebt:
 - **Thema's en processen:** normen uit alle bronnen, geordend per onderwerp.
 
 Elk overzicht heeft twee weergaven. Met **Tegels** blader je per categorie. Met **Lijst** zie je alles in één tabel: je kunt zoeken, filteren, groeperen en sorteren op een kolomkop. Bij wetten en kaders zie je in de lijst ook de familie (bronnen die bij elkaar horen, zoals DORA), de soort, de vaste ID, de uitgever en vanaf wanneer de bron geldt. In de kolom **Voor wie** staat per doelgroep een symbool, bijvoorbeeld voor de rijksdienst, de financiële sector of toezichthouders. Wijs een symbool aan om de uitleg te lezen; met het filter *Voor wie* toon je alleen de bronnen voor één doelgroep. Een vinkje kiest alle toetspunten van een bron; open de bron als je er een paar wilt kiezen. Op een smal scherm, zoals een telefoon, zie je alleen de tegels.
+
+Bij thema's en processen zie je in de lijst drie dingen in één oogopslag. **Soort proces** laat met een symbool zien of het om een primair proces gaat (gevuld symbool, bijvoorbeeld beleid, uitvoering of toezicht) of om een ondersteunend proces (open symbool, bijvoorbeeld financiën, inkoop of ICT). **Onderzocht bij** toont bij welke ministeries de bronrapporten zijn gemaakt, of dat het onderzoek rijksbreed was. **Rapporten** toont met streepjes uit hoeveel rapporten de bouwstenen komen. Wijs een symbool aan voor de uitleg. De indeling is bedoeld als oriëntatie.
 - **Rapportbibliotheek:** de oorspronkelijke rapporten, met hun normen en toetspunten.
 
 Bij elke norm zie je de samenhang tussen doel, risico, beheersdoelstelling en beheersmaatregel. Je kiest losse toetspunten, een hele norm of een hele groep.

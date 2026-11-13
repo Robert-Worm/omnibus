@@ -477,7 +477,7 @@ export function FoundationCatalogue({
   const listColumns:CatalogueColumn<ListRow>[]=[
    {key:'instrument',label:'Soort',width:'14%',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>{const text=r.record.instrument||r.kindLabel,parts=/^(.+?)\s*\((.+)\)$/.exec(text);return text?parts?<>{soft(parts[1])}<span className="catalogue-sub">{parts[2]}</span></>:soft(text):<small>–</small>;}},
    {key:'family',label:'Familie',width:'11%',groupKey:'family',sort:r=>r.record.familyTitle,render:r=>r.record.familyTitle?<span className="catalogue-pill" data-tone={r.record.family}>{r.record.familyTitle}</span>:<small>–</small>},
-   {key:'category',label:'Categorie',hideBelow:860,width:'16%',groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
+   {key:'category',label:'Categorie',hideBelow:860,groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
    {key:'audience',label:'Voor wie',hideBelow:900,width:'6.6rem',sort:r=>r.audiences.map(a=>audienceGroups[a].label).join(' ')||'zzz',render:r=>r.audiences.length?<AudienceIcons groups={r.audiences} text={r.audience}/>:<small>–</small>},
    {key:'effective',label:'Geldt vanaf',width:'11.2rem',sort:r=>r.record.applies||r.record.effective||r.record.published,
     title:r=>[r.record.applies&&r.record.effective?'In werking getreden op '+shortDate(r.record.effective)+', van toepassing vanaf '+shortDate(r.record.applies):'',r.record.reference?'Vindplaats: '+r.record.reference:''].filter(Boolean).join('. '),
@@ -501,7 +501,7 @@ export function FoundationCatalogue({
           </fieldset>}
         </div>}
       </>}
-      {listMode&&<CatalogueTable id="foundations-v4" defaultSort="instrument" noun={scope==='frameworks'?['kader','kaders']:['wet','wetten']} unit={['toetspunt','toetspunten']}
+      {listMode&&<CatalogueTable id="foundations-v5" defaultSort="title" noun={scope==='frameworks'?['kader','kaders']:['wet','wetten']} unit={['toetspunt','toetspunten']}
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
         filters={[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[r.record.issuer]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
         groups={[{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''},{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''}]}
