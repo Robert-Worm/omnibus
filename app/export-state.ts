@@ -22,8 +22,9 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
   const profile = get('profile', suggestedExportProfile(selectedLines)), basis = get('basis', 'norms');
   const testScope = get<string[]>('testingAspects', []), testingTerminology = get('testingTerminology', 'obw');
   const keyControl = get<boolean>('keyControl', false), riskProfile = String(profile) === 'risk';
-  // Verantwoording van het referentiekader (GIAS 13.4 en 13.6): staat aan tot de gebruiker het blad uitzet.
-  const accountability = get<boolean>('accountability', true);
+  // Verantwoording van het referentiekader (GIAS 13.4 en 13.6): alleen als de gebruiker het blad aanzet. Niet elk
+  // onderzoek volgt de GIAS (bijvoorbeeld NOREA of een andere beroepsgroep).
+  const accountability = get<boolean>('accountability', false);
   const storedMeta = get('meta', {version:'0.1', author:'', team:'', scope:exportScopeDefault(draft), change:'Eerste opzet'});
   const meta = {...storedMeta, scope:config.scopeFromInvestigation === true || !config.meta ? exportScopeDefault(draft) : storedMeta.scope};
   const focus = get('focus', researchSubjectDefault(draft).slice(0,160));

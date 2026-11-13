@@ -103,7 +103,7 @@ Kies een werkvorm voor je Excel-bestand:
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
-Bij een kader met normen staat standaard het blad **Verantwoording referentiekader** aan. Daarop vul je vier vragen in: welke criteria de organisatie zelf had, waarom dit kader adequaat is, met wie het is afgestemd en wie het heeft goedgekeurd. Bij elke vraag staat de eis uit de Global Internal Audit Standards (standaard 13.4 en 13.6). Je kunt het blad uitzetten onder **Extra blad**.
+Bij een kader met normen kun je onder **Extra in Excel** het blad **Verantwoording referentiekader** aanzetten. Het staat standaard uit. Daarop vul je vier vragen in: welke criteria de organisatie zelf had, waarom dit kader adequaat is, met wie het is afgestemd en wie het heeft goedgekeurd. Bij elke vraag staat de eis uit de Global Internal Audit Standards (standaard 13.4 en 13.6). Het blad is alleen nodig als je volgens die standaarden werkt. Welke bouwstenen meegaan, kies je in stap 3; de kleuren en het lettertype staan onder **Vormgeving**, dat je openklapt.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../images/stap-4-exporteer-donker.png">

@@ -190,3 +190,34 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 /* Zelfde lucht boven de kop in stap 2 (onder de tabbalk) als in stap 1 */
 .framework-app .directory-heading[data-below-tabs]{margin-top:1.15rem!important}
 .catalogue-table thead td{border-bottom:1px solid var(--border);background:var(--card)}
+
+/* Stap 4: extra's voor het Excelbestand als rustige regels, zonder eigen kader per optie. */
+.framework-app #main-workspace .creator-extras{border:0;border-top:1px solid var(--border);padding:.9rem 0 0;margin:1.25rem 0 var(--workflow-section-gap);min-width:0;display:grid;gap:.55rem}
+.framework-app #main-workspace .creator-extras legend{float:left;width:100%;padding:0;margin:0 0 .15rem;font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground)}
+.framework-app #main-workspace .creator-extras legend small{font-weight:400;color:var(--rm-muted);margin-left:.35rem;font-size:.75rem}
+.framework-app #main-workspace .creator-extras label{clear:both;display:flex;align-items:flex-start;gap:.6rem;margin:0;padding:0;cursor:pointer;border:0;background:none}
+.framework-app #main-workspace .creator-extras label [role=checkbox]{flex-shrink:0;margin-top:.15rem}
+.framework-app #main-workspace .creator-extras label>span{display:grid;gap:.1rem;min-width:0}
+.framework-app #main-workspace .creator-extras strong{font:500 .875rem/1.45 var(--font-ui);color:var(--foreground)}
+.framework-app #main-workspace .creator-extras label small{font:400 .8125rem/1.5 var(--font-ui);color:var(--rm-muted)}
+.framework-app #main-workspace .creator-excluded{font:400 .8125rem/1.5 var(--font-ui);color:var(--rm-muted);margin:.75rem 0 0}
+.framework-app #main-workspace .creator-excluded button{font:inherit;color:var(--rm-accent);text-decoration:underline;background:none;border:0;padding:0;min-height:0;cursor:pointer}
+
+/* Stap 4 rustiger: geen kaders in kaders, Vormgeving ingeklapt tot een regel. */
+.framework-app #main-workspace .creator-card .creator-testing-aspects{border:0;background:none;padding:0;margin-top:.5rem}
+.framework-app #main-workspace .creator-card .creator-testing-aspects legend{font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground);padding:0;margin-bottom:.4rem}
+.framework-app #main-workspace .creator-card .creator-selection-summary{border:0;border-top:1px solid var(--border);border-radius:0;background:none;padding:.9rem 0 0;margin-top:1.1rem}
+.framework-app #main-workspace .creator-card .creator-selection-summary h3{font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground);margin:0 0 .25rem}
+.framework-app #main-workspace .creator-card .creator-selection-summary>p{margin:0 0 .35rem}
+.framework-app #main-workspace .creator-card .creator-selection-summary>a{display:inline-block;margin:.15rem 0 0}
+.framework-app #main-workspace .creator-card .creator-autolink{margin-top:.5rem}
+.framework-app #main-workspace details.creator-fold>summary{display:flex;align-items:baseline;gap:.75rem;cursor:pointer;list-style:none}
+.framework-app #main-workspace details.creator-fold>summary::-webkit-details-marker{display:none}
+.framework-app #main-workspace details.creator-fold>summary h2{margin:0}
+.framework-app #main-workspace details.creator-fold>summary span{font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted)}
+.framework-app #main-workspace details.creator-fold>summary::after{content:"";margin-left:auto;align-self:center;width:.5rem;height:.5rem;border-right:2px solid var(--rm-muted);border-bottom:2px solid var(--rm-muted);transform:rotate(45deg);transition:transform .15s}
+.framework-app #main-workspace details.creator-fold[open]>summary::after{transform:rotate(-135deg)}
+.framework-app #main-workspace details.creator-fold[open]>summary{margin-bottom:1rem}
+.framework-app #main-workspace .creator-settings .creator-card>:last-child{margin-bottom:0}
+.framework-app #main-workspace .export-creator .creator-presets+.creator-layout,.framework-app #main-workspace .export-creator .creator-presets+.creator-hint{margin-top:1.25rem}
+.framework-app #main-workspace .creator-selection-summary .creator-sheet-list:empty{display:none}

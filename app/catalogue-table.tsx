@@ -16,7 +16,7 @@ export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:num
 
 /** Breed scherm: de lijst heeft ruimte nodig. Op een telefoon blijven het tegels. */
 export function useWideScreen(min=980){
- const [wide,setWide]=useState(false);
+ const [wide,setWide]=useState(()=>typeof window!=='undefined'&&window.matchMedia(`(min-width:${min}px)`).matches);
  useEffect(()=>{const media=window.matchMedia(`(min-width:${min}px)`);const update=()=>setWide(media.matches);update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[min]);
  return wide;
 }

@@ -14,26 +14,35 @@ export function cleanSaved<T extends object>(defaults: T, saved: unknown): T {
   return clean;
 }
 // Optional device-local view preferences; never stores audit data.
+// De opgeslagen voorkeur wordt meteen bij de eerste weergave gelezen. Zo verschijnt een overzicht direct in de gekozen
+// vorm (bijvoorbeeld Lijst) en niet eerst kort in de standaardvorm.
+function readSaved<T extends object>(key: string, defaults: T, storage: 'session'|'local'): T {
+  if (typeof window === 'undefined') return defaults;
+  try {
+    const raw = (storage==='local'?localStorage:sessionStorage).getItem("rijksmap-view-" + key);
+    return raw ? cleanSaved(defaults, JSON.parse(raw)) : defaults;
+  } catch {
+    /* View preferences are optional. */
+    return defaults;
+  }
+}
 export function useBrowseState<T extends object>(key: string, initial: T, storage: 'session'|'local'='session') {
-  const [defaults] = useState(initial);
-  const [value, setValue] = useState(initial),
-    [ready, setReady] = useState(false);
+  const [defaults] = useState(initial), slot = storage + ':' + key;
+  const [value, setValue] = useState(() => readSaved(key, initial, storage)),
+    [loaded, setLoaded] = useState(typeof window === 'undefined' ? '' : slot);
+  const ready = loaded === slot;
   useEffect(() => {
+    if (loaded === slot) return;
     let cancelled = false;
     void Promise.resolve().then(() => {
       if (cancelled) return;
-      try {
-        const raw = (storage==='local'?localStorage:sessionStorage).getItem("rijksmap-view-" + key);
-        if (raw) setValue(cleanSaved(defaults, JSON.parse(raw)));
-      } catch {
-        /* View preferences are optional. */
-      }
-      setReady(true);
+      setValue(readSaved(key, defaults, storage));
+      setLoaded(slot);
     });
     return () => {
       cancelled = true;
     };
-  }, [key, defaults,storage]);
+  }, [key, defaults, storage, slot, loaded]);
   useEffect(() => {
     if (ready)
       try {

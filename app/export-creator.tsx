@@ -19,14 +19,12 @@ import { exportPresets } from "@/lib/export-profiles.mjs";
 import type { LibraryModel } from "./model-library";
 import InterviewSettings from "./interview-settings";
 import { modelDisplayName, selectedQuestionCount } from "@/lib/interview-structure.mjs";
-import { lineCode } from "@/lib/norm-navigation.mjs";
 import type { Framework, Draft } from "@/lib/framework-types";
 import { testingAspects, testingTerminologies, testingAspectLabel, testingTerminologyHelp } from "@/lib/testing-aspects.mjs";
 import { exportFonts, exportFontSizes, exportPalettes, exportPhasePalette } from '@/lib/export-design.mjs';
 import { workbookPreviewEntries, workbookPreviewValue } from '@/lib/workbook-preview.mjs';
-import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
+import { WorkflowIntro } from './workflow-patterns';
 import ScrollablePreview from './scrollable-preview';
-import DeferredDetails from './deferred-details';
 
 export default function ExportCreator({
   framework,
@@ -71,7 +69,7 @@ export default function ExportCreator({
       };
   }
   const {
-    selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
+    selection, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral, autoLinkUnderSub, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
@@ -160,7 +158,7 @@ export default function ExportCreator({
     <section className="export-creator" aria-labelledby="workflow-page-title">
       {!modelBasis && <LegacyCioNotice draft={exportDraft} />}
       <WorkflowIntro title="Hoe wil je je kader gebruiken?">
-        Kies de werkvorm die past bij je onderzoek. Je kunt deze keuze later wijzigen.
+        Kies de werkvorm die past bij je onderzoek. Alleen de indeling van je Excelbestand verandert; je kunt later wisselen.
       </WorkflowIntro>
       <fieldset className="creator-presets" aria-label="Werkvorm">
         <legend className="sr-only">Werkvorm</legend>
@@ -183,17 +181,11 @@ export default function ExportCreator({
           </Button>
         ))}
       </fieldset>
-      <WorkflowOutcome title="Eén onderzoeksopzet, drie werkvormen">
-        Alleen de indeling van je Excelbestand verandert. Je vragen, bouwstenen en koppelingen in Omnibus blijven behouden.
-      </WorkflowOutcome>
       {profile === "testing" && !modelBasis && !hasCriteria && pickedLines.length > 0 && <p className="creator-hint">Je selectie bevat alleen modelvragen. Kies Interviewleidraad voor gesprekken; opzet, bestaan en werking gelden voor normen.</p>}
       <div className="creator-layout">
         <div className="creator-settings">
           <section className="creator-card">
             <h2>Inhoud</h2>
-            <p className="creator-help">
-              Exporteer de bouwstenen die aan je onderzoeksvragen zijn gekoppeld.
-            </p>
       {profile === "testing" && !modelBasis && hasCriteria && (
         <fieldset className="creator-testing-aspects" aria-describedby="testing-aspects-help">
           <legend>Wat wil je toetsen?</legend>
@@ -218,10 +210,7 @@ export default function ExportCreator({
               </label>
             ))}
           </div>
-          <p id="testing-aspects-help">
-            Kies één of meer onderdelen voor Toetsuitvoering. Bij een maatregel die nog niet in gebruik is,
-            kun je alleen {testingAspectLabel("opzet", testingTerminology)} onderzoeken.
-          </p>
+          <p id="testing-aspects-help">Kies één of meer. Is een maatregel nog niet in gebruik? Kies dan alleen {testingAspectLabel("opzet", testingTerminology)}.</p>
           <details className="creator-terminology-options">
             <summary>Toetslabels aanpassen</summary>
             <label className="creator-testing-terminology" htmlFor="creator-testing-terminology">Toetsterminologie in Excel
@@ -234,30 +223,6 @@ export default function ExportCreator({
             <p>{testingAspectLabel("bestaan", testingTerminology)} veronderstelt een ingerichte maatregel;
               {" "}{testingAspectLabel("werking", testingTerminology)} bovendien een afgebakende periode. Je Excelbestand bevat één rij per bouwsteen.</p>
           </details>
-        </fieldset>
-      )}
-      {!modelBasis && hasCriteria && (
-        <fieldset className="creator-testing-aspects">
-          <legend>Extra blad</legend>
-          <div>
-            <label data-selected={accountability} htmlFor="export-accountability">
-              <Checkbox id="export-accountability" checked={accountability} onCheckedChange={(v) => { setAccountability(v === true); setSaved(false); setError(""); }}/>
-              <span>Verantwoording referentiekader</span>
-            </label>
-          </div>
-          <p className="creator-help">Vier vragen om in te vullen: welke criteria de organisatie zelf had, waarom dit kader adequaat is, met wie het is afgestemd en wie het heeft goedgekeurd. Bij elke vraag staat de eis uit de Global Internal Audit Standards (13.4 en 13.6).</p>
-        </fieldset>
-      )}
-      {profile === "risk" && !modelBasis && hasCriteria && (
-        <fieldset className="creator-testing-aspects">
-          <legend>Extra kolom</legend>
-          <div>
-            <label data-selected={keyControl} htmlFor="risk-key-control">
-              <Checkbox id="risk-key-control" checked={keyControl} onCheckedChange={(v) => { setKeyControl(v === true); setSaved(false); setError(""); }}/>
-              <span>Key control (ja/nee)</span>
-            </label>
-          </div>
-          <p className="creator-help">Leeg om in te vullen: kies per beheersmaatregel of die op zichzelf het risico afdekt. De bron zegt daar niets over.</p>
         </fieldset>
       )}
             {(selectedModels.length > 0 || modelBasis) && (
@@ -366,9 +331,9 @@ export default function ExportCreator({
                   </>}
                   <a href="#mijn-kader">{emptyFramework ? 'Naar stap 3: Bouw je kader' : 'Onderzoeksvragen en koppelingen wijzigen'}</a>
                   {autoLinked.length > 0 && (
-                    <p className="creator-help creator-autolink">
+                    <details className="creator-review creator-autolink"><summary>{countLabel(autoLinked.length,'bouwstenen')} automatisch gekoppeld</summary><p className="creator-help">
                       {countLabel(autoLinked.length,'bouwstenen')} {autoLinked.length===1?'was':'waren'} niet aan een vraag gekoppeld. Ze gaan toch mee, zodat er niets wegvalt: {autoLinkUnderSub>0?<>{autoLinkUnderSub} bij een deelvraag waar al een toetspunt over dezelfde norm of een verwante norm hangt{autoLinked.length-autoLinkUnderSub>0&&<>, {autoLinked.length-autoLinkUnderSub} onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}</>:<>onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}. Wil je het anders, koppel ze dan zelf in stap 3.
-                    </p>
+                    </p></details>
                   )}
                   {!emptyFramework && !selection.included.length && (
                     <p>
@@ -377,27 +342,11 @@ export default function ExportCreator({
                     </p>
                   )}
                 </div>
-                {selectedLines.length > 0 && <DeferredDetails className="creator-review" summary={`Exportselectie aanpassen (${count})`}>
-                  {selectedLines.map((l) => (
-                    <label className="creator-check" key={l.id}>
-                      <Checkbox
-                        checked={!excludedNorms.includes(l.id)}
-                        onCheckedChange={(v) =>
-                          setExcludedNorms((old) =>
-                            v ? old.filter((id) => id !== l.id) : [...old, l.id],
-                          )
-                        }
-                      />
-                      <span>
-                        <small>{lineCode(l)}</small>
-                        {l.title}
-                      </span>
-                    </label>
-                  ))}
-                  <p className="creator-help">
-                    Uitsluiten geldt alleen voor deze export. Je referentiekader blijft behouden.
-                  </p>
-                </DeferredDetails>}
+                {/* Kiezen wat meegaat gebeurt in stap 3. Een eerder gemaakte uitsluiting blijft zichtbaar en is hier terug te draaien. */}
+                {excludedNorms.length > 0 && <p className="creator-excluded">
+                  {excludedNorms.length} {excludedNorms.length === 1 ? "bouwsteen is" : "bouwstenen zijn"} eerder uitgesloten van deze export.{" "}
+                  <button type="button" onClick={() => setExcludedNorms([])}>Alles weer meenemen</button>
+                </p>}
                 {!!planningIssues.length && (
                   <details className="creator-review">
                     <summary>Nog uit te werken ({planningIssues.length})</summary>
@@ -414,10 +363,26 @@ export default function ExportCreator({
                 )}
               </>
             )}
+      {!modelBasis && hasCriteria && (
+        <fieldset className="creator-extras">
+          <legend>Extra in Excel <small>optioneel</small></legend>
+          <label htmlFor="export-accountability">
+            <Checkbox id="export-accountability" checked={accountability} onCheckedChange={(v) => { setAccountability(v === true); setSaved(false); setError(""); }}/>
+            <span><strong>Blad Verantwoording referentiekader</strong>
+              <small>Vier vragen over de keuze van je kader, met de eis uit de Global Internal Audit Standards (13.4 en 13.6). Alleen nodig als je volgens die standaarden werkt.</small></span>
+          </label>
+          {profile === "risk" && (
+            <label htmlFor="risk-key-control">
+              <Checkbox id="risk-key-control" checked={keyControl} onCheckedChange={(v) => { setKeyControl(v === true); setSaved(false); setError(""); }}/>
+              <span><strong>Kolom Key control (ja/nee)</strong>
+                <small>Leeg om in te vullen: dekt de beheersmaatregel op zichzelf het risico af? De bron zegt daar niets over.</small></span>
+            </label>
+          )}
+        </fieldset>
+      )}
           </section>
-          <section className="creator-card">
-            <h2>Vormgeving</h2>
-            <p className="creator-help">De indeling volgt het referentiesjabloon. Kies hieronder de kleuren en het lettertype. {profile === 'testing' ? 'Uitvoering toont de norm en het volledige toetspunt, met instructie en verwacht bewijs naast elkaar. De detailviewer staat achteraan.' : profile === 'risk' ? 'De matrix blijft compact. Lees de volledige norm, risico’s, beheersing en toetsaanpak in de detailviewer.' : 'De leidraad blijft compact. Lees de volledige vragen, doorvragen en gespreksnotities in de detailviewer.'}</p>
+          <details className="creator-card creator-fold">
+            <summary><h2>Vormgeving</h2><span>{fontFamily} · {fontSize} pt · kleuren aanpassen</span></summary>
             <fieldset className="creator-basis" aria-label="Kleurgebruik">
               <Button
                 variant="outline"
@@ -461,7 +426,7 @@ export default function ExportCreator({
               <label htmlFor="export-font">Lettertype<select id="export-font" value={fontFamily} onChange={e=>setFontFamily(e.target.value)}>{exportFonts.map(f=><option key={f}>{f}</option>)}</select></label>
               <label htmlFor="export-font-size">Tekstgrootte<select id="export-font-size" value={fontSize} onChange={e=>setFontSize(Number(e.target.value))}>{exportFontSizes.map(s=><option key={s} value={s}>{s} pt{s===11?' · standaard':''}</option>)}</select></label>
             </div>
-          </section>
+          </details>
           <section className="creator-card">
             <h2>Versie en team</h2>
             <label htmlFor="creator-filename">Bestandsnaam
@@ -551,7 +516,7 @@ export default function ExportCreator({
             <p>Werk eerst je onderzoeksvragen uit. Daarna kun je hier de inhoud bekijken en je Excelbestand downloaden.</p>
             <a href="#mijn-kader">Naar stap 3: Bouw je kader →</a>
           </div> : <p className="creator-help">
-            Controleer de inhoud per onderdeel. Schuif voor de overige kolommen. Excel-formules worden hier niet berekend.
+            Schuif voor de overige kolommen. Excel-formules worden hier niet berekend.
           </p>}
           {!emptyFramework && register?.viewer && register.detailRecords && <div className="export-preview-navigation">
             <label htmlFor="export-detail-point">Onderdeel bekijken
@@ -645,10 +610,6 @@ export default function ExportCreator({
             {busy ? "Bestand maken…" : count === 0 && !modelBasis ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
           </Button>
           {saved && <output>Vorige download aangemaakt. Download opnieuw na wijzigingen.</output>}
-          <p className="creator-help">
-            Zonder macro’s. Keuzelijsten, opzoeken en filters werken met gewone Excel-functies.
-            Wijzigingen in Excel blijven in het werkboek en worden niet teruggelezen.
-          </p>
           {!modelBasis && (
             <Button
               variant="ghost"
@@ -660,6 +621,8 @@ export default function ExportCreator({
           )}
           <details className="creator-method">
             <summary>Over de werkvormen en bronnen</summary>
+            <p>Zonder macro’s. Keuzelijsten, opzoeken en filters werken met gewone Excel-functies. Wijzigingen in Excel blijven in het werkboek en worden niet teruggelezen.</p>
+            <p>De indeling volgt het referentiesjabloon. Kies hieronder de kleuren en het lettertype. {profile === 'testing' ? 'Uitvoering toont de norm en het volledige toetspunt, met instructie en verwacht bewijs naast elkaar. De detailviewer staat achteraan.' : profile === 'risk' ? 'De matrix blijft compact. Lees de volledige norm, risico’s, beheersing en toetsaanpak in de detailviewer.' : 'De leidraad blijft compact. Lees de volledige vragen, doorvragen en gespreksnotities in de detailviewer.'}</p>
             <p>
               Deze indelingen zijn eigen werkvormen, geen officiële IIA-sjablonen. Een werkvorm
               bepaalt niet welke normen voor je organisatie gelden.
