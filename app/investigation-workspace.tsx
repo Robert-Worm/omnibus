@@ -47,6 +47,8 @@ import { filterSources, sourceDomains } from "@/lib/active-foundation-navigation
 import {cioSourceId} from '@/lib/cio-law-data.mjs';
 import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
+import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import {frameworkRecord,frameworkFamilies,shortDate} from '@/lib/framework-register.mjs';
 import type { Draft } from "@/lib/framework-types";
 import './viewer-readability.css';
 
@@ -456,9 +458,34 @@ export function FoundationCatalogue({
       },
     } as Draft);
   }
+  // Lijstweergave: alle wetten en kaders in één tabel, met familie, uitgever en datums uit het register.
+  const catalogueView=useCatalogueView('foundations'),listMode=!guided&&catalogueView.list;
+  const listSources=scopeFoundationSources(allowedSources,'all') as typeof foundations;
+  const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
+  const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
+   const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);
+   return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:selection.selected,total:selection.total,all:selection.all,partial:selection.partial,
+    kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
+   .flatMap(row=>{if(!query.trim())return [row];const q=query.trim().toLocaleLowerCase('nl');
+    const own=[row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
+    return own?[row]:listSearch!.sources.some((s:{id:string})=>s.id===row.id)?[{...row,viaContent:true}]:[];}):[];
+  type ListRow=typeof listRows[number];
+  const listColumns:CatalogueColumn<ListRow>[]=[
+   {key:'instrument',label:'Soort',width:'11%',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>r.record.instrument||r.kindLabel||<small>–</small>},
+   {key:'family',label:'Familie',width:'10%',groupKey:'family',sort:r=>r.record.familyTitle,render:r=>r.record.familyTitle?<span className="catalogue-pill" data-tone={r.record.family}>{r.record.familyTitle}</span>:<small>–</small>},
+   {key:'category',label:'Categorie',hideBelow:920,width:'9.5%',groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<>{r.categories[0]}{r.categories.length>1&&<><small aria-hidden="true">+{r.categories.length-1}</small><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
+   {key:'audience',label:'Voor wie',hideBelow:1040,width:'9%',sort:r=>r.audience,title:r=>r.audience,render:r=>r.audience?<span className="catalogue-clamp">{r.audience}</span>:<small>–</small>},
+   {key:'issuer',label:'Uitgever',hideBelow:1180,width:'9.5%',sort:r=>r.record.issuer,title:r=>r.record.issuer,render:r=>r.record.issuer?<span className="catalogue-clamp">{r.record.issuer}</span>:<small>–</small>},
+   {key:'published',label:'Publicatie',width:'6.4rem',sort:r=>r.record.published,title:r=>r.record.reference,render:r=>r.record.published?shortDate(r.record.published):<small>–</small>},
+   {key:'effective',label:'Van kracht',width:'7.4rem',sort:r=>r.record.applies||r.record.effective,render:r=>{const d=r.record.applies||r.record.effective;if(!d)return <small title="Geen eigen datum van inwerkingtreding, bijvoorbeeld bij een handreiking">–</small>;
+    return <span className={d>today?'catalogue-future':undefined}>{shortDate(d)}{d>today&&<small>nog niet van kracht</small>}{r.record.applies&&(r.record.effective?<small title="De regeling trad eerder in werking, maar is pas vanaf deze datum van toepassing">in werking {shortDate(r.record.effective)}</small>:<small>toepassing</small>)}</span>;}},
+   {key:'norms',label:'Normen',width:'5.2rem',numeric:true,sort:r=>r.norms,render:r=>r.norms||<small>–</small>},
+  ];
   return (
     <section className="catalogue-explorer foundation-catalogue">
-      {!guided&&<><CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken."/><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
+      {!guided&&<><CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken."/>{catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?'Alle wetten en kaders in één lijst. Klik op een kolomkop om te sorteren.':'Blader per categorie, of bekijk alles in één lijst.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);if(mode==='list'&&query.trim())prepareSearch(listSources.map((x:{id:string})=>x.id));}}/></div>}</>}
+      {!guided&&!listMode&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
       {guided&&<DirectorySearch id="foundation-search" label={scope==='laws'?'Zoek wet of wetscategorie':scope==='frameworks'?'Zoek kader of kadercategorie':'Zoek wet, kader of categorie'} value={query} onChange={changeSearch} placeholder="Bijvoorbeeld: privacy of inkoop"/>}
       {!guided&&<>
         <DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen, bijvoorbeeld toegangsrechten…"/>
@@ -471,10 +498,19 @@ export function FoundationCatalogue({
           </fieldset>}
         </div>}
       </>}
-      <CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" allNoun={scope==='frameworks'?'kaders':'wetten'} value={directoryGroup} searching={Boolean(query.trim())}
+      {listMode&&<CatalogueTable id="foundations-v2" defaultSort="instrument" noun={['bron','bronnen']} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
+        filters={[{key:'kind',label:'Wet of kader',all:'Wetten en kaders',value:r=>[r.kind==='Wet'?'Wetten':'Kaders']},{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[r.record.issuer]},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
+        groups={[{key:'family',label:'Familie',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''},{key:'category',label:'Categorie',value:r=>r.categories[0]||''},{key:'kind',label:'Wet of kader',value:r=>r.kind==='Wet'?'Wetten':'Kaders'}]}
+        nameLabel="Wet of kader" nameMeta={r=><>{r.record.work&&<span title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
+        countLabel="Gekozen" selectLabel={r=>'Alle normen selecteren: '+r.title}
+        onOpen={id=>{if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
+        onSelect={(ids,checked)=>prepareSources(ids,()=>{try{const next=ids.reduce((value,id)=>chooseFoundationSource(value,id,checked) as Draft,draft);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}
+        empty={<p>Geen wet of kader gevonden. Wis je zoekopdracht of pas de filters aan.</p>}/>}
+      {listMode&&searchError&&<p role="alert">{searchError}</p>}
+      {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" allNoun={scope==='frameworks'?'kaders':'wetten'} value={directoryGroup} searching={Boolean(query.trim())}
         groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
-        onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>
-      {showList&&<>
+        onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>}
+      {!listMode&&showList&&<>
       {searchError && <p role="alert">{searchError}</p>}
       {query.trim() && <h2>Wetten &amp; kaders <small>({filtered.length})</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
