@@ -460,7 +460,7 @@ export function FoundationCatalogue({
     } as Draft);
   }
   // Lijstweergave: alle wetten en kaders in één tabel, met familie, uitgever en datums uit het register.
-  const catalogueView=useCatalogueView('foundations'),listMode=!guided&&catalogueView.list;
+  const catalogueView=useCatalogueView(),listMode=catalogueView.list;
   const listSources=scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws') as typeof foundations;
   const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
   const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -487,9 +487,9 @@ export function FoundationCatalogue({
   ];
   return (
     <section className="catalogue-explorer foundation-catalogue">
-      {!guided&&<><CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken."/>{catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?`Alle ${scope==='frameworks'?'kaders':'wetten'} in één lijst. Bronnen die bij elkaar horen, zoals DORA, vormen een familie.`:'Blader per categorie, of kies Lijst om alles in één overzicht te zien.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);if(mode==='list'&&query.trim())prepareSearch(listSources.map((x:{id:string})=>x.id));}}/></div>}</>}
+      {!guided&&<CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken." action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
-      {guided&&<DirectorySearch id="foundation-search" label={scope==='laws'?'Zoek wet of wetscategorie':scope==='frameworks'?'Zoek kader of kadercategorie':'Zoek wet, kader of categorie'} value={query} onChange={changeSearch} placeholder="Bijvoorbeeld: privacy of inkoop"/>}
+      {guided&&!listMode&&<DirectorySearch id="foundation-search" label={scope==='laws'?'Zoek wet of wetscategorie':scope==='frameworks'?'Zoek kader of kadercategorie':'Zoek wet, kader of categorie'} value={query} onChange={changeSearch} placeholder="Bijvoorbeeld: privacy of inkoop"/>}
       {!guided&&<>
         {!listMode&&<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen, bijvoorbeeld toegangsrechten…"/>}
         {query.trim() && <div className="catalogue-search-tools">

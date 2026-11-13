@@ -1,8 +1,8 @@
 'use client';
 import {Scale,BookOpen,Brain} from 'lucide-react';
 import {TermText} from './term-help';
-export function CatalogueHeader({title,description}:{title:string;description?:string}){
- return <header className="directory-heading"><div><h2>{title}</h2>{description&&<p className="directory-lead"><TermText text={description}/></p>}</div></header>;
+export function CatalogueHeader({title,description,action}:{title:string;description?:string;/** Rechts in de kop, bijvoorbeeld de schakelaar Tegels/Lijst. */action?:React.ReactNode}){
+ return <header className="directory-heading"><div><h2>{title}</h2>{description&&<p className="directory-lead"><TermText text={description}/></p>}</div>{action}</header>;
 }
 export function SourceChoices({value,onChange}:{value:string;onChange:(value:'laws'|'frameworks')=>void}){
  return <fieldset className="directory-axis"  aria-label="Bronnen verkennen"><button type="button" aria-pressed={value==='laws'} onClick={()=>onChange('laws')}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Verken wettelijke eisen</small></span></button><button type="button" aria-pressed={value==='frameworks'} onClick={()=>onChange('frameworks')}><BookOpen size={22} aria-hidden="true"/><span><strong>Kaders</strong><small>Verken beheersing en normen</small></span></button></fieldset>;

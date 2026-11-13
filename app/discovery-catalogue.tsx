@@ -32,7 +32,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const detailGroups=query||showAll?groups:selectedGroup?[selectedGroup]:[];
  const noun=axis==='themes'?'thema’s':'processen';
  // Lijstweergave: alle thema's of processen in één tabel, als alternatief voor de tegels per groep.
- const catalogueView=useCatalogueView('discovery'),listMode=!guided&&catalogueView.list;
+ const catalogueView=useCatalogueView(),listMode=catalogueView.list;
  const seen=new Set<string>(),groupLabel=axis==='themes'?'Themagroep':'Procesfamilie';
  // Symbolen in de lijst: wat voor soort proces het is, bij welke ministeries het is onderzocht en uit hoeveel rapporten het komt.
  // Alleen berekend voor de lijst, uit de taxonomie (lib/process-taxonomy.mjs) en de indeling van rapporten (lib/report-organisations.mjs).
@@ -56,6 +56,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    render:r=>!r.reports?<small>–</small>:<CellTip plain label={`${r.reports} ${r.reports===1?'rapport':'rapporten'}${r.period?', '+r.period:''}`}
     tip={<><strong>{r.reports===1?'Uit één rapport':`Uit ${r.reports} rapporten`}{r.period&&` (${r.period})`}</strong>{r.orgs.length>0&&<span>Onderzocht bij: {r.orgs.map((o:{label:string})=>o.label).join(', ')}</span>}{r.sources.slice(0,8).map((o:{id:string})=><span key={o.id}>{reportLine(o.id)}</span>)}{r.sources.length>8&&<span>en {r.sources.length-8} andere</span>}<em>{r.reports===1?'Eén rapport is een voorbeeld uit de praktijk, geen patroon.':'Meer rapporten wijzen op een breder beeld, niet op een zwaarder risico.'}</em></>}>
     <span className="catalogue-meter" data-level={strength(r.reports)} aria-hidden="true"><i/><i/><i/><i/></span><span className="catalogue-meter-count">{r.reports}</span></CellTip>},
+  {key:'spacer',label:'',render:()=>null},
  ];
  const familyHeading=useRef<HTMLHeadingElement>(null);
  const focusRequest=useRef(false);
@@ -67,8 +68,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   if(returnCard.current){cards.current?.querySelector<HTMLButtonElement>('[data-family="'+returnCard.current+'"]')?.focus();returnCard.current='';}
  },[selectedGroup]);
  return <section className="catalogue-explorer discovery-directory foundation-catalogue" aria-label="Thema’s en processen openen">
-  <header className="directory-heading"><div><h2>{guided?'Waar wil je beginnen?':'Verken thema’s en processen'}</h2><p className="directory-lead"><TermText text={guided?'Begin bij een wet, kader of model, of verken eerdere risico’s via thema’s of processen.':'Open een thema of proces om de inzichten uit eerdere onderzoeken te bekijken.'}/></p></div>{guided&&openIds.length>0&&<Button variant="outline" onClick={onWorkspace}><FolderOpen size={16} aria-hidden="true"/>Geopend ({openIds.length})</Button>}</header>
-  {!guided&&catalogueView.available&&<div className="catalogue-view-bar"><p>{listMode?`Alle ${noun} in één lijst.`:'Blader per groep, of kies Lijst om alles in één overzicht te zien.'}</p><CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/></div>}
+  <header className="directory-heading"><div><h2>{guided?'Waar wil je beginnen?':'Verken thema’s en processen'}</h2><p className="directory-lead"><TermText text={guided?'Begin bij een wet, kader of model, of verken eerdere risico’s via thema’s of processen.':'Open een thema of proces om de inzichten uit eerdere onderzoeken te bekijken.'}/></p></div><div className="directory-heading-actions">{guided&&openIds.length>0&&<Button variant="outline" onClick={onWorkspace}><FolderOpen size={16} aria-hidden="true"/>Geopend ({openIds.length})</Button>}{catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/>}</div></header>
   <fieldset className="directory-axis" data-guided={guided}  aria-label="Bladeren op">
    {/* Van wat moet, via wat wordt aangeraden en wat de wetenschap zegt, naar thema’s en processen (besluit beheerder 12 november 2026). */}
    {guided&&onSources&&<button type="button" aria-pressed={area==='laws'} onClick={onSources}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Verken wettelijke eisen</small></span></button>}
@@ -79,7 +79,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
   {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Bijvoorbeeld: informatie of dienstverlening':'Bijvoorbeeld: toegang of betalingen'}/>}
-  {listMode?<CatalogueTable wideName id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
+  {listMode?<CatalogueTable dense id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
    filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)}]}
    groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''},{key:'kind',label:'Primair of ondersteunend',plural:'soorten',value:r=>r.kind,describe:name=>name==='Primair'?processKinds.primair.description:name==='Ondersteunend'?processKinds.ondersteunend.description:''}]}

@@ -20,9 +20,13 @@ export function useWideScreen(min=980){
  useEffect(()=>{const media=window.matchMedia(`(min-width:${min}px)`);const update=()=>setWide(media.matches);update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[min]);
  return wide;
 }
-export function useCatalogueView(key:string){
- const [view,setView,ready]=useBrowseState('catalogue-view-'+key,{mode:'tiles' as 'tiles'|'list'},'local'),wide=useWideScreen();
- return {list:ready&&wide&&view.mode==='list',available:wide,mode:view.mode,setMode:(mode:'tiles'|'list')=>setView({mode})};
+// Eén voorkeur voor alle overzichten (wetten en kaders, modellen, thema's en processen) en voor stap 1 en stap 2:
+// wie Lijst kiest, ziet overal de lijst. Alle schakelaars op de pagina lopen gelijk.
+const viewListeners=new Set<(mode:'tiles'|'list')=>void>();
+export function useCatalogueView(){
+ const [view,setView,ready]=useBrowseState('catalogue-view',{mode:'tiles' as 'tiles'|'list'},'local'),wide=useWideScreen();
+ useEffect(()=>{const listener=(mode:'tiles'|'list')=>setView({mode});viewListeners.add(listener);return()=>{viewListeners.delete(listener);};},[setView]);
+ return {list:ready&&wide&&view.mode==='list',available:wide,mode:view.mode,setMode:(mode:'tiles'|'list')=>{for(const listener of viewListeners)listener(mode);}};
 }
 export function CatalogueViewToggle({mode,onChange}:{mode:'tiles'|'list';onChange:(mode:'tiles'|'list')=>void}){
  return <fieldset className="catalogue-view-toggle"><legend className="sr-only">Weergave van het overzicht</legend>
@@ -47,12 +51,12 @@ function ToolSelect({label,value,onChange,options,active=false}:{label:string;va
  </Select>;
 }
 
-export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,wideName=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
+export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
  groups:CatalogueGroup<Row>[];
  nameLabel?:string;nameMeta:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
- onOpen:(id:string)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** De naamkolom krijgt alle overige ruimte; voor lijsten met alleen symbolen en cijfers. */wideName?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string}){
+ onOpen:(id:string)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
  useEffect(()=>{const el=box.current;if(!el)return;const observer=new ResizeObserver(entries=>setWidth(Math.round(entries[0].contentRect.width)));observer.observe(el);return()=>observer.disconnect();},[]);
@@ -93,7 +97,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
   </div>
   <output className="catalogue-table-count"><span><strong>{shown.length}</strong>{(filtered||searching)&&shown.length!==rows.length?` van ${rows.length}`:''} {shown.length===1&&!((filtered||searching)&&shown.length!==rows.length)?noun[0]:noun[1]}{group&&sections.length>1?` in ${sections.length} ${group.plural||'groepen'}`:''}</span>{chosenTotal>0?<em>{chosenUnique===undefined?`${chosenTotal} ${chosenTotal===1?unit[0]:unit[1]} gekozen uit ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`:`${chosenUnique} ${chosenUnique===1?unit[0]:unit[1]} gekozen, te zien bij ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`}</em>:null}{hint&&<small>{hint}</small>}</output>
   {shown.length===0?<div className="catalogue-table-empty">{empty}</div>:
-  <div className="catalogue-table-scroll"><table data-wide-name={wideName||undefined}>
+  <div className="catalogue-table-scroll"><table data-dense={dense||undefined}>
    <thead><tr>
     {onSelect&&<th scope="col" className="catalogue-table-check">{(()=>{const pickable=shown.filter(r=>r.total>0),all=pickable.length>0&&pickable.every(r=>r.all),some=pickable.some(r=>r.selected>0);
      return <span className="catalogue-check-area" title={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${noun[1]}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${shown.length===1?noun[0]:noun[1]}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span>;})()}</th>}
@@ -108,7 +112,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
     {section.name&&<tr className="catalogue-table-group" data-closed={closed||undefined}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={`Kies alle ${unit[1]} in ${section.name}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} in ${section.name}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
-     <th colSpan={span-(lead?1:0)} scope="rowgroup" aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}><span>{section.name}</span>{closed?<ChevronRight size={16} aria-hidden="true"/>:<ChevronDown size={16} aria-hidden="true"/>}</button><small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small>{describe&&<p id={`${id}-group-${index}`}>{describe}</p>}{chosen>0&&<em>keuze in {chosen} {chosen===1?noun[0]:noun[1]}</em>}</div></th></tr>}
+     <th colSpan={span-(lead?1:0)} scope="rowgroup" title={describe||undefined} aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}><span>{section.name}</span>{closed?<ChevronRight size={16} aria-hidden="true"/>:<ChevronDown size={16} aria-hidden="true"/>}</button><small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small>{describe&&<p id={`${id}-group-${index}`} className="sr-only">{describe}</p>}{chosen>0&&<em>keuze in {chosen} {chosen===1?noun[0]:noun[1]}</em>}</div></th></tr>}
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id);}}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
