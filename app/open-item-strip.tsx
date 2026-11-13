@@ -1,7 +1,7 @@
 "use client";
 import {useCallback,useEffect,useRef,useState,startTransition} from 'react';
 import {Button} from '@/components/ui/button';
-import {X,FolderOpen,Info} from 'lucide-react';
+import {X,FolderOpen,Info,ArrowLeft} from 'lucide-react';
 import {Popover,PopoverTrigger,PopoverContent,PopoverTitle,PopoverDescription} from '@/components/ui/popover';
 type Item={id:string;title:string};
 export function OpenWorkspaceEmpty({prompt}:{prompt:string}){
@@ -26,6 +26,6 @@ export default function OpenItemStrip({id,items,activeId,onActivate,onIntent,onC
     <Button id={key(item.id)} variant="ghost" title={item.title} aria-pressed={target?shownId===item.id:!allActive&&activeId===item.id} onClick={()=>activate(item.id)}><span>{item.title}</span></Button>
     <Button variant="ghost" aria-label={'Sluit '+item.title} title="Sluiten bewaart je selectie en bewerkingen" disabled={disabled} onClick={()=>close(item.id)}><X size={14} aria-hidden="true"/></Button>
    </div>)}
-  </div><Button className="open-item-explore" id={id+'-open'} variant="outline" onClick={onExplore}>{exploreLabel}</Button>
+  </div><Button className="open-item-explore" id={id+'-open'} variant="outline" onClick={onExplore}><ArrowLeft aria-hidden="true"/>{exploreLabel}</Button>
  </section>;
 }

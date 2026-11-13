@@ -224,7 +224,7 @@ export function ThemeCatalogue({
 export function OpenThemes({themes,openIds,activeId,combined,onCombine,onOpen,onClose,onExplore,actions}:{themes:Theme[];openIds:string[];activeId:string|null;combined:boolean;onCombine:()=>void;onOpen:(id:string)=>void;onClose:(id:string)=>void;onExplore:()=>void;actions?:React.ReactNode}) {
  const opened=themes.filter(t=>openIds.includes(t.id));
  return <section className="open-themes" aria-label="Open thema’s en processen">
-  <OpenItemStrip id="themes" items={opened} activeId={activeId} allActive={combined} onAll={onCombine} onActivate={onOpen} onClose={onClose} onExplore={onExplore} exploreLabel="Thema of proces openen"/>
+  <OpenItemStrip id="themes" items={opened} activeId={activeId} allActive={combined} onAll={onCombine} onActivate={onOpen} onClose={onClose} onExplore={onExplore} exploreLabel="Terug naar alle thema’s &amp; processen"/>
   {actions&&<div className="open-workspace-actions">{actions}</div>}
   {!opened.length&&<OpenWorkspaceEmpty prompt="Open een thema of proces om de inhoud te bekijken."/>}
  </section>;

@@ -190,7 +190,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const shownOverview=wantedOverview&&wantedOverview.from===overview?wantedOverview.to:overview;
  return <section className="law-browser" aria-label={title}>
   {!viewerOnly&&<>
-  {!hideOpenStrip&&<OpenItemStrip id="cio-open" items={[{id:sourceId,title}]} activeId={sourceId} onActivate={()=>{}} onClose={()=>{onChange(closeFoundation(draft,sourceId) as Draft);navigate('foundations');}} onExplore={()=>navigate('foundations')} exploreLabel="Wet of kader openen" disabled={disabled}/>}
+  {!hideOpenStrip&&<OpenItemStrip id="cio-open" items={[{id:sourceId,title}]} activeId={sourceId} onActivate={()=>{}} onClose={()=>{onChange(closeFoundation(draft,sourceId) as Draft);navigate('foundations');}} onExplore={()=>navigate('foundations')} exploreLabel="Terug naar alle wetten &amp; kaders" disabled={disabled}/>}
   <div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={shownOverview==='norms'} onClick={()=>{actionGeneration.current++;setWantedOverview({from:overview,to:'norms'});startTransition(()=>setOverview('norms'));}}>Normen</button><button aria-pressed={shownOverview==='source'} onClick={()=>{setWantedOverview({from:overview,to:'source'});withDetails(()=>startTransition(()=>setOverview('source')));}}>Over dit kader</button></nav><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}

@@ -105,7 +105,7 @@ async function main() {
       await pagina.getByRole("button", { name: "Open in viewer" }).first().click(); await pagina.waitForTimeout(1500); await meet("normtabel");
       // Een toetspunt van een kader, met de drie tabbladen van de kaderviewer.
       await ga("open-grondslagen");
-      await pagina.getByRole("button", { name: "Wet of kader openen" }).click(); await pagina.waitForTimeout(800);
+      await pagina.getByRole("button", { name: "Terug naar alle wetten & kaders" }).click(); await pagina.waitForTimeout(800);
       await pagina.getByPlaceholder(/Zoek in bronnen/).fill("conflicterende belangen"); await pagina.waitForTimeout(1200);
       await pagina.getByRole("button", { name: /Open in viewer/ }).first().click(); await pagina.waitForTimeout(1500);
       await pagina.getByText("Advies bij conflicterende belangen tussen diensten", { exact: false }).first().click(); await meet("kaderdetail");
