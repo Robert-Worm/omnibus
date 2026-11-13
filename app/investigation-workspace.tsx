@@ -8,7 +8,8 @@ import DirectorySearch from './directory-search';
 import CatalogueCardActions from './catalogue-card-actions';
 import {CatalogueHeader,SourceChoices} from './catalogue-navigation';
 import {scopeFoundationSources} from '@/lib/catalogue-directory.mjs';
-import {sourceScope as scopeOfSource} from '@/lib/source-scope.mjs';
+import {sourceScope as scopeOfSource,sourceAudiences,audienceGroups} from '@/lib/source-scope.mjs';
+import {AudienceIcons} from './audience-icons';
 import CriterionSearchResults from './criterion-search-results';
 import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
 import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
@@ -466,18 +467,18 @@ export function FoundationCatalogue({
   const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
    const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);
    return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:selection.selected,total:selection.total,all:selection.all,partial:selection.partial,
-    kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
+    kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',audiences:sourceAudiences(s.id) as (keyof typeof audienceGroups)[],usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
    .flatMap(row=>{if(!query.trim())return [row];const q=query.trim().toLocaleLowerCase('nl');
-    const own=[row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
+    const own=[...row.audiences.map(a=>audienceGroups[a].label),row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
     return own?[row]:listSearch!.sources.some((s:{id:string})=>s.id===row.id)?[{...row,viaContent:true}]:[];}):[];
   type ListRow=typeof listRows[number];
   // Zachte afbreekpunten alleen in de weergave: de registertekst zelf blijft doorzoekbaar.
   const soft=(text:string)=>text.replace(/(uitvoerings|Beroeps)(?=[a-z])/g,'$1­'),glue=(text:string)=>text.replace(/ & /g,' & ');
   const listColumns:CatalogueColumn<ListRow>[]=[
-   {key:'instrument',label:'Soort',width:'13%',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>{const text=r.record.instrument||r.kindLabel,parts=/^(.+?)\s*\((.+)\)$/.exec(text);return text?parts?<>{soft(parts[1])}<span className="catalogue-sub">{parts[2]}</span></>:soft(text):<small>–</small>;}},
+   {key:'instrument',label:'Soort',width:'14%',sort:r=>r.record.rank+' '+r.record.instrument,title:r=>r.record.instrument,render:r=>{const text=r.record.instrument||r.kindLabel,parts=/^(.+?)\s*\((.+)\)$/.exec(text);return text?parts?<>{soft(parts[1])}<span className="catalogue-sub">{parts[2]}</span></>:soft(text):<small>–</small>;}},
    {key:'family',label:'Familie',width:'11%',groupKey:'family',sort:r=>r.record.familyTitle,render:r=>r.record.familyTitle?<span className="catalogue-pill" data-tone={r.record.family}>{r.record.familyTitle}</span>:<small>–</small>},
-   {key:'category',label:'Categorie',hideBelow:860,width:'14%',groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
-   {key:'audience',label:'Voor wie',hideBelow:1040,width:'13.5%',sort:r=>r.audience,title:r=>r.audience,render:r=>r.audience?<span className="catalogue-clamp" data-lines="3">{r.audience}</span>:<small>–</small>},
+   {key:'category',label:'Categorie',hideBelow:860,width:'16%',groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
+   {key:'audience',label:'Voor wie',hideBelow:900,width:'6.6rem',sort:r=>r.audiences.map(a=>audienceGroups[a].label).join(' ')||'zzz',render:r=>r.audiences.length?<AudienceIcons groups={r.audiences} text={r.audience}/>:<small>–</small>},
    {key:'effective',label:'Geldt vanaf',width:'11.2rem',sort:r=>r.record.applies||r.record.effective||r.record.published,
     title:r=>[r.record.applies&&r.record.effective?'In werking getreden op '+shortDate(r.record.effective)+', van toepassing vanaf '+shortDate(r.record.applies):'',r.record.reference?'Vindplaats: '+r.record.reference:''].filter(Boolean).join('. '),
     render:r=>{const d=r.record.applies||r.record.effective,published=r.record.published?<span className="catalogue-sub">gepubliceerd {shortDate(r.record.published)}</span>:null;
@@ -502,7 +503,7 @@ export function FoundationCatalogue({
       </>}
       {listMode&&<CatalogueTable id="foundations-v3" defaultSort="instrument" noun={['bron','bronnen']} unit={['toetspunt','toetspunten']}
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
-        filters={[{key:'kind',label:'Wet of kader',all:'Wetten en kaders',value:r=>[r.kind==='Wet'?'Wetten':'Kaders']},{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[r.record.issuer]},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
+        filters={[{key:'kind',label:'Wet of kader',all:'Wetten en kaders',value:r=>[r.kind==='Wet'?'Wetten':'Kaders']},{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[r.record.issuer]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
         groups={[{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''},{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'kind',label:'Wet of kader',plural:'groepen',value:r=>r.kind==='Wet'?'Wetten':'Kaders'}]}
         nameLabel="Bron" nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
         countLabel="Gekozen toetspunten" hint="Een vinkje kiest alle toetspunten van die bron. Open de bron om er een paar te kiezen." selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}

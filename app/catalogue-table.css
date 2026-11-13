@@ -122,3 +122,14 @@
 .catalogue-future-note{color:color-mix(in srgb,#b0640f 80%,var(--foreground))!important}
 .catalogue-table-count>small{font-size:.8125rem;color:var(--muted-foreground)}.catalogue-table-count>small::before{content:'·';margin-right:.75rem}
 .catalogue-table-name>span>*{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.catalogue-table-name>span>:is(.catalogue-id,em){flex-shrink:0;max-width:100%}
+
+/* Voor wie: één symbool per doelgroep, uitleg bij aanwijzen of focus */
+.audience-icons{display:inline-flex;gap:.3rem;flex-wrap:wrap}
+.catalogue-table .audience-icon{all:unset;box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border-radius:99px;border:1px solid color-mix(in srgb,var(--tone,var(--primary)) 35%,var(--card));background:color-mix(in srgb,var(--tone,var(--primary)) 10%,var(--card));color:color-mix(in srgb,var(--tone,var(--primary)) 85%,var(--foreground));cursor:help}
+.catalogue-table .audience-icon:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.audience-icon[data-audience=rijk]{--tone:#154273}.audience-icon[data-audience=financieel]{--tone:#1f6f8b}.audience-icon[data-audience=ict]{--tone:#5b5fa8}.audience-icon[data-audience=kritiek]{--tone:#b0640f}.audience-icon[data-audience=toezicht]{--tone:#7a4fa3}.audience-icon[data-audience=audit]{--tone:#2f7d4f}
+.audience-tip{display:none;position:absolute;z-index:5;top:calc(100% + .4rem);right:-.5rem;width:max-content;max-width:17rem;padding:.55rem .7rem;border-radius:8px;background:var(--foreground);color:var(--card);font:400 .78rem/1.4 var(--font-ui);text-align:left;white-space:normal;box-shadow:0 6px 18px color-mix(in srgb,var(--foreground) 25%,transparent);pointer-events:none}
+.audience-tip strong{display:block;font-weight:700;font-size:.8125rem}
+.audience-tip em{display:block;font-style:normal;margin-top:.3rem;padding-top:.3rem;border-top:1px solid color-mix(in srgb,var(--card) 30%,transparent)}
+.audience-icon:is(:hover,:focus-visible) .audience-tip{display:block}
+:is(.dark,[data-appearance=dark],[data-theme=dark]) .audience-icon{background:color-mix(in srgb,var(--tone,var(--primary)) 28%,var(--card));color:color-mix(in srgb,var(--tone,var(--primary)) 25%,var(--foreground));border-color:color-mix(in srgb,var(--tone,var(--primary)) 55%,transparent)}
