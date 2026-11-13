@@ -34,6 +34,7 @@ import {Approach,type Point as CioPoint} from './cio-law-workspace';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {wwkeBrowserRows,wwkeBrowserGroups,lawBrowserColumns as columns} from '@/lib/wwke-browser-view.mjs';
 import './control-objective-pilot.css';
+import {normId} from '@/lib/norm-navigation.mjs';
 import './cio-law-browser.css';
 import './cio-source-about.css';
 import './wwke-law-browser.css';
@@ -87,6 +88,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const selection=select(),selected=new Set(selection.selectedIds);
  const browseFilters={...view,section:'norms' as const};
  const rows=(preview?wwkeOverviewRows(preview,browseFilters,selection.selectedIds):wwkeBrowserRows(browseFilters,selection.selectedIds)) as BrowseRow[];
+ const idChars=allRows.reduce((n,r)=>Math.max(n,normId(r.id).length),0);
  const groups=wwkeBrowserGroups.map(group=>({...group,...(view.audience==='entities'&&group.id==='toezicht'?{title:'Opgelegd onderzoek en aanwijzingen',description:'Verplichtingen voor de entiteit wanneer een onderzoek of bindende aanwijzing is opgelegd.'}:{}),rows:rows.filter(r=>r.groupId===group.id)})).filter(group=>group.rows.length);
  const counts=Object.fromEntries(rows.map(r=>[r.id,select(r.pointIds)]));
  const visiblePointIds=[...new Set(rows.flatMap(r=>r.pointIds))].filter(id=>!excludedForSector(id,view.sector));
@@ -119,7 +121,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  </div>
  <div className="law-group-stack">{groups.map((group,index)=>{const ids=group.rows.flatMap(r=>r.pointIds),state=select(ids);return <section className="law-group" key={group.id} data-wwke-group={group.id}><header className="law-group-heading"><div><h3>{group.title}</h3><p className="law-group-description">{group.description}</p><p className="law-group-location">Bron: hoofdstuk {[...new Set(group.rows.map(r=>r.sourceChapter))].join(' · ')}</p><p className="law-group-count">{state.selected} van {countLabel(state.total,'toetspunten')} gekozen</p></div><label className="law-select-group" htmlFor={checkboxId+group.id}><Checkbox id={checkboxId+group.id} checked={state.all} indeterminate={state.partial} disabled={disabled||!state.total} aria-label={'Selecteer hele groep '+group.title} onCheckedChange={v=>choose(ids,v===true)}/><span>Selecteer hele groep<small>{countLabel(state.total,'toetspunten')}</small></span></label></header>
  <DeferredViewerSection count={group.rows.length} immediate={index===0}>
- <CompactMatrix collectionSource={wwkeSourceId} lines={group.rows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={'wwke-group-'+group.id+'-v3'} embedded descriptiveTitles subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]} onOpen={id=>open(id)} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:id=>open(id),onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
+ <CompactMatrix collectionSource={wwkeSourceId} lines={group.rows} draft={draft} viewDraft={draft} disabled={disabled} onChange={onChange} selected={openId} viewKey={'wwke-group-'+group.id+'-v3'} embedded descriptiveTitles identityChars={idChars} subjectColumnLabel="Norm" showProvenance={false} textDensity={readingDensity} initialColumns={visibleColumns} columnOptions={columns.map(c=>c.id) as ElementKey[]} onOpen={id=>open(id)} onOpenField={id=>open(id)} pointChoices={{counts,onChoose:id=>open(id),onSelect:(rowIds,value)=>choose(rows.filter(r=>rowIds.includes(r.id)).flatMap(r=>r.pointIds),value)}}/>
  </DeferredViewerSection>
  </section>;})}</div>{!groups.length&&<div className="law-empty"><h3>Geen selecteerbare normen in deze weergave</h3><p>Pas je filters aan om andere normen en toetspunten te bekijken. Achtergrondinformatie en open bronvragen vind je bij Over dit kader.</p></div>}
  </>}{error&&<p role="alert">{error}</p>}</>}

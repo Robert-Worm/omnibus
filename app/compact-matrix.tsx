@@ -70,6 +70,7 @@ export default function CompactMatrix({
   combineIdentity = false,
   groupLines,
   descriptiveTitles = false,
+  identityChars,
   subjectColumnLabel = descriptiveTitles ? 'Norm' : 'Onderdeel',
   collectionSource,
 }: {
@@ -114,6 +115,8 @@ export default function CompactMatrix({
   combineIdentity?: boolean;
   groupLines?: (lines:Line[])=>{id:string;title:string;lines:Line[]}[];
   descriptiveTitles?: boolean;
+  /** Langste ID van het hele kader. Daarmee is de ID-kolom in elke groep even breed. */
+  identityChars?: number;
   subjectColumnLabel?: string;
   /** Child choices are available only for worked-out source rows. */
   pointChoices?: {
@@ -154,7 +157,7 @@ export default function CompactMatrix({
   // Keep the complete identifier beside its checkbox, including longer report prefixes.
   // Size from the whole workspace so filtering/pagination does not make the column jump.
   const idColumnRem = Math.max(11, 3.5 + lines.reduce((length, line) => Math.max(length, normId(line.id).length), 0) * .875);
-  const identityColumnRem = combineIdentity ? Math.max(21, idColumnRem) : descriptiveTitles ? Math.max(8.5,2+lines.reduce((n,l)=>Math.max(n,normId(l.id).length),0)*.42) : idColumnRem;
+  const identityColumnRem = combineIdentity ? Math.max(21, idColumnRem) : descriptiveTitles ? Math.min(12,Math.max(8.5,2.6+(identityChars??lines.reduce((n,l)=>Math.max(n,normId(l.id).length),0))*.5)) : idColumnRem;
   const resetHandled=useRef(0);
   const restored = useRef(false);
   const handled = useRef(0);
