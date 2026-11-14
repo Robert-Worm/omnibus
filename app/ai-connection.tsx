@@ -21,13 +21,13 @@ export function AiConnection() {
     <DialogTrigger render={<Button variant="outline" className="ai-connection-trigger" aria-label="AI koppelen" title="AI koppelen"/>}><Bot size={18} aria-hidden="true"/>AI koppelen</DialogTrigger>
     <ProjectUtilityContent title="Je eigen AI koppelen" description="Verken bronnen en maak een onderzoeksproject met je eigen AI-app."
       icon={<Bot size={20}/>} closeLabel="AI-koppeling sluiten" className="ai-connection-dialog"
-      footer={<><output>{message}</output><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose>{setup && <Button onClick={copyConfig}><Copy size={16} aria-hidden="true"/>Kopieer Codex-instelling</Button>}</>}>
+      footer={<><output>{message}</output><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose>{setup && <Button onClick={copyConfig}><Copy size={16} aria-hidden="true"/>Kopieer instelling</Button>}</>}>
       <ol className="share-project-steps">
         <li><div><strong>Koppel Omnibus in je AI-app</strong><p>{setup ? 'Voeg in Codex bij Instellingen → MCP-servers een lokale STDIO-server toe met de gegevens hieronder. Herstart de verbinding als deze al is toegevoegd.' : 'Deze versie biedt nog geen online AI-koppeling. De lokale databaseversie ondersteunt een verbinding met Codex via MCP.'}</p></div></li>
-        <li><div><strong>Beschrijf je onderzoek</strong><p>Laat je AI relevante bronnen lezen, toetspunten selecteren en passende onderzoeksvragen voorstellen. Deel alleen intakegegevens die je met jouw AI-aanbieder mag delen.</p></div></li>
-        <li><div><strong>Beoordeel het aparte concept</strong><p>Open het gemaakte project via <strong>Open project</strong>, of laat de AI een Excel maken met de bestaande Omnibus-opmaak.</p></div></li>
+        <li><div><strong>Beschrijf je onderzoek</strong><p>Laat je AI bronnen lezen, toetspunten kiezen en vragen voorstellen. Deel alleen gegevens die je met je AI-aanbieder mag delen.</p></div></li>
+        <li><div><strong>Beoordeel het concept</strong><p>Open het gemaakte project via <strong>Open project</strong>.</p></div></li>
       </ol>
-      <section className="project-utility-note"><h3>De broncollectie blijft ongewijzigd</h3><p>De verbinding kan bronnen lezen en nieuwe project- en Excelbestanden maken. Zij kan geen oorspronkelijke normen, rapporten of modellen aanpassen. Je huidige browserproject wordt niet automatisch gedeeld of vervangen.</p></section>
+      <p className="project-utility-hint">Alleen lezen: bronnen blijven ongewijzigd en je project wordt niet gedeeld.</p>
       {setup && <details className="share-link-explanation"><summary>Lokale verbindingsgegevens</summary>
         <p>Alleen voor Omnibus op deze computer. Deze pagina kan niet zien of je AI-app verbonden is; controleer dat in je AI-app.</p>
         <label className="ai-connection-config">Codex-instelling<textarea readOnly value={config} rows={7} spellCheck={false}/></label>

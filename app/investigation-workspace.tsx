@@ -99,7 +99,7 @@ export function InvestigationNavigation({
   };
   const heading = headings[page] || headings.framework;
   const viewer=['foundation-workspace','model-workspace','topics'].includes(page);
-  const hasViewerNext=['foundation-workspace','topics','model-workspace'].includes(page);
+  // De volgende stap staat op elke pagina op dezelfde plek: rechts naast de paginatitel (besluit B-056).
   const route=<div className="entry-route-link"><span>Onderzoeksroute <strong><TermText text={researchRoute==='risk'?'Risk-based':'Vraaggestuurd'}/></strong></span><Button variant="ghost" onClick={()=>navigate('entry')}>Route wijzigen</Button></div>;
   const next = stage === 0 ? ['collect','Naar stap 2: Verzamel'] : stage === 1 ? ['framework','Naar stap 3: Bouw je kader'] : stage === 2 ? ['export','Naar stap 4: Exporteer'] : null;
   return (
@@ -126,7 +126,7 @@ export function InvestigationNavigation({
       </nav>}
       <header className="workflow-page-heading">
         <div><h1 id="workflow-page-title" tabIndex={-1}>{heading[0]}</h1><p><TermText text={heading[1]} /></p></div>
-        {next && !hasViewerNext && <div className={viewer?'viewer-heading-actions':undefined}><Button className="workflow-next" title={next[0]==='collect'?collectionHint:undefined} onClick={() => navigate(next[0])}>{next[1]}<ArrowRight size={16} aria-hidden="true" /></Button></div>}
+        {next && <div className={viewer?'viewer-heading-actions':undefined}><Button className="workflow-next" title={next[0]==='collect'?collectionHint:undefined} onClick={() => navigate(next[0])}>{next[1]}<ArrowRight size={16} aria-hidden="true" /></Button></div>}
       </header>
     </>
   );

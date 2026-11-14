@@ -1058,17 +1058,19 @@ export default function FrameworkEditor() {
             <fieldset className="project-action-group" aria-label="Project starten en openen">
             <AlertDialog open={newProjectOpen} onOpenChange={setNewProjectOpen}>
               <AlertDialogTrigger render={<Button variant="outline" disabled={!loaded || !modelsReady} />}><FilePlus2 size={16}/>Nieuw project</AlertDialogTrigger>
-              <AlertDialogContent className="new-project-dialog" initialFocus={cancelNewProjectRef}>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Opnieuw beginnen met een leeg project?</AlertDialogTitle>
-                  <AlertDialogDescription>Je huidige doelstelling, selecties, bouwstenen, onderzoeksvragen, modelaanpassingen en exportinstellingen worden uit het actieve project verwijderd. Herstelkopieën en oude projectgegevens in de browser blijven bestaan. De bronbibliotheek en eerder gedownloade bestanden blijven behouden.</AlertDialogDescription>
+              {/* Zelfde opbouw als de andere menu's (besluit B-056). */}
+              <AlertDialogContent className="new-project-dialog project-utility-dialog" initialFocus={cancelNewProjectRef}>
+                <AlertDialogHeader className="project-utility-header">
+                  <span className="project-utility-icon" aria-hidden="true"><FilePlus2 size={20}/></span>
+                  <div><AlertDialogTitle>Nieuw project</AlertDialogTitle>
+                  <AlertDialogDescription>Doel, selecties, vragen en exportinstellingen worden gewist. Tot je de pagina herlaadt kun je dit ongedaan maken.</AlertDialogDescription></div>
                 </AlertDialogHeader>
-                <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-voor-nieuw-project.json')}><Download size={16}/>Eerst huidig project bewaren</Button>
-                {fileDownload.error && <p role="alert">{fileDownload.error}</p>}
-                <p>Je kunt dit tot het herladen van de pagina ongedaan maken.</p>
-                <AlertDialogFooter>
+                <AlertDialogCancel variant="ghost" size="icon-sm" className="project-utility-close" aria-label="Nieuw project sluiten"><X size={18} aria-hidden="true"/></AlertDialogCancel>
+                {fileDownload.error && <div className="project-utility-body"><p role="alert">{fileDownload.error}</p></div>}
+                <AlertDialogFooter className="project-utility-footer">
                   <AlertDialogCancel ref={cancelNewProjectRef}>Annuleren</AlertDialogCancel>
-                  <AlertDialogAction variant="destructive" disabled={fileDownload.busy} onClick={startNewProject}>Wis project en begin opnieuw</AlertDialogAction>
+                  <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project-voor-nieuw-project.json')}><Download size={16}/>Eerst bewaren</Button>
+                  <AlertDialogAction variant="destructive" disabled={fileDownload.busy} onClick={startNewProject}>Wis en begin opnieuw</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -1405,7 +1407,6 @@ export default function FrameworkEditor() {
               >
                 {!editable&&<div className="law-view-actions">
                   <nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:false}))}>Normen</button><button aria-pressed={aboutViews.reports} onClick={()=>setAboutViews(v=>({...v,reports:true}))}>Over dit kader</button></nav>
-                  <div className="report-view-actions"><Button onClick={()=>navigate('framework')}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>
                 </div>}
                 {!editable&&<TabsContent value="about"><ReportFrameworkAbout title={combinedView?'Alle open thema’s en processen':activeTheme?.title||'Referentiekader'} workspaces={browseThemes} reports={overview?.reports??corpus.filter(c=>browseThemes.some(t=>t.reportIds.includes(c.framework.report.id))).map(c=>c.framework)} lines={visibleLines} allLines={allBrowseLines} onChoice={openReportChoice} onRead={id=>{setReturnPage('topics');setReaderId(id);setReportEvidence(null);setReportPage(1);navigate('reader',id);}}/></TabsContent>}
                 <TabsContent value="framework" id="working-area">

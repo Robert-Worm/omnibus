@@ -1,7 +1,8 @@
 'use client';
+import SelectionMenu from './selection-menu';
 import {countLabel} from '@/lib/display-count.mjs';
 import {useEffect,useMemo,useRef} from 'react';
-import {ListChecks,Search} from 'lucide-react';
+import {Search} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -37,8 +38,7 @@ export default function ReportNormBrowser({title,lines,draft,viewDraft,counts,se
  const density=(['compact','comfortable','full'].includes(view.density)?view.density:'compact') as MatrixTextDensity;
  return <section className="law-browser report-norm-browser" aria-label="Normen uit thema’s en processen">
   <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{title}</h2><output aria-live="polite">{visibleCounts}</output></div><div className="law-selection-actions">
-   <Button variant="outline" aria-pressed={view.selectedOnly} onClick={()=>setView(v=>({...v,selectedOnly:!v.selectedOnly}))}>Normen met gekozen toetspunten</Button>
-   <Button variant="outline" disabled={disabled||!lines.length} title="Voor het hele geopende kader, ook buiten zoek- en groepsfilters. Je rapportkeuze blijft van toepassing." onClick={()=>onSelect(lines.map(l=>l.id),!selection.all)}><ListChecks size={15}/>{selection.all?'Deselecteer alle normen':'Selecteer alle normen'}</Button>
+   <SelectionMenu selectedOnly={view.selectedOnly} onSelectedOnly={value=>setView(v=>({...v,selectedOnly:value}))} allChosen={selection.all} disabled={disabled||!lines.length} allTitle="Voor het hele geopende kader, ook buiten zoek- en groepsfilters. Je rapportkeuze blijft van toepassing." onToggleAll={()=>onSelect(lines.map(l=>l.id),!selection.all)}/>
   </div></div>
   <div className="law-browse-filters" aria-label="Normen filteren">
    <label className="law-search-label" htmlFor="report-norm-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="report-norm-search" placeholder="Zoek op norm, toetspunt of onderwerp…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>

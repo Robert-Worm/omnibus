@@ -44,16 +44,12 @@ export function ProjectUtilityContent({title,description,icon,children,footer,cl
 export function ShareProject({disabled,onDownload,error=''}:{disabled:boolean,onDownload:()=>void,error?:string}) {
   return <Dialog>
     <DialogTrigger render={<Button variant="outline" disabled={disabled} />}><Share2 size={16} aria-hidden="true"/>Delen</DialogTrigger>
-    <ProjectUtilityContent title="Je onderzoek overdragen" description="Geef iemand een kopie van je project om zelf mee verder te werken."
+    <ProjectUtilityContent title="Je onderzoek delen" description="Geef iemand een kopie van je project om zelf mee verder te werken."
       icon={<Share2 size={20}/>} className="share-project-dialog" closeLabel="Delen sluiten"
-      footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose><Button disabled={disabled} onClick={onDownload}><Download size={16} aria-hidden="true"/>Download project om te delen</Button></>}>
+      footer={<><DialogClose render={<Button variant="ghost"/>}>Sluiten</DialogClose><Button disabled={disabled} onClick={onDownload}><Download size={16} aria-hidden="true"/>Download projectbestand</Button></>}>
       {error && <p role="alert">{error}</p>}
-      <ol className="share-project-steps">
-        <li><div><strong>Bewaar een projectbestand</strong><p>Download je project met de knop hieronder.</p></div></li>
-        <li><div><strong>Stuur het veilig door</strong><p>Gebruik een kanaal dat voor jouw onderzoeksgegevens is toegestaan.</p></div></li>
-        <li><div><strong>Open de kopie in Omnibus</strong><p>De ontvanger kiest <strong>Open project</strong>, bij voorkeur in dezelfde versie van Omnibus.</p></div></li>
-      </ol>
-      <section className="project-utility-note"><h3>Wat gaat mee?</h3><p>Je doel, vragen, selecties, modelaanpassingen en exportinstellingen. Ook teamgegevens en notities gaan mee: controleer ze vóór het delen.</p></section>
+      <p>Download het projectbestand en stuur het via een kanaal dat voor je onderzoeksgegevens is toegestaan. De ontvanger kiest <strong>Open project</strong>.</p>
+      <p className="project-utility-hint">Ook teamgegevens en notities gaan mee; controleer ze vóór het delen.</p>
       <details className="share-link-explanation"><summary>Over het projectbestand en deellinks</summary>
         <p>De app en de oorspronkelijke brondocumenten zitten niet in het projectbestand. De ontvanger heeft die apart nodig. Jullie werken in afzonderlijke kopieën.</p>
         <p>Je project staat in deze browser, niet op een gedeelde projectserver. Een link naar Omnibus deelt je selecties en bewerkingen daarom niet. Er wordt niets geüpload bij het downloaden.</p>

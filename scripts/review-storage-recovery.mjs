@@ -230,7 +230,7 @@ try {
       },seed);
       await page.getByRole('button',{name:'Nieuw project',exact:true}).click();
       const explanation=await page.getByRole('alertdialog').innerText();
-      await page.getByRole('button',{name:'Wis project en begin opnieuw',exact:true}).click();await saved(page);
+      await page.getByRole('button',{name:'Wis en begin opnieuw',exact:true}).click();await saved(page);
       const empty=await read(page);assert.equal(empty.draft.included.length,0);assert.equal(empty.draft.research.questions.length,0);
       assert.equal(await page.evaluate(()=>sessionStorage.getItem('rijksmap-view-matrix-test')),null);
       assert.equal(await page.evaluate(()=>localStorage.getItem('rijksmap-project-v1-recovery-123')),seed);

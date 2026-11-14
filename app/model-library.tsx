@@ -31,7 +31,7 @@ import {
 } from "@/lib/catalogue-filters.mjs";
 import { chosenQuestionLevels, chooseModelQuestion, independentModelLevels } from "@/lib/model-context.mjs";
 import { questionFormulations, cycleQuestionFormulation } from "@/lib/content-adapters/question-formulations.mjs";
-import { RefreshCw, ArrowRight } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import {
   interviewLevels,
   modelDisplayName,
@@ -53,7 +53,6 @@ export default function ModelLibrary({
   onOpenModel,
   onCloseModel,
   onCatalogue,
-  onBuilder,
   overview,
   onOverviewChange:setOverview,
   suggestedSubject = "",
@@ -77,7 +76,7 @@ export default function ModelLibrary({
   onOpenModel:(id:string)=>void;
   onCloseModel:(id:string)=>void;
   onCatalogue:()=>void;
-  onBuilder:()=>void;
+  onBuilder?:()=>void;
   suggestedSubject?: string;
   directoryGroup?:string;
   onDirectoryGroup?:(id:string)=>void;
@@ -139,7 +138,7 @@ export default function ModelLibrary({
       {!guided&&mode==='workspace'&&<div className="model-open-navigation">
         {mode==='workspace'&&<OpenItemStrip id="models" items={openModels.map((model:LibraryModel)=>({id:model.id,title:modelDisplayName(model)}))} activeId={current?.id||null} onActivate={setActive} onClose={id=>{onCloseModel(id);if(id===current?.id)setActive(openIds.find(other=>other!==id)||null);}} onExplore={onCatalogue} exploreLabel="Terug naar alle modellen" disabled={!ready}/>}
       </div>}
-      {mode==='workspace'&&<div className="law-view-actions model-view-actions"><nav className="law-overview-tabs" aria-label="Modelweergave"><button aria-pressed={overview==='questions'} onClick={()=>setOverview('questions')}>Vragen</button><button disabled={!current} aria-pressed={overview==='about'&&Boolean(current)} onClick={()=>setOverview('about')}>Over dit model</button></nav><Button onClick={onBuilder}>Naar stap 3: Bouw je kader <ArrowRight size={16}/></Button></div>}
+      {mode==='workspace'&&<div className="law-view-actions model-view-actions"><nav className="law-overview-tabs" aria-label="Modelweergave"><button aria-pressed={overview==='questions'} onClick={()=>setOverview('questions')}>Vragen</button><button disabled={!current} aria-pressed={overview==='about'&&Boolean(current)} onClick={()=>setOverview('about')}>Over dit model</button></nav></div>}
       {mode==='workspace'&&current&&overview==='about'&&<ModelAbout model={current}/>}
       {mode==='catalogue' && <>
       {guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}

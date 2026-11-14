@@ -1,8 +1,8 @@
 /* Eenduidige stijl voor kopbalk, lijsten, keuzekaarten en donkere modus (expertpanels 14 november 2026, besluit B-055). */
 
 /* --- Kopbalk: één knopstijl. Tekstknoppen 34 px hoog; icoonknoppen 34×34. --- */
-.framework-app{--hb-line:#d5dce6;--hb-ink:#1f3a5f;--hb-hover:#eef3f9;--hb-hover-line:#b7c6da;--hb-on:#e1eaf5;--hb-on-line:#1f4e8c;--hb-focus:#1f4e8c}
-html[data-appearance=dark] .framework-app{--hb-line:#33445c;--hb-ink:#d6e0ec;--hb-hover:#1e2d42;--hb-hover-line:#4a6080;--hb-on:#23395a;--hb-on-line:#7fb0e6;--hb-focus:#7fb0e6}
+:is(.framework-app,.project-utility-dialog){--hb-line:#d5dce6;--hb-ink:#1f3a5f;--hb-hover:#eef3f9;--hb-hover-line:#b7c6da;--hb-on:#e1eaf5;--hb-on-line:#1f4e8c;--hb-focus:#1f4e8c}
+html[data-appearance=dark] :is(.framework-app,.project-utility-dialog){--hb-line:#33445c;--hb-ink:#d6e0ec;--hb-hover:#1e2d42;--hb-hover-line:#4a6080;--hb-on:#23395a;--hb-on-line:#7fb0e6;--hb-focus:#7fb0e6}
 .framework-app .brand-bar .project-actions button{height:2.125rem!important;min-height:2.125rem!important;padding:0 .75rem!important;border:1px solid var(--hb-line)!important;border-radius:8px!important;
  background:transparent!important;color:var(--hb-ink)!important;font:500 .875rem/1 var(--font-ui)!important;gap:.5rem!important;box-shadow:none!important;transition:background-color .12s,border-color .12s}
 .framework-app .brand-bar .project-actions button:not(:disabled):hover{background:var(--hb-hover)!important;border-color:var(--hb-hover-line)!important}
@@ -50,3 +50,27 @@ html[data-appearance=dark] .framework-app table thead th[class*="text-foreground
 html[data-appearance=dark] .framework-app .composer-field-label{color:var(--foreground)!important}
 /* Uitzondering: keuzeknoppen die in licht wel een rand hebben (Kolommen), houden die in donker ook. */
 html[data-appearance=dark] .framework-app .law-column-control button{border-color:var(--hb-line)!important}
+
+/* --- Menu's (Nieuw project, Delen, AI koppelen, Wegwijzer): één opbouw (besluit B-056). --- */
+[data-slot=alert-dialog-content].project-utility-dialog{padding:0!important;gap:0!important;overflow:hidden;max-width:min(36rem,calc(100vw - 2rem))!important}
+.project-utility-dialog .project-utility-header{position:relative;display:flex!important;flex-direction:row!important;align-items:flex-start;gap:.85rem;padding:1.4rem 3.25rem 1rem 1.5rem!important;text-align:left!important}
+.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem!important;font:600 1.25rem/1.3 var(--font-heading)!important;color:var(--primary)!important;text-align:left}
+.project-utility-dialog :is([data-slot=dialog-description],[data-slot=alert-dialog-description]){font:400 .875rem/1.5 var(--font-ui)!important;color:var(--rm-muted)!important;text-align:left}
+.project-utility-dialog .project-utility-close{position:absolute!important;top:.75rem;right:.75rem;width:2rem!important;height:2rem!important;min-height:2rem!important;padding:.4rem!important;border:0!important;background:transparent!important;color:var(--rm-muted)!important}
+.project-utility-dialog .project-utility-body{padding:0 1.5rem 1.25rem!important;display:grid;gap:.75rem;font-size:.875rem;line-height:1.5}
+.project-utility-dialog .project-utility-hint{font-size:.8125rem;color:var(--rm-muted)}
+.project-utility-dialog .project-utility-footer{display:flex!important;flex-direction:row!important;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:.6rem;margin:0!important;padding:.9rem 1.5rem!important;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
+/* Sluiten of Annuleren altijd links, de hoofdknop rechts. */
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){order:-1;margin-right:auto}
+.project-utility-dialog .project-utility-footer>output{order:-2;flex-basis:100%;font-size:.8125rem;color:var(--rm-muted)}
+.project-utility-dialog .project-utility-footer>output:empty{display:none}
+.project-utility-dialog .guide-context{margin:0 0 .2rem!important;font:500 .75rem/1.3 var(--font-ui);color:var(--rm-muted)}
+.workflow-help-dialog.project-utility-dialog .guide-instructions{margin:0;padding:0;border:0;background:none}
+/* Selectiemenu in de viewer. */
+.selection-menu-trigger{gap:.4rem}
+.selection-menu-trigger .selection-menu-flag{color:var(--rm-muted);font-weight:400}
+.selection-menu-trigger[data-active]{border-color:var(--primary)!important}
+/* Menu's in donker: voetknoppen zoals in licht (omlijnd; wissen in rustig rood). */
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,#33445c)!important;color:#d6e0ec!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12)!important;border:1px solid #6b3a3a!important;color:#f2a0a0!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec!important}

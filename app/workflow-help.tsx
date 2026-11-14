@@ -46,30 +46,26 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
     <DialogTrigger render={<Button ref={trigger} variant="outline" className="workflow-help-trigger" aria-label="Wegwijzer: hulp bij deze stap" title="Hulp bij deze stap" />}>
       <Compass className="guide-icon" size={18} aria-hidden="true" /><span>Wegwijzer</span>
     </DialogTrigger>
-    <DialogContent className="workflow-help-dialog contextual-help-dialog" showCloseButton={false}
+    {/* Zelfde opbouw als de andere menu's (besluit B-056): icoon, titel en ✕ bovenaan, inhoud, voetbalk met Sluiten links
+        en de hoofdknop rechts. */}
+    <DialogContent className="workflow-help-dialog contextual-help-dialog project-utility-dialog" showCloseButton={false}
       initialFocus={heading} finalFocus={() => navigating.current ? false : trigger.current}>
-      <div className="guide-context"><Compass size={18} aria-hidden="true" /><span>Wegwijzer</span><span aria-hidden="true">·</span><span>{guidance.pageLabel}</span></div>
-      <DialogHeader>
+      <DialogHeader className="project-utility-header">
+        <span className="project-utility-icon" aria-hidden="true"><Compass size={20}/></span>
+        <div><p className="guide-context">Wegwijzer · {guidance.pageLabel}</p>
         <DialogTitle ref={heading} tabIndex={-1}>{adviceTitle}</DialogTitle>
-        <DialogDescription>{adviceText}</DialogDescription>
+        <DialogDescription>{adviceText}</DialogDescription></div>
       </DialogHeader>
-      <DialogClose render={<Button variant="ghost" className="workflow-help-close" size="icon-sm" aria-label="Uitleg sluiten" />}><X size={18} aria-hidden="true" /></DialogClose>
+      <DialogClose render={<Button variant="ghost" className="project-utility-close workflow-help-close" size="icon-sm" aria-label="Wegwijzer sluiten" />}><X size={18} aria-hidden="true" /></DialogClose>
+      <div className="project-utility-body">
       {!ready && <p>Je project wordt geladen. Je kunt de uitleg alvast lezen.</p>}
       <section className="guide-instructions" aria-label={instructions.title}>
-        <h3>Zo pak je deze stap aan</h3>
         {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve Safari list semantics when CSS removes list markers. */}
         <ol role="list">{instructions.steps.map((text,index)=>{
           const StepIcon=[Compass,PencilLine,ArrowRight][index];
           return <li key={text}><StepIcon className="guide-instruction-icon" size={18} aria-hidden="true"/><div><strong>{instructions.labels[index]}</strong><p>{text}</p></div></li>;
         })}</ol>
       </section>
-      <div className="guide-actions">
-        {action && <Button className="guide-primary" variant="default" onClick={() => {
-          nextAction.current = {page: action.page, target: action.target};
-          navigating.current = true; setOpen(false);
-        }}>{action.label}<ArrowRight size={16} aria-hidden="true" /></Button>}
-        <DialogClose render={<Button variant="ghost" className="guide-dismiss" />}>Sluiten</DialogClose>
-      </div>
       <details className="guide-overview"><summary>Alle stappen in het kort</summary>
       {adviceText !== guidance.explanation && <p>{guidance.explanation}</p>}
       {action?.reason && <p>{action.reason}</p>}
@@ -85,6 +81,14 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
       <p><strong>Blijf zelf beoordelen.</strong> Controleer afbakening, toepasselijkheid en bron. Een modelvraag of rapportbevinding is niet vanzelf een toetsnorm. De Wegwijzer beoordeelt niet of je onderzoek inhoudelijk volledig of juist is.</p>
       <p><strong>Bewaar project</strong> maakt een heropenbaar projectbestand. Bewaar dit naast je Excelbestand: wijzigingen in Excel worden niet teruggelezen. Bij een opslagprobleem biedt de Wegwijzer toegang tot de opslaginformatie; de opslagmelding staat ook bij Exporteer.</p>
       </details>
+      </div>
+      <div className="project-utility-footer guide-actions">
+        <DialogClose render={<Button variant="ghost" className="guide-dismiss" />}>Sluiten</DialogClose>
+        {action && <Button className="guide-primary" variant="default" onClick={() => {
+          nextAction.current = {page: action.page, target: action.target};
+          navigating.current = true; setOpen(false);
+        }}>{action.label}<ArrowRight size={16} aria-hidden="true" /></Button>}
+      </div>
     </DialogContent>
   </Dialog>;
 }
