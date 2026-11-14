@@ -94,7 +94,7 @@
 html:not([data-appearance="dark"]) .framework-app .collection-filter-group > button[aria-pressed="true"] {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--donker-tekst-10);
 }
 
 /* One labelled field: caption above the control, consistent width.
@@ -173,7 +173,7 @@ html:not([data-appearance="dark"]) .framework-app .collection-filter-group > but
   --muted: var(--rm-surface);
   --muted-foreground: var(--rm-muted);
 }
-html[data-appearance=dark] .framework-app .catalogue-explorer { --card:#172330; }
+html[data-appearance=dark] .framework-app .catalogue-explorer { --card:var(--donker-vlak-2); }
 .framework-app .catalogue-explorer > .directory-heading h2 {
   font-size:1.15rem; margin:0 0 .5rem; line-height:1.3;
 }

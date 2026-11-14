@@ -1,3 +1,52 @@
+/* Palet voor de donkere weergave (besluit B-064). Elke kleur die in donker vaker voorkomt, staat hier één keer.
+   Wil je een tint aanpassen, doe dat hier; de regels hieronder en in de onderdelen verwijzen ernaar. */
+html[data-appearance=dark]{
+  /* vlakken, van donker naar licht */
+  --donker-vlak-1:#101923;
+  --donker-vlak-2:#172330;
+  --donker-vlak-3:#1f3045;
+  --donker-vlak-4:#20354a;
+  --donker-vlak-5:#22364d;
+  --donker-vlak-6:#25394d;
+  --donker-vlak-7:#29455f;
+  --donker-vlak-8:#294b69;
+  --donker-vlak-9:#265c89;
+  --donker-vlak-10:#5f8fbf;
+  --donker-vlak-11:#9fb6cc;
+  --donker-vlak-12:#c3e3fa;
+  /* lijnen en randen, van donker naar licht */
+  --donker-lijn-1:#33445c;
+  --donker-lijn-2:#35506b;
+  --donker-lijn-3:#435d76;
+  --donker-lijn-4:#4a6a8c;
+  --donker-lijn-5:#55728e;
+  --donker-lijn-6:#6884a0;
+  --donker-lijn-7:#729bbc;
+  --donker-lijn-8:#94c8f5;
+  /* tekst, van gedempt naar helder */
+  --donker-tekst-1:#b0bfd0;
+  --donker-tekst-2:#a2c9eb;
+  --donker-tekst-3:#abd5f7;
+  --donker-tekst-4:#d6e0ec;
+  --donker-tekst-5:#e0eaf5;
+  --donker-tekst-6:#e0edfa;
+  --donker-tekst-7:#e6edf5;
+  --donker-tekst-8:#e0f0ff;
+  --donker-tekst-9:#f0f7ff;
+  --donker-tekst-10:#ffffff;
+  /* groen (opgeslagen, goed) */
+  --donker-groen-1:#1d3a2e;
+  --donker-groen-2:#4e8064;
+  --donker-groen-3:#80a595;
+  --donker-groen-4:#6fb08f;
+  --donker-groen-5:#a5e0bb;
+  /* geel (let op) */
+  --donker-geel-1:#3a2f17;
+  --donker-geel-2:#d7ad6b;
+  --donker-geel-3:#e3c98b;
+  /* paars (accent) */
+  --donker-paars-1:#9482b1;
+}
 /* Application appearance is independent of project data and Excel design choices. */
 .framework-app .goal-builder .research-direction-picker:not(:disabled) label:hover {
   background:var(--rm-selected); border-color:var(--rm-accent); box-shadow:inset 0 0 0 1px var(--rm-accent);
@@ -10,34 +59,34 @@
 }
 .framework-app .goal-builder .research-direction-picker:disabled label { cursor:default; }
 :root { color-scheme: light; }
-html[data-appearance=dark] .framework-app .product-footer .footer-glossary-trigger { background:transparent; color:#abd5f7; }
-html[data-appearance=dark] .guide-instructions ol { background:#1b2d3d; border-color:#435d76; }
-html[data-appearance=dark] .guide-instructions li + li { border-color:#435d76; }
-html[data-appearance=dark] .guide-instructions .guide-instruction-icon { color:#a2c9eb; }
-html[data-appearance=dark] .glossary-dialog .glossary-group h3 { color:#abd5f7; border-color:#435d76; }
+html[data-appearance=dark] .framework-app .product-footer .footer-glossary-trigger { background:transparent; color:var(--donker-tekst-3); }
+html[data-appearance=dark] .guide-instructions ol { background:#1b2d3d; border-color:var(--donker-lijn-3); }
+html[data-appearance=dark] .guide-instructions li + li { border-color:var(--donker-lijn-3); }
+html[data-appearance=dark] .guide-instructions .guide-instruction-icon { color:var(--donker-tekst-2); }
+html[data-appearance=dark] .glossary-dialog .glossary-group h3 { color:var(--donker-tekst-3); border-color:var(--donker-lijn-3); }
 html[data-appearance=dark] [data-slot=dialog-content].glossary-dialog,
-html[data-appearance=dark] [data-slot=popover-content].term-help-popup { background:#172330; color:#e0eaf5; }
+html[data-appearance=dark] [data-slot=popover-content].term-help-popup { background:var(--donker-vlak-2); color:var(--donker-tekst-5); }
 html[data-appearance=dark] .framework-app button.term-help-trigger { background:transparent; color:inherit; border-color:transparent; }
-html[data-appearance=dark] .framework-app button.term-help-trigger:hover { color:#abd5f7; }
-html[data-appearance=dark] [data-slot=popover-content].term-help-popup .term-help-close { background:transparent; color:#abd5f7; }
+html[data-appearance=dark] .framework-app button.term-help-trigger:hover { color:var(--donker-tekst-3); }
+html[data-appearance=dark] [data-slot=popover-content].term-help-popup .term-help-close { background:transparent; color:var(--donker-tekst-3); }
 html[data-appearance=dark] .glossary-dialog :is(button,input,[data-slot=dialog-title]):focus-visible,
 html[data-appearance=dark] .term-help-popup button:focus-visible { outline-color:#94c8f5; }
-html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup { background:#172330; color:#e0eaf5; }
-html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup .term-help-close { background:transparent; color:#abd5f7; }
+html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup { background:var(--donker-vlak-2); color:var(--donker-tekst-5); }
+html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup .term-help-close { background:transparent; color:var(--donker-tekst-3); }
 html[data-appearance=dark] :is(.framework-app,[data-slot=sheet-content]) button.relevance-help-trigger { background:transparent; color:#abd5f7; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger { width:auto; padding:0 .65rem; gap:.4rem; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#d5e6f5; border-color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger .guide-icon { width:1.125rem; height:1.125rem; flex-shrink:0; }
-html[data-appearance=dark] .framework-app .brand-bar .project-actions .workflow-help-trigger { background:#29455f; border-color:#729bbc; color:#e0f0ff; }
-html[data-appearance=dark] .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#355975; border-color:#a2c9eb; }
-html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog { background:#172330; color:#e0eaf5; }
+html[data-appearance=dark] .framework-app .brand-bar .project-actions .workflow-help-trigger { background:var(--donker-vlak-7); border-color:var(--donker-lijn-7); color:var(--donker-tekst-8); }
+html[data-appearance=dark] .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#355975; border-color:var(--donker-tekst-2); }
+html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog { background:var(--donker-vlak-2); color:var(--donker-tekst-5); }
 html[data-appearance=dark] .contextual-help-dialog :is(.guide-context,.guide-welcome-note) { color:#bbcedf; }
 html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog .guide-primary { background:#a9d4f5; color:#112a40; }
-html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog .guide-primary:hover { background:#c3e3fa; }
+html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog .guide-primary:hover { background:var(--donker-vlak-12); }
 html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog :is(.guide-dismiss,.workflow-help-close) { background:transparent; border-color:transparent; color:#bbcedf; }
 html[data-appearance=dark] [data-slot=dialog-content].contextual-help-dialog :is(.guide-dismiss,.workflow-help-close):hover { background:#29455f; color:#e0f0ff; }
-html[data-appearance=dark] .contextual-help-dialog .guide-overview > summary { color:#abd5f7; background:#20374c; border-color:#4c6d8a; }
-html[data-appearance=dark] .contextual-help-dialog .guide-overview > summary:hover { background:#29455f; border-color:#729bbc; }
+html[data-appearance=dark] .contextual-help-dialog .guide-overview > summary { color:var(--donker-tekst-3); background:#20374c; border-color:#4c6d8a; }
+html[data-appearance=dark] .contextual-help-dialog .guide-overview > summary:hover { background:var(--donker-vlak-7); border-color:var(--donker-lijn-7); }
 html[data-appearance=dark] .contextual-help-dialog :is(button,summary,[data-slot=dialog-title]):focus-visible { outline-color:#94c8f5; }
 .framework-app .brand-bar .project-actions .appearance-toggle { width:2.125rem; height:2.125rem; min-width:2.125rem; padding:0; }
 .footer-about-contact > a { display:flex; align-items:center; gap:.55rem; margin:.6rem 0; overflow-wrap:anywhere; }
@@ -52,7 +101,7 @@ html[data-appearance=dark] .contextual-help-dialog :is(button,summary,[data-slot
   overflow-wrap:anywhere; cursor:pointer;
 }
 .framework-app .product-footer .footer-contact-item:hover { background:var(--rm-selected); border-color:var(--rm-accent); }
-html[data-appearance=dark] .framework-app .product-footer .footer-contact-item { background:#20354a; color:#e0edfa; border-color:#55728e; }
+html[data-appearance=dark] .framework-app .product-footer .footer-contact-item { background:var(--donker-vlak-4); color:var(--donker-tekst-6); border-color:var(--donker-lijn-5); }
 html[data-appearance=dark] .framework-app .product-footer .footer-contact-item:hover { background:#304c68; border-color:var(--rm-accent); }
 .framework-app .product-footer .footer-contact-item > svg { width:1rem; height:1rem; flex-shrink:0; margin:0; }
 .framework-app .product-footer .footer-about-contact > .footer-contact-item { width:auto; }
@@ -109,7 +158,7 @@ html[data-appearance=dark] .footer-mail-choice-actions > .footer-mail-choice-pri
 .project-utility-dialog button:not(.project-utility-close) { min-height:2.5rem; height:auto; max-width:100%; padding:.55rem .85rem; white-space:normal; font:500 .875rem/1.4 var(--font-ui); }
 .project-utility-dialog :is(button,summary):focus-visible { outline:2px solid var(--ring); outline-offset:3px; }
 html[data-appearance=dark] .project-utility-dialog .project-utility-footer .bg-primary { background:var(--primary); border-color:var(--primary); color:var(--primary-foreground); }
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer .bg-primary:hover { background:#c3e3fa; }
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer .bg-primary:hover { background:var(--donker-vlak-12); }
 html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.project-utility-footer button:not(.bg-primary)) { background:transparent; border-color:transparent; color:var(--rm-muted); }
 html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.project-utility-footer button:not(.bg-primary)):hover { background:var(--rm-selected); color:var(--foreground); }
 .share-project-steps { list-style:none; counter-reset:share-step; padding:0; margin:0; display:grid; gap:1rem; }
@@ -184,13 +233,13 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
 @media screen {
   :root[data-appearance=dark] {
     color-scheme:dark;
-    --background:#101923; --foreground:#dce6f1; --primary:#94c8f5;
-    --primary-foreground:#101923;
-    --border:#384b60; --rm-accent:#83caf3; --rm-muted:#b0bfd0;
-    --rm-surface:#1d2b3b; --rm-selected:#29455f; --rm-control-border:#6884a0; --rm-input:#101c29; --rm-id:#b0bfd0;
+    --background:var(--donker-vlak-1); --foreground:#dce6f1; --primary:var(--donker-lijn-8);
+    --primary-foreground:var(--donker-vlak-1);
+    --border:#384b60; --rm-accent:#83caf3; --rm-muted:var(--donker-tekst-1);
+    --rm-surface:#1d2b3b; --rm-selected:var(--donker-vlak-7); --rm-control-border:var(--donker-lijn-6); --rm-input:#101c29; --rm-id:var(--donker-tekst-1);
     --rm-card-shadow:none;
   }
-  html[data-appearance=dark] body { background:#101923; color:var(--foreground); }
+  html[data-appearance=dark] body { background:var(--donker-vlak-1); color:var(--foreground); }
   /* Existing components use a mix of tokens and legacy colors. These overrides
      cover shared surfaces without changing source images or export colors. */
   html[data-appearance=dark] :is(.framework-app,[data-slot=dialog-content],[data-slot=alert-dialog-content],[data-slot=sheet-content],[data-slot=popover-content]) { color:var(--foreground); }
@@ -201,7 +250,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] .framework-app.compact-app :is(.brand-bar,.product-footer),
   html[data-appearance=dark] :is([data-slot=dialog-content],[data-slot=alert-dialog-content],[data-slot=sheet-content],[data-slot=popover-content]),
   html[data-appearance=dark] .framework-app :is(.workflow-surface,.goal-builder,.creator-card,.creator-preset,.model-catalogue-row,.research-question,.research-start,.cev-workbench,.cev-question,.model-variable,.model-question-option,.theme-card,.foundation-card,.entry-grid article,.investigation-steps,.collection-navigation nav,.goal-builder [role=radiogroup] label,.foundation-scope-notes article) { background:#172330; color:var(--foreground); }
-  html[data-appearance=dark] [data-slot=sheet-content].foundation-detail { background:#172330 !important; }
+  html[data-appearance=dark] [data-slot=sheet-content].foundation-detail { background:var(--donker-vlak-2) !important; }
   html[data-appearance=dark] :is(.framework-app,[data-slot=dialog-content],[data-slot=alert-dialog-content],[data-slot=sheet-content]) :is(input,select,textarea) { background:#101c29; color:var(--foreground); border-color:var(--rm-control-border); }
   html[data-appearance=dark] input::placeholder,html[data-appearance=dark] textarea::placeholder { color:#a2b2c5; }
   html[data-appearance=dark] :is(.framework-app,[data-slot=dialog-content],[data-slot=alert-dialog-content],[data-slot=sheet-content]) :is(button,[role=button]) { background:#20354a; color:#e0edfa; border-color:#55728e; }
@@ -209,37 +258,37 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   html[data-appearance=dark] :is(.framework-app,[data-slot=dialog-content],[data-slot=alert-dialog-content],[data-slot=sheet-content]) button:disabled { opacity:.55; }
   html[data-appearance=dark] .framework-app :is(button[aria-pressed=true],button[aria-selected=true],[role=checkbox][data-checked],.goal-builder [role=radiogroup] label.is-selected,.investigation-steps a[aria-current],.collection-navigation nav a[aria-current],.cev-question.is-chosen,.creator-testing-aspects label[data-selected=true]) { background:#294b69; border-color:#94c8f5; color:#f0f7ff; }
   html[data-appearance=dark] .framework-app :is(.investigation-steps a,.collection-navigation nav a) { background:var(--rm-surface); color:var(--foreground); }
-  html[data-appearance=dark] .framework-app .collection-navigation .collection-grouped-nav { background:#172330; }
+  html[data-appearance=dark] .framework-app .collection-navigation .collection-grouped-nav { background:var(--donker-vlak-2); }
   html[data-appearance=dark] .framework-app .collection-nav-group { background:transparent; }
   html[data-appearance=dark] .framework-app .collection-open-count { background:#2c3c4d; }
-  html[data-appearance=dark] .framework-app .collection-grouped-nav .collection-nav-links a[aria-current] { background:#294b69; color:#f0f7ff; box-shadow:inset 0 0 0 1px #6884a0; }
+  html[data-appearance=dark] .framework-app .collection-grouped-nav .collection-nav-links a[aria-current] { background:var(--donker-vlak-8); color:var(--donker-tekst-9); box-shadow:inset 0 0 0 1px var(--donker-lijn-6); }
   html[data-appearance=dark] .framework-app .collection-grouped-nav .collection-nav-links a:not([aria-current]) { background:transparent; }
-  html[data-appearance=dark] .framework-app .collection-grouped-nav .collection-nav-links a:not([aria-current]):hover { background:#20354a; }
-  html[data-appearance=dark] .framework-app .workflow-next { background:#265c89; color:white; }
+  html[data-appearance=dark] .framework-app .collection-grouped-nav .collection-nav-links a:not([aria-current]):hover { background:var(--donker-vlak-4); }
+  html[data-appearance=dark] .framework-app .workflow-next { background:var(--donker-vlak-9); color:white; }
   html[data-appearance=dark] .framework-app :is(.goal-preview,.research-goal-summary,.central-help,.central-proposals,.subquestion-picker,.research-bank,.creator-selection-summary,.creator-testing-aspects,.goal-fields > div,.approach-question-preview,.cev-selection,.cev-applicability,.cev-evidence,.cev-level-summary,.model-indicator,.source-passage-links,.source-status,.foundation-readable-norm,.foundation-scope-notes,.bulk-link-panel,.model-question-adoption,.reader-layout-notice,.creator-sheet-list li,.creator-sheet-list span,.research-direction-badge,.column-arrows,.goal-suggestions ul) { background:var(--rm-surface); color:var(--foreground); }
   html[data-appearance=dark] .framework-app :is(.step-count,.cev-count,.model-selection-count,.group-selection-count) { background:#29455f; color:#dceeff; }
   html[data-appearance=dark] .framework-app :is(.cev-wording,.cev-question-kind,.cev-count,.cev-dimension-number,.cev-dimensions-caption,.creator-preview-heading,.creator-preview-heading > span,.criterion-reference,.criterion-group-description,.sub-proposal-origin,.product-footer-version,.product-identity,.eyebrow) { color:var(--rm-muted); }
-  html[data-appearance=dark] .framework-app table:not(.creator-table-scroll table) { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .framework-app table:not(.creator-table-scroll table) { background:var(--donker-vlak-2); color:var(--foreground); }
   html[data-appearance=dark] .framework-app :is(th,td):not(.creator-table-scroll *) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .framework-app :is(th,.criterion-group th):not(.creator-table-scroll *) { background:#25394d; }
   html[data-appearance=dark] :is(.provision-status,.provision-status:hover,.source-cell-notice,.export-input-guidance,.project-import-feedback,.framework-app .brand-bar .project-actions .storage-status) { background:#3c2e16; color:#ffd98d; border-color:#997436; }
   html[data-appearance=dark] .notification-dot { background:#ffd98d; }
-  html[data-appearance=dark] .provision-status-detail { background:#172330; color:var(--foreground); }
+  html[data-appearance=dark] .provision-status-detail { background:var(--donker-vlak-2); color:var(--foreground); }
   /* A workbook preview and a scanned source keep their own paper colors. */
-  html[data-appearance=dark] .creator-table-scroll { color-scheme:light; background:#fff; color:#15233b; }
+  html[data-appearance=dark] .creator-table-scroll { color-scheme:light; background:var(--donker-tekst-10); color:#15233b; }
   html[data-appearance=dark] .creator-table-scroll :is(p,small,strong) { color:inherit; }
-  html[data-appearance=dark] :focus-visible { outline-color:#94c8f5; }
+  html[data-appearance=dark] :focus-visible { outline-color:var(--donker-lijn-8); }
   html[data-appearance=dark] .framework-app.compact-app :is(input,select,textarea) { background:#101c29; color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app :is(.process-list article,.foundation-list article,.empty-framework,.report-list-item,.report-list-heading,.goal-question-direction,.research-direction-picker label,.skip-link,.sub-suggestions,.research-question-card,.research-bank-item,.question-target,.norm-link-picker,.link-actions) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app :is(.theme-description,.creator-preset > span,.cev-level-summary > span,.cev-interview-guidance,.cev-interview-guidance p,.report-list-body,.report-list-body p,.report-list-body h2,.creator-preview > h3) { color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app .entry-grid svg { color:var(--rm-accent); }
-  html[data-appearance=dark] :is(.navigation-filter) { background:#172330 !important; color:var(--foreground); }
+  html[data-appearance=dark] :is(.navigation-filter) { background:var(--donker-vlak-2) !important; color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app :is(.cev-usage,.research-builder,.research-toolbar > span,.bank-heading > span,.question-level,.question-count,.source-meta) { color:var(--rm-muted); }
   html[data-appearance=dark] .framework-app.compact-app :is(.research-item,.question-suggestions,.subquestion-option,.central-proposals button,.report-filter-help,.report-choice-help) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] :is([data-slot=sheet-content],[data-slot=popover-content]) :is(.foundation-readable-norm,.foundation-scope-notes,.link-norm-context,.source-status,.source-passage-links,.about-framework [data-slot=sheet-header],.norm-link-picker,.question-target,.link-actions) { background:var(--rm-surface); color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app :is(.report-choice-panel,.column-picker,.bank-return-zone) { background:var(--rm-surface); color:var(--rm-muted); }
   html[data-appearance=dark] .framework-app.compact-app :is(.material-kind,.navigation-notice,.result-count,.column-arrows > span,.filter-count,.matrix-bottom,.matrix-bottom span) { color:var(--rm-muted); }
-  html[data-appearance=dark] .framework-app.compact-app .creator-preview.creator-card > h3 { color:var(--foreground) !important; }
+  html[data-appearance=dark] .framework-app.compact-app .creator-preview.creator-card > h3 { color:var(--foreground); }
   html[data-appearance=dark] .framework-app.compact-app .column-picker > div { background:var(--rm-surface); }
   html[data-appearance=dark] .framework-app.compact-app .full-text-trigger { background:transparent; color:inherit; }
   html[data-appearance=dark] [data-slot=sheet-content]:is(.foundation-source-reader,.foundation-comparison) :is(input,select) { background:#101c29; color:var(--foreground); }
@@ -247,68 +296,68 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   /* Wet- en kaderviewer: filters, groepen en de normtabel kregen vaste lichte kleuren. */
   html[data-appearance=dark] .framework-app :is(.law-group,.law-browse-filters,.matrix-explained-table) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .framework-app .law-group-heading { background:var(--rm-surface); }
-  html[data-appearance=dark] .framework-app thead { background:#25394d; }
+  html[data-appearance=dark] .framework-app thead { background:var(--donker-vlak-6); }
   html[data-appearance=dark] .law-viewer-heading h2 { color:var(--foreground); }
   html[data-appearance=dark] :is(.law-viewer-heading output,.cio-source-toolbar > span,.cio-point-source .cio-source-links button span) { color:var(--rm-muted); }
   html[data-appearance=dark] .framework-app :is(.law-group-location,.law-group-count) { color:var(--rm-muted); }
   /* Normdetail (rapporten en kaders): vlakken, kaarten en tekst in donker; het brondocument houdt zijn papierkleur. */
-  html[data-appearance=dark] [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { background:#101923; color:var(--foreground); }
+  html[data-appearance=dark] [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { background:var(--donker-vlak-1); color:var(--foreground); }
   html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-header],.bd-panel-nav,.bd-footer,.bd-criterion,.bd-point,.law-active-point,.law-application,.law-parent-criterion) { background:#172330; color:var(--foreground); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-point.is-chosen { background:#1d3a2e; border-color:#6fb08f; }
-  html[data-appearance=dark] .bd-pilot-detail .bd-context-card { background:#172330; color:var(--foreground); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-objective { background:color-mix(in srgb,#5f8fbf 16%,#172330); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-risk { background:color-mix(in srgb,#d7ad6b 14%,#172330); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-controlObjective { background:color-mix(in srgb,#9482b1 16%,#172330); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-control { background:color-mix(in srgb,#80a595 16%,#172330); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-point.is-chosen { background:var(--donker-groen-1); border-color:var(--donker-groen-4); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card { background:var(--donker-vlak-2); color:var(--foreground); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-objective { background:color-mix(in srgb,var(--donker-vlak-10) 16%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-risk { background:color-mix(in srgb,var(--donker-geel-2) 14%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-controlObjective { background:color-mix(in srgb,var(--donker-paars-1) 16%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .bd-pilot-detail .bd-context-card.bd-control { background:color-mix(in srgb,var(--donker-groen-3) 16%,var(--donker-vlak-2)); }
   html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-title],h2,h3,h4,strong,p,dd,li,label,blockquote):not(:is(.comparison-source,.report-reading) *) { color:var(--foreground); }
   html[data-appearance=dark] .bd-pilot-detail :is([data-slot=sheet-description],small,.bd-panel-nav button:not([aria-pressed=true]),.bd-footer span):not(:is(.comparison-source,.report-reading) *) { color:var(--rm-muted); }
-  html[data-appearance=dark] .bd-pilot-detail .bd-panel-nav button[aria-pressed=true] { background:#294b69; color:#f0f7ff; }
+  html[data-appearance=dark] .bd-pilot-detail .bd-panel-nav button[aria-pressed=true] { background:var(--donker-vlak-8); color:var(--donker-tekst-9); }
   /* Kaderviewer (wetten en kaders): tabbalk, ketenkaarten en toetspuntkaarten hadden vaste lichte vlakken. */
-  html[data-appearance=dark] .law-detail .law-main-tabs { background:#172330; }
+  html[data-appearance=dark] .law-detail .law-main-tabs { background:var(--donker-vlak-2); }
   html[data-appearance=dark] .law-detail .law-point-tabs button:not([aria-pressed=true]) { background:transparent; border-color:transparent; color:var(--rm-muted); }
-  html[data-appearance=dark] .law-detail .law-point-tabs button[aria-pressed=true] { background:#294b69; color:#f0f7ff; box-shadow:inset 0 -2px #94c8f5; }
-  html[data-appearance=dark] .law-detail .law-context-card { background:color-mix(in srgb,#5f8fbf 16%,#172330); color:var(--foreground); }
-  html[data-appearance=dark] .law-detail .law-context-risk { background:color-mix(in srgb,#d7ad6b 14%,#172330); }
-  html[data-appearance=dark] .law-detail .law-context-controlObjective { background:color-mix(in srgb,#9482b1 16%,#172330); }
-  html[data-appearance=dark] .law-detail .law-context-control { background:color-mix(in srgb,#80a595 16%,#172330); }
+  html[data-appearance=dark] .law-detail .law-point-tabs button[aria-pressed=true] { background:var(--donker-vlak-8); color:var(--donker-tekst-9); box-shadow:inset 0 -2px var(--donker-lijn-8); }
+  html[data-appearance=dark] .law-detail .law-context-card { background:color-mix(in srgb,var(--donker-vlak-10) 16%,var(--donker-vlak-2)); color:var(--foreground); }
+  html[data-appearance=dark] .law-detail .law-context-risk { background:color-mix(in srgb,var(--donker-geel-2) 14%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .law-detail .law-context-controlObjective { background:color-mix(in srgb,var(--donker-paars-1) 16%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .law-detail .law-context-control { background:color-mix(in srgb,var(--donker-groen-3) 16%,var(--donker-vlak-2)); }
   html[data-appearance=dark] .law-detail .law-context-card .law-context-reason { color:var(--rm-muted); }
   html[data-appearance=dark] .law-detail :is(.law-choice-card,.law-point-item) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .law-detail :is(.law-choice-card,.law-point-item).is-chosen { background:#1d3a2e; border-color:#6fb08f; }
-  html[data-appearance=dark] .law-detail .law-point-item.is-active { background:#20354a; }
+  html[data-appearance=dark] .law-detail .law-point-item.is-active { background:var(--donker-vlak-4); }
   html[data-appearance=dark] .law-detail .law-point-item.is-hold { background:#3c2e16; }
   html[data-appearance=dark] .law-detail .law-choice-actions button { background:transparent; border-color:transparent; color:var(--rm-accent); }
   /* Tabbladen Bronpassage en Toetsaanpak; de bron zelf houdt zijn papierkleur. */
-  html[data-appearance=dark] .law-detail .cio-norm-summary { background:color-mix(in srgb,#80a595 16%,#172330); }
-  html[data-appearance=dark] .law-detail .cio-norm-heading { color:#a5e0bb; }
-  html[data-appearance=dark] .law-detail .cio-norm-heading > span { color:#c9e6d6; border-color:#4e8064; }
+  html[data-appearance=dark] .law-detail .cio-norm-summary { background:color-mix(in srgb,var(--donker-groen-3) 16%,var(--donker-vlak-2)); }
+  html[data-appearance=dark] .law-detail .cio-norm-heading { color:var(--donker-groen-5); }
+  html[data-appearance=dark] .law-detail .cio-norm-heading > span { color:#c9e6d6; border-color:var(--donker-groen-2); }
   html[data-appearance=dark] .law-detail .cio-norm-summary > small { color:var(--rm-muted); }
   html[data-appearance=dark] .law-detail :is(.cio-source-link-card,.cio-phase) { background:#172330; color:var(--foreground); }
   html[data-appearance=dark] .law-detail .cio-point-source [data-source-group=context] { background:var(--rm-surface); }
-  html[data-appearance=dark] .law-detail .cio-point-source [data-source-group=context] .cio-source-link-card { background:#172330; }
-  html[data-appearance=dark] .law-detail .cio-source-link-card.is-active { border-color:#729bbc; box-shadow:inset 3px 0 #94c8f5; }
+  html[data-appearance=dark] .law-detail .cio-point-source [data-source-group=context] .cio-source-link-card { background:var(--donker-vlak-2); }
+  html[data-appearance=dark] .law-detail .cio-source-link-card.is-active { border-color:var(--donker-lijn-7); box-shadow:inset 3px 0 var(--donker-lijn-8); }
   html[data-appearance=dark] .law-detail .cio-source-links button { background:transparent; border-color:transparent; color:var(--rm-accent); }
   html[data-appearance=dark] .law-detail .cio-source-links > section > h4 { color:var(--foreground); }
   html[data-appearance=dark] .law-detail .cio-phase .cio-phase-evidence { background:var(--rm-surface); }
   /* Begripsuitleg in een kop: een woord, geen knop; ook in een paneel buiten .framework-app. */
   html[data-appearance=dark] :is([data-slot=sheet-content],[data-slot=dialog-content]) button.term-help-trigger { background:transparent; color:inherit; border-color:transparent; }
   html[data-appearance=dark] :is([data-slot=sheet-content],[data-slot=dialog-content]) button.term-help-trigger:hover { color:#abd5f7; }
-  html[data-appearance=dark] [data-slot=dropdown-menu-content].research-menu { background:#172330; color:var(--foreground); border-color:var(--border); }
-  html[data-appearance=dark] .research-menu [data-highlighted] { background:#29455f; color:var(--foreground); }
+  html[data-appearance=dark] [data-slot=dropdown-menu-content].research-menu { background:var(--donker-vlak-2); color:var(--foreground); border-color:var(--border); }
+  html[data-appearance=dark] .research-menu [data-highlighted] { background:var(--donker-vlak-7); color:var(--foreground); }
   html[data-appearance=dark] .research-menu [data-variant=destructive] { color:#ffcfce; }
 }
-html[data-appearance=dark] .law-audience-notice{background:color-mix(in srgb,#e3c98b 14%,transparent);border-color:color-mix(in srgb,#e3c98b 45%,transparent);color:inherit}html[data-appearance=dark] .law-audience-beide{background:color-mix(in srgb,#9fb6cc 12%,transparent);border-color:color-mix(in srgb,#9fb6cc 40%,transparent)}html[data-appearance=dark] .catalogue-card-role{color:#e8c37a}
-html[data-appearance=dark] button.related-norms-trigger{background:#1d2b3a;border-color:#35506b;color:#abd5f7}
-html[data-appearance=dark] .related-norms-link{color:#abd5f7}
+html[data-appearance=dark] .law-audience-notice{background:color-mix(in srgb,var(--donker-geel-3) 14%,transparent);border-color:color-mix(in srgb,var(--donker-geel-3) 45%,transparent);color:inherit}html[data-appearance=dark] .law-audience-beide{background:color-mix(in srgb,var(--donker-vlak-11) 12%,transparent);border-color:color-mix(in srgb,var(--donker-vlak-11) 40%,transparent)}html[data-appearance=dark] .catalogue-card-role{color:#e8c37a}
+html[data-appearance=dark] button.related-norms-trigger{background:#1d2b3a;border-color:var(--donker-lijn-2);color:var(--donker-tekst-3)}
+html[data-appearance=dark] .related-norms-link{color:var(--donker-tekst-3)}
 html[data-appearance=dark] .related-norms-popup small{color:#9fb3c8}
-html[data-appearance=dark] .law-active-choice{background:#172330;border-color:#35506b}
+html[data-appearance=dark] .law-active-choice{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2)}
 html[data-appearance=dark] :is(.law-point-picker .law-point-select,.law-point-menu){background:#172330;border-color:#35506b;color:var(--foreground)}
 html[data-appearance=dark] :is(.law-point-select-title strong,.law-point-menu .law-point-option .law-point-option-text>span){color:#f0f7ff}
 html[data-appearance=dark] :is(.law-point-select-body>small,.law-point-option-text small){color:#a9bccf}
-html[data-appearance=dark] .law-point-menu .law-point-option[data-highlighted]{background:#20354a}
-html[data-appearance=dark] .law-point-menu .law-point-option[data-selected]{background:#294b69;box-shadow:inset 3px 0 #94c8f5}
-html[data-appearance=dark] .law-point-num{background:#29455f;color:#e0f0ff}
-html[data-appearance=dark] .law-point-num.is-chosen{background:#1d3a2e;color:#a5e0bb}
-html[data-appearance=dark] .law-point-option-text small.is-chosen{color:#6fb08f}
+html[data-appearance=dark] .law-point-menu .law-point-option[data-highlighted]{background:var(--donker-vlak-4)}
+html[data-appearance=dark] .law-point-menu .law-point-option[data-selected]{background:var(--donker-vlak-8);box-shadow:inset 3px 0 var(--donker-lijn-8)}
+html[data-appearance=dark] .law-point-num{background:var(--donker-vlak-7);color:var(--donker-tekst-8)}
+html[data-appearance=dark] .law-point-num.is-chosen{background:var(--donker-groen-1);color:var(--donker-groen-5)}
+html[data-appearance=dark] .law-point-option-text small.is-chosen{color:var(--donker-groen-4)}
 html[data-appearance=dark] .law-point-option-text small.is-hold{color:#e6c37a}
 
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
@@ -316,57 +365,57 @@ html[data-appearance=dark] .law-point-option-text small.is-hold{color:#e6c37a}
 :is(.framework-app,.project-utility-dialog){--hb-line:#d5dce6;--hb-ink:#1f3a5f;--hb-hover:#eef3f9;--hb-hover-line:#b7c6da;--hb-on:#e1eaf5;--hb-on-line:#1f4e8c;--hb-focus:#1f4e8c}
 /* Eenduidige stijl voor kopbalk, lijsten, keuzekaarten en donkere modus (expertpanels 14 november 2026, besluit B-055). */
 html[data-appearance=dark] :is(.framework-app,.project-utility-dialog){--hb-line:#33445c;--hb-ink:#d6e0ec;--hb-hover:#1e2d42;--hb-hover-line:#4a6080;--hb-on:#23395a;--hb-on-line:#7fb0e6;--hb-focus:#7fb0e6}
-.framework-app .brand-bar .project-actions button{height:2.125rem!important;min-height:2.125rem!important;padding:0 .75rem!important;border:1px solid var(--hb-line)!important;border-radius:8px!important;
- background:transparent!important;color:var(--hb-ink)!important;font:500 .875rem/1 var(--font-ui)!important;gap:.5rem!important;box-shadow:none!important;transition:background-color .12s,border-color .12s}
+.framework-app .brand-bar .project-actions button{height:2.125rem;min-height:2.125rem;padding:0 .75rem!important;border:1px solid var(--hb-line)!important;border-radius:8px;
+ background:transparent!important;color:var(--hb-ink)!important;font:500 .875rem/1 var(--font-ui)!important;gap:.5rem!important;box-shadow:none;transition:background-color .12s,border-color .12s}
 .framework-app .brand-bar .project-actions button:not(:disabled):hover{background:var(--hb-hover)!important;border-color:var(--hb-hover-line)!important}
 .framework-app .brand-bar .project-actions button:is([aria-expanded=true],[data-popup-open],[data-state=open]){background:var(--hb-on)!important;border-color:var(--hb-on-line)!important}
 .framework-app .brand-bar .project-actions button:focus-visible{outline:2px solid var(--hb-focus)!important;outline-offset:2px}
 /* Wegwijzer niet langer altijd 'actief'; opslagstatus als rustig icoon zonder vlak. */
-.framework-app .brand-bar .project-actions .workflow-help-trigger{background:transparent!important;border-color:var(--hb-line)!important;color:var(--hb-ink)!important}
+.framework-app .brand-bar .project-actions .workflow-help-trigger{background:transparent!important;border-color:var(--hb-line)!important;color:var(--hb-ink)}
 .framework-app .brand-bar .project-actions button svg{width:1rem!important;height:1rem!important}
 /* --- Menu's (Nieuw project, Delen, AI koppelen, Wegwijzer): één opbouw (besluit B-056). --- */
-[data-slot=alert-dialog-content].project-utility-dialog{padding:0!important;gap:0!important;overflow:hidden;max-width:min(38rem,calc(100vw - 2rem))!important;width:min(38rem,calc(100vw - 2rem))!important}
-.project-utility-dialog .project-utility-header{position:relative;display:flex!important;flex-direction:row!important;align-items:flex-start;text-align:left!important}
-.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem!important;font:600 1.25rem/1.3 var(--font-heading)!important;color:var(--primary)!important;text-align:left}
+[data-slot=alert-dialog-content].project-utility-dialog{padding:0;gap:0;overflow:hidden;max-width:min(38rem,calc(100vw - 2rem));width:min(38rem,calc(100vw - 2rem))}
+.project-utility-dialog .project-utility-header{position:relative;display:flex;flex-direction:row;align-items:flex-start;text-align:left}
+.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem;font:600 1.25rem/1.3 var(--font-heading)!important;color:var(--primary)!important;text-align:left}
 .project-utility-dialog :is([data-slot=dialog-description],[data-slot=alert-dialog-description]){font:400 .875rem/1.5 var(--font-ui)!important;color:var(--rm-muted)!important;text-align:left}
-.project-utility-dialog .project-utility-close{position:absolute!important;width:2rem!important;height:2rem!important;min-height:2rem!important;padding:.4rem!important;border:0!important;background:transparent!important;color:var(--rm-muted)!important}
+.project-utility-dialog .project-utility-close{position:absolute;width:2rem;height:2rem;min-height:2rem;padding:.4rem;border:0!important;background:transparent!important;color:var(--rm-muted)!important}
 .project-utility-dialog .project-utility-body{display:grid;font-size:.875rem;line-height:1.5}
 .project-utility-dialog .project-utility-hint{font-size:.8125rem;color:var(--rm-muted)}
-.project-utility-dialog .project-utility-footer{display:flex!important;flex-direction:row!important;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:0!important;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
+.project-utility-dialog .project-utility-footer{display:flex;flex-direction:row;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:0;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
 /* Sluiten of Annuleren altijd links, de hoofdknop rechts. */
 .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){order:-1;margin-right:auto}
 .project-utility-dialog .project-utility-footer>output{order:-2;flex-basis:100%;font-size:.8125rem;color:var(--rm-muted)}
 .project-utility-dialog .project-utility-footer>output:empty{display:none}
-.project-utility-dialog .guide-context{margin:0 0 .2rem!important;font:500 .75rem/1.3 var(--font-ui);color:var(--rm-muted)}
+.project-utility-dialog .guide-context{margin:0 0 .2rem;font:500 .75rem/1.3 var(--font-ui);color:var(--rm-muted)}
 /* Menu's in donker: voetknoppen zoals in licht (omlijnd; wissen in rustig rood). */
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,#33445c)!important;color:#d6e0ec!important}
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12)!important;border:1px solid #6b3a3a!important;color:#f2a0a0!important}
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,var(--donker-lijn-1))!important;color:var(--donker-tekst-4)}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12);border:1px solid #6b3a3a;color:#f2a0a0}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec}
 /* ===== 0.1.52: menu's in vaste maatvoering (panel 14 november 2026, besluit B-057) =====
    Kop 24/24/20 px, icoon 40×40, titel op x=80. Inhoud begint 20 px onder de lijn; tekst op de titelkolom,
    genummerde stappen met het nummer onder het icoon. Voetbalk 16/24 px, Sluiten omlijnd links, hoofdknop rechts. */
-.project-utility-dialog .project-utility-header{padding:24px 56px 20px 24px!important;gap:16px!important;border-bottom:1px solid var(--border)}
-.project-utility-dialog .project-utility-icon{flex:0 0 40px;width:40px!important;height:40px!important;border-radius:10px!important}
+.project-utility-dialog .project-utility-header{padding:24px 56px 20px 24px;gap:16px;border-bottom:1px solid var(--border)}
+.project-utility-dialog .project-utility-icon{flex:0 0 40px;width:40px;height:40px;border-radius:10px}
 .project-utility-dialog .project-utility-icon svg{width:20px;height:20px}
-.project-utility-dialog .project-utility-close{top:16px!important;right:16px!important}
-.project-utility-dialog .project-utility-body{padding:20px 24px 24px 80px!important;gap:12px!important}
-.project-utility-dialog .project-utility-body>:is(.share-project-steps,.guide-instructions,.project-storage-states,section:not(.project-utility-note)){margin-left:-56px!important}
-.project-utility-dialog .share-project-steps li{grid-template-columns:40px minmax(0,1fr)!important;gap:16px!important}
+.project-utility-dialog .project-utility-close{top:16px;right:16px}
+.project-utility-dialog .project-utility-body{padding:20px 24px 24px 80px;gap:12px}
+.project-utility-dialog .project-utility-body>:is(.share-project-steps,.guide-instructions,.project-storage-states,section:not(.project-utility-note)){margin-left:-56px}
+.project-utility-dialog .share-project-steps li{grid-template-columns:40px minmax(0,1fr);gap:16px}
 .project-utility-dialog .share-project-steps li::before{width:28px;height:28px;justify-self:center}
-.project-utility-dialog .project-utility-footer{padding:16px 24px!important;gap:12px!important}
-.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border)!important;background:transparent!important;color:var(--foreground)!important;min-height:2.5rem}
-.project-utility-dialog .guide-overview{border-top:0!important;padding-top:0!important}
-html[data-appearance=dark] .project-utility-dialog .project-utility-hint{color:#9fb1c4!important}
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec!important}
+.project-utility-dialog .project-utility-footer{padding:16px 24px;gap:12px}
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border);background:transparent!important;color:var(--foreground);min-height:2.5rem}
+.project-utility-dialog .guide-overview{border-top:0!important;padding-top:0}
+html[data-appearance=dark] .project-utility-dialog .project-utility-hint{color:#9fb1c4}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec}
 .footer-about-dialog .footer-contact-item{display:flex;align-items:center;gap:.55rem;width:100%;margin:0;padding:.5rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--rm-surface,#f4f7fa);color:var(--rm-accent,#24558a);font:inherit;font-size:.875rem;text-align:start;cursor:pointer;text-decoration:none}
 .footer-about-dialog .footer-contact-item:hover{border-color:var(--rm-accent,#24558a)}
 .footer-about-dialog .footer-contact-item>svg{width:1rem;height:1rem;flex-shrink:0}
 .footer-about-dialog :is(.footer-contact-status,.footer-contact-note){color:var(--rm-muted,#5b6b7c);font-size:.8125rem;margin:0}
 .footer-about-dialog .footer-contact-status:empty{display:none}
-html[data-appearance=dark] .footer-about-dialog .footer-contact-item{background:#20354a;color:#e0edfa;border-color:#55728e}
+html[data-appearance=dark] .footer-about-dialog .footer-contact-item{background:var(--donker-vlak-4);color:var(--donker-tekst-6);border-color:var(--donker-lijn-5)}
 /* Donker: de rand van de menu's iets duidelijker. */
-html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialog-content]).project-utility-dialog{border:1px solid #3a4a60!important}
+html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialog-content]).project-utility-dialog{border:1px solid #3a4a60}
 /* Wegwijzer: uitklapregel op één lijn met de stappen erboven. */
-.project-utility-dialog .project-utility-body>.guide-overview{margin-left:-56px!important}
+.project-utility-dialog .project-utility-body>.guide-overview{margin-left:-56px}
 /* Telefoon: de knoppen in de kop lopen door in één blok, zonder een knop alleen op een regel. */
 @media (max-width:760px){.framework-app .brand-bar .project-actions .project-action-group{display:contents}}

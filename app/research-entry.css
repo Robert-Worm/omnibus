@@ -157,20 +157,20 @@
 /* T3: kaartkoppen en keuzekaarten in Inter, niet in Spectral. */
 .framework-app :is(.creator-presets .preset-heading,.entry-card>h3,.directory-family-card>strong,aside.creator-preview>h3,.directory-axis strong){font:600 .9375rem/1.35 var(--font-ui)!important;letter-spacing:0}
 /* T4: lopende tekst 14 px. */
-.framework-app .entry-card>p{font-size:.875rem!important;line-height:1.5}
+.framework-app .entry-card>p{font-size:.875rem;line-height:1.5}
 /* Gewicht 700 bestaat niet meer in de interface. */
 .framework-app :is(.catalogue-table-count strong,.directory-family-card strong,legend){font-weight:600}
 /* --- Keuzekaarten (Wetten, Kaders, Modellen, Thema's, Processen): overal even hoog, titel op één regel. --- */
-.framework-app .directory-axis>button{min-height:4.75rem!important;height:4.75rem;padding:.85rem 1rem!important;box-sizing:border-box;align-items:flex-start!important}
-.framework-app .directory-axis>button strong{font-size:.875rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-.framework-app .directory-axis>button small{display:-webkit-box!important;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:.75rem!important}
+.framework-app .directory-axis>button{min-height:4.75rem!important;height:4.75rem;padding:.85rem 1rem!important;box-sizing:border-box;align-items:flex-start}
+.framework-app .directory-axis>button strong{font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.framework-app .directory-axis>button small{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:.75rem}
 .framework-app .directory-axis>button>span{min-width:0;display:grid;gap:.15rem}
-html[data-appearance=dark] .framework-app .directory-family-card:hover{background:#22364d!important;border-color:#4a6a8c!important}
+html[data-appearance=dark] .framework-app .directory-family-card:hover{background:var(--donker-vlak-5)!important;border-color:var(--donker-lijn-4)!important}
 /* Eén geopend onderdeel: de terugknop staat rechts op de regel met Normen en Over dit kader, zonder eigen balk. */
-.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:block;width:auto;margin:0 0 0 1rem!important;padding:0!important;background:transparent!important;border:0!important;position:relative;z-index:1}
-.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore{min-height:2.25rem!important;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6)!important;background:transparent!important;color:var(--hb-ink,#1f3a5f)!important}
+.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:block;width:auto;margin:0 0 0 1rem;padding:0;background:transparent!important;border:0;position:relative;z-index:1}
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore{min-height:2.25rem;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6)!important;background:transparent!important;color:var(--hb-ink,#1f3a5f)}
 .framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore:hover{background:var(--hb-hover,#eef3f9)!important}
 /* Thema's: de strook staat in een eigen blok vóór de tabs; daar absoluut rechtsboven, zodat de tabs de volle breedte houden. */
-.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){position:relative;height:0;margin:0!important;padding:0!important}
+.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){position:relative;height:0;margin:0;padding:0}
 .framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:absolute;top:0;right:0;float:none;margin:0!important}
 @media (max-width:760px){.framework-app #main-workspace .open-item-workspace[data-single]{float:none;margin:0 0 .5rem!important}.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){height:auto}.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:static}}

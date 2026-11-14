@@ -63,7 +63,7 @@ html [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { width:m
 .audit-detail.bd-pilot-detail .law-focused-body .law-parent-criterion p { max-height:none; overflow:visible; }
 .audit-detail.bd-pilot-detail :is(.bd-card-heading h3,.law-context-card h3,.law-parent-criterion h3) { font-size:14px; line-height:1.4; }
 .audit-detail.bd-pilot-detail :is(.bd-criterion>p,.law-focused-body .law-parent-criterion>p,.law-choice-card>p) { font-size:14px; line-height:1.55; }
-.framework-app .model-library-layout[hidden] { display:none!important; }
+.framework-app .model-library-layout[hidden] { display:none; }
 .framework-app .matrix-workspace .compact-table .row-title button.matrix-point-chip[data-slot=button] {
  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
  height:auto; min-height:2.5rem; padding:.25rem .4rem; gap:.1rem;
@@ -88,7 +88,7 @@ html [data-slot=sheet-content].audit-detail.bd-pilot-detail.law-detail { width:m
 /* Decision surfaces share the landing page's identity; working panels stay denser.
    These rules deliberately exclude source passages and workbook preview cells. */
 .framework-app #main-workspace { --workflow-choice-radius:.875rem; --workflow-section-gap:1.5rem; --workflow-card:#fff; }
-html[data-appearance=dark] .framework-app #main-workspace { --workflow-card:#172330; }
+html[data-appearance=dark] .framework-app #main-workspace { --workflow-card:var(--donker-vlak-2); }
 .framework-app #main-workspace :is(.entry-card,.workflow-choice,.directory-axis>button,.goal-builder [role=radiogroup] label) { border-radius:var(--workflow-choice-radius); }
 .framework-app #main-workspace :is(.entry-card.is-current,.workflow-choice[aria-pressed=true],.directory-axis>button[aria-pressed=true],.goal-builder [role=radiogroup] label.is-selected) {
  border-color:var(--primary); background:color-mix(in srgb,var(--primary) 5%,var(--workflow-card)); box-shadow:inset 0 3px 0 var(--primary);

@@ -154,7 +154,7 @@
 .matrix-grouped .matrix-workspace[data-text-density=comfortable] .compact-table .cell-preview{-webkit-line-clamp:5;line-clamp:5;line-height:1.4;max-height:7em}
 .matrix-grouped .basis-tag{font-size:.64rem;padding:0 3px;margin-bottom:3px}
 @media(max-width:700px){.matrix-browse-group>header{align-items:start;flex-direction:column;gap:.25rem}.matrix-group-filter{flex-wrap:wrap}.matrix-grouped .matrix-workspace.matrix-embedded .compact-table [data-slot=table-container]{max-height:330px}}
-html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=objective] { background: #25394d; }
+html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=objective] { background: var(--donker-vlak-6); }
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=risk] { background: #3c3425; }
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=controlObjective] { background: #352e45; }
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=control] { background: #243c43; }

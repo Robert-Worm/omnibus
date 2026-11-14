@@ -138,7 +138,7 @@
 .framework-app .process-group-context button { white-space:normal; height:auto; min-height:2.125rem; text-align:left; }
 .framework-app .process-group-context small { color:var(--rm-muted); }
 .framework-app .goal-builder .research-direction-picker [data-slot="radio-group"] { grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)); }
-.framework-app :is(.source-title,.cev-dimensions > button,.model-catalogue-row div button) { font-size: var(--text-body) !important; }
+.framework-app :is(.source-title,.cev-dimensions > button,.model-catalogue-row div button) { font-size: var(--text-body); }
 @media (max-width: 650px) {
   .framework-app :is(.central-help,.subquestion-picker) { padding: .75rem; }
   .framework-app .subquestion-option { padding: .75rem; gap: .5rem; }
@@ -267,7 +267,7 @@ html[data-appearance=dark] .framework-app .creator-testing-aspects label:not([da
 
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
 /* --- Stap 4: bladeren door het voorbeeld in één regel; tekstexport als gewone tweede knop. --- */
-.framework-app .export-preview-navigation{display:flex!important;align-items:center;gap:.5rem!important;margin:.75rem 0!important}
+.framework-app .export-preview-navigation{display:flex;align-items:center;gap:.5rem;margin:.75rem 0}
 .framework-app .export-preview-navigation>span{font-size:.8125rem;color:var(--muted-foreground);white-space:nowrap;font-variant-numeric:tabular-nums}
 .framework-app .export-preview-navigation>button{flex:none;width:2.5rem;height:2.5rem}
-.framework-app .model-information-trigger[data-labelled]{width:auto!important;padding:0 .75rem!important;gap:.4rem;height:2.25rem;font-size:.8125rem}
+.framework-app .model-information-trigger[data-labelled]{width:auto;padding:0 .75rem;gap:.4rem;height:2.25rem;font-size:.8125rem}

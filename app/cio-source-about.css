@@ -15,7 +15,7 @@
 .law-about-limitations>section{padding:1rem 0}
 .law-about-limitations>section:last-child{padding-bottom:0}
 .law-about :is(.law-about-document-list,.law-about-source-explanation) :is(p,h4){white-space:normal;overflow-wrap:anywhere;max-height:none;overflow:visible;-webkit-line-clamp:unset;line-clamp:unset}
-html[data-appearance=dark] .law-about{--about-surface:#172330;--about-text:#e0eaf5;--about-hold:#29271f}
+html[data-appearance=dark] .law-about{--about-surface:var(--donker-vlak-2);--about-text:var(--donker-tekst-5);--about-hold:#29271f}
 .law-about :is(p,li,dd){overflow-wrap:break-word}.law-about p{margin:.65rem 0;max-width:none}
 .law-about-intro{padding:1.4rem 1.5rem;background:var(--rm-surface);border:1px solid var(--border);border-top:3px solid var(--rm-accent);border-radius:.7rem}
 .law-about-eyebrow{display:flex;align-items:center;gap:.5rem;font-size:12px;color:var(--rm-muted);margin-bottom:.4rem}

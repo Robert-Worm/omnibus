@@ -299,7 +299,7 @@ a:focus-visible {
 .brand-bar > .project-actions { flex-wrap: wrap; gap: .5rem; margin: 0; }
 .project-actions .storage-status { color: #7c3c00; background: #fff4df; border-color: #cba777; }
 .project-save-indicator { --save-ok: #247044; --save-ok-bg: #f0f8f2; --save-ok-border: #a8cdb5; --save-warning: #874800; --save-warning-bg: #fff4df; --save-warning-border: #cba777; }
-[data-appearance="dark"] .project-save-indicator { --save-ok: #a5e0bb; --save-ok-bg: #19382b; --save-ok-border: #4e8064; --save-warning: #ffd197; --save-warning-bg: #44301c; --save-warning-border: #a87b40; }
+[data-appearance="dark"] .project-save-indicator { --save-ok: var(--donker-groen-5); --save-ok-bg: #19382b; --save-ok-border: var(--donker-groen-2); --save-warning: #ffd197; --save-warning-bg: #44301c; --save-warning-border: #a87b40; }
 .project-actions .project-save-indicator { width: 2rem; min-width: 2rem; padding-inline: 0; }
 .framework-app .brand-bar .project-actions .project-save-indicator[data-state="saved"] { color: var(--save-ok); background: var(--save-ok-bg); border-color: var(--save-ok-border); }
 .framework-app .brand-bar .project-actions .project-save-indicator[data-state="unsaved"] { color: var(--save-warning); background: var(--save-warning-bg); border-color: var(--save-warning-border); }
@@ -1009,7 +1009,7 @@ footer {
 }
 @media (prefers-reduced-motion: reduce) {
   * {
-    transition: none !important;
+    transition: none;
   }
 }
 
@@ -2404,7 +2404,7 @@ button.readable-reference[data-slot="button"] {
 }
 .framework-app :is(h1, .framework-title),
 .compact-app .framework-title {
-  font-size: var(--text-page) !important;
+  font-size: var(--text-page);
   line-height: 1.35;
   font-weight: 600;
 }
@@ -2812,28 +2812,28 @@ button.readable-reference[data-slot="button"] {
 
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
 .framework-app .creator-colors>legend{font:600 .9375rem/1.35 var(--font-ui)!important}
-.framework-app .brand-bar .project-actions :is(.appearance-toggle,.project-save-indicator,.project-undo){width:2.125rem!important;min-width:2.125rem!important;padding:0!important}
+.framework-app .brand-bar .project-actions :is(.appearance-toggle,.project-save-indicator,.project-undo){width:2.125rem;min-width:2.125rem;padding:0!important}
 .framework-app .brand-bar .project-actions .project-undo:disabled{opacity:.4}
 .framework-app .brand-bar .project-actions .project-save-indicator{border-color:transparent!important;color:var(--muted-foreground)!important}
 .framework-app .brand-bar .project-actions .project-save-indicator[data-state=unsaved]{color:#b4541a!important;border-color:#e6b38f!important}
-html[data-appearance=dark] .framework-app .creator-download:not(:disabled){background:#265c89!important;color:#fff!important;border-color:#265c89!important}
+html[data-appearance=dark] .framework-app .creator-download:not(:disabled){background:var(--donker-vlak-9)!important;color:var(--donker-tekst-10);border-color:var(--donker-vlak-9)!important}
 /* Het Excelvoorbeeld blijft 'papier' (wit), maar met een rustige rand. */
-html[data-appearance=dark] .framework-app .creator-table-scroll{border-color:#33445c}
+html[data-appearance=dark] .framework-app .creator-table-scroll{border-color:var(--donker-lijn-1)}
 .report-table .report-source-id{display:inline-block;font:600 .6875rem/1.2 var(--font-mono,ui-monospace,monospace);letter-spacing:.02em;padding:.2rem .4rem;border-radius:4px;background:color-mix(in srgb,var(--muted) 70%,var(--card));color:var(--muted-foreground);white-space:nowrap}
 .report-catalogue .report-pagination{margin-top:.75rem}
 /* --- Voettekst tijdens het werken: één regel; links wie en welke versie, rechts de onderwerpen als vensters. --- */
 .framework-app .product-footer.product-footer-compact{padding:.85rem 2rem!important;display:flex;align-items:center;justify-content:space-between;gap:.5rem 2rem;flex-wrap:wrap;font-size:.8125rem}
-.product-footer-compact .product-footer-wordmark{font-size:1rem!important;margin:0!important;padding:0!important;border:0!important}
-.product-footer-compact .product-footer-version{margin:0!important;display:inline;color:var(--muted-foreground)}
-.product-footer-compact .product-footer-attribution{margin:0!important;color:var(--muted-foreground)}
-.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex!important;flex-direction:row!important;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0!important;padding:0!important;margin:0}
+.product-footer-compact .product-footer-wordmark{font-size:1rem;margin:0;padding:0;border:0}
+.product-footer-compact .product-footer-version{margin:0;display:inline;color:var(--muted-foreground)}
+.product-footer-compact .product-footer-attribution{margin:0;color:var(--muted-foreground)}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex;flex-direction:row;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0;padding:0;margin:0}
 @media (max-width:760px){.framework-app .product-footer.product-footer-compact{padding:1rem!important}}
 /* Kleine tekst minimaal 12 px. */
-.report-table .report-source-id,.report-context-kind{font-size:.75rem!important}
-html[data-appearance=dark] .framework-app .cev-dimensions button[aria-pressed=true]{background:#22364d!important;border:1px solid #6884a0!important;box-shadow:inset 3px 0 #94c8f5!important}
+.report-table .report-source-id,.report-context-kind{font-size:.75rem}
+html[data-appearance=dark] .framework-app .cev-dimensions button[aria-pressed=true]{background:var(--donker-vlak-5)!important;border:1px solid var(--donker-lijn-6)!important;box-shadow:inset 3px 0 var(--donker-lijn-8)}
 html[data-appearance=dark] .framework-app .cev-selection{background:transparent!important}
 .product-footer-compact .product-footer-line .product-footer-attribution{flex-basis:100%;font-size:.75rem}
-.framework-app .product-footer.product-footer-compact a.product-footer-repository{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:.4rem!important;margin:0!important}
-.framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0!important}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository{display:inline-flex;flex-direction:row;align-items:center;gap:.4rem;margin:0}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0}
 .framework-app .product-footer.product-footer-compact .product-footer-line{flex:1 1 22rem;max-width:36rem}
 .framework-app :is([role=tabpanel],.creator-preset):focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}

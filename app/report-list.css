@@ -1,6 +1,6 @@
 /*  Rapportenlijst: de compacte lijst van bronrapporten en het themamenu per rapport.  */
 .report-table{margin-top:0}
-.report-table tbody td,.report-table tbody th{vertical-align:middle!important;padding-top:.55rem!important;padding-bottom:.55rem!important}
+.report-table tbody td,.report-table tbody th{vertical-align:middle;padding-top:.55rem!important;padding-bottom:.55rem!important}
 .report-table .catalogue-table-name>button{all:unset;cursor:pointer;font-weight:600;color:var(--primary);line-height:1.4}
 .report-table td[data-column=date]{color:var(--muted-foreground);white-space:nowrap}
 .report-table .report-row-actions{text-align:right;white-space:nowrap}
@@ -15,11 +15,11 @@
 .report-context-menu{overflow:auto;min-width:16rem}
 .report-context-kind{display:inline-block;min-width:3.6rem;margin-right:.35rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-foreground)}
 .report-context-trigger{white-space:nowrap}
-html[data-appearance=dark] .framework-app .report-context-trigger{background:transparent!important;border:0!important;color:#e6edf5!important}
-html[data-appearance=dark] .framework-app .report-context-trigger:hover{background:#22364d!important}
-html[data-appearance=dark] .report-context-menu{background:#172330!important;border-color:#35506b!important;color:#f0f7ff!important}
-html[data-appearance=dark] .report-context-menu [role=menuitem]{color:#f0f7ff}
-html[data-appearance=dark] .report-context-menu [role=menuitem][data-highlighted]{background:#20354a}
+html[data-appearance=dark] .framework-app .report-context-trigger{background:transparent!important;border:0;color:var(--donker-tekst-7)}
+html[data-appearance=dark] .framework-app .report-context-trigger:hover{background:var(--donker-vlak-5)!important}
+html[data-appearance=dark] .report-context-menu{background:var(--donker-vlak-2)!important;border-color:var(--donker-lijn-2)!important;color:var(--donker-tekst-9)}
+html[data-appearance=dark] .report-context-menu [role=menuitem]{color:var(--donker-tekst-9)}
+html[data-appearance=dark] .report-context-menu [role=menuitem][data-highlighted]{background:var(--donker-vlak-4)}
 html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-slot=dropdown-menu-label]){color:#9fb1c4}
 /* Rapporten op een smal scherm: elke regel wordt een klein blok. */
 @media (max-width:760px){
@@ -43,5 +43,5 @@ html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-s
 .report-context-menu{max-height:18rem}
 .report-table td[data-column=date]{font-variant-numeric:tabular-nums;font-family:var(--font-ui)}
 /* Eindcontrole (B-058) */
-.report-context-menu{overflow-y:auto!important;box-shadow:0 8px 24px rgba(15,27,43,.18)!important}
+.report-context-menu{overflow-y:auto;box-shadow:0 8px 24px rgba(15,27,43,.18)}
 .report-choice-hint{font-size:.8125rem;color:var(--muted-foreground)}

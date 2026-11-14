@@ -12,7 +12,7 @@
 .catalogue-table .catalogue-table-search{position:relative;display:inline-flex;align-items:center;min-width:12rem;box-sizing:border-box;border:1px solid var(--ct-control)!important;background:var(--card);margin:0;padding:0}
 .catalogue-table-search:focus-within{outline:2px solid var(--ring);outline-offset:1px}
 .catalogue-table-search>svg{position:absolute;left:.65rem;color:var(--muted-foreground);pointer-events:none}
-.catalogue-table .catalogue-table-search>input{all:unset;box-sizing:border-box;width:100%;height:100%!important;min-height:0!important;background:transparent!important;border:0!important;padding:0 .6rem 0 2.05rem!important;font:400 .8125rem/1 var(--font-ui);color:var(--foreground)}
+.catalogue-table .catalogue-table-search>input{all:unset;box-sizing:border-box;width:100%;height:100%;min-height:0!important;background:transparent!important;border:0!important;padding:0 .6rem 0 2.05rem;font:400 .8125rem/1 var(--font-ui);color:var(--foreground)}
 .catalogue-table-search>input::placeholder{color:var(--muted-foreground);opacity:1}
 .catalogue-table-filters,.catalogue-table-grouping{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
 .catalogue-table-grouping{margin-left:auto}
@@ -27,14 +27,14 @@
 .catalogue-table .catalogue-tool[data-active] :is(.catalogue-tool-label,svg){color:var(--primary)}
 .catalogue-table .catalogue-tool[data-popup-open]{border-color:var(--primary)}
 /* Het menu staat buiten de tabel (portal) */
-.catalogue-tool-menu{width:max-content!important;min-width:max(var(--anchor-width),11rem);max-width:24rem;padding:.3rem;border:1px solid var(--border,#ccd8e5);border-radius:10px;background:#fff;color:var(--foreground,#20344b);box-shadow:0 10px 28px rgb(32 52 75 / .18);outline:0;--tw-ring-shadow:0 0 #0000}
+.catalogue-tool-menu{width:max-content;min-width:max(var(--anchor-width),11rem);max-width:24rem;padding:.3rem;border:1px solid var(--border,#ccd8e5);border-radius:10px;background:#fff;color:var(--foreground,#20344b);box-shadow:0 10px 28px rgb(32 52 75 / .18);outline:0;--tw-ring-shadow:0 0 #0000}
 .catalogue-tool-option{display:flex;align-items:center;min-height:2.1rem;padding:.35rem 2rem .35rem .65rem;border-radius:6px;font:400 .8125rem/1.35 var(--font-ui);color:var(--foreground,#20344b);cursor:pointer;outline:0}
 .catalogue-tool-option[data-highlighted]{background:#eaf1f8;color:var(--primary,#234f80)}
 .catalogue-tool-option[data-selected]{font-weight:600;color:var(--primary,#234f80)}
-html[data-appearance=dark] .catalogue-tool-menu{background:#172330;border-color:#35506b;color:#f0f7ff}
-html[data-appearance=dark] .catalogue-tool-option{color:#f0f7ff}
-html[data-appearance=dark] .catalogue-tool-option[data-highlighted]{background:#20354a;color:#f0f7ff}
-html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
+html[data-appearance=dark] .catalogue-tool-menu{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2);color:var(--donker-tekst-9)}
+html[data-appearance=dark] .catalogue-tool-option{color:var(--donker-tekst-9)}
+html[data-appearance=dark] .catalogue-tool-option[data-highlighted]{background:var(--donker-vlak-4);color:var(--donker-tekst-9)}
+html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:var(--donker-lijn-8)}
 .catalogue-tool-clear{display:inline-flex;align-items:center;gap:.25rem;min-height:2.5rem;border:0;background:transparent;color:var(--primary);font:500 .8125rem/1 var(--font-ui);padding:0 .4rem;border-radius:6px;cursor:pointer;white-space:nowrap}
 .catalogue-tool-clear:hover{text-decoration:underline;text-underline-offset:3px}
 .catalogue-tool-clear:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
@@ -235,13 +235,13 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .framework-app .research-toolbar>.catalogue-cell-tip{order:2;margin-left:auto}
 .framework-app .research-link-status{display:inline-flex;align-items:center;gap:.35rem;font:500 .8125rem/1 var(--font-ui);color:var(--rm-muted);border:1px solid var(--border);border-radius:999px;padding:.35rem .6rem;background:var(--card,#fff)}
 .framework-app .research-link-status[data-open]{color:#8a5a00;border-color:#e3c27a;background:#fff8e8}
-html[data-appearance=dark] .framework-app .research-link-status[data-open]{color:#f1cf85;border-color:#7a6230;background:#3a2f17}
+html[data-appearance=dark] .framework-app .research-link-status[data-open]{color:#f1cf85;border-color:#7a6230;background:var(--donker-geel-1)}
 .framework-app .research-toolbar .audience-tip{left:auto;right:0;transform:none;width:19rem;text-align:left}
 .framework-app .research-toolbar .audience-tip strong{display:block;margin-bottom:.2rem}
 
 /* Tegels in hetzelfde kader als de lijst: zoekbalk bovenin, tegels eronder, één rand eromheen die meegroeit. */
 .framework-app .catalogue-explorer .catalogue-table.directory-search-row,.catalogue-table.directory-search-row{flex-direction:row;flex-wrap:wrap;margin:1rem 0 0;padding:.75rem var(--ct-pad);border:1px solid var(--border);border-bottom:1px solid var(--ct-line);border-radius:14px 14px 0 0;background:var(--card)}
-.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout){margin-top:0!important;margin-bottom:0!important;padding:0 var(--ct-pad,1rem);border:solid var(--border);border-width:0 1px;background:var(--card)}
+.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout){margin-top:0;margin-bottom:0;padding:0 var(--ct-pad,1rem);border:solid var(--border);border-width:0 1px;background:var(--card)}
 .directory-search-row+*{padding-top:1rem!important}
 .directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):has(+.directory-note),.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):last-child{border-bottom-width:1px;border-radius:0 0 14px 14px;padding-bottom:1rem;box-shadow:0 1px 2px color-mix(in srgb,var(--foreground) 5%,transparent)}
 /* Omschrijving bij aanwijzen van de naam in de lijst. */
@@ -273,7 +273,7 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .catalogue-table-group th em+small{margin-left:.75rem}
 /* Zoekbalk en keuzeknoppen: één rij van 44 px, het zoekveld groeit mee. */
 .catalogue-table .catalogue-table-search{flex:1 1 20rem;max-width:30rem;height:2.75rem;border-radius:10px}
-.catalogue-table .catalogue-table-search input{font-size:.875rem!important}
+.catalogue-table .catalogue-table-search input{font-size:.875rem}
 .catalogue-table .catalogue-tool{height:2.75rem;border-radius:10px}
 .catalogue-table.directory-search-row .catalogue-table-search{flex:1 1 20rem;max-width:30rem;height:2.75rem}
 /* Naam in de rij: één maat (15 px), ID-label rustig grijs. */
@@ -289,11 +289,11 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .framework-app #main-workspace .creator-presets .creator-preset{padding:14px 18px;min-height:0}
 /* Wat wil je toetsen: gewone vinkregels in drie kolommen, zonder eigen kaders. */
 .framework-app #main-workspace .creator-card .creator-testing-aspects>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
-.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label{border:0!important;background:none!important;padding:0!important;gap:.55rem}
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label{border:0;background:none!important;padding:0!important;gap:.55rem}
 .framework-app #main-workspace .creator-card .creator-testing-aspects>div>label small{font:400 .8125rem/1.45 var(--font-ui);color:var(--rm-muted)}
 /* Witruimte in plaats van scheidingslijnen binnen een blok. */
 .framework-app #main-workspace .creator-card .creator-selection-summary{border-top:0;padding-top:0;margin-top:1.25rem}
-.framework-app #main-workspace .creator-extras{border-top:0!important;padding-top:0!important;margin:0!important}
+.framework-app #main-workspace .creator-extras{border-top:0;padding-top:0;margin:0}
 /* Automatisch koppelen: een vinkregel in dezelfde stijl als de Excel-opties. */
 .framework-app #main-workspace .creator-autolink{display:flex;align-items:flex-start;gap:.6rem;margin-top:.75rem;cursor:pointer}
 .framework-app #main-workspace .creator-autolink [role=checkbox]{flex-shrink:0;margin-top:.15rem}
@@ -309,7 +309,7 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .framework-app #main-workspace .creator-options>.creator-extras{display:grid;gap:.75rem}
 /* Melding rustiger: geen eigen kopregel-kader. */
 .framework-app #main-workspace .export-input-guidance{background:#fff8eb;border:0;border-left:3px solid #d99a2b;border-radius:6px;padding:.75rem 1rem;font-size:.875rem}
-html[data-appearance=dark] .framework-app #main-workspace .export-input-guidance{background:#3a2f17}
+html[data-appearance=dark] .framework-app #main-workspace .export-input-guidance{background:var(--donker-geel-1)}
 /* Overal dezelfde kaartrand. */
 .framework-app #main-workspace .export-creator .creator-card{border-radius:12px}
 
@@ -320,17 +320,17 @@ html[data-appearance=dark] .framework-app #main-workspace .export-input-guidance
 .catalogue-table thead th>:is(button,span:not(.catalogue-check-area,.sr-only)){font:600 .8125rem/1.3 var(--font-ui)!important;letter-spacing:.01em;color:color-mix(in srgb,var(--foreground) 78%,var(--muted-foreground))}
 .catalogue-table thead th{height:2.5rem;background:color-mix(in srgb,var(--muted) 45%,var(--card))!important}
 .catalogue-table-group>*{background:color-mix(in srgb,var(--muted) 35%,var(--card))!important}
-.catalogue-table-group th button span{color:var(--foreground)!important}
-.catalogue-table-group th>div{min-height:2.25rem!important}
-html[data-appearance=dark] .catalogue-table-group th em{background:none!important;border:0!important;color:var(--muted-foreground)}
-html[data-appearance=dark] .catalogue-table :is(thead th>button,.catalogue-table-group th button,.catalogue-table-name>button){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
-html[data-appearance=dark] .catalogue-table thead th>button:hover{color:#e6edf5!important;text-decoration:underline;text-underline-offset:3px}
+.catalogue-table-group th button span{color:var(--foreground)}
+.catalogue-table-group th>div{min-height:2.25rem}
+html[data-appearance=dark] .catalogue-table-group th em{background:none!important;border:0;color:var(--muted-foreground)}
+html[data-appearance=dark] .catalogue-table :is(thead th>button,.catalogue-table-group th button,.catalogue-table-name>button){background:transparent!important;border-color:transparent!important;box-shadow:none}
+html[data-appearance=dark] .catalogue-table thead th>button:hover{color:var(--donker-tekst-7)!important;text-decoration:underline;text-underline-offset:3px}
 /* De naamkolom (een th) kreeg in donker het lichtere kopvlak; nu dezelfde kleur als de rest van de rij, met een rustige zebra. */
-html[data-appearance=dark] .catalogue-table tbody tr[data-row]>*{background:#172330!important}
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]>*{background:var(--donker-vlak-2)!important}
 html[data-appearance=dark] .catalogue-table tbody:has(.catalogue-table-group) tr[data-row]:nth-child(odd)>*,
 html[data-appearance=dark] .catalogue-table tbody:not(:has(.catalogue-table-group)) tr[data-row]:nth-child(even)>*{background:#1a2939!important}
-html[data-appearance=dark] .catalogue-table tbody tr[data-row]:hover>*{background:#1f3045!important}
-html[data-appearance=dark] .catalogue-table-group:hover>*{background:#1f3045!important}
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]:hover>*{background:var(--donker-vlak-3)!important}
+html[data-appearance=dark] .catalogue-table-group:hover>*{background:var(--donker-vlak-3)!important}
 /* --- Gedeelde keuzeknop (ToolSelect) ook buiten de lijsten: viewer, rapporten en stap 4. --- */
 :is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool{--ct-control:var(--rm-control-border,#a9bacb);display:inline-flex;align-items:center;gap:.3rem;width:auto;height:2.5rem;padding:0 .55rem 0 .7rem;border:1px solid var(--ct-control);border-radius:8px;background:var(--card);color:var(--foreground);font:400 .8125rem/1 var(--font-ui);box-shadow:none;cursor:pointer;min-width:0}
 /* Verfijning na de panelronde van 14 november 2026, middag (besluit B-058): elk scherm minimaal een 8. */
@@ -347,9 +347,9 @@ html[data-appearance=dark] .catalogue-table-group:hover>*{background:#1f3045!imp
 .framework-app .export-preview-navigation .catalogue-tool{flex:1 1 auto;justify-content:space-between}
 .framework-app .export-preview-navigation .catalogue-tool .catalogue-tool-value{max-width:none;flex:1;text-align:left}
 /* Donker: actieve Tegels/Lijst zoals een actieve tab. */
-html[data-appearance=dark] .catalogue-view-toggle button[aria-pressed=true]{background:#294b69!important;color:#f0f7ff!important;box-shadow:inset 0 0 0 1px #6884a0}
+html[data-appearance=dark] .catalogue-view-toggle button[aria-pressed=true]{background:var(--donker-vlak-8)!important;color:var(--donker-tekst-9)!important;box-shadow:inset 0 0 0 1px var(--donker-lijn-6)}
 /* Donker: tekstknoppen en meters in de lijst zonder vlak. */
-html[data-appearance=dark] .framework-app :is(.catalogue-tool-clear,.catalogue-cell-tip){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
-html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background:#22364d!important}
-html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:#94c8f5!important}
+html[data-appearance=dark] .framework-app :is(.catalogue-tool-clear,.catalogue-cell-tip){background:transparent!important;border-color:transparent!important;box-shadow:none}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background:var(--donker-vlak-5)!important}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:var(--donker-lijn-8)!important}
 .framework-app .creator-presets button:focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}

@@ -1,5 +1,5 @@
 [hidden] {
-  display: none !important;
+  display: none;
 }
 .creator-testing-aspects {
   width: fit-content;
@@ -1078,4 +1078,4 @@
 }
 
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
-html[data-appearance=dark] .framework-app .investigation-steps a[aria-current] .step-number{border-color:#cfe3f7!important;color:#f0f7ff!important}
+html[data-appearance=dark] .framework-app .investigation-steps a[aria-current] .step-number{border-color:#cfe3f7;color:var(--donker-tekst-9)}
