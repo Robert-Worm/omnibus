@@ -418,7 +418,7 @@ export default function ResearchBuilder({
       next=addOwnSubquestions(next,savedId,ownSubs);
       if (!ownCentral) for(const id of directPlanIds) if(next.included.includes(id)&&!researchOf(next).links.some((l:{line_id:string})=>l.line_id===id))next=linkLine(next,id,savedId);
       return next as Draft;
-    }, centralTarget ? "Vraagopzet bijgewerkt. Je gekozen bouwstenen blijven behouden." : "Vraagopzet opgeslagen. Je gekozen bouwstenen blijven behouden.")) return;
+    })) return; // Geen melding: de vraag staat direct in beeld en krijgt de focus (besluit B-061).
     setOwnSubs([]);ownText.current="";setChoosing(false); setEditing(""); setFocusId(savedId); setCentralTarget(null); setChosenSubKeys([]);
   }
   function end() {
