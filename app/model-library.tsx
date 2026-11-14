@@ -1,4 +1,5 @@
 "use client";
+import {codeMatches} from '@/lib/process-taxonomy.mjs';
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,13 +94,13 @@ export default function ModelLibrary({
   const setQuery=(modelQuery:string)=>onViewChange({modelQuery});
   const setActive=(id:string|null)=>onViewChange({activeModel:id??'',modelDimension:''});
   const models: ModelDirectoryEntry[] = filterModels(
-    directory.filter(m=>m.searchText.includes(query.trim().toLowerCase())),
+    directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))),
     { subject, processId, selectedOnly },
   );
   const openIds = normalizeOpenModelIds(openModelIds, value.models);
   // Lijstweergave: alle modellen in één tabel, als alternatief voor de tegels per categorie.
   const catalogueView=useCatalogueView(),listMode=mode==='catalogue'&&catalogueView.list;
-  const listRows=listMode?directory.filter(m=>m.searchText.includes(query.trim().toLowerCase())).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
+  const listRows=listMode?directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
     summary:m.summary,origin:modelOrigin(m.id) as null|{authors:string;year:number;kind:string;kindLabel:string;kindDescription:string},uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[

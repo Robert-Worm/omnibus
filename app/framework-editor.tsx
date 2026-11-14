@@ -22,7 +22,7 @@ import {modelAdoptionPlan,applyModelAdoption,syncModelLibrarySelection} from '@/
 import {download} from '@/lib/browser-download.mjs';
 import {newProject,clearProjectBrowsePreferences} from '@/lib/new-project.mjs';
 import ProductFooter from './product-footer';
-import { useCallback, useEffect, useEffectEvent, useRef, useState, useMemo, useSyncExternalStore, startTransition } from "react";
+import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useMemo, useSyncExternalStore, startTransition } from "react";
 import {createProjectStatus} from '@/lib/project-status.mjs';
 import {createBackgroundProjectSave} from '@/lib/background-project-save.mjs';
 import {createProjectEncoder} from './project-encoder';
@@ -33,7 +33,7 @@ import {
   FoundationCatalogue,
   MaterialEditor,
 } from "./investigation-workspace";
-import { investigationFramework, prepareInvestigationFramework, foundations, foundationProposals, validateInvestigation } from "@/lib/investigation.mjs";
+import { investigationFramework, prepareInvestigationFramework, foundations, foundationProposals, validateInvestigation, workflowStage } from "@/lib/investigation.mjs";
 import {admittedMaterialTarget} from '@/lib/admitted-foundation.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
 import { flushSync } from "react-dom";
@@ -242,6 +242,13 @@ export default function FrameworkEditor() {
   const [aboutViews,setAboutViews]=useState(()=>projectView().aboutViews);
   const [detail, setDetail] = useState("chain");
   const [page, setPage] = useState("entry");
+  // Naar een andere stap: begin bovenaan. Binnen een stap blijft de plek staan (die herstelt de viewer zelf).
+  const shownStage = useRef(workflowStage("entry"));
+  useLayoutEffect(() => {
+    const stage = workflowStage(page);
+    if (stage !== shownStage.current && typeof window !== "undefined" && window.scrollY > 0) window.scrollTo({ top: 0, behavior: "instant" });
+    shownStage.current = stage;
+  }, [page]);
   const [lastCollectionPage,setLastCollectionPage]=useState('');
   const [researchRoute,setResearchRoute]=useState('');
   const [discoveryView,setDiscoveryView]=useState<{axis:'themes'|'processes';category:string}>({axis:'themes',category:''});

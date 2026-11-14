@@ -72,21 +72,27 @@ html[data-appearance=dark] .framework-app .collection-navigation .collection-nav
 .framework-app .creator-markdown{width:100%;margin-top:.5rem;height:2.5rem;gap:.5rem}
 .framework-app .creator-saved{display:block;margin-top:.5rem;font-size:.8125rem;color:var(--muted-foreground)}
 
-/* --- Voettekst tijdens het werken: één smalle regel plus de informatieknoppen. --- */
-.framework-app .product-footer-compact{padding:1rem 2rem!important;display:flex;align-items:center;justify-content:space-between;gap:.75rem 2rem;flex-wrap:wrap;font-size:.8125rem}
-.product-footer-compact .product-footer-line{display:flex;align-items:baseline;gap:.4rem 1rem;flex-wrap:wrap;min-width:0}
+/* --- Voettekst tijdens het werken: één regel; links wie en welke versie, rechts de onderwerpen als vensters. --- */
+.framework-app .product-footer.product-footer-compact{padding:.85rem 2rem!important;display:flex;align-items:center;justify-content:space-between;gap:.5rem 2rem;flex-wrap:wrap;font-size:.8125rem}
+.product-footer-compact .product-footer-line{display:flex;align-items:baseline;gap:.35rem .9rem;flex-wrap:wrap;min-width:0}
 .product-footer-compact .product-footer-wordmark{font-size:1rem!important;margin:0!important;padding:0!important;border:0!important}
-.product-footer-compact .product-footer-version{margin:0!important;display:inline}
+.product-footer-compact .product-footer-version{margin:0!important;display:inline;color:var(--muted-foreground)}
 .product-footer-compact .product-footer-attribution{margin:0!important;color:var(--muted-foreground)}
-.product-footer-compact .product-footer-repository{margin:0!important;display:inline-flex!important;align-items:center}
-.product-footer-compact .product-footer-repository svg{margin-top:0}
-.product-footer-compact .product-footer-about-row{display:flex;align-items:flex-start;gap:.25rem 1.25rem;flex-wrap:wrap;border:0!important;padding:0!important}
-.product-footer-compact .product-footer-about-row>details{max-width:40rem}
-.product-footer-compact .product-footer-about-row>details[open]{flex-basis:100%}
-.product-footer-compact .product-footer-about-row :is(summary,button){font-size:.8125rem}
-@media (max-width:760px){.framework-app .product-footer-compact{padding:1rem!important}}
-.framework-app .product-footer.product-footer-compact .product-footer-about-row{flex-direction:row!important;align-items:center;gap:.25rem 1rem}
-.framework-app .product-footer.product-footer-compact .product-footer-about-row>details[open]{align-self:flex-start}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex!important;flex-direction:row!important;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0!important;padding:0!important;margin:0}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger{min-height:2.25rem!important;padding:.25rem 0!important;font-size:.8125rem!important;gap:.4rem!important;white-space:nowrap;text-decoration:none}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger:hover{text-decoration:underline;text-underline-offset:3px}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger .footer-external{width:.8rem!important;height:.8rem!important;opacity:.7}
+@media (max-width:760px){.framework-app .product-footer.product-footer-compact{padding:1rem!important}}
+/* Vensters uit de voettekst: zelfde opmaak als Begrippen. */
+.footer-about-dialog .footer-about-body{display:grid;gap:.75rem;font-size:.875rem;line-height:1.55}
+.footer-about-dialog .footer-about-body p{margin:0}
+.footer-about-dialog .footer-contact-item{display:flex;align-items:center;gap:.55rem;width:100%;margin:0;padding:.5rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--rm-surface,#f4f7fa);color:var(--rm-accent,#24558a);font:inherit;font-size:.875rem;text-align:start;cursor:pointer;text-decoration:none}
+.footer-about-dialog .footer-contact-item:hover{border-color:var(--rm-accent,#24558a)}
+.footer-about-dialog .footer-contact-item>svg{width:1rem;height:1rem;flex-shrink:0}
+.footer-about-dialog .footer-contact{display:grid;gap:.5rem}
+.footer-about-dialog :is(.footer-contact-status,.footer-contact-note){color:var(--rm-muted,#5b6b7c);font-size:.8125rem;margin:0}
+.footer-about-dialog .footer-contact-status:empty{display:none}
+html[data-appearance=dark] .footer-about-dialog .footer-contact-item{background:#20354a;color:#e0edfa;border-color:#55728e}
 .report-context-trigger{white-space:nowrap}
 html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice{background:transparent!important;border:0!important;color:#aebdcd!important}
 html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice strong{color:#e6edf5!important}
@@ -151,3 +157,12 @@ html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:#94c8f5!im
 html[data-appearance=dark] .framework-app .cev-dimensions button[aria-pressed=true]{background:#22364d!important;border:1px solid #6884a0!important;box-shadow:inset 3px 0 #94c8f5!important}
 html[data-appearance=dark] .framework-app .cev-selection{background:transparent!important}
 html[data-appearance=dark] .framework-app .investigation-steps a[aria-current] .step-number{border-color:#cfe3f7!important;color:#f0f7ff!important}
+/* Overgangen: de werkruimte is altijd minstens schermhoog, zodat de voettekst niet even in beeld springt terwijl een
+   stap of viewer laadt (gemeten verspringing bij stap 3 en 4, B-058). */
+.framework-app main#main-workspace{min-height:100vh}
+/* Smalle voettekst: links naam en versie met de regel eronder, rechts de onderwerpen op één regel. */
+.product-footer-compact .product-footer-line{row-gap:.1rem!important}
+.product-footer-compact .product-footer-line .product-footer-attribution{flex-basis:100%;font-size:.75rem}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:.4rem!important;margin:0!important}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0!important}
+.framework-app .product-footer.product-footer-compact .product-footer-line{flex:1 1 22rem;max-width:36rem}
