@@ -2811,12 +2811,12 @@ button.readable-reference[data-slot="button"] {
 .provision-status-detail p { white-space: pre-line; overflow-wrap: anywhere; font-size: .875rem; line-height: 1.5; margin-top: .5rem; }
 
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
-.framework-app .creator-colors>legend{font:600 .9375rem/1.35 var(--font-ui)!important}
+.framework-app .creator-colors>legend{font:600 .9375rem/1.35 var(--font-ui)}
 .framework-app .brand-bar .project-actions :is(.appearance-toggle,.project-save-indicator,.project-undo){width:2.125rem;min-width:2.125rem;padding:0!important}
 .framework-app .brand-bar .project-actions .project-undo:disabled{opacity:.4}
 .framework-app .brand-bar .project-actions .project-save-indicator{border-color:transparent!important;color:var(--muted-foreground)!important}
 .framework-app .brand-bar .project-actions .project-save-indicator[data-state=unsaved]{color:#b4541a!important;border-color:#e6b38f!important}
-html[data-appearance=dark] .framework-app .creator-download:not(:disabled){background:var(--donker-vlak-9)!important;color:var(--donker-tekst-10);border-color:var(--donker-vlak-9)!important}
+html[data-appearance=dark] .framework-app .creator-download:not(:disabled){background:var(--donker-vlak-9);color:var(--donker-tekst-10);border-color:var(--donker-vlak-9)}
 /* Het Excelvoorbeeld blijft 'papier' (wit), maar met een rustige rand. */
 html[data-appearance=dark] .framework-app .creator-table-scroll{border-color:var(--donker-lijn-1)}
 .report-table .report-source-id{display:inline-block;font:600 .6875rem/1.2 var(--font-mono,ui-monospace,monospace);letter-spacing:.02em;padding:.2rem .4rem;border-radius:4px;background:color-mix(in srgb,var(--muted) 70%,var(--card));color:var(--muted-foreground);white-space:nowrap}
@@ -2826,7 +2826,7 @@ html[data-appearance=dark] .framework-app .creator-table-scroll{border-color:var
 .product-footer-compact .product-footer-wordmark{font-size:1rem;margin:0;padding:0;border:0}
 .product-footer-compact .product-footer-version{margin:0;display:inline;color:var(--muted-foreground)}
 .product-footer-compact .product-footer-attribution{margin:0;color:var(--muted-foreground)}
-.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex;flex-direction:row;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0;padding:0;margin:0}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex;flex-direction:row !important;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0;padding:0;margin:0}
 @media (max-width:760px){.framework-app .product-footer.product-footer-compact{padding:1rem!important}}
 /* Kleine tekst minimaal 12 px. */
 .report-table .report-source-id,.report-context-kind{font-size:.75rem}

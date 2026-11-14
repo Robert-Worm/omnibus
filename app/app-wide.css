@@ -19,7 +19,7 @@ html[data-appearance=dark] .framework-app .law-column-control button{border-colo
 .footer-about-dialog .footer-about-body p{margin:0}
 .footer-about-dialog .footer-contact{display:grid;gap:.5rem}
 /* Donker: primaire knoppen overal donkerblauw met witte tekst, zoals "Naar stap …". */
-html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled){background:var(--donker-vlak-9)!important;color:var(--donker-tekst-10);border-color:var(--donker-vlak-9)!important}
+html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled){background:var(--donker-vlak-9);color:var(--donker-tekst-10);border-color:var(--donker-vlak-9)}
 html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled):hover{background:#2f6d9f!important}
 /* Overgangen: de werkruimte is altijd minstens schermhoog, zodat de voettekst niet even in beeld springt terwijl een
    stap of viewer laadt (gemeten verspringing bij stap 3 en 4, B-058). */

@@ -17,7 +17,7 @@
 .report-context-trigger{white-space:nowrap}
 html[data-appearance=dark] .framework-app .report-context-trigger{background:transparent!important;border:0;color:var(--donker-tekst-7)}
 html[data-appearance=dark] .framework-app .report-context-trigger:hover{background:var(--donker-vlak-5)!important}
-html[data-appearance=dark] .report-context-menu{background:var(--donker-vlak-2)!important;border-color:var(--donker-lijn-2)!important;color:var(--donker-tekst-9)}
+html[data-appearance=dark] .report-context-menu{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2);color:var(--donker-tekst-9)}
 html[data-appearance=dark] .report-context-menu [role=menuitem]{color:var(--donker-tekst-9)}
 html[data-appearance=dark] .report-context-menu [role=menuitem][data-highlighted]{background:var(--donker-vlak-4)}
 html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-slot=dropdown-menu-label]){color:#9fb1c4}
@@ -43,5 +43,5 @@ html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-s
 .report-context-menu{max-height:18rem}
 .report-table td[data-column=date]{font-variant-numeric:tabular-nums;font-family:var(--font-ui)}
 /* Eindcontrole (B-058) */
-.report-context-menu{overflow-y:auto;box-shadow:0 8px 24px rgba(15,27,43,.18)}
+.report-context-menu{overflow-y:auto !important;box-shadow:0 8px 24px rgba(15,27,43,.18)}
 .report-choice-hint{font-size:.8125rem;color:var(--muted-foreground)}

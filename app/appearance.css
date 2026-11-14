@@ -365,32 +365,32 @@ html[data-appearance=dark] .law-point-option-text small.is-hold{color:#e6c37a}
 :is(.framework-app,.project-utility-dialog){--hb-line:#d5dce6;--hb-ink:#1f3a5f;--hb-hover:#eef3f9;--hb-hover-line:#b7c6da;--hb-on:#e1eaf5;--hb-on-line:#1f4e8c;--hb-focus:#1f4e8c}
 /* Eenduidige stijl voor kopbalk, lijsten, keuzekaarten en donkere modus (expertpanels 14 november 2026, besluit B-055). */
 html[data-appearance=dark] :is(.framework-app,.project-utility-dialog){--hb-line:#33445c;--hb-ink:#d6e0ec;--hb-hover:#1e2d42;--hb-hover-line:#4a6080;--hb-on:#23395a;--hb-on-line:#7fb0e6;--hb-focus:#7fb0e6}
-.framework-app .brand-bar .project-actions button{height:2.125rem;min-height:2.125rem;padding:0 .75rem!important;border:1px solid var(--hb-line)!important;border-radius:8px;
+.framework-app .brand-bar .project-actions button{height:2.125rem;min-height:2.125rem;padding:0 .75rem!important;border:1px solid var(--hb-line) !important;border-radius:8px;
  background:transparent!important;color:var(--hb-ink)!important;font:500 .875rem/1 var(--font-ui)!important;gap:.5rem!important;box-shadow:none;transition:background-color .12s,border-color .12s}
 .framework-app .brand-bar .project-actions button:not(:disabled):hover{background:var(--hb-hover)!important;border-color:var(--hb-hover-line)!important}
 .framework-app .brand-bar .project-actions button:is([aria-expanded=true],[data-popup-open],[data-state=open]){background:var(--hb-on)!important;border-color:var(--hb-on-line)!important}
 .framework-app .brand-bar .project-actions button:focus-visible{outline:2px solid var(--hb-focus)!important;outline-offset:2px}
 /* Wegwijzer niet langer altijd 'actief'; opslagstatus als rustig icoon zonder vlak. */
-.framework-app .brand-bar .project-actions .workflow-help-trigger{background:transparent!important;border-color:var(--hb-line)!important;color:var(--hb-ink)}
+.framework-app .brand-bar .project-actions .workflow-help-trigger{background:transparent!important;border-color:var(--hb-line) !important;color:var(--hb-ink)}
 .framework-app .brand-bar .project-actions button svg{width:1rem!important;height:1rem!important}
 /* --- Menu's (Nieuw project, Delen, AI koppelen, Wegwijzer): één opbouw (besluit B-056). --- */
 [data-slot=alert-dialog-content].project-utility-dialog{padding:0;gap:0;overflow:hidden;max-width:min(38rem,calc(100vw - 2rem));width:min(38rem,calc(100vw - 2rem))}
 .project-utility-dialog .project-utility-header{position:relative;display:flex;flex-direction:row;align-items:flex-start;text-align:left}
-.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem;font:600 1.25rem/1.3 var(--font-heading)!important;color:var(--primary)!important;text-align:left}
-.project-utility-dialog :is([data-slot=dialog-description],[data-slot=alert-dialog-description]){font:400 .875rem/1.5 var(--font-ui)!important;color:var(--rm-muted)!important;text-align:left}
+.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem;font:600 1.25rem/1.3 var(--font-heading);color:var(--primary)!important;text-align:left}
+.project-utility-dialog :is([data-slot=dialog-description],[data-slot=alert-dialog-description]){font:400 .875rem/1.5 var(--font-ui);color:var(--rm-muted)!important;text-align:left}
 .project-utility-dialog .project-utility-close{position:absolute;width:2rem;height:2rem;min-height:2rem;padding:.4rem;border:0!important;background:transparent!important;color:var(--rm-muted)!important}
 .project-utility-dialog .project-utility-body{display:grid;font-size:.875rem;line-height:1.5}
 .project-utility-dialog .project-utility-hint{font-size:.8125rem;color:var(--rm-muted)}
-.project-utility-dialog .project-utility-footer{display:flex;flex-direction:row;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:0;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
+.project-utility-dialog .project-utility-footer{display:flex;flex-direction:row !important;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:0;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
 /* Sluiten of Annuleren altijd links, de hoofdknop rechts. */
 .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){order:-1;margin-right:auto}
 .project-utility-dialog .project-utility-footer>output{order:-2;flex-basis:100%;font-size:.8125rem;color:var(--rm-muted)}
 .project-utility-dialog .project-utility-footer>output:empty{display:none}
 .project-utility-dialog .guide-context{margin:0 0 .2rem;font:500 .75rem/1.3 var(--font-ui);color:var(--rm-muted)}
 /* Menu's in donker: voetknoppen zoals in licht (omlijnd; wissen in rustig rood). */
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,var(--donker-lijn-1))!important;color:var(--donker-tekst-4)}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,var(--donker-lijn-1));color:var(--donker-tekst-4)}
 html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12);border:1px solid #6b3a3a;color:#f2a0a0}
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec !important}
 /* ===== 0.1.52: menu's in vaste maatvoering (panel 14 november 2026, besluit B-057) =====
    Kop 24/24/20 px, icoon 40×40, titel op x=80. Inhoud begint 20 px onder de lijn; tekst op de titelkolom,
    genummerde stappen met het nummer onder het icoon. Voetbalk 16/24 px, Sluiten omlijnd links, hoofdknop rechts. */
@@ -403,10 +403,10 @@ html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([
 .project-utility-dialog .share-project-steps li{grid-template-columns:40px minmax(0,1fr);gap:16px}
 .project-utility-dialog .share-project-steps li::before{width:28px;height:28px;justify-self:center}
 .project-utility-dialog .project-utility-footer{padding:16px 24px;gap:12px}
-.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border);background:transparent!important;color:var(--foreground);min-height:2.5rem}
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border) !important;background:transparent!important;color:var(--foreground) !important;min-height:2.5rem}
 .project-utility-dialog .guide-overview{border-top:0!important;padding-top:0}
 html[data-appearance=dark] .project-utility-dialog .project-utility-hint{color:#9fb1c4}
-html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec !important}
 .footer-about-dialog .footer-contact-item{display:flex;align-items:center;gap:.55rem;width:100%;margin:0;padding:.5rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--rm-surface,#f4f7fa);color:var(--rm-accent,#24558a);font:inherit;font-size:.875rem;text-align:start;cursor:pointer;text-decoration:none}
 .footer-about-dialog .footer-contact-item:hover{border-color:var(--rm-accent,#24558a)}
 .footer-about-dialog .footer-contact-item>svg{width:1rem;height:1rem;flex-shrink:0}
