@@ -74,3 +74,35 @@ html[data-appearance=dark] .framework-app .law-column-control button{border-colo
 html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,#33445c)!important;color:#d6e0ec!important}
 html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12)!important;border:1px solid #6b3a3a!important;color:#f2a0a0!important}
 html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec!important}
+
+/* ===== 0.1.52: menu's in vaste maatvoering (panel 14 november 2026, besluit B-057) =====
+   Kop 24/24/20 px, icoon 40×40, titel op x=80. Inhoud begint 20 px onder de lijn; tekst op de titelkolom,
+   genummerde stappen met het nummer onder het icoon. Voetbalk 16/24 px, Sluiten omlijnd links, hoofdknop rechts. */
+.project-utility-dialog .project-utility-header{padding:24px 56px 20px 24px!important;gap:16px!important;border-bottom:1px solid var(--border)}
+.project-utility-dialog .project-utility-icon{flex:0 0 40px;width:40px!important;height:40px!important;border-radius:10px!important}
+.project-utility-dialog .project-utility-icon svg{width:20px;height:20px}
+.project-utility-dialog .project-utility-close{top:16px!important;right:16px!important}
+.project-utility-dialog .project-utility-body{padding:20px 24px 24px 80px!important;gap:12px!important}
+.project-utility-dialog .project-utility-body>:is(.share-project-steps,.guide-instructions,.project-storage-states,section:not(.project-utility-note)){margin-left:-56px!important}
+.project-utility-dialog .share-project-steps li{grid-template-columns:40px minmax(0,1fr)!important;gap:16px!important}
+.project-utility-dialog .share-project-steps li::before{width:28px;height:28px;justify-self:center}
+.project-utility-dialog .project-utility-footer{padding:16px 24px!important;gap:12px!important}
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border)!important;background:transparent!important;color:var(--foreground)!important;min-height:2.5rem}
+.project-utility-dialog .guide-overview{border-top:0!important;padding-top:0!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-hint{color:#9fb1c4!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec!important}
+
+/* ===== 0.1.52: donkere modus, aanwijzen en vlakken =====
+   Regel: aanwijzen = één stap lichter dan de achtergrond, tekst blijft licht; nooit een licht vlak met lichte tekst;
+   geen vlakjes achter losse labels in koppen of groepsbalken. */
+html[data-appearance=dark] .framework-app .investigation-steps a:not([aria-current]):hover{background:#22364d!important;color:#e6edf5!important;border-color:#4a6a8c!important}
+html[data-appearance=dark] .framework-app .collection-navigation nav a:not([aria-current]):hover{background:#22364d!important;color:#e6edf5!important}
+html[data-appearance=dark] .catalogue-table :is(thead th>button,.catalogue-table-group th button,.catalogue-table-name>button){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+html[data-appearance=dark] .catalogue-table thead th>button:hover{color:#e6edf5!important;text-decoration:underline;text-underline-offset:3px}
+/* De naamkolom (een th) kreeg in donker het lichtere kopvlak; nu dezelfde kleur als de rest van de rij, met een rustige zebra. */
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]>*{background:#172330!important}
+html[data-appearance=dark] .catalogue-table tbody:has(.catalogue-table-group) tr[data-row]:nth-child(odd)>*,
+html[data-appearance=dark] .catalogue-table tbody:not(:has(.catalogue-table-group)) tr[data-row]:nth-child(even)>*{background:#1a2939!important}
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]:hover>*{background:#1f3045!important}
+html[data-appearance=dark] .catalogue-table-group:hover>*{background:#1f3045!important}
+html[data-appearance=dark] .framework-app .directory-family-card:hover{background:#22364d!important;border-color:#4a6a8c!important}
