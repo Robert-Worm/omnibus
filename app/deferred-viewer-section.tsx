@@ -1,7 +1,6 @@
 import type {ReactNode} from 'react';
 import {Button} from '@/components/ui/button';
 import {useViewerVisibility} from './use-viewer-visibility';
-import './deferred-viewer.css';
 
 /** Only defer presentation. Counts, filtering and selection retain the full group. */
 /** `estimate` is de verwachte hoogte in pixels; klopt die, dan verspringt de pagina niet als de inhoud verschijnt. */

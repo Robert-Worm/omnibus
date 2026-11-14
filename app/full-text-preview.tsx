@@ -1,5 +1,4 @@
 "use client";
-import "./research-builder.css";
 import { Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 export default function FullTextPreview({

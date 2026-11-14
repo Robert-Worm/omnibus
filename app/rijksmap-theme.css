@@ -72,20 +72,13 @@ body {
   margin-left: .25rem;
   line-height: 1.5;
 }
-.framework-app .brand-bar .project-actions { gap: .5rem; }
-.framework-app .brand-bar .project-actions button { border-radius: .5rem; }
 .framework-app .brand-bar .project-actions button:not(.storage-status) { background: var(--rm-surface); }
-.framework-app.compact-app main { padding-top: 1rem; }
 
 /* Segmented navigation; selection remains visible independently of hover. */
 .framework-app .investigation-steps {
-  gap: .375rem;
-  padding: .375rem;
-  margin-bottom: 1.75rem;
   background: rgb(255 255 255 / 85%);
   border: 1px solid var(--border);
   border-radius: .75rem;
-  width: fit-content;
   max-width: 100%;
   flex-wrap: wrap;
 }
@@ -94,8 +87,6 @@ body {
   color: #3d4a5c;
   border-color: transparent;
   border-radius: .5rem;
-  font-size: var(--text-label);
-  padding: .625rem .875rem;
   gap: .625rem;
 }
 .framework-app .investigation-steps a[aria-current] {
@@ -125,9 +116,7 @@ body {
 /* One navigation, with browsing, opened viewers and original reports separated. */
 .framework-app .collection-navigation { container:collection-nav / inline-size; }
 .framework-app .collection-navigation .collection-grouped-nav {
-  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(90px,.25fr);
-  gap:0; padding:.25rem; align-items:stretch;
-  border:1px solid var(--border); border-radius:.5rem; background:var(--rm-surface);
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(90px,.25fr); align-items:stretch; border-radius:.5rem;
 }
 .collection-nav-group {
   display:flex; min-width:0; padding:0 .625rem; background:transparent;
@@ -161,7 +150,7 @@ body {
    rather than becoming an orphaned third row. Use actual panel width. */
 @container collection-nav (max-width:1180px) {
   .framework-app .collection-navigation .collection-grouped-nav {
-    grid-template-columns:minmax(0,1fr) 6.5rem; gap:.375rem .625rem;
+    grid-template-columns:minmax(0,1fr) 6.5rem;
   }
   .collection-nav-group { padding:0; }
   .collection-nav-group + .collection-nav-group { border-left:0; }
@@ -196,9 +185,8 @@ body {
 .framework-app .goal-builder [role=radiogroup] label {
   border-color: var(--border);
   border-radius: .625rem;
-  background: var(--rm-surface);
 }
-.framework-app .goal-builder [role=radiogroup] label.is-selected { background: var(--rm-selected); border-color: var(--rm-accent); }
+.framework-app .goal-builder [role=radiogroup] label.is-selected { border-color: var(--rm-accent); }
 .framework-app .goal-builder [role=radiogroup] small { color: var(--rm-muted); }
 .framework-app .goal-fields > label,
 .framework-app .goal-fields > div { background: var(--rm-surface); border-color: var(--border); border-radius: .625rem; }
@@ -229,19 +217,18 @@ body {
 .framework-app a:not([class]) { color: var(--rm-accent); }
 .framework-app .product-footer a,
 .framework-app .product-footer summary { color: var(--rm-accent); }
-.framework-app.compact-app .product-footer { border-color: var(--border); color: #3d4a5c; margin-top: 2rem; padding-top: 2.5rem; }
+.framework-app.compact-app .product-footer { border-color: var(--border); color: #3d4a5c; margin-top: 2rem; }
 .framework-app .product-footer .product-footer-wordmark { font-family: var(--font-heading); color: var(--primary); font-weight: 600; border-color: var(--primary); }
 .framework-app .product-footer .product-footer-column h2 { font-family: var(--font-ui); font-size: var(--text-meta); letter-spacing: .09em; color: var(--rm-muted); }
 .framework-app .product-footer-column { border-color: var(--border); }
 .framework-app .product-footer-version { font-size: var(--text-meta); }
-.framework-app .product-footer .footer-glossary-trigger { display:flex; align-items:center; gap:.5rem; min-height:2.5rem; padding:.5rem 0; border:0; background:transparent; color:var(--rm-accent); font:inherit; font-size:.875rem; text-align:left; cursor:pointer; }
+.framework-app .product-footer .footer-glossary-trigger { background:transparent; color:var(--rm-accent); text-align:left; cursor:pointer; }
 .framework-app .product-footer .footer-glossary-trigger:hover { text-decoration:underline; text-underline-offset:3px; }
-.framework-app .product-footer .footer-glossary-trigger svg { width:1rem; height:1rem; flex-shrink:0; margin-top:0; }
+.framework-app .product-footer .footer-glossary-trigger svg { height:1rem; flex-shrink:0; margin-top:0; }
 @media (max-width: 650px) {
   .framework-app.compact-app .brand-bar { padding: .875rem 1rem; }
   .framework-app .brand-bar > div > span { display: inline; padding-left: .75rem; }
-  .framework-app .investigation-steps { width: 100%; gap: .25rem; }
-  .framework-app .investigation-steps a { flex: 1 1 calc(50% - .25rem); padding: .625rem; }
+  .framework-app .investigation-steps a { flex: 1 1 calc(50% - .25rem); }
   .framework-app .goal-builder { padding: 1rem; }
 }
 @media print {
@@ -383,7 +370,7 @@ body {
   color: #864d00; background: #fff3dd; border: 1px solid #d8aa56;
 }
 .notification-dot { position:absolute; top:5px; right:5px; width:7px; height:7px; border-radius:50%; background:#a15c00; }
-.framework-app .brand-bar .project-actions .workflow-help-trigger { width:2.125rem; min-width:2.125rem; height:2.125rem; padding:0; }
+.framework-app .brand-bar .project-actions .workflow-help-trigger { min-width:2.125rem; height:2.125rem; }
 [data-slot=dialog-content].workflow-help-dialog { width:min(32rem,calc(100vw - 2rem)); max-width:32rem; max-height:calc(100dvh - 2rem); overflow-y:auto; padding:1.5rem; gap:1rem; font:400 .875rem/1.55 var(--font-ui); color:#16324f; background:#fff; text-align:left; overflow-wrap:anywhere; }
 .workflow-help-dialog [data-slot=dialog-header] { gap:.6rem; min-width:0; text-align:left; }
 .workflow-help-dialog [data-slot=dialog-title] { font:600 1.125rem/1.4 var(--font-ui); letter-spacing:normal; margin:0; }
@@ -492,3 +479,31 @@ body {
 .link-scope-hint { display:block; font-size:13px; margin-top:4px; color:var(--rm-muted); }
 @media(max-width:480px) { [data-slot=sheet-content].project-recovery-sheet { padding:16px; } }
 .framework-app button.term-help-trigger.afkorting-trigger,[data-slot=sheet-content] button.term-help-trigger.afkorting-trigger{text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,currentColor 55%,transparent);text-underline-offset:3px}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* Eén typografische schaal voor de hele app (expertpanel 14 november 2026, besluit B-054).
+   T1 paginatitel  Spectral 30/600   T2 sectiekop  Spectral 20/600   T3 kaartkop  Inter 15/600
+   T4 tekst        Inter 14/400      T5 label      Inter 13/400-500  T6 meta      Inter 12/500
+   Spectral alleen voor T1 en T2; alles wat je aanklikt of vergelijkt staat in Inter. Geen gewicht 700. */
+.framework-app .investigation-steps a>span:not(.step-number,.step-count){font-size:.9375rem!important;font-weight:600!important}
+/* Donker: knoppen die in licht geen vlak of rand hebben (spookknoppen, links, oogjes, info), krijgen dat in donker ook niet. */
+html[data-appearance=dark] .framework-app :is(button[class*="dark:hover:bg-muted/50"],button[class*="underline-offset-4"],.open-item-help,.matrix-subject-info,.preview-eye,.footer-glossary-trigger),
+html[data-appearance=dark] .framework-app footer a{background:transparent!important;border-color:transparent!important}
+html[data-appearance=dark] .framework-app :is(button[class*="dark:hover:bg-muted/50"],.preview-eye,.footer-glossary-trigger):not(:disabled):hover,
+html[data-appearance=dark] .framework-app footer a:hover{background:color-mix(in srgb,var(--muted) 60%,transparent)!important}
+.workflow-help-dialog.project-utility-dialog .guide-instructions{margin:0;padding:0;border:0;background:none}
+/* ===== 0.1.52: donkere modus, aanwijzen en vlakken =====
+   Regel: aanwijzen = één stap lichter dan de achtergrond, tekst blijft licht; nooit een licht vlak met lichte tekst;
+   geen vlakjes achter losse labels in koppen of groepsbalken. */
+html[data-appearance=dark] .framework-app .investigation-steps a:not([aria-current]):hover{background:#22364d!important;color:#e6edf5!important;border-color:#4a6a8c!important}
+html[data-appearance=dark] .framework-app .collection-navigation nav a:not([aria-current]):hover{background:#22364d!important;color:#e6edf5!important}
+/* --- Tabbalk: drie herkenbare groepen (verkennen, geopend, bronnen), elk met een eigen vlak. --- */
+.framework-app .collection-navigation .collection-grouped-nav{background:transparent!important;border:0!important;padding:0!important;gap:.5rem!important}
+.framework-app .collection-navigation .collection-nav-group{border:1px solid var(--border)!important;border-radius:.5rem;padding:.25rem!important;background:var(--rm-surface,#f4f7fa)}
+.framework-app .collection-navigation .collection-nav-group:nth-child(2){background:color-mix(in srgb,var(--primary) 5%,var(--card))}
+html[data-appearance=dark] .framework-app .collection-navigation .collection-nav-group{background:#172330!important}
+html[data-appearance=dark] .framework-app .collection-navigation .collection-nav-group:nth-child(2){background:#1a2a3d!important}
+@container collection-nav (max-width:1180px){.framework-app .collection-navigation .collection-nav-group:last-child{border-left:1px solid var(--border)!important;padding:.25rem!important}}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger{min-height:2.25rem!important;padding:.25rem 0!important;font-size:.8125rem!important;gap:.4rem!important;white-space:nowrap;text-decoration:none}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger:hover{text-decoration:underline;text-underline-offset:3px}
+.framework-app .product-footer.product-footer-compact .footer-glossary-trigger .footer-external{width:.8rem!important;height:.8rem!important;opacity:.7}

@@ -9,18 +9,18 @@
 .catalogue-table{margin:1rem 0 0;--ct-line:color-mix(in srgb,var(--border) 55%,transparent);--ct-soft:color-mix(in srgb,var(--primary) 6%,var(--muted));--ct-control:var(--rm-control-border,#a9bacb);--ct-pad:1rem}
 .catalogue-table-frame{border:1px solid var(--border);border-radius:14px;background:var(--card);overflow:clip;box-shadow:0 1px 2px color-mix(in srgb,var(--foreground) 5%,transparent)}
 .catalogue-table-tools{display:flex;align-items:center;gap:.6rem .75rem;flex-wrap:wrap;padding:.75rem var(--ct-pad)}
-.catalogue-table .catalogue-table-search{position:relative;display:inline-flex;align-items:center;flex:0 1 17rem;min-width:12rem;height:2.5rem;box-sizing:border-box;border:1px solid var(--ct-control)!important;border-radius:8px;background:var(--card);margin:0;padding:0}
+.catalogue-table .catalogue-table-search{position:relative;display:inline-flex;align-items:center;min-width:12rem;box-sizing:border-box;border:1px solid var(--ct-control)!important;background:var(--card);margin:0;padding:0}
 .catalogue-table-search:focus-within{outline:2px solid var(--ring);outline-offset:1px}
 .catalogue-table-search>svg{position:absolute;left:.65rem;color:var(--muted-foreground);pointer-events:none}
 .catalogue-table .catalogue-table-search>input{all:unset;box-sizing:border-box;width:100%;height:100%!important;min-height:0!important;background:transparent!important;border:0!important;padding:0 .6rem 0 2.05rem!important;font:400 .8125rem/1 var(--font-ui);color:var(--foreground)}
 .catalogue-table-search>input::placeholder{color:var(--muted-foreground);opacity:1}
 .catalogue-table-filters,.catalogue-table-grouping{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
 .catalogue-table-grouping{margin-left:auto}
-.catalogue-table .catalogue-tool{display:inline-flex;align-items:center;gap:.3rem;width:auto;height:2.5rem;padding:0 .55rem 0 .7rem;border:1px solid var(--ct-control);border-radius:8px;background:var(--card);color:var(--foreground);font:400 .8125rem/1 var(--font-ui);box-shadow:none;cursor:pointer;transition:border-color .12s,background-color .12s}
+.catalogue-table .catalogue-tool{display:inline-flex;align-items:center;gap:.3rem;width:auto;padding:0 .55rem 0 .7rem;border:1px solid var(--ct-control);background:var(--card);color:var(--foreground);font:400 .8125rem/1 var(--font-ui);box-shadow:none;cursor:pointer;transition:border-color .12s,background-color .12s}
 .catalogue-table .catalogue-tool:hover{border-color:var(--primary)}
 .catalogue-table .catalogue-tool:focus-visible{outline:2px solid var(--ring);outline-offset:1px;box-shadow:none}
 .catalogue-tool-label{color:var(--muted-foreground);white-space:nowrap;line-height:1.4}
-.catalogue-tool-value{max-width:11rem;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catalogue-tool-value{line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .catalogue-table .catalogue-tool svg{color:var(--muted-foreground);width:14px;height:14px;margin-left:.15rem}
 .catalogue-table .catalogue-tool[data-active]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--card))}
 .catalogue-tool[data-active] .catalogue-tool-value{color:var(--primary);font-weight:600}
@@ -44,9 +44,9 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 
 /* Tabel */
 .catalogue-table table{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;font:400 .8125rem/1.45 var(--font-ui);color:var(--foreground)}
-.catalogue-table thead th{position:sticky;top:0;z-index:2;background:var(--card);text-align:left;height:2.75rem;box-sizing:border-box;padding:.4rem .6rem;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:middle}
+.catalogue-table thead th{position:sticky;top:0;z-index:2;text-align:left;box-sizing:border-box;padding:.4rem .6rem;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:middle}
 .catalogue-table thead th:first-child:not(.catalogue-table-check){padding-left:var(--ct-pad)}
-.catalogue-table thead th>:is(button,span:not(.catalogue-check-area,.sr-only)){all:unset;display:inline-flex;align-items:center;gap:.25rem;min-height:24px;border-radius:4px;font:600 .75rem/1.3 var(--font-ui)!important;color:var(--muted-foreground);white-space:nowrap}
+.catalogue-table thead th>:is(button,span:not(.catalogue-check-area,.sr-only)){all:unset;display:inline-flex;align-items:center;gap:.25rem;min-height:24px;border-radius:4px;white-space:nowrap}
 .catalogue-table thead th>button{cursor:pointer}
 .catalogue-table thead th>button:hover,.catalogue-table thead th[aria-sort]>button{color:var(--primary)}
 .catalogue-table thead th>button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
@@ -67,20 +67,18 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table :is(thead,tbody) tr>:last-child{padding-right:var(--ct-pad)}
 
 /* Groepskop: zelfde taal als de tegels, met de donkerblauwe rand links */
-.catalogue-table-group>*{background:var(--ct-soft);border-bottom:1px solid var(--ct-line)!important;padding:0!important}
+.catalogue-table-group>*{padding:0!important}
 .catalogue-table tbody+tbody .catalogue-table-group>*{border-top:1px solid var(--border)}
-.catalogue-table-group>*{border-bottom:1px solid var(--border)!important}
-.catalogue-table-group th>div{display:flex;align-items:center;gap:.25rem .75rem;flex-wrap:wrap;min-height:2.5rem;padding:.35rem var(--ct-pad) .35rem var(--ct-pad)}
+.catalogue-table-group th>div{display:flex;align-items:center;gap:.25rem .75rem;padding:.35rem var(--ct-pad) .35rem var(--ct-pad)}
 .catalogue-table-group .catalogue-table-check+th>div{padding-left:.6rem}
-.catalogue-table-group th button{all:unset;display:inline-flex;align-items:center;gap:.35rem;min-height:24px;cursor:pointer;border-radius:5px}
+.catalogue-table-group th button{all:unset;display:inline-flex;align-items:center;min-height:24px;cursor:pointer;border-radius:5px}
 .catalogue-table-group th button svg{color:var(--muted-foreground)}
 .catalogue-table-group th button:hover span{text-decoration:underline;text-underline-offset:3px}
 .catalogue-table-group th button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
-.catalogue-table-group th button span{font:600 .875rem/1.3 var(--font-ui)!important;color:var(--foreground)}
-.catalogue-table-group th small{font:400 .8125rem/1.3 var(--font-ui);color:var(--muted-foreground);font-variant-numeric:tabular-nums;white-space:nowrap}
+.catalogue-table-group th small{font-variant-numeric:tabular-nums;white-space:nowrap}
 .catalogue-table-group th p{margin:0;flex:1 1 22rem;font:400 .8125rem/1.4 var(--font-ui);color:var(--muted-foreground)}
 .catalogue-table-group th p::before{content:'·';margin-right:.75rem}
-.catalogue-table-group th em{font:600 .75rem/1 var(--font-ui);font-style:normal;color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--card));border-radius:99px;padding:.3rem .65rem;margin-left:auto;white-space:nowrap}
+.catalogue-table-group th em{font:600 .75rem/1 var(--font-ui);font-style:normal;color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--card));border-radius:99px;white-space:nowrap}
 .catalogue-table-group .catalogue-table-check .catalogue-check-area{align-items:center;padding:0 0 0 .35rem;min-height:2.5rem}
 
 /* Vinkje en openen */
@@ -93,16 +91,15 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table tbody tr:hover .catalogue-table-open button{color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,transparent)}
 
 /* Naam met vaste ID */
-.catalogue-table thead th[data-column=title]{width:24rem}
 .catalogue-table-name{width:auto}
 .catalogue-table tbody tr>:is(.catalogue-table-name:first-child){padding-left:var(--ct-pad)}
-.catalogue-table .catalogue-table-name>button{all:unset;display:inline-block;min-height:24px;cursor:pointer;font:600 .875rem/1.35 var(--font-ui)!important;color:var(--foreground);text-wrap:pretty}
+.catalogue-table .catalogue-table-name>button{all:unset;display:inline-block;min-height:24px;cursor:pointer;text-wrap:pretty}
 .catalogue-table tbody tr:hover .catalogue-table-name>button,.catalogue-table .catalogue-table-name>button:hover{color:var(--primary)}
 .catalogue-table .catalogue-table-name>button:hover{text-decoration:underline;text-underline-offset:3px}
 .catalogue-table .catalogue-table-name>button:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:3px}
 .catalogue-table-name>span{display:flex;align-items:center;gap:.25rem .5rem;flex-wrap:nowrap;overflow:hidden;margin-top:.15rem;font-size:.75rem;line-height:1.35;color:var(--muted-foreground)}
 .catalogue-table-name>span:empty{display:none}
-.catalogue-id{font-variant-numeric:tabular-nums;border:1px solid var(--ct-line);background:var(--ct-soft);border-radius:5px;padding:.08rem .4rem;white-space:nowrap}
+.catalogue-id{white-space:nowrap}
 .catalogue-table-name em{display:inline-flex;align-items:center;gap:.25rem;font-style:normal;font-weight:600;color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,transparent);border-radius:99px;padding:.1rem .5rem}
 .catalogue-hit{font-style:italic}
 
@@ -122,9 +119,8 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .catalogue-table td .catalogue-clamp[data-lines="3"]{-webkit-line-clamp:3;line-clamp:3}
 .catalogue-table td .catalogue-sub{display:block;font-size:.75rem;font-weight:400;color:var(--muted-foreground);margin-top:.1rem;white-space:normal;hyphens:none;overflow-wrap:normal}
 .catalogue-more{display:inline;margin:0 0 0 .35rem;font-size:.75rem;color:var(--muted-foreground);white-space:nowrap}
-.catalogue-pill{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;border-radius:99px;padding:.12rem .6rem;font-size:.75rem;font-weight:600;white-space:nowrap;background:color-mix(in srgb,var(--pill,var(--primary)) 12%,var(--card));color:color-mix(in srgb,var(--pill,var(--primary)) 80%,var(--foreground));border:1px solid color-mix(in srgb,var(--pill,var(--primary)) 26%,transparent)}
+.catalogue-pill{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;border-radius:99px;font-size:.75rem;white-space:nowrap;border:1px solid color-mix(in srgb,var(--pill,var(--primary)) 26%,transparent)}
 .catalogue-pill[data-tone=dora]{--pill:#1f6f8b}.catalogue-pill[data-tone=iia]{--pill:#7a4fa3}.catalogue-pill[data-tone=rijk]{--pill:#b0640f}.catalogue-pill[data-tone=cer]{--pill:#2f7d4f}
-:is(.dark,[data-appearance=dark],[data-theme=dark]) .catalogue-pill{background:color-mix(in srgb,var(--pill,var(--primary)) 26%,var(--card));color:color-mix(in srgb,var(--pill,var(--primary)) 30%,var(--foreground));border-color:color-mix(in srgb,var(--pill,var(--primary)) 55%,transparent)}
 .catalogue-future{color:color-mix(in srgb,#b0640f 80%,var(--foreground));font-weight:600}
 .catalogue-table-empty{padding:2.2rem 1.4rem;color:var(--muted-foreground);text-align:center}
 .catalogue-table-empty p{margin:0}
@@ -183,16 +179,15 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .directory-heading>.catalogue-view-toggle,.directory-heading-actions{flex:none;margin-top:.15rem}
 .catalogue-table thead th[data-column=spacer]{width:auto}
 /* Zoekveld boven de tegels: zelfde veld en zelfde plek als in de lijst */
-.framework-app .catalogue-explorer .catalogue-table.directory-search-row,.catalogue-table.directory-search-row{display:flex;align-items:center;gap:.6rem;margin:1rem 0 1.25rem;padding:calc(.75rem + 1px) 0 0 calc(var(--ct-pad) + 1px)}
+.framework-app .catalogue-explorer .catalogue-table.directory-search-row,.catalogue-table.directory-search-row{display:flex;align-items:center;gap:.6rem}
 .catalogue-groups>.catalogue-group-heading:has(>div:empty:only-child){display:none}
 .framework-app .catalogue-explorer .catalogue-groups{margin-top:0}
-.catalogue-table.directory-search-row .catalogue-table-search{flex:0 0 17rem;height:2.5rem}
 /* Zelfde lucht boven de kop in stap 2 (onder de tabbalk) als in stap 1 */
 .framework-app .directory-heading[data-below-tabs]{margin-top:1.15rem!important}
 .catalogue-table thead td{border-bottom:1px solid var(--border);background:var(--card)}
 
 /* Stap 4: extra's voor het Excelbestand als rustige regels, zonder eigen kader per optie. */
-.framework-app #main-workspace .creator-extras{border:0;border-top:1px solid var(--border);padding:.9rem 0 0;margin:1.25rem 0 var(--workflow-section-gap);min-width:0;display:grid;gap:.55rem}
+.framework-app #main-workspace .creator-extras{border:0;padding:.9rem 0 0;min-width:0;display:grid;gap:.55rem}
 .framework-app #main-workspace .creator-extras legend{float:left;width:100%;padding:0;margin:0 0 .15rem;font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground)}
 .framework-app #main-workspace .creator-extras legend small{font-weight:400;color:var(--rm-muted);margin-left:.35rem;font-size:.75rem}
 .framework-app #main-workspace .creator-extras label{clear:both;display:flex;align-items:flex-start;gap:.6rem;margin:0;padding:0;cursor:pointer;border:0;background:none}
@@ -204,9 +199,9 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .framework-app #main-workspace .creator-excluded button{font:inherit;color:var(--rm-accent);text-decoration:underline;background:none;border:0;padding:0;min-height:0;cursor:pointer}
 
 /* Stap 4 rustiger: geen kaders in kaders, Vormgeving ingeklapt tot een regel. */
-.framework-app #main-workspace .creator-card .creator-testing-aspects{border:0;background:none;padding:0;margin-top:.5rem}
+.framework-app #main-workspace .creator-card .creator-testing-aspects{border:0;background:none;padding:0}
 .framework-app #main-workspace .creator-card .creator-testing-aspects legend{font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground);padding:0;margin-bottom:.4rem}
-.framework-app #main-workspace .creator-card .creator-selection-summary{border:0;border-top:1px solid var(--border);border-radius:0;background:none;padding:.9rem 0 0;margin-top:1.1rem}
+.framework-app #main-workspace .creator-card .creator-selection-summary{border:0;border-radius:0;background:none;padding:.9rem 0 0}
 .framework-app #main-workspace .creator-card .creator-selection-summary h3{font:600 .8125rem/1.4 var(--font-ui)!important;color:var(--foreground);margin:0 0 .25rem}
 .framework-app #main-workspace .creator-card .creator-selection-summary>p{margin:0 0 .35rem}
 .framework-app #main-workspace .creator-card .creator-selection-summary>a{display:inline-block;margin:.15rem 0 0}
@@ -228,7 +223,7 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .framework-app #main-workspace .creator-context h2{margin:0}
 .framework-app #main-workspace .creator-context>label{margin:0}
 .framework-app #main-workspace .creator-context textarea{min-height:2.5rem;height:2.5rem}
-.framework-app #main-workspace .creator-terminology{border:0;padding:0;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.6rem}
+.framework-app #main-workspace .creator-terminology{border:0;padding:0;min-width:0}
 .framework-app #main-workspace .creator-terminology>legend{float:left;padding:0;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted);margin-right:.25rem}
 .framework-app #main-workspace .creator-terminology button{font:400 .8125rem/1.3 var(--font-ui);min-height:1.9rem;padding:.2rem .65rem;border:1px solid var(--border);border-radius:999px;background:var(--workflow-card,var(--card));color:var(--foreground);cursor:pointer}
 .framework-app #main-workspace .creator-terminology button[aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--workflow-card,#fff));color:var(--primary);font-weight:600}
@@ -249,14 +244,13 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout){margin-top:0!important;margin-bottom:0!important;padding:0 var(--ct-pad,1rem);border:solid var(--border);border-width:0 1px;background:var(--card)}
 .directory-search-row+*{padding-top:1rem!important}
 .directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):has(+.directory-note),.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):last-child{border-bottom-width:1px;border-radius:0 0 14px 14px;padding-bottom:1rem;box-shadow:0 1px 2px color-mix(in srgb,var(--foreground) 5%,transparent)}
-@media (max-width:640px){.catalogue-table.directory-search-row .catalogue-table-search{flex:1 1 100%}}
 /* Omschrijving bij aanwijzen van de naam in de lijst. */
 .catalogue-table-name{position:relative}
 .catalogue-table .catalogue-table-name>.catalogue-name-tip{display:none;font:400 .75rem/1.45 var(--font-ui);color:var(--card);white-space:normal;overflow:visible}
 .catalogue-table-name .catalogue-name-tip{left:0;right:auto;top:calc(100% - .2rem);max-width:26rem;width:max-content;transition-delay:.25s}
 .catalogue-table .catalogue-table-name:is(:hover,:focus-within)>.catalogue-name-tip{display:block}
 .catalogue-table tbody:last-child tr[data-row]:nth-last-child(-n+2) .catalogue-name-tip{top:auto;bottom:calc(100% - .2rem)}
-.catalogue-table .catalogue-table-name>button{font-size:.9rem!important;color:var(--primary)}
+.catalogue-table .catalogue-table-name>button{color:var(--primary)}
 /* Keuzelijst: lange namen lopen door op een volgende regel in plaats van af te kappen. */
 .catalogue-tool-option{white-space:normal;overflow-wrap:anywhere}
 .catalogue-tool-value{max-width:14rem}
@@ -266,14 +260,14 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 /* De naam neemt de overige ruimte; de vier kolomplekken hebben een vaste breedte (zie SLOTS in catalogue-table.tsx). */
 .catalogue-table thead th[data-column=title]{width:auto}
 /* Groepsbalk: wit met een smalle accentstreep, pijltje vóór de naam, aantal rechts op een vaste plek. */
-.catalogue-table-group>*{background:var(--card)!important;border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important}
+.catalogue-table-group>*{border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important}
 .catalogue-table-group th{box-shadow:inset 3px 0 0 var(--primary)}
 .catalogue-table-group .catalogue-table-check{box-shadow:inset 3px 0 0 var(--primary)}
 .catalogue-table-group .catalogue-table-check+th{box-shadow:none}
-.catalogue-table-group th>div{flex-wrap:nowrap;min-height:2.6rem}
+.catalogue-table-group th>div{flex-wrap:nowrap}
 .catalogue-table-group th button{gap:.4rem}
 .catalogue-table-group th button svg{transition:transform .15s}
-.catalogue-table-group th button span{font:600 .8125rem/1.3 var(--font-ui)!important;color:var(--primary);letter-spacing:.01em}
+.catalogue-table-group th button span{font:600 .8125rem/1.3 var(--font-ui)!important;letter-spacing:.01em}
 .catalogue-table-group th small{margin-left:auto;padding-right:3.6rem;font:500 .75rem/1 var(--font-ui);color:var(--muted-foreground)}
 .catalogue-table-group th em{margin-left:auto;padding:.25rem .55rem}
 .catalogue-table-group th em+small{margin-left:.75rem}
@@ -318,3 +312,44 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 html[data-appearance=dark] .framework-app #main-workspace .export-input-guidance{background:#3a2f17}
 /* Overal dezelfde kaartrand. */
 .framework-app #main-workspace .export-creator .creator-card{border-radius:12px}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* T2: alle sectie- en paneelkoppen even groot. */
+.framework-app :is(.directory-heading h2,.workflow-section-intro h2,.creator-card>h2,.creator-preview-heading h2,details.creator-fold>summary h2){font:600 1.25rem/1.3 var(--font-heading)!important}
+/* --- Lijst: kolomkoppen leesbaar (13 px, donkerder) en groepsbalk in tekstkleur. --- */
+.catalogue-table thead th>:is(button,span:not(.catalogue-check-area,.sr-only)){font:600 .8125rem/1.3 var(--font-ui)!important;letter-spacing:.01em;color:color-mix(in srgb,var(--foreground) 78%,var(--muted-foreground))}
+.catalogue-table thead th{height:2.5rem;background:color-mix(in srgb,var(--muted) 45%,var(--card))!important}
+.catalogue-table-group>*{background:color-mix(in srgb,var(--muted) 35%,var(--card))!important}
+.catalogue-table-group th button span{color:var(--foreground)!important}
+.catalogue-table-group th>div{min-height:2.25rem!important}
+html[data-appearance=dark] .catalogue-table-group th em{background:none!important;border:0!important;color:var(--muted-foreground)}
+html[data-appearance=dark] .catalogue-table :is(thead th>button,.catalogue-table-group th button,.catalogue-table-name>button){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+html[data-appearance=dark] .catalogue-table thead th>button:hover{color:#e6edf5!important;text-decoration:underline;text-underline-offset:3px}
+/* De naamkolom (een th) kreeg in donker het lichtere kopvlak; nu dezelfde kleur als de rest van de rij, met een rustige zebra. */
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]>*{background:#172330!important}
+html[data-appearance=dark] .catalogue-table tbody:has(.catalogue-table-group) tr[data-row]:nth-child(odd)>*,
+html[data-appearance=dark] .catalogue-table tbody:not(:has(.catalogue-table-group)) tr[data-row]:nth-child(even)>*{background:#1a2939!important}
+html[data-appearance=dark] .catalogue-table tbody tr[data-row]:hover>*{background:#1f3045!important}
+html[data-appearance=dark] .catalogue-table-group:hover>*{background:#1f3045!important}
+/* --- Gedeelde keuzeknop (ToolSelect) ook buiten de lijsten: viewer, rapporten en stap 4. --- */
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool{--ct-control:var(--rm-control-border,#a9bacb);display:inline-flex;align-items:center;gap:.3rem;width:auto;height:2.5rem;padding:0 .55rem 0 .7rem;border:1px solid var(--ct-control);border-radius:8px;background:var(--card);color:var(--foreground);font:400 .8125rem/1 var(--font-ui);box-shadow:none;cursor:pointer;min-width:0}
+/* Verfijning na de panelronde van 14 november 2026, middag (besluit B-058): elk scherm minimaal een 8. */
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool:hover,:is(.law-browse-filters,.export-preview-navigation) .catalogue-tool[data-popup-open]{border-color:var(--primary)}
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool svg{color:var(--muted-foreground);width:14px;height:14px;margin-left:.15rem;flex:none}
+:is(.law-browse-filters,.export-preview-navigation) .catalogue-tool[data-active]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--card))}
+.law-browse-filters .catalogue-tool .catalogue-tool-value{max-width:16rem}
+.report-table .catalogue-table-filters{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.report-table .catalogue-table-grouping{margin-left:auto}
+.report-table .catalogue-table-name>button:hover{text-decoration:underline;text-underline-offset:3px}
+.report-table .catalogue-table-name>button:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:2px}
+.report-table .catalogue-table-name>span{display:block;margin-top:.15rem;font-size:.75rem;color:var(--muted-foreground)}
+.framework-app .export-preview-navigation .catalogue-tool{flex:1 1 auto;justify-content:space-between}
+.framework-app .export-preview-navigation .catalogue-tool .catalogue-tool-value{max-width:none;flex:1;text-align:left}
+/* Donker: actieve Tegels/Lijst zoals een actieve tab. */
+html[data-appearance=dark] .catalogue-view-toggle button[aria-pressed=true]{background:#294b69!important;color:#f0f7ff!important;box-shadow:inset 0 0 0 1px #6884a0}
+/* Donker: tekstknoppen en meters in de lijst zonder vlak. */
+html[data-appearance=dark] .framework-app :is(.catalogue-tool-clear,.catalogue-cell-tip){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background:#22364d!important}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:#94c8f5!important}
+.framework-app .creator-presets button:focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}

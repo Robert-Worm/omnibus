@@ -14,10 +14,9 @@
 .cio-source-links button[aria-pressed=true]{border-color:#6f91b0;background:#eaf2fa;box-shadow:inset 0 -2px #6f91b0}
 .cio-point-source :is(button,a):focus-visible{outline:3px solid #5884b1;outline-offset:3px}
 .cio-point-source .criterion-source-layout{margin-top:1rem}
-.cio-point-source .criterion-source-panels{grid-template-columns:minmax(260px,.8fr) minmax(0,1.45fr);gap:1.25rem;align-items:start}
+.cio-point-source .criterion-source-panels{align-items:start}
 .cio-point-source .comparison-criterion,.cio-point-source .comparison-source{min-width:0;padding:.6rem}
 .cio-point-source .comparison-source{max-height:60vh;overflow:auto;scrollbar-gutter:stable}
-.cio-source-explanation>header{background:#f4f0f8;border-top:3px solid #aa8bbd;padding:.9rem;border-radius:.4rem}
 .cio-point-source .cio-source-kicker{font-size:.72rem;color:#65748a;margin:0 0 .5rem}
 .cio-source-reason{border-left:3px solid #839bb4;padding:.3rem 0 .3rem .9rem;margin:1rem 0}
 .cio-source-text{padding-top:.85rem;border-top:1px solid #e2e8ee;margin-top:.85rem}
@@ -38,12 +37,12 @@
 .cio-source-document .report-navigation{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
 .cio-source-document .report-navigation input{width:4rem}
 .cio-source-document .report-navigation button{font-size:.73rem;padding:.4rem .55rem}
-.cio-source-document .report-reading{font-size:.88rem;line-height:1.8;padding:1.1rem}
+.cio-source-document .report-reading{font-size:.88rem;line-height:1.8}
 .cio-source-document .report-reading h2{font-size:1rem}
 .cio-source-document .report-page-text{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
 .cio-source-status{font-size:.72rem;color:#68788b;border-top:1px solid #e0e6ed;margin-top:1rem;padding-top:.7rem}
 @media(min-width:1024px){.cio-point-source .comparison-criterion,.cio-point-source .comparison-source{max-height:68vh;overflow:auto;scrollbar-gutter:stable}}
-@media(max-width:1023px){.cio-point-source .criterion-source-panels{grid-template-columns:1fr}.cio-source-document .report-reading{padding:.8rem}.cio-source-toolbar{align-items:flex-start}}
+@media(max-width:1023px){.cio-source-toolbar{align-items:flex-start}}
 /* The reading panel starts flush with its opaque sticky article header. */
 .cio-point-source .criterion-source-panels>.comparison-source{padding:0;border:1px solid #dce3ec;border-radius:5px;background:#fff}
 .cio-point-source .cio-source-record-heading{top:0;margin:0;padding:.55rem .7rem;background:#fff;z-index:5;min-height:44px;box-shadow:0 1px 0 #dce3ec}

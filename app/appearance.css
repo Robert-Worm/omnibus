@@ -25,7 +25,7 @@ html[data-appearance=dark] .term-help-popup button:focus-visible { outline-color
 html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup { background:#172330; color:#e0eaf5; }
 html[data-appearance=dark] [data-slot=popover-content].relevance-help-popup .term-help-close { background:transparent; color:#abd5f7; }
 html[data-appearance=dark] :is(.framework-app,[data-slot=sheet-content]) button.relevance-help-trigger { background:transparent; color:#abd5f7; }
-.framework-app .brand-bar .project-actions .workflow-help-trigger { width:auto; padding:0 .65rem; gap:.4rem; background:#e5eff8; border-color:#9bbbd9; color:#154273; }
+.framework-app .brand-bar .project-actions .workflow-help-trigger { width:auto; padding:0 .65rem; gap:.4rem; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger:hover { background:#d5e6f5; border-color:#154273; }
 .framework-app .brand-bar .project-actions .workflow-help-trigger .guide-icon { width:1.125rem; height:1.125rem; flex-shrink:0; }
 html[data-appearance=dark] .framework-app .brand-bar .project-actions .workflow-help-trigger { background:#29455f; border-color:#729bbc; color:#e0f0ff; }
@@ -92,14 +92,11 @@ html[data-appearance=dark] .footer-mail-choice-actions > .footer-mail-choice-pri
   background:#fff; color:var(--foreground); border:1px solid var(--border);
   border-radius:.875rem; font:400 .875rem/1.6 var(--font-ui); text-align:left;
 }
-.project-utility-dialog .project-utility-header {
-  display:grid; grid-template-columns:2.5rem minmax(0,1fr); gap:.85rem; align-items:start;
-  padding:1.5rem 3.5rem 1.25rem 1.5rem; border-bottom:1px solid var(--border);
+.project-utility-dialog .project-utility-header { grid-template-columns:2.5rem minmax(0,1fr);
 }
 .project-utility-icon { display:grid; place-items:center; width:2.5rem; height:2.5rem; border:1px solid var(--border); border-radius:.65rem; color:var(--primary); background:var(--rm-selected); }
 .project-utility-dialog [data-slot=dialog-title] { margin:0 0 .4rem; font:600 1.3rem/1.3 var(--font-heading); color:var(--primary); }
 .project-utility-dialog [data-slot=dialog-description] { font:inherit; color:var(--rm-muted); }
-.project-utility-dialog .project-utility-close { position:absolute; top:.75rem; right:.75rem; width:2rem; height:2rem; padding:.4rem; color:var(--rm-muted); }
 .project-utility-body { display:grid; gap:1.25rem; padding:1.25rem 1.5rem; min-height:0; overflow-y:auto; overscroll-behavior:contain; }
 .project-utility-body > * { min-width:0; }
 .ai-connection-config { display:grid; gap:.5rem; margin-top:.75rem; font-weight:600; }
@@ -131,7 +128,6 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
 .project-storage-dialog .creator-check { display:flex; align-items:flex-start; gap:.6rem; margin-top:.25rem; }
 .project-storage-dialog .creator-check [role=checkbox] { flex-shrink:0; margin-top:.2rem; min-height:1rem; padding:0; }
 @media(max-width:480px) {
-  .project-utility-dialog .project-utility-header { padding:1.1rem 3rem 1rem 1rem; gap:.6rem; }
   .project-utility-body { padding:1rem; }
   .project-utility-footer { padding:1rem; flex-direction:column-reverse; align-items:stretch; }
 }
@@ -170,16 +166,7 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
 .framework-app .brand-bar .project-actions { align-items:center; justify-content:flex-end; gap:.65rem; margin-inline-start:auto; }
 .project-actions .project-action-group { display:flex; flex:0 0 auto; flex-wrap:wrap; align-items:center; gap:.375rem; max-width:100%; min-width:0; }
 .project-actions .project-action-group + .project-action-group { border-inline-start:1px solid var(--border); padding-inline-start:.65rem; }
-.framework-app .brand-bar .project-actions button {
-  height:2.125rem; min-height:2.125rem; padding:0 .65rem; gap:.375rem;
-  font:500 .8125rem/1 var(--font-ui); border-radius:.5rem;
-  transition:background-color .13s ease,color .13s ease,border-color .13s ease;
-}
-.framework-app .brand-bar .project-actions button svg { width:1rem; height:1rem; }
 .framework-app .brand-bar .project-actions .project-save-indicator { width:2.125rem; min-width:2.125rem; padding:0; }
-.framework-app .brand-bar .project-actions button:focus-visible {
-  outline:2px solid var(--primary); outline-offset:3px;
-}
 @media (hover:hover) {
   .framework-app .brand-bar .project-actions button:not(:disabled):not([aria-disabled=true]):not(.storage-status):hover {
     background:color-mix(in srgb,var(--rm-accent) 11%,var(--rm-surface));
@@ -188,9 +175,6 @@ html[data-appearance=dark] .project-utility-dialog :is(.project-utility-close,.p
   .framework-app .brand-bar .project-actions button.storage-status:not(:disabled):hover {
     background:color-mix(in srgb,#d8aa56 25%,var(--rm-surface)); border-color:#a15c00;
   }
-}
-@media (prefers-reduced-motion:reduce) {
-  .framework-app .brand-bar .project-actions button { transition:none; }
 }
 @media (max-width:600px) {
   .framework-app .brand-bar .project-actions { width:100%; justify-content:flex-start; }
@@ -326,3 +310,63 @@ html[data-appearance=dark] .law-point-num{background:#29455f;color:#e0f0ff}
 html[data-appearance=dark] .law-point-num.is-chosen{background:#1d3a2e;color:#a5e0bb}
 html[data-appearance=dark] .law-point-option-text small.is-chosen{color:#6fb08f}
 html[data-appearance=dark] .law-point-option-text small.is-hold{color:#e6c37a}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* --- Kopbalk: één knopstijl. Tekstknoppen 34 px hoog; icoonknoppen 34×34. --- */
+:is(.framework-app,.project-utility-dialog){--hb-line:#d5dce6;--hb-ink:#1f3a5f;--hb-hover:#eef3f9;--hb-hover-line:#b7c6da;--hb-on:#e1eaf5;--hb-on-line:#1f4e8c;--hb-focus:#1f4e8c}
+/* Eenduidige stijl voor kopbalk, lijsten, keuzekaarten en donkere modus (expertpanels 14 november 2026, besluit B-055). */
+html[data-appearance=dark] :is(.framework-app,.project-utility-dialog){--hb-line:#33445c;--hb-ink:#d6e0ec;--hb-hover:#1e2d42;--hb-hover-line:#4a6080;--hb-on:#23395a;--hb-on-line:#7fb0e6;--hb-focus:#7fb0e6}
+.framework-app .brand-bar .project-actions button{height:2.125rem!important;min-height:2.125rem!important;padding:0 .75rem!important;border:1px solid var(--hb-line)!important;border-radius:8px!important;
+ background:transparent!important;color:var(--hb-ink)!important;font:500 .875rem/1 var(--font-ui)!important;gap:.5rem!important;box-shadow:none!important;transition:background-color .12s,border-color .12s}
+.framework-app .brand-bar .project-actions button:not(:disabled):hover{background:var(--hb-hover)!important;border-color:var(--hb-hover-line)!important}
+.framework-app .brand-bar .project-actions button:is([aria-expanded=true],[data-popup-open],[data-state=open]){background:var(--hb-on)!important;border-color:var(--hb-on-line)!important}
+.framework-app .brand-bar .project-actions button:focus-visible{outline:2px solid var(--hb-focus)!important;outline-offset:2px}
+/* Wegwijzer niet langer altijd 'actief'; opslagstatus als rustig icoon zonder vlak. */
+.framework-app .brand-bar .project-actions .workflow-help-trigger{background:transparent!important;border-color:var(--hb-line)!important;color:var(--hb-ink)!important}
+.framework-app .brand-bar .project-actions button svg{width:1rem!important;height:1rem!important}
+/* --- Menu's (Nieuw project, Delen, AI koppelen, Wegwijzer): één opbouw (besluit B-056). --- */
+[data-slot=alert-dialog-content].project-utility-dialog{padding:0!important;gap:0!important;overflow:hidden;max-width:min(38rem,calc(100vw - 2rem))!important;width:min(38rem,calc(100vw - 2rem))!important}
+.project-utility-dialog .project-utility-header{position:relative;display:flex!important;flex-direction:row!important;align-items:flex-start;text-align:left!important}
+.project-utility-dialog :is([data-slot=dialog-title],[data-slot=alert-dialog-title]){margin:0 0 .35rem!important;font:600 1.25rem/1.3 var(--font-heading)!important;color:var(--primary)!important;text-align:left}
+.project-utility-dialog :is([data-slot=dialog-description],[data-slot=alert-dialog-description]){font:400 .875rem/1.5 var(--font-ui)!important;color:var(--rm-muted)!important;text-align:left}
+.project-utility-dialog .project-utility-close{position:absolute!important;width:2rem!important;height:2rem!important;min-height:2rem!important;padding:.4rem!important;border:0!important;background:transparent!important;color:var(--rm-muted)!important}
+.project-utility-dialog .project-utility-body{display:grid;font-size:.875rem;line-height:1.5}
+.project-utility-dialog .project-utility-hint{font-size:.8125rem;color:var(--rm-muted)}
+.project-utility-dialog .project-utility-footer{display:flex!important;flex-direction:row!important;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:0!important;border-top:1px solid var(--border);background:var(--rm-surface,var(--muted))}
+/* Sluiten of Annuleren altijd links, de hoofdknop rechts. */
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){order:-1;margin-right:auto}
+.project-utility-dialog .project-utility-footer>output{order:-2;flex-basis:100%;font-size:.8125rem;color:var(--rm-muted)}
+.project-utility-dialog .project-utility-footer>output:empty{display:none}
+.project-utility-dialog .guide-context{margin:0 0 .2rem!important;font:500 .75rem/1.3 var(--font-ui);color:var(--rm-muted)}
+/* Menu's in donker: voetknoppen zoals in licht (omlijnd; wissen in rustig rood). */
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="border-border"]{background:transparent!important;border:1px solid var(--hb-line,#33445c)!important;color:#d6e0ec!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer button[class*="bg-destructive"]{background:rgba(242,160,160,.12)!important;border:1px solid #6b3a3a!important;color:#f2a0a0!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer :is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){background:transparent!important;border-color:transparent!important;color:#d6e0ec!important}
+/* ===== 0.1.52: menu's in vaste maatvoering (panel 14 november 2026, besluit B-057) =====
+   Kop 24/24/20 px, icoon 40×40, titel op x=80. Inhoud begint 20 px onder de lijn; tekst op de titelkolom,
+   genummerde stappen met het nummer onder het icoon. Voetbalk 16/24 px, Sluiten omlijnd links, hoofdknop rechts. */
+.project-utility-dialog .project-utility-header{padding:24px 56px 20px 24px!important;gap:16px!important;border-bottom:1px solid var(--border)}
+.project-utility-dialog .project-utility-icon{flex:0 0 40px;width:40px!important;height:40px!important;border-radius:10px!important}
+.project-utility-dialog .project-utility-icon svg{width:20px;height:20px}
+.project-utility-dialog .project-utility-close{top:16px!important;right:16px!important}
+.project-utility-dialog .project-utility-body{padding:20px 24px 24px 80px!important;gap:12px!important}
+.project-utility-dialog .project-utility-body>:is(.share-project-steps,.guide-instructions,.project-storage-states,section:not(.project-utility-note)){margin-left:-56px!important}
+.project-utility-dialog .share-project-steps li{grid-template-columns:40px minmax(0,1fr)!important;gap:16px!important}
+.project-utility-dialog .share-project-steps li::before{width:28px;height:28px;justify-self:center}
+.project-utility-dialog .project-utility-footer{padding:16px 24px!important;gap:12px!important}
+.project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border:1px solid var(--border)!important;background:transparent!important;color:var(--foreground)!important;min-height:2.5rem}
+.project-utility-dialog .guide-overview{border-top:0!important;padding-top:0!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-hint{color:#9fb1c4!important}
+html[data-appearance=dark] .project-utility-dialog .project-utility-footer>:is([data-slot=dialog-close],[data-slot=alert-dialog-cancel],.guide-dismiss){border-color:#33445c!important;color:#d6e0ec!important}
+.footer-about-dialog .footer-contact-item{display:flex;align-items:center;gap:.55rem;width:100%;margin:0;padding:.5rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--rm-surface,#f4f7fa);color:var(--rm-accent,#24558a);font:inherit;font-size:.875rem;text-align:start;cursor:pointer;text-decoration:none}
+.footer-about-dialog .footer-contact-item:hover{border-color:var(--rm-accent,#24558a)}
+.footer-about-dialog .footer-contact-item>svg{width:1rem;height:1rem;flex-shrink:0}
+.footer-about-dialog :is(.footer-contact-status,.footer-contact-note){color:var(--rm-muted,#5b6b7c);font-size:.8125rem;margin:0}
+.footer-about-dialog .footer-contact-status:empty{display:none}
+html[data-appearance=dark] .footer-about-dialog .footer-contact-item{background:#20354a;color:#e0edfa;border-color:#55728e}
+/* Donker: de rand van de menu's iets duidelijker. */
+html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialog-content]).project-utility-dialog{border:1px solid #3a4a60!important}
+/* Wegwijzer: uitklapregel op één lijn met de stappen erboven. */
+.project-utility-dialog .project-utility-body>.guide-overview{margin-left:-56px!important}
+/* Telefoon: de knoppen in de kop lopen door in één blok, zonder een knop alleen op een regel. */
+@media (max-width:760px){.framework-app .brand-bar .project-actions .project-action-group{display:contents}}

@@ -156,3 +156,6 @@ html[data-appearance=dark] .framework-app #main-workspace :is(.workflow-next,.la
  .framework-app #main-workspace[data-viewer=true] .open-item-workspace { row-gap:.25rem; }
 }
 .afkorting-voluit{color:#5b6f83}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+.framework-app #main-workspace .open-item-workspace[data-single]~* .law-view-actions,.framework-app #main-workspace .open-item-workspace[data-single]~.law-view-actions{min-height:2.25rem}

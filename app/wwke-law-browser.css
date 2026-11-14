@@ -49,3 +49,6 @@
 .wwke-saved dt{font-weight:600}
 @media(max-width:1100px){.wwke-source-columns{grid-template-columns:1fr}}
 @media(max-width:650px){.wwke-form-grid,.wwke-role-choices{grid-template-columns:1fr}.wwke-scope-dialog[data-slot=dialog-content]{padding:.8rem}.wwke-scope-dialog [data-slot=dialog-footer]{margin:0;flex-direction:column;align-items:stretch}.wwke-detail .bd-footer{flex-wrap:wrap}.wwke-source>label{max-width:100%}}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+.wwke-browser .law-group-heading .law-group-description{margin-bottom:.15rem}

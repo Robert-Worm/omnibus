@@ -30,9 +30,6 @@
   }
   .framework-app .brand-bar .project-actions button {
     flex: 0 0 auto;
-    font-size: .8125rem;
-    padding: 0 .5rem;
-    gap: .3rem;
   }
 
   /* 2. Stack whole steps on phones so every label, including a count badge,

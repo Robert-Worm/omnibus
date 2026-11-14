@@ -110,12 +110,12 @@
 .matrix-workspace .combined-identity-table .cell-preview{white-space:normal}
 /* Separate compact identifiers from descriptive subject text. */
 .matrix-workspace .matrix-explained-table :is(th,td){vertical-align:top}
-.matrix-workspace .matrix-explained-table .row-title{align-items:center;gap:6px;min-height:22px;flex-wrap:nowrap}
+.matrix-workspace .matrix-explained-table .row-title{gap:6px;min-height:22px;flex-wrap:nowrap}
 .matrix-workspace .matrix-explained-table .row-title>[data-slot=checkbox]{width:14px;height:14px;min-width:14px;min-height:14px;flex:0 0 14px;margin:0;border-radius:3px}
 .matrix-workspace .matrix-explained-table [data-slot=checkbox-indicator] svg{width:11px;height:11px}
 .matrix-workspace .matrix-explained-table .row-title .norm-id{font-size:10.5px;line-height:1.4;white-space:nowrap}
 .matrix-workspace .matrix-explained-table .row-title button.norm-id[data-slot=button]{font-size:10.5px;line-height:1.4;min-width:0;white-space:nowrap}
-.matrix-workspace .matrix-explained-table .row-title .matrix-point-chip[data-slot=button]{height:22px;min-height:22px;padding:1px 3px;font-size:10.5px;gap:3px;background:transparent;border-color:transparent}
+.matrix-workspace .matrix-explained-table .row-title .matrix-point-chip[data-slot=button]{font-size:10.5px;gap:3px;background:transparent;border-color:transparent}
 .matrix-workspace .matrix-explained-table td:nth-child(2) .compact-title{display:block;width:100%;font-size:inherit;font-weight:600;line-height:1.4;padding:0;text-align:left;white-space:normal}
 .matrix-workspace .matrix-explained-table .compact-title>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;max-height:7em;overflow:hidden;overflow-wrap:normal;word-break:normal}
 .matrix-subject-explanation{display:flex;align-items:flex-start;gap:4px;margin-top:4px;min-width:0}
@@ -160,3 +160,6 @@ html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[da
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=control] { background: #243c43; }
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=criterion] { background: #263e37; }
 html[data-appearance=dark] .framework-app .matrix-workspace .compact-table th[data-field=procedure] { background: #363d28; }
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+.framework-app .matrix-point-chip,.framework-app .matrix-point-chip>span{font-size:.75rem!important}

@@ -30,7 +30,6 @@ import { organizationalGoalFor } from "@/lib/organizational-goals.mjs";
 import { reportDateLabel } from "@/lib/report-display.mjs";
 import { setReportPointSelection, pointWording } from "@/lib/report-point-adapter.mjs";
 import catalogue from "@/lib/report-point-catalogue.mjs";
-import "./control-objective-pilot.css";
 
 export default function ControlObjectivePilot({
   lines,

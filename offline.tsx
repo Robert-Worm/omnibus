@@ -1,18 +1,8 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
+import './app/styles';
 import FrameworkEditor from './app/framework-editor';
 import {trustStableInputs} from './lib/stable-inputs.mjs';
-import './app/globals.css';
-import './app/workflow-polish.css';
-import './app/rijksmap-fonts.css';
-import './app/rijksmap-theme.css';
-import './app/appearance.css';
-import './app/collection-layout.css';
-// Last, so phone-only overrides win ties. All rules are inside a max-width query.
-import './app/mobile.css';
-import './app/typography.css';
-import './app/polish.css';
-import './app/refine.css';
 try {
   const saved = localStorage.getItem('omnibus-appearance');
   document.documentElement.dataset.appearance = saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';

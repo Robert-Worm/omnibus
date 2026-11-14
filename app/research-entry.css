@@ -44,10 +44,10 @@
 .open-item-chip{display:flex;flex:0 0 auto;max-width:300px;border:1px solid var(--border);border-radius:6px;background:var(--card)}.open-item-chip.is-active{border-color:var(--primary);box-shadow:inset 0 -2px 0 var(--primary);background:color-mix(in srgb,var(--primary) 7%,var(--card))}
 .open-item-chip>button:first-child{white-space:nowrap;text-align:left;height:auto;min-height:34px;padding:.3rem .6rem;font-size:.8125rem;flex-shrink:1;min-width:0}.open-item-chip>button:first-child>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.open-item-chip>button:last-child{height:auto;min-height:34px;min-width:32px;padding:.3rem;border-left:1px solid var(--border);border-radius:0 5px 5px 0}.open-item-chip button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .open-item-strip .open-item-all{height:auto;min-height:34px;font-size:.75rem;white-space:nowrap}.open-item-explore{min-height:34px;height:auto}.open-workspace-actions{display:flex;justify-content:flex-end;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 .85rem}
-.framework-app .collection-navigation nav a{border-radius:0;border-width:0 0 2px;border-bottom-color:transparent;background:transparent}.framework-app .collection-navigation nav a[aria-current=page]{border-bottom-color:var(--primary);background:transparent}
+.framework-app .collection-navigation nav a{border-width:0 0 2px;border-bottom-color:transparent}.framework-app .collection-navigation nav a[aria-current=page]{border-bottom-color:var(--primary);background:transparent}
 @media(max-width:850px){.open-item-workspace{grid-template-columns:1fr auto}.open-item-strip{grid-row:2;grid-column:1/-1}.open-item-explore{grid-row:1;grid-column:2}.open-item-chip{max-width:260px}}
 @media(max-width:480px){.open-item-workspace{grid-template-columns:minmax(0,1fr)}.open-item-explore{grid-row:3;grid-column:1;justify-self:start;white-space:normal}.open-item-chip{max-width:min(260px,100%)}}
-.directory-search{display:grid;gap:.4rem;font-size:.8125rem;max-width:620px;margin:1.25rem 0}.directory-families{display:grid;gap:.6rem}.directory-family{border:1px solid var(--border);border-radius:10px;background:var(--card);overflow:hidden}.directory-family h3{margin:0}.directory-family h3>button{display:flex;align-items:center;gap:1rem;justify-content:space-between;width:100%;text-align:left;padding:1rem 1.2rem;color:var(--foreground);background:var(--muted);border:0;cursor:pointer}.directory-family h3>button:focus-visible{outline:2px solid var(--primary);outline-offset:-3px}.directory-family h3 strong{font-size:.9375rem;font-weight:600;display:block}.directory-family h3 small{display:block;font-size:.8125rem;font-weight:400;color:var(--muted-foreground);margin-top:.3rem}.family-count{margin-left:auto;font-size:.75rem;white-space:nowrap;font-weight:400;color:var(--muted-foreground)}
+.directory-search{display:grid;gap:.4rem;font-size:.8125rem;max-width:620px;margin:1.25rem 0}.directory-families{display:grid;gap:.6rem}.directory-family{border:1px solid var(--border);border-radius:10px;background:var(--card);overflow:hidden}.directory-family h3{margin:0}.directory-family h3>button{display:flex;align-items:center;gap:1rem;justify-content:space-between;width:100%;text-align:left;padding:1rem 1.2rem;color:var(--foreground);border:0;cursor:pointer}.directory-family h3>button:focus-visible{outline:2px solid var(--primary);outline-offset:-3px}.directory-family h3 strong{font-size:.9375rem;font-weight:600;display:block}.directory-family h3 small{display:block;font-size:.8125rem;font-weight:400;color:var(--muted-foreground);margin-top:.3rem}.family-count{margin-left:auto;font-size:.75rem;white-space:nowrap;font-weight:400;color:var(--muted-foreground)}
 .directory-children{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;padding:1rem;background:var(--muted)}
 .directory-children article{display:flex;flex-direction:column;min-width:0;padding:1rem;gap:1rem;border:1px solid var(--border);border-radius:9px;background:var(--card)}
 .directory-children article[data-open=true]{border-color:var(--primary);box-shadow:inset 3px 0 0 var(--primary)}
@@ -57,7 +57,7 @@
 .directory-children p{font-size:.8125rem;line-height:1.6;color:var(--muted-foreground);margin:.4rem 0 .7rem}
 .directory-child-meta{display:block;font-size:.75rem;line-height:1.5;color:var(--muted-foreground);margin-top:auto;padding-top:.3rem}
 .directory-children>button{grid-column:1/-1;justify-self:start}
-.directory-check{display:flex;padding:.25rem}.directory-note{font-size:.75rem;line-height:1.6;color:var(--muted-foreground);margin:1.2rem 0 0;max-width:95ch}
+.directory-check{padding:.25rem}.directory-note{font-size:.75rem;line-height:1.6;color:var(--muted-foreground);margin:1.2rem 0 0;max-width:95ch}
 .catalogue-card-id { font:600 .75rem/1.5 var(--font-ui); color:var(--rm-muted); letter-spacing:.025em; margin-bottom:.4rem; }
 .framework-app .catalogue-card-stats { display:flex; flex-wrap:wrap; gap:.4rem 1rem; padding:.75rem 0; margin-top:auto; font:400 .8125rem/1.5 var(--font-ui); color:var(--rm-muted); }
 .catalogue-card-stats strong { color:var(--foreground); font-weight:600; }
@@ -152,3 +152,25 @@
 .catalogue-card-role{font-style:normal;color:#8a5a00}
 
 .directory-view-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:0 0 .6rem}.directory-view-actions .directory-back{margin:0}
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* T3: kaartkoppen en keuzekaarten in Inter, niet in Spectral. */
+.framework-app :is(.creator-presets .preset-heading,.entry-card>h3,.directory-family-card>strong,aside.creator-preview>h3,.directory-axis strong){font:600 .9375rem/1.35 var(--font-ui)!important;letter-spacing:0}
+/* T4: lopende tekst 14 px. */
+.framework-app .entry-card>p{font-size:.875rem!important;line-height:1.5}
+/* Gewicht 700 bestaat niet meer in de interface. */
+.framework-app :is(.catalogue-table-count strong,.directory-family-card strong,legend){font-weight:600}
+/* --- Keuzekaarten (Wetten, Kaders, Modellen, Thema's, Processen): overal even hoog, titel op één regel. --- */
+.framework-app .directory-axis>button{min-height:4.75rem!important;height:4.75rem;padding:.85rem 1rem!important;box-sizing:border-box;align-items:flex-start!important}
+.framework-app .directory-axis>button strong{font-size:.875rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.framework-app .directory-axis>button small{display:-webkit-box!important;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:.75rem!important}
+.framework-app .directory-axis>button>span{min-width:0;display:grid;gap:.15rem}
+html[data-appearance=dark] .framework-app .directory-family-card:hover{background:#22364d!important;border-color:#4a6a8c!important}
+/* Eén geopend onderdeel: de terugknop staat rechts op de regel met Normen en Over dit kader, zonder eigen balk. */
+.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:block;width:auto;margin:0 0 0 1rem!important;padding:0!important;background:transparent!important;border:0!important;position:relative;z-index:1}
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore{min-height:2.25rem!important;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6)!important;background:transparent!important;color:var(--hb-ink,#1f3a5f)!important}
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore:hover{background:var(--hb-hover,#eef3f9)!important}
+/* Thema's: de strook staat in een eigen blok vóór de tabs; daar absoluut rechtsboven, zodat de tabs de volle breedte houden. */
+.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){position:relative;height:0;margin:0!important;padding:0!important}
+.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:absolute;top:0;right:0;float:none;margin:0!important}
+@media (max-width:760px){.framework-app #main-workspace .open-item-workspace[data-single]{float:none;margin:0 0 .5rem!important}.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){height:auto}.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:static}}

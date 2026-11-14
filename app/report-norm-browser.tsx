@@ -17,7 +17,6 @@ import DeferredViewerSection from './deferred-viewer-section';
 import FilterPicker from './filter-picker';
 import LawReadingControls from './law-reading-controls';
 import {useBrowseState} from './browse-state';
-import './cio-law-browser.css';
 const columns=[{id:'objective',title:'Doel'},{id:'risk',title:'Risico'},{id:'controlObjective',title:'Beheersdoelstelling'},{id:'control',title:'Beheersmaatregel'}];
 type Counts=Record<string,{selected:number;total:number;legacySelected?:boolean}>;
 type Group={id:string;title:string;lines:Line[];allRows:Line[]};

@@ -7,7 +7,6 @@ import type {Framework,Line} from '@/lib/framework-types';
 import {LawAboutIntro,LawAboutSpecifications} from './law-about-layout';
 import {reportDateLabel} from '@/lib/report-display.mjs';
 import {reportAboutContent,reportSourceGuidance} from '@/lib/report-about-content.mjs';
-import './report-framework-about.css';
 export default function ReportFrameworkAbout({title,workspaces,reports,lines,allLines,onRead,onChoice}:{title:string;workspaces:{id:string;title:string}[];reports:Pick<Framework,'report'|'scope'|'limitations'|'gaps'>[];lines:Line[];allLines:Line[];onRead:(id:string)=>void;onChoice:()=>void}){
  const [selected,setSelected]=useState('');
  const current=reports.find(f=>f.report.id===selected)||reports[0];

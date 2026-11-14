@@ -40,8 +40,6 @@ import LawPointPicker from './law-point-picker';
 import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
-import './control-objective-pilot.css';
-import './cio-law-browser.css';
 
 export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void;onOpenSource?:(id:string)=>void};

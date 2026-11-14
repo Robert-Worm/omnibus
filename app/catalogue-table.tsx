@@ -7,7 +7,6 @@ import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/select';
 import {useBrowseState} from './browse-state';
-import './catalogue-table.css';
 
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
 export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[]};

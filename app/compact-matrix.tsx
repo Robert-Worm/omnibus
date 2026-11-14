@@ -4,7 +4,6 @@ import {NormCollection} from './collection-choice';
 import { useRef, useState, useEffect, useLayoutEffect, useCallback, useId, useMemo } from "react";
 import { Info } from 'lucide-react';
 import {Tooltip,TooltipTrigger,TooltipContent,TooltipProvider} from '@/components/ui/tooltip';
-import "./matrix-readability.css";
 import { useBrowseState } from "./browse-state";
 import {resetReportView} from '@/lib/report-workspaces.mjs';
 import FilterPicker from "./filter-picker";

@@ -35,10 +35,6 @@ import LawPointPicker from './law-point-picker';
 import {Approach,type Point as CioPoint} from './cio-law-workspace';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {wwkeBrowserRows,wwkeBrowserGroups,lawBrowserColumns as columns} from '@/lib/wwke-browser-view.mjs';
-import './control-objective-pilot.css';
-import './cio-law-browser.css';
-import './cio-source-about.css';
-import './wwke-law-browser.css';
 
 type Point=typeof wwkePoints[number];
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;prepareDetails?:(action:()=>void)=>void};

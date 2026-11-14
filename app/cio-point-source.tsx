@@ -14,7 +14,6 @@ import {cioSourceBank,cioPages,cioStatus,cioIssues,cioContributionLabels,cioKind
 import {cioSourceDocument as readerSource} from '@/lib/cio-source-document.mjs';
 import {cioReaderPassages,cioReaderFocus} from '@/lib/cio-source-reader.mjs';
 import CatalogueContent from './catalogue-content';
-import './cio-point-source.css';
 
 type Props = {point:Point; parent:Criterion};
 type Passage = {page:number;start:number;end:number;quote:string;label:string};

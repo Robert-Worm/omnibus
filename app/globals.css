@@ -165,16 +165,11 @@
   --font-sans: Arial, Helvetica, sans-serif;
 }
 :root {
-  --font-ui: Arial, Helvetica, sans-serif;
   --text-meta: 0.8125rem;
   --text-label: 0.875rem;
   --text-body: 1rem;
   --text-section: 1.25rem;
   --text-page: 1.5rem;
-  --background: #f3f6fa;
-  --foreground: #20344b;
-  --primary: #234f80;
-  --border: #ccd8e5;
   font-family: var(--font-ui);
   font-size: 100%;
   color: var(--foreground);
@@ -677,8 +672,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
   margin-top: 7px;
 }
 .cell-footer button {
@@ -775,7 +768,6 @@ main {
 .evidence-header {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
   font-size: var(--text-label);
   color: #43617f;
 }
@@ -783,12 +775,7 @@ main {
   font-size: var(--text-meta);
 }
 .evidence-card blockquote {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: var(--text-body);
-  line-height: 1.7;
-  white-space: pre-wrap;
   margin: 15px 0;
-  overflow-wrap: anywhere;
 }
 .evidence-card small {
   font-size: var(--text-label);
@@ -1010,9 +997,6 @@ footer {
   .pattern {
     padding: 18px;
   }
-  .evidence-header {
-    flex-wrap: wrap;
-  }
   .evidence-card {
     padding: 15px;
   }
@@ -1164,7 +1148,6 @@ footer {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
   padding: 14px 0;
   font-size: var(--text-body);
 }
@@ -1176,9 +1159,6 @@ footer {
   font-size: var(--text-label);
 }
 .report-page-text {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: var(--text-body);
-  line-height: 1.8;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   background: white;
@@ -1197,7 +1177,6 @@ footer {
     font-size: var(--text-label);
   }
   .report-page-text {
-    font-size: var(--text-body);
     padding: 18px;
   }
 }
@@ -1533,9 +1512,6 @@ button.readable-reference[data-slot="button"] {
   padding: clamp(20px, 4vw, 54px);
   margin-top: 18px;
   color: #26394a;
-  line-height: 1.85;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: var(--text-body);
   overflow-wrap: anywhere;
 }
 .report-reading > p,
@@ -1546,8 +1522,6 @@ button.readable-reference[data-slot="button"] {
   margin: 0 0 1.25em;
 }
 .report-reading h2 {
-  font-family: Arial, sans-serif;
-  font-size: var(--text-section);
   font-weight: 600;
   line-height: 1.45;
   color: #163f67;
@@ -1608,9 +1582,6 @@ button.readable-reference[data-slot="button"] {
   .reader-contents nav {
     grid-template-columns: 1fr;
   }
-  .report-reading {
-    font-size: var(--text-body);
-  }
   .reader-evidence {
     padding: 14px;
   }
@@ -1625,7 +1596,6 @@ button.readable-reference[data-slot="button"] {
   padding: 16px 28px 0;
 }
 .compact-app .brand-bar {
-  min-height: 48px;
   padding: 8px 28px;
 }
 .compact-app .brand-bar strong {
@@ -1633,7 +1603,6 @@ button.readable-reference[data-slot="button"] {
 }
 .compact-app .workflow-navigation {
   margin: 0 0 14px;
-  padding-bottom: 10px;
 }
 .compact-app .workflow-navigation a {
   padding: 7px 12px;
@@ -1657,13 +1626,11 @@ button.readable-reference[data-slot="button"] {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px 18px;
-  margin: 7px 0;
   color: #52667b;
   font-size: var(--text-label);
 }
 .compact-context button {
   font-size: var(--text-label);
-  padding: 3px 0;
   height: auto;
 }
 .quiet-save {
@@ -1678,11 +1645,7 @@ button.readable-reference[data-slot="button"] {
   color: #713713;
   font-size: var(--text-body);
 }
-.compact-app .main-tabs > [data-slot="tabs-list"] {
-  height: 38px;
-}
 .compact-app .main-tabs > [data-slot="tabs-list"] button {
-  height: 36px;
   font-size: var(--text-label);
   padding: 0 15px;
 }
@@ -1758,14 +1721,11 @@ button.readable-reference[data-slot="button"] {
 .compact-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px 14px;
   flex-wrap: wrap;
-  padding: 12px 0;
 }
 .compact-toolbar > input {
   width: 270px;
   flex: 1 1 220px;
-  max-width: 420px;
 }
 .compact-toolbar label {
   display: flex;
@@ -1817,7 +1777,6 @@ button.readable-reference[data-slot="button"] {
   border: 1px solid #cad6e4;
 }
 .compact-table [data-slot="table-container"] {
-  height: calc(100dvh - 320px);
   min-height: 320px;
   overflow: auto;
   scrollbar-gutter: stable;
@@ -1850,9 +1809,6 @@ button.readable-reference[data-slot="button"] {
   white-space: normal;
   border-right: 1px solid #e5ebf2;
   overflow-wrap: anywhere;
-}
-.compact-table tr {
-  height: 92px;
 }
 .compact-table thead tr {
   height: 40px;
@@ -1903,8 +1859,6 @@ button.readable-reference[data-slot="button"] {
 /* Compact catalogues retain readable names, while IDs remain separate from titles. */
 .compact-app .theme-card,
 .compact-app .report-list-item {
-  padding: 12px 16px;
-  gap: 12px;
   margin: 0;
   border-radius: 0;
   align-items: center;
@@ -1927,26 +1881,18 @@ button.readable-reference[data-slot="button"] {
 }
 .compact-app .theme-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px;
 }
 .compact-app .theme-card > div {
-  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px 20px;
 }
 .compact-app .theme-card .theme-counts {
-  display: flex;
   flex-wrap: wrap;
-  gap: 6px;
 }
 .theme-counts > span {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  background: #edf2f7;
-  border-radius: 12px;
   color: #4d6178;
   white-space: nowrap;
 }
@@ -2103,13 +2049,6 @@ button.readable-reference[data-slot="button"] {
 .report-list-item[data-active="false"] .report-visibility {
   color: #746246;
 }
-.compact-app .report-list-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-.compact-app .report-list-item[data-choice="true"] {
-  grid-template-columns: 20px minmax(0, 1fr) auto;
-}
 .report-list-item > .report-choice-checkbox {
   grid-column: 1;
   grid-row: 1;
@@ -2195,22 +2134,8 @@ button.readable-reference[data-slot="button"] {
   height: auto;
 }
 @media (max-width: 700px) {
-  .compact-app .theme-card {
-    grid-template-columns: minmax(0, 1fr) 140px;
-  }
-  .compact-app .theme-card > div {
-    display: block;
-  }
-  .compact-app .theme-card .theme-counts {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
   .compact-app .theme-card > button {
     width: 140px;
-  }
-  .compact-app .report-list-item {
-    align-items: flex-start;
   }
   .identified-table th:first-child {
     width: 130px;
@@ -2353,17 +2278,9 @@ button.readable-reference[data-slot="button"] {
   font-size: var(--text-label);
   color: #7d5b32;
 }
-@media (min-height: 900px) {
-  .compact-table [data-slot="table-container"] {
-    height: calc(100dvh - 280px);
-  }
-}
 @media (max-width: 900px) {
   .compact-app main {
     padding: 14px 16px 0;
-  }
-  .compact-toolbar > input {
-    max-width: none;
   }
   .matrix-bottom {
     flex-wrap: wrap;
@@ -2375,9 +2292,6 @@ button.readable-reference[data-slot="button"] {
   .report-list-item {
     align-items: flex-start;
     flex-direction: column;
-  }
-  .compact-table [data-slot="table-container"] {
-    height: 55dvh;
   }
   .compact-context {
     gap: 6px 12px;
@@ -2391,9 +2305,6 @@ button.readable-reference[data-slot="button"] {
   }
   .compact-app .file-actions {
     margin: 0;
-  }
-  .compact-app .framework-title {
-    font-size: var(--text-page) !important;
   }
 }
 .compact-table tr {
@@ -2426,21 +2337,10 @@ button.readable-reference[data-slot="button"] {
   padding-top: 5px;
   padding-bottom: 5px;
 }
-.compact-app main {
-  padding-top: 10px;
-}
-.compact-app .workflow-navigation {
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-}
 .theme-title {
   display: flex;
   align-items: center;
   gap: 18px;
-}
-.compact-context {
-  margin: 4px 0;
-  min-height: 24px;
 }
 .compact-context button {
   padding: 0;
@@ -2463,7 +2363,6 @@ button.readable-reference[data-slot="button"] {
   height: calc(100dvh - 245px);
 }
 .compact-app .workflow-navigation {
-  height: 38px;
   padding: 0;
   margin-bottom: 4px;
 }
@@ -2518,17 +2417,6 @@ button.readable-reference[data-slot="button"] {
   font-size: var(--text-body);
   font-weight: 600;
 }
-.evidence-card blockquote {
-  font-family: var(--font-ui);
-  font-size: var(--text-body);
-  line-height: 1.5;
-}
-.report-reading,
-.report-page-text {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.125rem;
-  line-height: 1.8;
-}
 .report-reading h2 {
   font-family: var(--font-ui);
   font-size: var(--text-section);
@@ -2550,22 +2438,6 @@ button.readable-reference[data-slot="button"] {
 }
 .open-theme-actions button {
   height: 34px;
-}
-@media (max-width: 700px) {
-  .compact-app .report-list-item {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .compact-app .report-list-item[data-choice="true"] {
-    grid-template-columns: 20px minmax(0, 1fr);
-  }
-  .report-list-item > button {
-    grid-row: 2;
-    grid-column: 1;
-    justify-self: start;
-  }
-  .report-list-item[data-choice="true"] > button {
-    grid-column: 2;
-  }
 }
 @media (max-width: 900px) {
   .open-theme-actions {
@@ -2937,3 +2809,31 @@ button.readable-reference[data-slot="button"] {
 .provision-status:focus-visible { outline: 2px solid #154273; outline-offset: 2px; }
 .provision-status-detail { max-width: min(25rem, calc(100vw - 2rem)); background: white; color: #243b53; }
 .provision-status-detail p { white-space: pre-line; overflow-wrap: anywhere; font-size: .875rem; line-height: 1.5; margin-top: .5rem; }
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+.framework-app .creator-colors>legend{font:600 .9375rem/1.35 var(--font-ui)!important}
+.framework-app .brand-bar .project-actions :is(.appearance-toggle,.project-save-indicator,.project-undo){width:2.125rem!important;min-width:2.125rem!important;padding:0!important}
+.framework-app .brand-bar .project-actions .project-undo:disabled{opacity:.4}
+.framework-app .brand-bar .project-actions .project-save-indicator{border-color:transparent!important;color:var(--muted-foreground)!important}
+.framework-app .brand-bar .project-actions .project-save-indicator[data-state=unsaved]{color:#b4541a!important;border-color:#e6b38f!important}
+html[data-appearance=dark] .framework-app .creator-download:not(:disabled){background:#265c89!important;color:#fff!important;border-color:#265c89!important}
+/* Het Excelvoorbeeld blijft 'papier' (wit), maar met een rustige rand. */
+html[data-appearance=dark] .framework-app .creator-table-scroll{border-color:#33445c}
+.report-table .report-source-id{display:inline-block;font:600 .6875rem/1.2 var(--font-mono,ui-monospace,monospace);letter-spacing:.02em;padding:.2rem .4rem;border-radius:4px;background:color-mix(in srgb,var(--muted) 70%,var(--card));color:var(--muted-foreground);white-space:nowrap}
+.report-catalogue .report-pagination{margin-top:.75rem}
+/* --- Voettekst tijdens het werken: één regel; links wie en welke versie, rechts de onderwerpen als vensters. --- */
+.framework-app .product-footer.product-footer-compact{padding:.85rem 2rem!important;display:flex;align-items:center;justify-content:space-between;gap:.5rem 2rem;flex-wrap:wrap;font-size:.8125rem}
+.product-footer-compact .product-footer-wordmark{font-size:1rem!important;margin:0!important;padding:0!important;border:0!important}
+.product-footer-compact .product-footer-version{margin:0!important;display:inline;color:var(--muted-foreground)}
+.product-footer-compact .product-footer-attribution{margin:0!important;color:var(--muted-foreground)}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row{display:flex!important;flex-direction:row!important;align-items:center;gap:.15rem 1.1rem;flex-wrap:wrap;border:0!important;padding:0!important;margin:0}
+@media (max-width:760px){.framework-app .product-footer.product-footer-compact{padding:1rem!important}}
+/* Kleine tekst minimaal 12 px. */
+.report-table .report-source-id,.report-context-kind{font-size:.75rem!important}
+html[data-appearance=dark] .framework-app .cev-dimensions button[aria-pressed=true]{background:#22364d!important;border:1px solid #6884a0!important;box-shadow:inset 3px 0 #94c8f5!important}
+html[data-appearance=dark] .framework-app .cev-selection{background:transparent!important}
+.product-footer-compact .product-footer-line .product-footer-attribution{flex-basis:100%;font-size:.75rem}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:.4rem!important;margin:0!important}
+.framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0!important}
+.framework-app .product-footer.product-footer-compact .product-footer-line{flex:1 1 22rem;max-width:36rem}
+.framework-app :is([role=tabpanel],.creator-preset):focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}

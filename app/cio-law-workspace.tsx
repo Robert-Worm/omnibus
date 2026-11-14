@@ -24,7 +24,6 @@ import {
   chooseCioPoints,
   cioGoalFor,
 } from "@/lib/cio-law-adapter.mjs";
-import "./cio-law-workspace.css";
 import {catalogueDerived} from '@/lib/catalogue-runtime.mjs';
 import {lawTestPhases} from '@/lib/law-test-phases.mjs';
 import {AfkortingText} from './term-help';

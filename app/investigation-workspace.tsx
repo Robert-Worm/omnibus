@@ -51,7 +51,6 @@ import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
 import {frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
 import type { Draft } from "@/lib/framework-types";
-import './viewer-readability.css';
 
 // Creating this closure is cheap; the corpus search index is built on first search.
 const searchCatalogue=createCatalogueSearch(foundationSearchItems,foundations);

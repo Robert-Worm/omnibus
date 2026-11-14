@@ -70,7 +70,6 @@
 }
 .framework-app :is(.central-help,.subquestion-picker) > summary {
   cursor: pointer;
-  color: #234f80;
   font-size: var(--text-label);
   font-weight: 600;
   line-height: 1.5;
@@ -106,7 +105,6 @@
 .framework-app .model-question-adoption [role=radiogroup] { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; }
 .framework-app .model-question-adoption label { display: flex; align-items: center; gap: .5rem; }
 .framework-app .use-goal-subject { height: auto; white-space: normal; text-align: left; justify-content: start; line-height: 1.5; }
-.report-reading, .report-page-text { font-size: var(--text-body); line-height: 1.65; }
 .reader-layout-notice { font: 400 var(--text-label)/1.5 var(--font-ui); color: #50647d; margin: .75rem 0; padding: .75rem; background: #edf3f9; }
 .report-reading .reader-verbatim { padding: .5rem .75rem; margin: .25rem 0; border-left: 2px solid #bed0e2; }
 .report-reading .reader-verbatim pre { font-size: var(--text-body); line-height: 1.55; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -126,7 +124,7 @@
 .question-bulk-body > button { white-space:normal; height:auto; min-height:2rem; text-align:left; }
 .framework-app .pilot-corpus-note { font-size:.8125rem; line-height:1.5; color:var(--rm-muted); margin:.65rem 0 0; max-width:66rem; }
 .framework-app .research-first-question .research-bank { align-self: start; position: static; margin-top: 0; }
-.framework-app .export-preview-navigation { display:grid; gap:.65rem; margin:1rem 0; min-width:0; }
+.framework-app .export-preview-navigation { min-width:0; }
 .framework-app .export-preview-navigation label { display:grid; gap:.4rem; font-size:var(--text-label); min-width:0; }
 .framework-app .export-preview-navigation select { width:100%; min-width:0; max-width:100%; padding:.6rem; border:1px solid var(--border); border-radius:4px; color:inherit; background:var(--rm-surface); }
 .framework-app .export-preview-navigation > div { display:flex; align-items:center; justify-content:space-between; gap:.5rem; font-size:var(--text-label); }
@@ -266,3 +264,10 @@ html[data-appearance=dark] .framework-app .creator-testing-aspects label:not([da
   .framework-app .models-workspace .model-catalogue-row { grid-template-columns:20px minmax(0,1fr); }
   .framework-app .model-catalogue-actions { grid-column:2; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; }
 }
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* --- Stap 4: bladeren door het voorbeeld in één regel; tekstexport als gewone tweede knop. --- */
+.framework-app .export-preview-navigation{display:flex!important;align-items:center;gap:.5rem!important;margin:.75rem 0!important}
+.framework-app .export-preview-navigation>span{font-size:.8125rem;color:var(--muted-foreground);white-space:nowrap;font-variant-numeric:tabular-nums}
+.framework-app .export-preview-navigation>button{flex:none;width:2.5rem;height:2.5rem}
+.framework-app .model-information-trigger[data-labelled]{width:auto!important;padding:0 .75rem!important;gap:.4rem;height:2.25rem;font-size:.8125rem}

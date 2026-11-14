@@ -11,7 +11,6 @@ import {
   cioContributionLabels,
   cioKindLabels,
 } from "@/lib/cio-law-data.mjs";
-import "./cio-law-workspace.css";
 
 type Actor = { label: string; role: string; condition?: string | null };
 type Span = { page: number; start: number; end: number; quote: string };

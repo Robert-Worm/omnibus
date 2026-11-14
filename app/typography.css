@@ -1,21 +1,2 @@
-/* Eén typografische schaal voor de hele app (expertpanel 14 november 2026, besluit B-054).
-   T1 paginatitel  Spectral 30/600   T2 sectiekop  Spectral 20/600   T3 kaartkop  Inter 15/600
-   T4 tekst        Inter 14/400      T5 label      Inter 13/400-500  T6 meta      Inter 12/500
-   Spectral alleen voor T1 en T2; alles wat je aanklikt of vergelijkt staat in Inter. Geen gewicht 700. */
-
-/* T2: alle sectie- en paneelkoppen even groot. */
-.framework-app :is(.directory-heading h2,.workflow-section-intro h2,.creator-card>h2,.creator-preview-heading h2,details.creator-fold>summary h2){font:600 1.25rem/1.3 var(--font-heading)!important}
-
-/* T3: kaartkoppen en keuzekaarten in Inter, niet in Spectral. */
-.framework-app :is(.creator-presets .preset-heading,.entry-card>h3,.directory-family-card>strong,aside.creator-preview>h3,.directory-axis strong){font:600 .9375rem/1.35 var(--font-ui)!important;letter-spacing:0}
-.framework-app .investigation-steps a>span:not(.step-number,.step-count){font-size:.9375rem!important;font-weight:600!important}
-.framework-app .creator-colors>legend{font:600 .9375rem/1.35 var(--font-ui)!important}
-
-/* T4: lopende tekst 14 px. */
-.framework-app .entry-card>p{font-size:.875rem!important;line-height:1.5}
-
 /* Route-regel: label en knop even groot. */
 .framework-app .entry-route-link button{font:500 .75rem/1.3 var(--font-ui)!important;color:var(--primary)}
-
-/* Gewicht 700 bestaat niet meer in de interface. */
-.framework-app :is(.catalogue-table-count strong,.directory-family-card strong,legend){font-weight:600}

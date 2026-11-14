@@ -197,7 +197,6 @@
   gap: 24px;
 }
 .research-bank {
-  position: sticky;
   top: 16px;
   background: #eef3f8;
   border: 1px solid #c5d3e1;
@@ -301,7 +300,6 @@
   margin-bottom: 8px;
 }
 .question-level {
-  font-size: var(--text-label);
   font-weight: 600;
   color: #23558a;
 }
@@ -309,7 +307,6 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: var(--text-meta);
   color: #5d758b;
   margin-left: auto;
 }
@@ -329,16 +326,11 @@
   height: 28px;
 }
 .research-question .research-question-text {
-  font-size: var(--text-body);
-  line-height: 1.5;
-  min-height: 70px;
   resize: vertical;
   border: 1px solid transparent;
   box-shadow: none;
   padding: 6px 8px;
   margin: 0 0 8px;
-  field-sizing: content;
-  max-height: 280px;
 }
 .research-question .research-question-text:hover {
   border-color: #d5dfe9;
@@ -501,7 +493,6 @@
     gap: 16px;
   }
   .research-bank {
-    position: static;
     max-height: 430px;
   }
   .research-question {
@@ -515,9 +506,6 @@
   }
   .research-toolbar h2 {
     flex-basis: 100%;
-  }
-  .research-question .research-question-text {
-    font-size: var(--text-body);
   }
   .question-count {
     margin-left: 0;
@@ -578,12 +566,6 @@
   color: #5e768c;
   margin: 0 0 18px;
 }
-.research-start textarea {
-  font-size: var(--text-section);
-  line-height: 1.55;
-  min-height: 130px;
-  field-sizing: content;
-}
 .start-actions {
   display: flex;
   gap: 16px;
@@ -600,15 +582,10 @@
 }
 .clean-flow .research-bank {
   background: #f1f5f9;
-  top: 16px;
-  padding: 16px;
 }
 .clean-flow .question-title-button {
   display: block;
   text-align: left;
-  font-size: var(--text-section);
-  font-weight: 600;
-  line-height: 1.5;
   white-space: normal;
   overflow-wrap: anywhere;
   border: 0;
@@ -617,9 +594,6 @@
   cursor: text;
   padding: 6px 0 12px;
   width: 100%;
-}
-.clean-flow .sub-question .question-title-button {
-  font-size: var(--text-body);
 }
 .question-title-button:focus-visible {
   outline: 2px solid #23558a;
@@ -633,7 +607,6 @@
   margin-left: auto;
 }
 .clean-flow .question-header > [data-slot="dropdown-menu-trigger"] {
-  width: 32px;
   height: 32px;
   padding: 4px;
 }
@@ -643,8 +616,6 @@
 }
 .clean-flow .question-drop-hint {
   margin: 8px 0;
-  font-size: var(--text-label);
-  padding: 12px;
 }
 .clean-flow .research-item {
   cursor: grab;
@@ -668,9 +639,6 @@
   color: #8c9fb0;
   flex-shrink: 0;
   pointer-events: none;
-}
-.clean-flow .research-item-label {
-  font-size: var(--text-body);
 }
 .clean-flow .research-item-label .cell-preview {
   display: block;
@@ -968,10 +936,6 @@
   .clean-flow .research-columns {
     grid-template-columns: 1fr;
   }
-  .clean-flow .research-bank {
-    position: static;
-    max-height: 500px;
-  }
   .research-flow-guide {
     gap: 12px;
     font-size: var(--text-label);
@@ -980,19 +944,10 @@
     padding: 20px;
     margin: 16px 0;
   }
-  .research-start textarea {
-    font-size: var(--text-body);
-  }
-  .clean-flow .question-title-button {
-    font-size: var(--text-body);
-  }
   .norm-link-picker {
     right: 12px;
     bottom: 12px;
     max-width: calc(100vw - 24px);
-  }
-  .clean-flow .research-item-label {
-    font-size: var(--text-body);
   }
 }
 /* Shared left edge for catalogue, open theme and personal workspace. */
@@ -1012,7 +967,6 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin: 24px 0 16px;
 }
 .open-theme-chip {
   display: flex;
@@ -1159,9 +1113,6 @@
   .central-proposals {
     grid-template-columns: 1fr;
   }
-  .catalogue-toolbar {
-    flex-wrap: wrap;
-  }
 }
 /* Question workbench alignment and type scale. */
 .question-workbench-hidden { display:none !important; }
@@ -1173,13 +1124,11 @@
 .question-entry-cards [data-slot=button] { margin-top:auto; white-space:normal; height:auto; min-height:40px; }
 .question-entry-cards small { margin-top:12px; color:var(--muted-foreground); }
 .question-composer { border:1px solid #ceddea; border-radius:14px; background:#fff; overflow:hidden; margin:8px 0 24px; }
-.composer-top { display:flex; align-items:center; gap:12px; padding:12px 20px; background:#f4f8fb; border-bottom:1px solid #e2eaf1; color:#52677b; font-size:.875rem; }
-.composer-top > [data-slot=button]:last-child:not(:first-child) { margin-left:auto; }
-.composer-main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; padding:28px; }
-.composer-question > label { display:block; font-size:1.15rem; font-weight:600; margin-bottom:14px; color:#173c63; }
-.composer-question textarea { font-size:1rem; line-height:1.6; min-height:145px; field-sizing:content; }
-.composer-branches { min-width:0; border-left:2px solid #b7cfe3; padding-left:24px; }
-.composer-branches header { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:16px; }
+.composer-top { display:flex; align-items:center; border-bottom:1px solid #e2eaf1; color:#52677b; font-size:.875rem; }
+.composer-main { display:grid; padding:28px; }
+.composer-question textarea { font-size:1rem; line-height:1.6; field-sizing:content; }
+.composer-branches { min-width:0; border-left:2px solid #b7cfe3; }
+.composer-branches header { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
 .composer-branches header h3 { font-size:1rem; margin:0; }
 .composer-branches header > span,.composer-note { color:#52677b; font-size:.875rem; }
 .composer-subquestions { display:grid; gap:10px; max-height:440px; overflow-y:auto; padding:2px; }
@@ -1188,10 +1137,10 @@
 .composer-subquestion:focus-within { outline:2px solid #245b90; outline-offset:2px; }
 .composer-subquestion [data-slot=checkbox] { flex-shrink:0; margin-top:3px; }
 .composer-subquestion small { display:block; margin-top:6px; color:#52677b; font-size:.8rem; }
-.composer-actions { display:flex; align-items:center; flex-wrap:wrap; gap:16px; padding:18px 28px; border-top:1px solid #dce7f0; background:#f8fafc; }
+.composer-actions { flex-wrap:wrap; border-top:1px solid #dce7f0; background:#f8fafc; }
 .composer-actions > span { color:#52677b; font-size:.875rem; }
-.add-branch { display:flex; align-items:center; gap:10px; border:1px dashed #96b3cd; border-radius:8px; background:#f7fafd; color:#174b7d; padding:18px; width:100%; cursor:pointer; }
-.own-subquestion { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+.add-branch { display:flex; align-items:center; gap:10px; border:1px dashed #96b3cd; border-radius:8px; background:#f7fafd; color:#174b7d; width:100%; cursor:pointer; }
+.own-subquestion { align-items:flex-start; margin-bottom:12px; }
 .own-subquestion > span { color:#174b7d; padding-top:8px; }
 .own-subquestion textarea { min-height:70px; field-sizing:content; }
 .proposal-switch { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0; font-size:.8rem; color:#52677b; }
@@ -1219,9 +1168,6 @@
 .clean-flow .question-drop-hint { border:1px dashed #96b3cd; border-radius:8px; padding:16px; background:#f8fbfd; }
 @media(max-width:800px) {
  .question-entry-cards,.composer-main { grid-template-columns:1fr; }
- .composer-main { padding:20px; }
- .composer-branches { padding-left:16px; }
- .composer-top { flex-wrap:wrap; padding:10px; }
 }
 .clean-flow .research-columns {
   align-items: start;
@@ -1558,3 +1504,10 @@
 /* Panel 9 november 2026: de hulpregel boven de deelvragen mag niet over een weggescrolde kaart vallen. */
 .composer-branches .composer-note { margin:0 0 10px; line-height:1.5; }
 .composer-branches .composer-subquestions { border-top:1px solid #dbe5ee; padding-top:8px; }
+
+/*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
+/* --- Donkere modus: vlakken die wit bleven. --- */
+html[data-appearance=dark] .framework-app .question-composer{background:var(--card)!important;border-color:var(--border)!important}
+html[data-appearance=dark] .framework-app :is(.composer-top,.composer-actions){background:color-mix(in srgb,var(--muted) 40%,var(--card))!important;border-color:var(--border)!important;color:var(--foreground)}
+html[data-appearance=dark] .framework-app .question-composer :is(h2,h3,label,legend){color:var(--foreground)}
+html[data-appearance=dark] .framework-app .composer-field-label{color:var(--foreground)!important}

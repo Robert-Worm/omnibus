@@ -1,6 +1,5 @@
 import type {ReactNode} from 'react';
 import {BookOpen,CalendarDays,ExternalLink,History,Landmark,ListChecks,Scale,ShieldCheck,Users} from 'lucide-react';
-import './cio-source-about.css';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
 import {frameworkSourceRole,frameworkSourceLink,frameworkDocumentTitle,leesbareDocumentTitel} from '@/lib/framework-source-labels.mjs';
 

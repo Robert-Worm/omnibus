@@ -3,7 +3,6 @@ import type {ComponentProps,ReactNode} from 'react';
 import {Button} from '@/components/ui/button';
 import CriterionSourceLayout from './criterion-source-layout';
 import ReportLibrary from './lazy-report-library';
-import './cio-point-source.css';
 
 type ReaderProps=ComponentProps<typeof ReportLibrary>;
 export type LawPassage={page:number;start:number;end:number;quote:string;label:string};
