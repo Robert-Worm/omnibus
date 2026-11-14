@@ -142,3 +142,12 @@ html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialo
 .report-table td[data-column=date]{font-variant-numeric:tabular-nums;font-family:var(--font-ui)}
 .framework-app .model-information-trigger[data-labelled]{width:auto!important;padding:0 .75rem!important;gap:.4rem;height:2.25rem;font-size:.8125rem}
 html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:#94c8f5!important}
+/* Eindcontrole (B-058) */
+.report-context-menu{overflow-y:auto!important;box-shadow:0 8px 24px rgba(15,27,43,.18)!important}
+.report-choice-hint{font-size:.8125rem;color:var(--muted-foreground)}
+.wwke-browser .law-group-heading :is(.law-group-location,.law-group-count){display:inline;margin:0}
+.wwke-browser .law-group-heading .law-group-location::after{content:' · '}
+.wwke-browser .law-group-heading .law-group-description{margin-bottom:.15rem}
+html[data-appearance=dark] .framework-app .cev-dimensions button[aria-pressed=true]{background:#22364d!important;border:1px solid #6884a0!important;box-shadow:inset 3px 0 #94c8f5!important}
+html[data-appearance=dark] .framework-app .cev-selection{background:transparent!important}
+html[data-appearance=dark] .framework-app .investigation-steps a[aria-current] .step-number{border-color:#cfe3f7!important;color:#f0f7ff!important}

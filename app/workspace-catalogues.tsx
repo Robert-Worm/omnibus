@@ -10,6 +10,7 @@ import FilterPicker from "./filter-picker";
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import ReportContextLinks from './report-context-links';
 import {ToolSelect} from './catalogue-table';
+import {shortDate} from '@/lib/framework-register.mjs';
 import {Search,X} from 'lucide-react';
 import { useBrowseState } from "./browse-state";
 import { catalogueSlice } from "@/lib/norm-navigation.mjs";
@@ -322,7 +323,7 @@ export function ReportCatalogue({
   const pages = Math.max(1, Math.ceil(matches.length / perPage));
   const currentPage = Math.min(page, pages - 1);
   const dateText = (f: Framework) =>
-    f.report.date ? f.report.date.split("-").reverse().join("-") : String(f.report.year ?? "");
+    f.report.date ? shortDate(f.report.date) : String(f.report.year ?? "");
   const scopeOptions = [
     { value: "open", label: "Open thema’s" },
     { value: "audit", label: "Mijn referentiekader" },
@@ -399,9 +400,7 @@ export function ReportCatalogue({
                     Rapporten per thema aan/uitzetten
                   </button>
                 ) : (
-                  <a className="catalogue-tool-clear" href="#themas" title="Rapporten zet je per geopend thema aan of uit.">
-                    Rapporten per thema aan/uitzetten: open eerst een thema
-                  </a>
+                  <span className="report-choice-hint">Rapporten zet je per thema aan of uit. Open daarvoor eerst een thema.</span>
                 )}
               </div>
             )}
