@@ -1,0 +1,144 @@
+/* Verfijning na de panelronde van 14 november 2026, middag (besluit B-058): elk scherm minimaal een 8. */
+
+/* --- Gedeelde keuzeknop (ToolSelect) ook buiten de lijsten: viewer, rapporten en stap 4. --- */
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool{--ct-control:var(--rm-control-border,#a9bacb);display:inline-flex;align-items:center;gap:.3rem;width:auto;height:2.5rem;padding:0 .55rem 0 .7rem;border:1px solid var(--ct-control);border-radius:8px;background:var(--card);color:var(--foreground);font:400 .8125rem/1 var(--font-ui);box-shadow:none;cursor:pointer;min-width:0}
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool:hover,:is(.law-browse-filters,.export-preview-navigation) .catalogue-tool[data-popup-open]{border-color:var(--primary)}
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+:is(.law-browse-filters,.export-preview-navigation,.export-creator) .catalogue-tool svg{color:var(--muted-foreground);width:14px;height:14px;margin-left:.15rem;flex:none}
+:is(.law-browse-filters,.export-preview-navigation) .catalogue-tool[data-active]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--card))}
+.law-browse-filters .catalogue-tool .catalogue-tool-value{max-width:16rem}
+
+/* --- Viewer: filters in één rustige regel, zonder losse labels erboven. --- */
+.framework-app .law-browse-filters{align-items:center!important;gap:.5rem!important;padding:.5rem!important;background:color-mix(in srgb,var(--muted) 45%,var(--card))!important;border-color:var(--border)!important}
+.framework-app .law-browse-filters>.law-search{position:relative;flex:1 1 18rem;min-width:14rem;display:flex;align-items:center}
+.framework-app .law-browse-filters>.law-search svg{position:absolute;top:50%;left:.65rem;transform:translateY(-50%);color:var(--muted-foreground)}
+.framework-app .law-browse-filters>.law-search input{height:2.5rem!important;padding-left:2.1rem!important;border-color:var(--rm-control-border,#a9bacb)!important;border-radius:8px!important;background:var(--card)!important;font-size:.8125rem!important}
+.framework-app .law-browse-filters .law-column-control{display:flex!important;min-width:0!important;flex:none!important}
+.framework-app .law-browse-filters .law-column-control>span{display:none}
+.framework-app .law-browse-filters .law-column-control button{height:2.5rem!important;min-height:2.5rem!important;border-radius:8px!important;font-size:.8125rem!important;border:1px solid var(--rm-control-border,#a9bacb)!important;background:var(--card)!important}
+.framework-app .law-browse-filters .law-reset-filters{height:2.5rem}
+
+/* Doelgroep van het kader: één regel tekst bij de titel, geen apart gekleurd vlak. */
+.framework-app .law-browse-intro .law-audience-notice{background:transparent!important;border:0!important;padding:0!important;margin:-.15rem 0 .1rem!important;font-size:.8125rem!important;line-height:1.45;color:var(--muted-foreground)!important;align-items:center!important}
+.framework-app .law-browse-intro .law-audience-notice strong{color:var(--foreground)!important;font-weight:600}
+.framework-app .law-browse-intro .law-audience-notice svg{color:var(--muted-foreground);flex:none}
+
+/* Eén geopend onderdeel: de terugknop staat rechts op de regel met Normen en Over dit kader, zonder eigen balk. */
+.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:block;width:auto;margin:0 0 0 1rem!important;padding:0!important;background:transparent!important;border:0!important;position:relative;z-index:1}
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore{min-height:2.25rem!important;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6)!important;background:transparent!important;color:var(--hb-ink,#1f3a5f)!important}
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore:hover{background:var(--hb-hover,#eef3f9)!important}
+.framework-app #main-workspace .open-item-workspace[data-single]~*:not(.law-browser,.model-library,.law-view-actions,[class*=main-tabs]),
+.framework-app #main-workspace .open-item-workspace[data-single]~* :is(.law-browse-intro,.law-group-stack,.law-browser>section,.report-choice-summary,[role=tabpanel]){clear:both}
+.framework-app #main-workspace .open-item-workspace[data-single]~* .law-view-actions,.framework-app #main-workspace .open-item-workspace[data-single]~.law-view-actions{min-height:2.25rem}
+
+/* --- Tabbalk: drie herkenbare groepen (verkennen, geopend, bronnen), elk met een eigen vlak. --- */
+.framework-app .collection-navigation .collection-grouped-nav{background:transparent!important;border:0!important;padding:0!important;gap:.5rem!important}
+.framework-app .collection-navigation .collection-nav-group{border:1px solid var(--border)!important;border-radius:.5rem;padding:.25rem!important;background:var(--rm-surface,#f4f7fa)}
+.framework-app .collection-navigation .collection-nav-group:nth-child(2){background:color-mix(in srgb,var(--primary) 5%,var(--card))}
+html[data-appearance=dark] .framework-app .collection-navigation .collection-nav-group{background:#172330!important}
+html[data-appearance=dark] .framework-app .collection-navigation .collection-nav-group:nth-child(2){background:#1a2a3d!important}
+@container collection-nav (max-width:1180px){.framework-app .collection-navigation .collection-nav-group:last-child{border-left:1px solid var(--border)!important;padding:.25rem!important}}
+
+/* --- Rapporten: compacte lijst in de vorm van de andere overzichten. --- */
+.report-table{margin-top:0}
+.report-table .catalogue-table-filters{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.report-table .catalogue-table-grouping{margin-left:auto}
+.report-table tbody td,.report-table tbody th{vertical-align:middle!important;padding-top:.55rem!important;padding-bottom:.55rem!important}
+.report-table .catalogue-table-name>button{all:unset;cursor:pointer;font-weight:600;color:var(--primary);line-height:1.4}
+.report-table .catalogue-table-name>button:hover{text-decoration:underline;text-underline-offset:3px}
+.report-table .catalogue-table-name>button:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:2px}
+.report-table .catalogue-table-name>span{display:block;margin-top:.15rem;font-size:.75rem;color:var(--muted-foreground)}
+.report-table td[data-column=date]{color:var(--muted-foreground);white-space:nowrap}
+.report-table .report-source-id{display:inline-block;font:600 .6875rem/1.2 var(--font-mono,ui-monospace,monospace);letter-spacing:.02em;padding:.2rem .4rem;border-radius:4px;background:color-mix(in srgb,var(--muted) 70%,var(--card));color:var(--muted-foreground);white-space:nowrap}
+.report-table .report-row-actions{text-align:right;white-space:nowrap}
+.report-table .report-row-actions>*+*{margin-left:.25rem}
+.report-table .report-row-actions [data-slot=button][data-variant=outline],.report-table .report-row-actions button:first-child:not(:only-child){height:2rem;font-size:.8125rem}
+.report-table tr[data-active=false] :is(.catalogue-table-name>button,td){opacity:.6}
+.report-context-trigger{all:unset;display:inline-flex;align-items:center;gap:.25rem;cursor:pointer;color:var(--foreground);font-size:.8125rem;border-radius:4px;padding:.15rem .25rem;margin-left:-.25rem}
+.report-context-trigger:hover{color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,transparent)}
+.report-context-trigger:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+.report-context-trigger svg{color:var(--muted-foreground)}
+.report-context-none{color:var(--muted-foreground)}
+.report-context-menu{max-height:22rem;overflow:auto;min-width:16rem}
+.report-context-kind{display:inline-block;min-width:3.6rem;margin-right:.35rem;font-size:.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-foreground)}
+.report-catalogue .report-pagination{margin-top:.75rem}
+
+/* --- Stap 4: bladeren door het voorbeeld in één regel; tekstexport als gewone tweede knop. --- */
+.framework-app .export-preview-navigation{display:flex!important;align-items:center;gap:.5rem!important;margin:.75rem 0!important}
+.framework-app .export-preview-navigation .catalogue-tool{flex:1 1 auto;justify-content:space-between}
+.framework-app .export-preview-navigation .catalogue-tool .catalogue-tool-value{max-width:none;flex:1;text-align:left}
+.framework-app .export-preview-navigation>span{font-size:.8125rem;color:var(--muted-foreground);white-space:nowrap;font-variant-numeric:tabular-nums}
+.framework-app .export-preview-navigation>button{flex:none;width:2.5rem;height:2.5rem}
+.framework-app .creator-markdown{width:100%;margin-top:.5rem;height:2.5rem;gap:.5rem}
+.framework-app .creator-saved{display:block;margin-top:.5rem;font-size:.8125rem;color:var(--muted-foreground)}
+
+/* --- Voettekst tijdens het werken: één smalle regel plus de informatieknoppen. --- */
+.framework-app .product-footer-compact{padding:1rem 2rem!important;display:flex;align-items:center;justify-content:space-between;gap:.75rem 2rem;flex-wrap:wrap;font-size:.8125rem}
+.product-footer-compact .product-footer-line{display:flex;align-items:baseline;gap:.4rem 1rem;flex-wrap:wrap;min-width:0}
+.product-footer-compact .product-footer-wordmark{font-size:1rem!important;margin:0!important;padding:0!important;border:0!important}
+.product-footer-compact .product-footer-version{margin:0!important;display:inline}
+.product-footer-compact .product-footer-attribution{margin:0!important;color:var(--muted-foreground)}
+.product-footer-compact .product-footer-repository{margin:0!important;display:inline-flex!important;align-items:center}
+.product-footer-compact .product-footer-repository svg{margin-top:0}
+.product-footer-compact .product-footer-about-row{display:flex;align-items:flex-start;gap:.25rem 1.25rem;flex-wrap:wrap;border:0!important;padding:0!important}
+.product-footer-compact .product-footer-about-row>details{max-width:40rem}
+.product-footer-compact .product-footer-about-row>details[open]{flex-basis:100%}
+.product-footer-compact .product-footer-about-row :is(summary,button){font-size:.8125rem}
+@media (max-width:760px){.framework-app .product-footer-compact{padding:1rem!important}}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row{flex-direction:row!important;align-items:center;gap:.25rem 1rem}
+.framework-app .product-footer.product-footer-compact .product-footer-about-row>details[open]{align-self:flex-start}
+.report-context-trigger{white-space:nowrap}
+html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice{background:transparent!important;border:0!important;color:#aebdcd!important}
+html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice strong{color:#e6edf5!important}
+.framework-app #main-workspace .open-item-workspace[data-single]~* .law-browser,.framework-app #main-workspace .open-item-workspace[data-single]~.law-browser>:not(.law-view-actions){clear:both}
+html[data-appearance=dark] .framework-app .report-context-trigger{background:transparent!important;border:0!important;color:#e6edf5!important}
+html[data-appearance=dark] .framework-app .report-context-trigger:hover{background:#22364d!important}
+html[data-appearance=dark] .report-context-menu{background:#172330!important;border-color:#35506b!important;color:#f0f7ff!important}
+html[data-appearance=dark] .report-context-menu [role=menuitem]{color:#f0f7ff}
+html[data-appearance=dark] .report-context-menu [role=menuitem][data-highlighted]{background:#20354a}
+html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-slot=dropdown-menu-label]){color:#9fb1c4}
+/* Thema's: de strook staat in een eigen blok vóór de tabs; daar absoluut rechtsboven, zodat de tabs de volle breedte houden. */
+.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){position:relative;height:0;margin:0!important;padding:0!important}
+.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:absolute;top:0;right:0;float:none;margin:0!important}
+@media (max-width:760px){.framework-app #main-workspace .open-item-workspace[data-single]{float:none;margin:0 0 .5rem!important}.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){height:auto}.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:static}}
+/* Rapporten op een smal scherm: elke regel wordt een klein blok. */
+@media (max-width:760px){
+ .report-table table,.report-table tbody{display:block;width:100%}
+ .report-table thead{display:none}
+ .report-table tbody tr[data-row]{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.35rem .5rem;padding:.75rem var(--ct-pad);border-bottom:1px solid var(--ct-line)}
+ .report-table tbody tr[data-row]>*{display:block;padding:0!important;border:0!important;background:transparent!important;text-align:left!important}
+ .report-table tbody tr[data-row]>.catalogue-table-check{grid-row:1;grid-column:1;width:auto}
+ .report-table tbody tr[data-row]>.catalogue-table-check .catalogue-check-area{padding:0;min-height:0}
+ .report-table td[data-column=id]{grid-row:1;grid-column:1/3}
+ .report-table tr:has(>.catalogue-table-check) td[data-column=id]{grid-column:2}
+ .report-table td[data-column=date]{grid-row:1;grid-column:3;text-align:right!important}
+ .report-table th.catalogue-table-name{grid-row:2;grid-column:1/-1}
+ .report-table td[data-column=themes]{grid-row:3;grid-column:1/3}
+ .report-table td.report-row-actions{grid-row:3;grid-column:3}
+}
+@media (max-width:760px){
+ .report-table td[data-column=themes]{grid-column:1/-1}
+ .report-table td.report-row-actions{grid-row:4;grid-column:1/-1;text-align:left!important}
+ .report-table td[data-column=date]{justify-self:end}
+}
+
+/* --- Tweede panelronde (B-058) --- */
+/* Donker: primaire knoppen overal donkerblauw met witte tekst, zoals "Naar stap …". */
+html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled){background:#265c89!important;color:#fff!important;border-color:#265c89!important}
+html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled):hover{background:#2f6d9f!important}
+/* Donker: actieve Tegels/Lijst zoals een actieve tab. */
+html[data-appearance=dark] .catalogue-view-toggle button[aria-pressed=true]{background:#294b69!important;color:#f0f7ff!important;box-shadow:inset 0 0 0 1px #6884a0}
+/* Donker: tekstknoppen en meters in de lijst zonder vlak. */
+html[data-appearance=dark] .framework-app :is(.catalogue-tool-clear,.catalogue-cell-tip){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background:#22364d!important}
+/* Donker: de rand van de menu's iets duidelijker. */
+html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialog-content]).project-utility-dialog{border:1px solid #3a4a60!important}
+/* Wegwijzer: uitklapregel op één lijn met de stappen erboven. */
+.project-utility-dialog .project-utility-body>.guide-overview{margin-left:-56px!important}
+/* Kleine tekst minimaal 12 px. */
+.report-table .report-source-id,.report-context-kind{font-size:.75rem!important}
+.framework-app .matrix-point-chip,.framework-app .matrix-point-chip>span{font-size:.75rem!important}
+.report-context-menu{max-height:18rem}
+.report-table td[data-column=date]{font-variant-numeric:tabular-nums;font-family:var(--font-ui)}
+.framework-app .model-information-trigger[data-labelled]{width:auto!important;padding:0 .75rem!important;gap:.4rem;height:2.25rem;font-size:.8125rem}
+html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:#94c8f5!important}

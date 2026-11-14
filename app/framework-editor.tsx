@@ -1856,7 +1856,7 @@ export default function FrameworkEditor() {
 
           </div>
         </main>
-        <ProductFooter />
+        <ProductFooter compact={page!=='entry'} />
       </div>
     </EvidenceDisplayContext.Provider>
     </CollectionContext.Provider>

@@ -13,10 +13,11 @@ export default function ModelInformation({model,onAbout}:{model:LibraryModel;onA
     {(['concepts','about'] as const).map(kind=>{
       const title=kind==='concepts'?'Begrippen en toepassingen':'Over dit model';
       const Icon=kind==='concepts'?BookOpen:Info;
-      if(kind==='about'&&onAbout)return <Button key={kind} variant="outline" className="model-information-trigger" aria-label={title} title={title} onClick={onAbout}><Icon size={18} aria-hidden="true"/></Button>;
+      // In de viewer staat "Over dit model" al als tab; een tweede knop met hetzelfde doel vervalt (besluit B-058).
+      if(kind==='about'&&onAbout)return null;
       return <Dialog key={kind}>
-        <DialogTrigger render={<Button variant="outline" className="model-information-trigger" aria-label={title} title={title}/>}>
-          <Icon size={18} aria-hidden="true"/>
+        <DialogTrigger render={<Button variant="outline" className="model-information-trigger" data-labelled={kind==='concepts'&&onAbout?'':undefined} aria-label={title} title={title}/>}>
+          <Icon size={16} aria-hidden="true"/>{kind==='concepts'&&onAbout&&<span>Begrippen</span>}
         </DialogTrigger>
         <DialogContent className="model-information-dialog" showCloseButton={false}>
           <div className="model-information-heading">

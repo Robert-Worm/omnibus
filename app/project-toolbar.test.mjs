@@ -30,7 +30,7 @@ test('Omnibus branding keeps one header wordmark and the version in the footer',
   assert.match(page, /<meta name="description" content="[^"]*referentiekader[^"]*toetsingskader[^"]*">/);
   assert.match(page, /<meta property="og:title" content="Omnibus/);
   assert.doesNotMatch(page, /<script(?![^>]*src="\/offline\.tsx")/);
-  assert.equal((footer.match(/href=\{repositoryUrl\} target="_blank" rel="noopener noreferrer"/g) || []).length, 2);
+  assert.equal((footer.match(/href=\{repositoryUrl\} target="_blank" rel="noopener noreferrer"/g) || []).length, 3);
   assert.match(footer, /Broncode op GitHub/);
   assert.match(read('../lib/product-contact.mjs'), /repositoryUrl = 'https:\/\/github\.com\/Robert-Worm\/omnibus'/);
 });

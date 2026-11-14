@@ -173,10 +173,10 @@ export default function CevWorkbench({
           }{" "}
           van {singleEntryPoints ? item.indicators?.length ?? 0 : model.items.length} {singleEntryPoints ? 'gespreksingangen' : isCev ? 'dimensies' : 'onderdelen'}
         </strong>
-        <output className="model-selection-status">Je vraagselectie wordt direct in je kader bewaard.</output>
-        <Button
+        {count > 0 && <Button
           variant="ghost"
-          disabled={disabled || !count}
+          title="Je vraagselectie wordt direct in je kader bewaard."
+          disabled={disabled}
           onClick={() =>
             onChange({
               items: model.items.map((i) => ({
@@ -187,7 +187,7 @@ export default function CevWorkbench({
           }
         >
           Vraagselectie wissen
-        </Button>
+        </Button>}
       </div>
       {model.items.some(incomplete) && (
         <p role="alert">

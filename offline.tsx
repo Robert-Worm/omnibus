@@ -12,6 +12,7 @@ import './app/collection-layout.css';
 import './app/mobile.css';
 import './app/typography.css';
 import './app/polish.css';
+import './app/refine.css';
 try {
   const saved = localStorage.getItem('omnibus-appearance');
   document.documentElement.dataset.appearance = saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';

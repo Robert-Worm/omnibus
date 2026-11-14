@@ -181,7 +181,7 @@ try{
   });
  }
  await go('rapporten');await page.getByRole('textbox',{name:'Zoek rapport',exact:true}).fill('CIBGBIO24-K01');
- await page.getByRole('button',{name:'Bekijk normen en toetspunten →',exact:true}).click();
+ await page.getByRole('button',{name:/^Bekijk normen en toetspunten/}).first().click();
  const opener=page.getByRole('button',{name:'Kies toetspunten voor CIBGBIO24-K01',exact:true}).first();
  await opener.focus();await page.keyboard.press('Enter');
  const dialog=page.getByRole('dialog');await dialog.waitFor();await dialogChecks(dialog,'report');

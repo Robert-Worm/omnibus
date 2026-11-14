@@ -92,7 +92,7 @@ async function measureNavigation(page, hash, selector, timings = false) {
 export async function measureWarmSession(page, cdp, {rounds, requestCount}) {
   assert(Number.isInteger(rounds) && rounds >= 30 && rounds <= 60, 'Use 30–60 warm rounds');
   const routes = [['#begin', '.entry-options button:not(:disabled)'],
-    ['#rapporten', '.report-catalogue .report-list-item button:not(:disabled)']];
+    ['#rapporten', '.report-catalogue tr[data-report] button:not(:disabled)']];
   const cycle = async () => {
     const values = {};
     for (const [hash, selector] of routes) values[hash] = await measureNavigation(page, hash, selector, true);
@@ -232,9 +232,9 @@ export async function measureLoading({url, out, samples = 9, warmRounds = 0, vie
         result.initial.push(await snapshot());
         await page.reload();
         result.reload.push(await snapshot());
-        const firstReportCatalogueMs = await measureNavigation(page, '#rapporten', '.report-catalogue .report-list-item button:not(:disabled)');
+        const firstReportCatalogueMs = await measureNavigation(page, '#rapporten', '.report-catalogue tr[data-report] button:not(:disabled)');
         const backToStartMs = await measureNavigation(page, '#begin', '.entry-options button:not(:disabled)');
-        const repeatReportCatalogueMs = await measureNavigation(page, '#rapporten', '.report-catalogue .report-list-item button:not(:disabled)');
+        const repeatReportCatalogueMs = await measureNavigation(page, '#rapporten', '.report-catalogue tr[data-report] button:not(:disabled)');
         result.navigation.push({firstReportCatalogueMs, backToStartMs, repeatReportCatalogueMs});
         if (index === samples - 1) {
           if (warmRounds) result.warmSession = await measureWarmSession(page, cdp, {rounds: warmRounds, requestCount: () => requests});
@@ -263,7 +263,7 @@ export async function measureLoading({url, out, samples = 9, warmRounds = 0, vie
           await page.keyboard.press('Escape');
           await page.evaluate(() => {location.hash = '#rapporten';});
           await page.getByRole('textbox', {name: 'Zoek rapport', exact: true}).fill('CIBGBIO24-K01');
-          await page.getByRole('button', {name: 'Bekijk normen en toetspunten →', exact: true}).click();
+          await page.getByRole('button', {name:/^Bekijk normen en toetspunten/}).first().click();
           await page.getByRole('button', {name: 'Kies toetspunten voor CIBGBIO24-K01', exact: true}).first().click();
           const report = page.locator('.bd-pilot-detail'), point = report.locator('.bd-point').first();
           await point.getByRole('checkbox').click();

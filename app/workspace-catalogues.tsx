@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import FilterPicker from "./filter-picker";
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import ReportContextLinks from './report-context-links';
+import {ToolSelect} from './catalogue-table';
+import {Search,X} from 'lucide-react';
 import { useBrowseState } from "./browse-state";
 import { catalogueSlice } from "@/lib/norm-navigation.mjs";
 import {
@@ -312,208 +314,249 @@ export function ReportCatalogue({
         filteredReportIds.has(f.report.id)) &&
       reportMatchesQuery(f, query),
   );
-  const pages = Math.max(1, Math.ceil(matches.length / 25));
+  // Compacte lijst in dezelfde vorm als de andere overzichten (besluit B-058): één regel per rapport.
+  const perPage = 50;
+  // Nieuwste rapport bovenaan.
+  const dateKey = (f: Framework) => f.report.date || String(f.report.year ?? "");
+  matches.sort((a, b) => dateKey(b).localeCompare(dateKey(a)) || a.report.title.localeCompare(b.report.title, "nl"));
+  const pages = Math.max(1, Math.ceil(matches.length / perPage));
   const currentPage = Math.min(page, pages - 1);
+  const dateText = (f: Framework) =>
+    f.report.date ? f.report.date.split("-").reverse().join("-") : String(f.report.year ?? "");
+  const scopeOptions = [
+    { value: "open", label: "Open thema’s" },
+    { value: "audit", label: "Mijn referentiekader" },
+    { value: "all", label: "Alle bronrapporten" },
+  ];
   return (
     <section className="catalogue report-catalogue">
-      <div className="collection-header">
-        <div className="collection-header-top">
-          <label className="collection-search-label" htmlFor="report-search">Zoek rapport</label>
-        </div>
-        <Input
-          id="report-search"
-          className="collection-search"
-          aria-label="Zoek rapport"
-          placeholder="Zoek op titel, jaar, rapport-ID of norm-ID…"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setPage(0);
-          }}
-        />
-        <div className="collection-filters">
-          <label className="collection-filter library-scope">
-            <span>Rapporten bij</span>
-            <select
-              aria-label="Rapporten bij"
-              value={scope}
-              onChange={(e) => onScope(e.target.value as "open" | "audit" | "all")}
-            >
-              <option value="open">Open thema’s</option>
-              <option value="audit">Mijn referentiekader</option>
-              <option value="all">Alle bronrapporten</option>
-            </select>
-          </label>
-        </div>
-      </div>
-      {scope !== "open" && reportChoice && frameworks.length>0 && (
-        <div className="report-choice-panel">
-          <Button variant="outline" disabled={!reportChoice.themes.length} onClick={() => onScope("open")}>
-            Rapporten aan/uitzetten per thema
-          </Button>
-          {!reportChoice.themes.length && <a href="#themas">Open eerst een thema</a>}
-        </div>
-      )}
-      {scope === "open" && reportChoice && (
-        <section className="report-choice-panel" aria-label="Bronrapporten kiezen">
-          <label className="library-scope">
-            Rapporten aan/uitzetten voor
-            <select
-              aria-label="Rapportkeuze voor thema"
-              value={choiceTheme?.id ?? ""}
-              onChange={(e) => reportChoice.onTheme(e.target.value)}
-            >
-              <option value="">Alle open thema’s</option>
-              {reportChoice.themes.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          {choiceTheme ? (
-            <>
-              <output>
-                {choiceTheme.reportIds.filter((id) => reportChoice.enabled(id)).length} van{" "}
-                {choiceTheme.reportIds.length} actief
-                {" · "}
-                {choiceTheme.reportIds
-                  .filter((id) => !reportChoice.enabled(id))
-                  .reduce((n, id) => n + reportChoice.impact(id).norms, 0)}{" "}
-                normen verborgen
-              </output>
-              <span>
-                Filtert alleen dit thema. Je verzamelde en gekoppelde normen blijven behouden, ook
-                in de export.
-              </span>
-            </>
-          ) : (
-            <span>Kies een thema om rapporten aan of uit te zetten.</span>
-          )}
-        </section>
-      )}
-      {scope !== "all" && themes.length > 1 && !choiceTheme && (
-        <FilterPicker
-          label="Themafilters"
-          options={themes.map((t) => ({
-            ...t,
-            count: new Set(t.reportIds.filter((id) => scopeIds.has(id))).size,
-          }))}
-          value={themeFilter}
-          onChange={(themeFilter) => setView((v) => ({ ...v, themeFilter, page: 0 }))}
-        />
-      )}
-      <p className="report-result-count">
-        {matches.length} {matches.length === 1 ? "rapport" : "rapporten"}
-      </p>
-      {matches.length > 0 && (
-        <div className="report-list-heading" data-choice={Boolean(choiceTheme)} aria-hidden="true">
-          {choiceTheme && <span>In thema</span>}
-          <span>Rapport</span>
-          <span>Bekijken</span>
-        </div>
-      )}
-      {matches.slice(currentPage * 25, (currentPage + 1) * 25).map((f) => (
-        <article
-          className="report-list-item"
-          data-choice={Boolean(choiceTheme)}
-          data-active={!choiceTheme || reportChoice?.enabled(f.report.id)}
-          key={f.report.id}
-        >
-          {choiceTheme && reportChoice && (
-            <div className="report-selection-cell">
-              <label
-                className="report-selection-target"
-                htmlFor={"report-choice-" + f.report.id}
-                aria-label={"Gebruik rapport " + f.report.id + " voor " + choiceTheme.title}
-              >
-                <Checkbox
-                  id={"report-choice-" + f.report.id}
-                  className="report-choice-checkbox"
-                  checked={reportChoice.enabled(f.report.id)}
-                  disabled={!reportChoice.ready}
-                  aria-label={"Gebruik " + f.report.title + " voor " + choiceTheme.title}
-                  onCheckedChange={(v) => reportChoice.onToggle(f.report.id, Boolean(v))}
+      <section className="catalogue-table report-table" aria-label="Lijst van rapporten">
+        <div className="catalogue-table-frame">
+          <div className="catalogue-table-tools">
+            <div className="catalogue-table-search">
+              <Search size={15} aria-hidden="true" />
+              <input
+                id="report-search"
+                type="search"
+                aria-label="Zoek rapport"
+                placeholder="Zoek op titel, jaar, rapport-ID of norm-ID…"
+                value={query}
+                maxLength={500}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setPage(0);
+                }}
+              />
+            </div>
+            <div className="catalogue-table-filters">
+              <ToolSelect
+                label="Rapporten bij:"
+                value={scope}
+                onChange={(value) => onScope(value as "open" | "audit" | "all")}
+                options={scopeOptions}
+              />
+              {scope === "open" && reportChoice && (
+                <ToolSelect
+                  label="Aan/uitzetten voor:"
+                  active={Boolean(choiceTheme)}
+                  value={choiceTheme?.id ?? ""}
+                  onChange={(value) => reportChoice.onTheme(value)}
+                  options={[
+                    { value: "", label: "Alle open thema’s" },
+                    ...reportChoice.themes.map((t) => ({ value: t.id, label: t.title })),
+                  ]}
                 />
-              </label>
-              {!reportChoice.enabled(f.report.id) && (
-                <span className="report-excluded-status">Uitgesloten</span>
+              )}
+              {scope !== "all" && themes.length > 1 && !choiceTheme && (
+                <FilterPicker
+                  label="Themafilters"
+                  options={themes.map((t) => ({
+                    ...t,
+                    count: new Set(t.reportIds.filter((id) => scopeIds.has(id))).size,
+                  }))}
+                  value={themeFilter}
+                  onChange={(themeFilter) => setView((v) => ({ ...v, themeFilter, page: 0 }))}
+                />
+              )}
+              {query && (
+                <button
+                  type="button"
+                  className="catalogue-tool-clear"
+                  onClick={() => {
+                    setQuery("");
+                    setPage(0);
+                  }}
+                >
+                  <X size={14} aria-hidden="true" />
+                  Wis zoeken
+                </button>
+              )}
+            </div>
+            {scope !== "open" && reportChoice && frameworks.length > 0 && (
+              <div className="catalogue-table-grouping">
+                {reportChoice.themes.length ? (
+                  <button type="button" className="catalogue-tool-clear" onClick={() => onScope("open")}>
+                    Rapporten per thema aan/uitzetten
+                  </button>
+                ) : (
+                  <a className="catalogue-tool-clear" href="#themas" title="Rapporten zet je per geopend thema aan of uit.">
+                    Rapporten per thema aan/uitzetten: open eerst een thema
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+          <output className="catalogue-table-count">
+            <span>
+              <strong>{matches.length}</strong> {matches.length === 1 ? "rapport" : "rapporten"}
+            </span>
+            {choiceTheme && reportChoice && (
+              <em>
+                {choiceTheme.reportIds.filter((id) => reportChoice.enabled(id)).length} van{" "}
+                {choiceTheme.reportIds.length} actief in {choiceTheme.title} ·{" "}
+                {countLabel(
+                  choiceTheme.reportIds
+                    .filter((id) => !reportChoice.enabled(id))
+                    .reduce((n, id) => n + reportChoice.impact(id).norms, 0),
+                  "normen",
+                )}{" "}
+                verborgen. Je verzamelde en gekoppelde normen blijven behouden.
+              </em>
+            )}
+            {scope === "open" && reportChoice && !choiceTheme && reportChoice.themes.length > 0 && (
+              <em>Kies bij “Aan/uitzetten voor” een thema om rapporten aan of uit te zetten.</em>
+            )}
+          </output>
+          {matches.length > 0 && (
+            <div className="catalogue-table-scroll">
+              <table data-dense="">
+                <thead>
+                  <tr>
+                    {choiceTheme && (
+                      <th scope="col" className="catalogue-table-check">
+                        <span className="sr-only">In thema</span>
+                      </th>
+                    )}
+                    <th scope="col" data-column="id" style={{ width: "8.5rem" }}>
+                      <span>ID</span>
+                    </th>
+                    <th scope="col">
+                      <span>Rapport</span>
+                    </th>
+                    <th scope="col" data-column="date" style={{ width: "7.5rem" }}>
+                      <span>Datum</span>
+                    </th>
+                    <th scope="col" data-column="themes" style={{ width: "13.5rem" }}>
+                      <span>Thema’s en processen</span>
+                    </th>
+                    <th scope="col" data-column="actions" style={{ width: "10.5rem" }}>
+                      <span className="sr-only">Acties</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {matches.slice(currentPage * perPage, (currentPage + 1) * perPage).map((f) => {
+                    const enabled = !choiceTheme || Boolean(reportChoice?.enabled(f.report.id));
+                    const impact = choiceTheme && reportChoice ? reportChoice.impact(f.report.id) : null;
+                    const linked = themes.filter((t) => t.reportIds.includes(f.report.id));
+                    return (
+                      <tr
+                        key={f.report.id}
+                        data-row=""
+                        data-report=""
+                        data-active={enabled}
+                        onClick={(event) => {
+                          if (!(event.target as HTMLElement).closest("button,a,input,summary,details,[role=checkbox],.catalogue-table-check"))
+                            onOpen(f.report.id);
+                        }}
+                      >
+                        {choiceTheme && reportChoice && (
+                          <td className="catalogue-table-check">
+                            <span className="catalogue-check-area" title={"Gebruik " + f.report.id + " voor " + choiceTheme.title}>
+                              <Checkbox
+                                id={"report-choice-" + f.report.id}
+                                checked={reportChoice.enabled(f.report.id)}
+                                disabled={!reportChoice.ready}
+                                aria-label={"Gebruik " + f.report.title + " voor " + choiceTheme.title}
+                                onCheckedChange={(v) => reportChoice.onToggle(f.report.id, Boolean(v))}
+                              />
+                            </span>
+                          </td>
+                        )}
+                        <td data-column="id">
+                          <span className="report-source-id">{f.report.id}</span>
+                        </td>
+                        <th scope="row" className="catalogue-table-name">
+                          <button type="button" onClick={() => onOpen(f.report.id)}>
+                            {f.report.title}
+                          </button>
+                          {impact && (
+                            <span>
+                              {enabled ? "" : "Uitgesloten · "}
+                              {countLabel(impact.norms, "normen")} {enabled ? "verbergen bij uitsluiten" : "verborgen"}
+                              {impact.collected > 0 && ` · ${impact.collected} verzameld, ${impact.linked} gekoppeld — blijven behouden`}
+                            </span>
+                          )}
+                        </th>
+                        <td data-column="date">
+                          {dateText(f)}
+                        </td>
+                        <td data-column="themes">
+                          <ReportContextLinks items={linked} onOpen={onTheme} compact />
+                        </td>
+                        <td data-column="actions" className="report-row-actions">
+                          {onRisks && riskReportIds.includes(f.report.id) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              aria-label={"Bekijk normen en toetspunten van " + f.report.id}
+                              onClick={() => onRisks(f.report.id)}
+                            >
+                              Normen bekijken
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {!matches.length && (
+            <div className="catalogue-table-empty">
+              <p>
+                {scope === "all" && !frameworks.length
+                  ? "Nog geen rapporten beschikbaar. De nieuwe rapportselectie wordt afzonderlijk toegevoegd."
+                  : !ids.length
+                    ? scope === "open"
+                      ? "Open een thema om de bijbehorende rapporten te zien."
+                      : "Selecteer normen om hun bronrapporten hier te zien."
+                    : "Geen rapport gevonden."}
+              </p>
+              {!ids.length && scope !== "all" && (
+                <Button variant="outline" onClick={onExplore}>
+                  Thema’s bekijken
+                </Button>
               )}
             </div>
           )}
-          <div className="report-list-body">
-            <h2>
-              <span className="report-source-id" aria-label={"Rapport-ID " + f.report.id}>
-                {f.report.id}
-              </span>
-              <span>{f.report.title}</span>
-            </h2>
-            <p>
-              {f.report.date
-                ? `Rapportdatum ${f.report.date.split("-").reverse().join("-")}`
-                : `Verslagjaar ${f.report.year}`}
-            </p>
-            {choiceTheme && reportChoice && (
-              <p className="report-norm-impact">
-                {countLabel(reportChoice.impact(f.report.id).norms,'normen')}{" "}
-                {reportChoice.enabled(f.report.id) ? "verbergen bij uitsluiten" : "verborgen"} in
-                dit thema
-                {reportChoice.impact(f.report.id).collected > 0 && (
-                  <>
-                    {" "}
-                    · {reportChoice.impact(f.report.id).collected} verzameld, waarvan{" "}
-                    {reportChoice.impact(f.report.id).linked} gekoppeld — blijven behouden
-                  </>
-                )}
-              </p>
-            )}
-            <ReportContextLinks items={themes.filter(t=>t.reportIds.includes(f.report.id))} onOpen={onTheme}/>
-          </div>
-          <div className="report-list-actions">
-          {onRisks&&riskReportIds.includes(f.report.id)&&<Button onClick={()=>onRisks(f.report.id)}>Bekijk normen en toetspunten →</Button>}
-          <Button variant="outline" onClick={() => onOpen(f.report.id)}>
-            Lees rapport →
-          </Button>
-          </div>
-        </article>
-      ))}
+        </div>
+      </section>
       {pages > 1 && (
         <nav className="report-pagination" aria-label="Rapportpagina’s">
-          <Button
-            variant="outline"
-            disabled={currentPage === 0}
-            onClick={() => setPage(currentPage - 1)}
-          >
+          <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
             Vorige
           </Button>
           <span>
             {currentPage + 1} / {pages}
           </span>
-          <Button
-            variant="outline"
-            disabled={currentPage + 1 === pages}
-            onClick={() => setPage(currentPage + 1)}
-          >
+          <Button variant="outline" disabled={currentPage + 1 === pages} onClick={() => setPage(currentPage + 1)}>
             Volgende
           </Button>
         </nav>
       )}
-      {!matches.length && (
-        <div className="empty-framework">
-          <p>
-            {scope==='all' && !frameworks.length ? 'Nog geen rapporten beschikbaar. De nieuwe rapportselectie wordt afzonderlijk toegevoegd.' : !ids.length
-              ? scope === "open"
-                ? "Open een thema om de bijbehorende rapporten te zien."
-                : "Selecteer normen om hun bronrapporten hier te zien."
-              : "Geen rapport gevonden."}
-          </p>
-          {!ids.length && scope!=='all' && (
-            <Button variant="outline" onClick={onExplore}>
-              Thema’s bekijken
-            </Button>
-          )}
-        </div>
-      )}
     </section>
   );
 }
+

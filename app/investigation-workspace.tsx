@@ -480,8 +480,9 @@ export function FoundationCatalogue({
    {key:'category',label:'Categorie',groupKey:'category',sort:r=>r.categories[0]||'',title:r=>r.categories.join(' · '),render:r=>r.categories.length?<><span>{glue(r.categories[0])}</span>{r.categories.length>1&&<><span className="catalogue-more" aria-hidden="true">+{r.categories.length-1} meer</span><span className="sr-only">, {r.categories.slice(1).join(', ')}</span></>}</>:<small>–</small>},
    {key:'audience',label:'Voor wie',width:'6.6rem',sort:r=>r.audiences.map(a=>audienceGroups[a].label).join(' ')||'zzz',render:r=>r.audiences.length?<AudienceIcons groups={r.audiences} text={r.audience}/>:<small>–</small>},
    {key:'effective',label:'Geldt vanaf',width:'11.2rem',sort:r=>r.record.applies||r.record.effective||r.record.published,
-    title:r=>[r.record.applies&&r.record.effective?'In werking getreden op '+shortDate(r.record.effective)+', van toepassing vanaf '+shortDate(r.record.applies):'',r.record.reference?'Vindplaats: '+r.record.reference:''].filter(Boolean).join('. '),
-    render:r=>{const d=r.record.applies||r.record.effective,published=r.record.published?<span className="catalogue-sub">gepubliceerd {shortDate(r.record.published)}</span>:null;
+    title:r=>[r.record.applies&&r.record.effective?'In werking getreden op '+shortDate(r.record.effective)+', van toepassing vanaf '+shortDate(r.record.applies):'',r.record.published?'Gepubliceerd '+shortDate(r.record.published):'',r.record.reference?'Vindplaats: '+r.record.reference:''].filter(Boolean).join('. '),
+    // De publicatiedatum staat in de uitleg bij aanwijzen; zo blijft elke rij één regel hoog (besluit B-058).
+    render:r=>{const d=r.record.applies||r.record.effective,published=!d&&r.record.published?<span className="catalogue-sub">gepubliceerd {shortDate(r.record.published)}</span>:null;
      if(!d)return <><small title="Geen eigen datum van inwerkingtreding, bijvoorbeeld bij een handreiking">n.v.t.</small>{published}</>;
      return <><span className={d>today?'catalogue-future':undefined}>{shortDate(d)}</span>{d>today&&<span className="catalogue-sub catalogue-future-note">geldt nog niet</span>}{published}</>;}},
   ];

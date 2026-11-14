@@ -75,7 +75,7 @@ try {
     await page.goto(baseline+'#begin');await saved(page);
     for(const [key,title,category] of frameworkCases)fixtures[key]=await sourceAndSelection(page,title,{category});
     await go(page,'rapporten');await page.getByRole('textbox',{name:'Zoek rapport',exact:true}).fill('CIBGBIO24-K01');
-    await page.getByRole('button',{name:'Bekijk normen en toetspunten →',exact:true}).click();
+    await page.getByRole('button',{name:/^Bekijk normen en toetspunten/}).first().click();
     await page.getByRole('button',{name:'Kies toetspunten voor CIBGBIO24-K01',exact:true}).first().click();
     const detail=page.locator('.bd-pilot-detail'),point=detail.locator('.bd-point').first();
     await point.getByRole('checkbox').click();

@@ -1,4 +1,5 @@
 "use client";
+import {ToolSelect} from './catalogue-table';
 import SelectionMenu from './selection-menu';
 import {normId} from '@/lib/norm-navigation.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
@@ -198,9 +199,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   {overview==='norms'&&<>
    <div className="law-browse-intro"><div className="law-viewer-heading"><h2>{frameworkTitle(adapter?.heading||'Besluit CIO-stelsel Rijksdienst 2026')}</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Een norm kan bij meerdere groepen staan; gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(matches)}</output></div>{(()=>{const notice=sourceAudienceNotice(sourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><SelectionMenu selectedOnly={view.selectedOnly} onSelectedOnly={value=>setView(v=>({...v,selectedOnly:value}))} allChosen={selection.all} disabled={disabled} allTitle="Voor het hele kader, ook buiten de huidige filters. Punten met open bronvragen blijven uitgesloten." onToggleAll={()=>choose(points.map(p=>p.id),!selection.all)}/></div></div>
    <div className="law-browse-filters" aria-label="Normen filteren">
-    <label className="law-search-label" htmlFor="law-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="law-search" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>
-    <label htmlFor="law-group-filter">Groep binnen het kader<select id="law-group-filter" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupsForSource.map(group=><option key={group.id} value={group.id}>{group.title}</option>)}</select></label>
-    <div className="law-column-control"><span>Weergave</span><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
+    <div className="law-search"><Search size={16} aria-hidden="true"/><Input id="law-search" aria-label="Zoeken in dit kader" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div>
+    {groupsForSource.length>1&&<ToolSelect label="Groep:" active={Boolean(view.group)} value={view.group} onChange={group=>setView(v=>({...v,group}))} options={[{value:'',label:'Alle groepen'},...groupsForSource.map(group=>({value:group.id,label:group.title}))]}/>}
+    <div className="law-column-control"><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
     <LawReadingControls value={readingDensity} onChange={setReadingDensity}/>
     {(query||view.group||view.selectedOnly)&&<Button className="law-reset-filters" variant="ghost" onClick={resetFilters}>Filters wissen</Button>}
    </div>

@@ -63,7 +63,44 @@ function ContactActions() {
   </div>;
 }
 
-export default function ProductFooter() {
+function AboutDetails() {
+  return <>
+      <details><summary><Info aria-hidden="true"/>Gebruik en bronnen<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
+        <p>Omnibus helpt bij het voorbereiden van onderzoek; het geeft geen auditoordeel of juridisch advies. Met AI ondersteunde bewerkingen kunnen fouten bevatten. Controleer de oorspronkelijke bron, toepasselijkheid, reikwijdte en actualiteit voordat je normen gebruikt. De auditor bepaalt de onderzoeksaanpak en trekt de conclusies.</p>
+        <p>De rechten en gebruiksvoorwaarden van de oorspronkelijke bronnen blijven gelden. Een verwijzing of eigen bewerking maakt de bron niet vrij beschikbaar.</p>
+      </details>
+      <details><summary><LockKeyhole aria-hidden="true"/>Lokale opslag en privacy<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
+        <p>Omnibus bewaart je onderzoeksproject automatisch in deze browser, ook bij online gebruik. Je vragen, notities en selecties worden niet automatisch in de online database opgeslagen. Bewaar ook een projectbestand: browseropslag kan verdwijnen of vol raken. Op een andere computer, in een andere browser of op een ander website-adres open je dat bestand om verder te werken.</p>
+        <p>Bij openen en aanpassen aan een nieuwe indeling kunnen herstelkopieën in deze browser achterblijven, naast oude projectgegevens en weergavevoorkeuren. Nieuw project maakt het actieve project leeg, maar verwijdert herstelkopieën en oude projectgegevens niet. Wil je alle lokale gegevens verwijderen? Bewaar eerst de benodigde bestanden, sluit alle tabbladen van Omnibus en verwijder de sitegegevens voor dit website-adres via de browserinstellingen. Gedownloade project- en herstelbestanden blijven op je computer staan; verwijder die zo nodig apart.</p>
+        {databaseSourcesEnabled&&<p>De catalogus, normen, modelgegevens en bronpagina’s worden opgehaald bij de brondienst zodra ze nodig zijn. Deze aanvragen bevatten verwijzingen naar de benodigde brondata, niet je vragen, notities of projectbestand. De online versie wordt gehost bij Sliplane; bij lokaal gebruik draait de brondienst op je eigen computer.</p>}
+        <p>Bij online gebruik ontvangt de hostingdienst technische verbindingsgegevens, zoals je IP-adres en de opgevraagde adressen. De app registreert beperkte technische foutgegevens voor het opsporen van storingen. Lokale projectopslag betekent dus niet dat je websitebezoek anoniem is.</p>
+        <p>Als je zelf een project deelt of gegevens aan een externe AI-dienst geeft, bepaal je welke informatie je overdraagt. Controleer daarvoor de afspraken van je organisatie en de voorwaarden van die dienst. Stuur geen vertrouwelijke onderzoeksgegevens mee bij een foutmelding. Bij externe links gelden de voorwaarden van die website.</p>
+      </details>
+      <details className="footer-about-contact"><summary><UserRound aria-hidden="true"/>Over &amp; contact<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
+        <p>Omnibus is een persoonlijk, niet-commercieel initiatief van <strong>Robert Worm</strong>, ook de maker van Rijksmap. De toepassing wordt verder ontwikkeld en getest.</p>
+        <p>Het doel: auditors helpen om vanuit een onderzoeksbehoefte of signalen bruikbare normen en interviewvragen te kiezen, met zicht op de oorspronkelijke bronnen.</p>
+        <a className="footer-contact-item" href="https://www.linkedin.com/in/robertworm/" target="_blank" rel="noopener noreferrer"><UserRound aria-hidden="true"/><span>Robert Worm op LinkedIn</span><ArrowUpRight aria-hidden="true"/></a>
+        <a className="footer-contact-item" href={repositoryUrl} target="_blank" rel="noopener noreferrer"><Code aria-hidden="true"/><span>Broncode op GitHub</span><ArrowUpRight aria-hidden="true"/></a>
+        <ContactActions/>
+      </details>
+  </>;
+}
+
+// Tijdens het werken in de stappen is de voettekst één smalle regel (besluit B-058): de stappenbalk en de kop
+// bevatten de navigatie al. Op de beginpagina staat de volledige voettekst.
+export default function ProductFooter({compact=false}:{compact?:boolean}) {
+  if (compact) return <footer className="product-footer product-footer-compact" aria-label="Over Omnibus en contact">
+    <div className="product-footer-line">
+      <a className="product-footer-wordmark" href="#begin">Omnibus</a>
+      <span className="product-footer-version">Versie {PRODUCT_VERSION}</span>
+      <span className="product-footer-attribution">Een niet-commercieel initiatief van <strong>Robert Worm</strong>. Geen officiële uiting van de rijksoverheid.</span>
+      <a className="product-footer-repository" href={repositoryUrl} target="_blank" rel="noopener noreferrer"><Code aria-hidden="true"/><span>Broncode <ArrowUpRight className="footer-external" aria-hidden="true"/></span></a>
+    </div>
+    <div className="product-footer-column product-footer-about-row">
+      <Glossary />
+      <AboutDetails/>
+    </div>
+  </footer>;
   return <footer className="product-footer" aria-label="Over Omnibus en contact">
     <div className="product-footer-grid">
       <section className="product-footer-brand" aria-label={`Omnibus · versie ${PRODUCT_VERSION}`}>
@@ -92,24 +129,7 @@ export default function ProductFooter() {
       <section className="product-footer-column" aria-label="Over en contact">
         <h2>Over Omnibus</h2>
         <Glossary />
-      <details><summary><Info aria-hidden="true"/>Gebruik en bronnen<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Omnibus helpt bij het voorbereiden van onderzoek; het geeft geen auditoordeel of juridisch advies. Met AI ondersteunde bewerkingen kunnen fouten bevatten. Controleer de oorspronkelijke bron, toepasselijkheid, reikwijdte en actualiteit voordat je normen gebruikt. De auditor bepaalt de onderzoeksaanpak en trekt de conclusies.</p>
-        <p>De rechten en gebruiksvoorwaarden van de oorspronkelijke bronnen blijven gelden. Een verwijzing of eigen bewerking maakt de bron niet vrij beschikbaar.</p>
-      </details>
-      <details><summary><LockKeyhole aria-hidden="true"/>Lokale opslag en privacy<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Omnibus bewaart je onderzoeksproject automatisch in deze browser, ook bij online gebruik. Je vragen, notities en selecties worden niet automatisch in de online database opgeslagen. Bewaar ook een projectbestand: browseropslag kan verdwijnen of vol raken. Op een andere computer, in een andere browser of op een ander website-adres open je dat bestand om verder te werken.</p>
-        <p>Bij openen en aanpassen aan een nieuwe indeling kunnen herstelkopieën in deze browser achterblijven, naast oude projectgegevens en weergavevoorkeuren. Nieuw project maakt het actieve project leeg, maar verwijdert herstelkopieën en oude projectgegevens niet. Wil je alle lokale gegevens verwijderen? Bewaar eerst de benodigde bestanden, sluit alle tabbladen van Omnibus en verwijder de sitegegevens voor dit website-adres via de browserinstellingen. Gedownloade project- en herstelbestanden blijven op je computer staan; verwijder die zo nodig apart.</p>
-        {databaseSourcesEnabled&&<p>De catalogus, normen, modelgegevens en bronpagina’s worden opgehaald bij de brondienst zodra ze nodig zijn. Deze aanvragen bevatten verwijzingen naar de benodigde brondata, niet je vragen, notities of projectbestand. De online versie wordt gehost bij Sliplane; bij lokaal gebruik draait de brondienst op je eigen computer.</p>}
-        <p>Bij online gebruik ontvangt de hostingdienst technische verbindingsgegevens, zoals je IP-adres en de opgevraagde adressen. De app registreert beperkte technische foutgegevens voor het opsporen van storingen. Lokale projectopslag betekent dus niet dat je websitebezoek anoniem is.</p>
-        <p>Als je zelf een project deelt of gegevens aan een externe AI-dienst geeft, bepaal je welke informatie je overdraagt. Controleer daarvoor de afspraken van je organisatie en de voorwaarden van die dienst. Stuur geen vertrouwelijke onderzoeksgegevens mee bij een foutmelding. Bij externe links gelden de voorwaarden van die website.</p>
-      </details>
-      <details className="footer-about-contact"><summary><UserRound aria-hidden="true"/>Over &amp; contact<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary>
-        <p>Omnibus is een persoonlijk, niet-commercieel initiatief van <strong>Robert Worm</strong>, ook de maker van Rijksmap. De toepassing wordt verder ontwikkeld en getest.</p>
-        <p>Het doel: auditors helpen om vanuit een onderzoeksbehoefte of signalen bruikbare normen en interviewvragen te kiezen, met zicht op de oorspronkelijke bronnen.</p>
-        <a className="footer-contact-item" href="https://www.linkedin.com/in/robertworm/" target="_blank" rel="noopener noreferrer"><UserRound aria-hidden="true"/><span>Robert Worm op LinkedIn</span><ArrowUpRight aria-hidden="true"/></a>
-        <a className="footer-contact-item" href={repositoryUrl} target="_blank" rel="noopener noreferrer"><Code aria-hidden="true"/><span>Broncode op GitHub</span><ArrowUpRight aria-hidden="true"/></a>
-        <ContactActions/>
-      </details>
+        <AboutDetails/>
       </section>
     </div>
   </footer>;

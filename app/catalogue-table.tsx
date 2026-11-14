@@ -44,10 +44,10 @@ export function CellTip({label,tip,children,plain=false}:{label:string;tip:React
 /** Keuzelijst als compacte knop: het label staat erin, de gekozen waarde ernaast. Het menu is het gedeelde Select-onderdeel
  * van de app, zodat het er in elke browser hetzelfde uitziet. */
 const none='__geen';
-function ToolSelect({label,value,onChange,options,active=false}:{label:string;value:string;onChange:(value:string)=>void;options:{value:string;label:string}[];active?:boolean}){
+export function ToolSelect({label,value,onChange,options,active=false,name}:{label:string;/** Toegankelijke naam als het zichtbare label leeg is. */name?:string;value:string;onChange:(value:string)=>void;options:{value:string;label:string}[];active?:boolean}){
  const current=options.find(o=>o.value===value)?.label??value;
  return <Select value={value||none} onValueChange={next=>{if(typeof next==='string')onChange(next===none?'':next);}}>
-  <SelectTrigger className="catalogue-tool" data-active={active||undefined} aria-label={`${label} ${current}`}><span className="catalogue-tool-label">{label}</span><span className="catalogue-tool-value">{current}</span></SelectTrigger>
+  <SelectTrigger className="catalogue-tool" data-active={active||undefined} aria-label={`${label||name||''} ${current}`.trim()}>{label&&<span className="catalogue-tool-label">{label}</span>}<span className="catalogue-tool-value">{current}</span></SelectTrigger>
   <SelectContent className="catalogue-tool-menu" alignItemWithTrigger={false} align="start">{options.map(o=><SelectItem key={o.value||none} value={o.value||none} className="catalogue-tool-option">{o.label}</SelectItem>)}</SelectContent>
  </Select>;
 }

@@ -1,4 +1,5 @@
 'use client';
+import {ToolSelect} from './catalogue-table';
 import SelectionMenu from './selection-menu';
 import {countLabel} from '@/lib/display-count.mjs';
 import {useEffect,useMemo,useRef} from 'react';
@@ -41,9 +42,9 @@ export default function ReportNormBrowser({title,lines,draft,viewDraft,counts,se
    <SelectionMenu selectedOnly={view.selectedOnly} onSelectedOnly={value=>setView(v=>({...v,selectedOnly:value}))} allChosen={selection.all} disabled={disabled||!lines.length} allTitle="Voor het hele geopende kader, ook buiten zoek- en groepsfilters. Je rapportkeuze blijft van toepassing." onToggleAll={()=>onSelect(lines.map(l=>l.id),!selection.all)}/>
   </div></div>
   <div className="law-browse-filters" aria-label="Normen filteren">
-   <label className="law-search-label" htmlFor="report-norm-search">Zoeken in dit kader<div className="law-search"><Search size={17}/><Input id="report-norm-search" placeholder="Zoek op norm, toetspunt of onderwerp…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div></label>
-   <label htmlFor="report-group-filter">Groep binnen het kader<select id="report-group-filter" value={view.group} onChange={e=>setView(v=>({...v,group:e.target.value}))}><option value="">Alle groepen</option>{groupOptions.map(g=><option key={g.id} value={g.id}>{g.title}</option>)}</select></label>
-   <div className="law-column-control"><span>Weergave</span><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
+   <div className="law-search"><Search size={16} aria-hidden="true"/><Input id="report-norm-search" aria-label="Zoeken in dit kader" placeholder="Zoek op norm, toetspunt of onderwerp…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div>
+   {groupOptions.length>1&&<ToolSelect label="Groep:" active={Boolean(view.group)} value={view.group} onChange={group=>setView(v=>({...v,group}))} options={[{value:'',label:'Alle groepen'},...groupOptions.map(g=>({value:g.id,label:g.title}))]}/>}
+   <div className="law-column-control"><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
    <LawReadingControls value={density} onChange={density=>setView(v=>({...v,density}))}/>
    {(view.query||view.group||view.selectedOnly)&&<Button variant="ghost" className="law-reset-filters" onClick={reset}>Filters wissen</Button>}
   </div>

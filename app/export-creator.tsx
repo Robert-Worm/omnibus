@@ -4,7 +4,8 @@ import {countLabel} from '@/lib/display-count.mjs';
 import LegacyCioNotice from "./legacy-cio-notice";
 import { useState, useEffect, useMemo } from "react";
 import type { ExportGuideStatus } from './workflow-help';
-import { FileSpreadsheet, Check, ClipboardCheck, ShieldCheck, MessagesSquare } from "lucide-react";
+import { FileSpreadsheet, FileText, Check, ClipboardCheck, ShieldCheck, MessagesSquare, ChevronLeft, ChevronRight } from "lucide-react";
+import { ToolSelect } from "./catalogue-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -202,7 +203,7 @@ export default function ExportCreator({
                   <Textarea
                     id="creator-scope"
                     value={meta.scope}
-                    placeholder={exportDraft.title}
+                    placeholder={`Standaard: ${exportDraft.title}`}
                     maxLength={2000}
                     onChange={(e) => updateSettings({ ...config, meta: { ...meta, scope: e.target.value }, scopeFromInvestigation: false })}
                   />
@@ -512,11 +513,7 @@ export default function ExportCreator({
             Voorbeeld
           </p>}
           {!emptyFramework && register?.viewer && register.detailRecords && <div className="export-preview-navigation">
-            <label htmlFor="export-detail-point">Onderdeel bekijken
-              <select id="export-detail-point" value={detailPoint} onChange={e=>setDetailPointIndex(Number(e.target.value))} disabled={!register.detailRecords.length}>
-                {register.detailRecords.map((entry: {pointId:string}, i:number)=><option key={entry.pointId} value={i}>{workbookPreviewValue(register.rows[i+1][6])}</option>)}
-              </select>
-            </label>
+            {register.detailRecords.length>0&&<div className="export-preview-navigation"><ToolSelect label="Onderdeel:" value={String(detailPoint)} onChange={value=>setDetailPointIndex(Number(value))} options={register.detailRecords.map((entry: {pointId:string}, i:number)=>({value:String(i),label:String(workbookPreviewValue(register.rows[i+1][6]))}))}/></div>}
             <article aria-live="polite" aria-label="Detail van je export" style={{whiteSpace:'pre-wrap',fontFamily,fontSize:fontSize+'pt',lineHeight:1.6,maxHeight:'28rem',overflowY:'auto',padding:'1rem',border:'1px solid var(--border)',borderRadius:8}}>
               {register.viewer.labels.map((label:string, i:number)=><section key={label} style={{marginBottom:'1rem'}}>
                 <h4 style={{fontWeight:600,marginBottom:'0.75rem',borderBottom:'1px solid var(--border)',paddingBottom:'0.5rem'}}>{label}</h4>
@@ -525,14 +522,10 @@ export default function ExportCreator({
             </article>
           </div>}
           {!emptyFramework && !detailPreview && !!previewEntries.length && <div className="export-preview-navigation">
-            <label htmlFor="export-preview-entry">{register?.entries ? 'Bouwsteen bekijken' : 'Rij bekijken'}
-              <select id="export-preview-entry" value={previewEntry.key} onChange={e=>setPreviewEntryKey(e.target.value)}>
-                {previewEntries.map((entry: {key:string;label:string}, i:number)=><option key={entry.key} value={entry.key}>{i+1}. {entry.label}</option>)}
-              </select>
-            </label>
-            <div><Button variant="outline" disabled={previewIndex===0} onClick={()=>setPreviewEntryKey(previewEntries[previewIndex-1].key)}>Vorige</Button>
-              <span aria-live="polite">{previewIndex+1} van {previewEntries.length}</span>
-              <Button variant="outline" disabled={previewIndex===previewEntries.length-1} onClick={()=>setPreviewEntryKey(previewEntries[previewIndex+1].key)}>Volgende</Button></div>
+            <Button variant="outline" size="icon" aria-label="Vorige" title="Vorige" disabled={previewIndex===0} onClick={()=>setPreviewEntryKey(previewEntries[previewIndex-1].key)}><ChevronLeft size={16} aria-hidden="true"/></Button>
+            <ToolSelect label="" name={register?.entries ? 'Bouwsteen:' : 'Rij:'} value={previewEntry.key} onChange={setPreviewEntryKey} options={previewEntries.map((entry: {key:string;label:string}, i:number)=>({value:entry.key,label:`${i+1}. ${entry.label}`}))}/>
+            <span aria-live="polite">{previewIndex+1} van {previewEntries.length}</span>
+            <Button variant="outline" size="icon" aria-label="Volgende" title="Volgende" disabled={previewIndex===previewEntries.length-1} onClick={()=>setPreviewEntryKey(previewEntries[previewIndex+1].key)}><ChevronRight size={16} aria-hidden="true"/></Button>
           </div>}
           {!emptyFramework && register && !detailPreview && (
             <>
@@ -602,16 +595,17 @@ export default function ExportCreator({
             <FileSpreadsheet size={18} />
             {busy ? "Bestand maken…" : count === 0 && !modelBasis ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
           </Button>
-          {saved && <output>Vorige download aangemaakt. Download opnieuw na wijzigingen.</output>}
           {!modelBasis && (
             <Button
-              variant="ghost"
+              variant="outline"
+              className="creator-markdown"
               disabled={disabled || busy || !ready || !!validation || !exportedNormIds.length}
               onClick={() => {try {onMarkdown(exportDraft, choices);}catch(e){setError(e instanceof Error ? e.message : 'Tekstexport is niet gelukt.');}}}
             >
-              {profile === 'interview' ? 'Deze interviewselectie' : profile === 'risk' ? 'Deze risicoselectie' : 'Deze normselectie'} als tekst (.md)
+              <FileText size={16} aria-hidden="true"/>Download als tekst (.md)
             </Button>
           )}
+          {saved && <output className="creator-saved">Vorige download aangemaakt. Download opnieuw na wijzigingen.</output>}
           <details className="creator-method">
             <summary>Over de werkvormen en bronnen</summary>
             <p>Zonder macro’s. Keuzelijsten, opzoeken en filters werken met gewone Excel-functies. Wijzigingen in Excel blijven in het werkboek en worden niet teruggelezen.</p>
