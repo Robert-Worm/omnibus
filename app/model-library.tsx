@@ -105,11 +105,10 @@ export default function ModelLibrary({
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
-    {key:'uses',label:'Helpt bij',width:'11.5rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
     {key:'kind',label:'Soort model',width:'9.5rem',groupKey:'kind',sort:r=>r.origin?.kindLabel||'zzz',render:r=>r.origin?<CellTip plain label={r.origin.kindLabel+': '+r.origin.kindDescription} tip={<><strong>{r.origin.kindLabel}</strong><span>{r.origin.kindDescription}</span></>}><span className="catalogue-pill" data-tone={r.origin.kind}>{r.origin.kindLabel}</span></CellTip>:<small>–</small>},
-    {key:'year',label:'Sinds',width:'5rem',sort:r=>r.origin?.year||9999,title:()=>'Jaar van de eerste publicatie over dit model',render:r=>r.origin?.year||<small>–</small>},
     {key:'items',label:'Variabelen',width:'6rem',sort:r=>r.items,render:r=>r.items||<small>–</small>},
-    {key:'spacer',label:'',render:()=>null},
+    {key:'uses',label:'Helpt bij',width:'11.5rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
+    {key:'year',label:'Sinds',width:'5rem',sort:r=>r.origin?.year||9999,title:()=>'Jaar van de eerste publicatie over dit model',render:r=>r.origin?.year||<small>–</small>},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
   const current: LibraryModel | undefined = mode === 'workspace' ? resolveOpenModel(openIds, active, value.models) : undefined;
@@ -149,7 +148,7 @@ export default function ModelLibrary({
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
         filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:r=>r.origin?[r.origin.kindLabel]:[]}]}
         groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''},{key:'kind',label:'Soort model',plural:'soorten',value:r=>r.origin?.kindLabel||'',describe:name=>Object.values(modelKinds as Record<string,{label:string;description:string}>).find(k=>k.label===name)?.description||''}]}
-        gutter nameLabel="Model" nameMeta={r=>r.origin?<span title="Auteur(s) van het model">{r.origin.authors}</span>:null} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
+        gutter nameLabel="Model" nameMeta={r=><><span className="catalogue-id" title="Vaste ID van dit model">MOD-{r.id}</span>{r.origin&&<span title="Auteur(s) van het model">{r.origin.authors}</span>}</>} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}

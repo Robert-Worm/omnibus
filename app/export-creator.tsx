@@ -69,9 +69,9 @@ export default function ExportCreator({
       };
   }
   const {
-    withoutQuestions, selection, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
+    withoutQuestions, autoLinkOn, unlinkedCount, selection, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
-    modelBasis, modelTitle, exportedNormIds, autoLinked, autoLinkCentral, autoLinkUnderSub, exportDraft, filename, downloadName, pickedLines, hasCriteria,
+    modelBasis, modelTitle, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
   } = useMemo(() => exportInputs(framework, draft, config, models), [framework, draft, config, models]);
   const request=useMemo(()=>({framework,draft,config,models}),[framework,draft,config,models]);
@@ -81,7 +81,7 @@ export default function ExportCreator({
   const questions = choices.questions;
   const setBasis = setting('basis', basis), setTestScope = setting('testingAspects', testScope);
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
-  const setKeyControl = setting('keyControl', keyControl);
+  const setKeyControl = setting('keyControl', keyControl), setAutoLink = setting('autoLink', autoLinkOn);
   const setAccountability = setting('accountability', accountability);
   const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
   const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
@@ -236,12 +236,6 @@ export default function ExportCreator({
             ))}
           </div>
           <p id="testing-aspects-help">Kies één of meer.</p>
-          <fieldset className="creator-terminology" title={testingTerminologyHelp}>
-            <legend>Labels in Excel</legend>
-            {testingTerminologies.map(option => <button type="button" key={option.id} aria-pressed={testingTerminology === option.id}
-              onClick={() => { setTestingTerminology(option.id); setSaved(false); setError(""); }}>
-              {option.id === 'obw' ? 'Opzet · Bestaan · Werking' : 'Design · Implementation · Operating'}</button>)}
-          </fieldset>
         </fieldset>
       )}
             {(selectedModels.length > 0 || modelBasis) && (
@@ -319,11 +313,13 @@ export default function ExportCreator({
                   <p>{countLabel(exportedNormIds.length,'bouwstenen')} in deze export{withoutQuestions ? ' · zonder onderzoeksvragen' : ''} · <a href="#mijn-kader">wijzigen</a></p>
                   </>}
                   {emptyFramework && <a href="#mijn-kader">Naar stap 3: Bouw je kader</a>}
-                  {autoLinked.length > 0 && (
-                    <details className="creator-review creator-autolink"><summary>{countLabel(autoLinked.length,'bouwstenen')} automatisch gekoppeld</summary><p className="creator-help">
-                      {countLabel(autoLinked.length,'bouwstenen')} {autoLinked.length===1?'was':'waren'} niet aan een vraag gekoppeld. Ze gaan toch mee, zodat er niets wegvalt: {autoLinkUnderSub>0?<>{autoLinkUnderSub} bij een deelvraag waar al een toetspunt over dezelfde norm of een verwante norm hangt{autoLinked.length-autoLinkUnderSub>0&&<>, {autoLinked.length-autoLinkUnderSub} onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}</>:<>onder je centrale vraag{autoLinkCentral?<> ‘{autoLinkCentral}’</>:''}</>}. Wil je het anders, koppel ze dan zelf in stap 3.
-                    </p></details>
-                  )}
+                  {!emptyFramework && !withoutQuestions && unlinkedCount > 0 && <label className="creator-check creator-autolink" htmlFor="export-autolink">
+                    <Checkbox id="export-autolink" checked={autoLinkOn} onCheckedChange={(v) => { setAutoLink(v === true); setSaved(false); setError(""); }}/>
+                    <span><strong>Koppel bouwstenen zonder onderzoeksvraag automatisch</strong>
+                      <small>{autoLinkOn
+                        ? `${countLabel(unlinkedCount,'bouwstenen')} ${unlinkedCount===1?'krijgt':'krijgen'} een plek bij een verwante deelvraag of onder je centrale vraag.`
+                        : `${countLabel(unlinkedCount,'bouwstenen')} zonder vraag ${unlinkedCount===1?'gaat':'gaan'} niet mee.`}</small></span>
+                  </label>}
                   {!emptyFramework && !selection.included.length && (
                     <p>
                       Maak onderzoeksvragen of koppel bouwstenen om je onderzoeksopzet te
@@ -352,14 +348,23 @@ export default function ExportCreator({
                 )}
               </>
             )}
-      {!modelBasis && hasCriteria && (
-        <fieldset className="creator-extras">
-          <legend>Extra in Excel <small>optioneel</small></legend>
+          </section>
+          {!modelBasis && hasCriteria && <section className="creator-card creator-options">
+            <h2>Excel-opties</h2>
+        <fieldset className="creator-extras" aria-label="Excel-opties">
           <label htmlFor="export-accountability">
             <Checkbox id="export-accountability" checked={accountability} onCheckedChange={(v) => { setAccountability(v === true); setSaved(false); setError(""); }}/>
             <span><strong>Blad Verantwoording referentiekader</strong>
               <small>Voor wie volgens de Global Internal Audit Standards werkt (13.4 en 13.6).</small></span>
           </label>
+          {profile === "testing" && <div className="creator-terminology" role="radiogroup" aria-label="Toetslabels in Excel" title={testingTerminologyHelp}>
+            <span>Toetslabels</span>
+            {testingTerminologies.map(option => <label key={option.id} className="creator-radio">
+              <input type="radio" name="export-terminology" value={option.id} checked={testingTerminology === option.id}
+                onChange={() => { setTestingTerminology(option.id); setSaved(false); setError(""); }}/>
+              <span>{option.id === 'obw' ? 'Nederlands' : 'Engels'} <small>{option.id === 'obw' ? 'Opzet · Bestaan · Werking' : 'Design · Implementation · Operating'}</small></span>
+            </label>)}
+          </div>}
           {profile === "risk" && (
             <label htmlFor="risk-key-control">
               <Checkbox id="risk-key-control" checked={keyControl} onCheckedChange={(v) => { setKeyControl(v === true); setSaved(false); setError(""); }}/>
@@ -368,54 +373,7 @@ export default function ExportCreator({
             </label>
           )}
         </fieldset>
-      )}
-          </section>
-          <details className="creator-card creator-fold">
-            <summary><h2>Vormgeving</h2><span>{fontFamily} · {fontSize} pt · kleuren aanpassen</span></summary>
-            <fieldset className="creator-basis" aria-label="Kleurgebruik">
-              <Button
-                variant="outline"
-                aria-pressed={colorMode === "uniform"}
-                onClick={() => setColorMode("uniform")}
-              >
-                Eén kleurenpalet
-              </Button>
-              <Button
-                variant="outline"
-                aria-pressed={colorMode === "sections"}
-                onClick={() => setColorMode("sections")}
-              >
-                Kleuren per werkfase
-              </Button>
-            </fieldset>
-            {colorMode === 'sections' && <figure className="export-palette-preview" aria-label="Bijpassende kleuren voor de werkfasen">{exportPhasePalette(accent).map((color, i)=><span key={i} style={{backgroundColor:'#'+color.dark}} />)}</figure>}
-            <fieldset className="creator-colors" aria-label="Auditkleuren">
-              <legend>Hoofdkleur · alle werkbladen</legend>
-              {Object.entries(exportPalettes).filter(([id])=>id.startsWith('audit-')).map(([id, palette]) => (
-                <Button
-                  key={id}
-                  variant="outline"
-                  title={'#' + palette.dark}
-                  aria-pressed={accent === id}
-                  onClick={() => setAccent(id)}
-                >
-                  <span style={{ backgroundColor: '#' + palette.dark }} />
-                  {palette.label}
-                </Button>
-              ))}
-            </fieldset>
-            <details><summary>Overige paletten{!accent.startsWith('audit-') ? ' · '+(Object.entries(exportPalettes).find(([id])=>id===accent)?.[1].label || '') : ''}</summary>
-              <fieldset className="creator-colors" aria-label="Overige accentkleuren">
-                {Object.entries(exportPalettes).filter(([id])=>!id.startsWith('audit-')).map(([id,palette])=>(
-                  <Button key={id} variant="outline" aria-pressed={accent===id} onClick={()=>setAccent(id)} title={'#'+palette.dark}><span style={{backgroundColor:'#'+palette.dark}}/>{palette.label}</Button>
-                ))}
-              </fieldset>
-            </details>
-            <div className="creator-two creator-typography">
-              <label htmlFor="export-font">Lettertype<select id="export-font" value={fontFamily} onChange={e=>setFontFamily(e.target.value)}>{exportFonts.map(f=><option key={f}>{f}</option>)}</select></label>
-              <label htmlFor="export-font-size">Tekstgrootte<select id="export-font-size" value={fontSize} onChange={e=>setFontSize(Number(e.target.value))}>{exportFontSizes.map(s=><option key={s} value={s}>{s} pt{s===11?' · standaard':''}</option>)}</select></label>
-            </div>
-          </details>
+          </section>}
           <section className="creator-card">
             <h2>Versie en team</h2>
             <label htmlFor="creator-filename">Bestandsnaam
@@ -477,6 +435,52 @@ export default function ExportCreator({
               </label>
             </details>
           </section>
+          <details className="creator-card creator-fold">
+            <summary><h2>Vormgeving</h2><span>{fontFamily} · {fontSize} pt · kleuren aanpassen</span></summary>
+            <fieldset className="creator-basis" aria-label="Kleurgebruik">
+              <Button
+                variant="outline"
+                aria-pressed={colorMode === "uniform"}
+                onClick={() => setColorMode("uniform")}
+              >
+                Eén kleurenpalet
+              </Button>
+              <Button
+                variant="outline"
+                aria-pressed={colorMode === "sections"}
+                onClick={() => setColorMode("sections")}
+              >
+                Kleuren per werkfase
+              </Button>
+            </fieldset>
+            {colorMode === 'sections' && <figure className="export-palette-preview" aria-label="Bijpassende kleuren voor de werkfasen">{exportPhasePalette(accent).map((color, i)=><span key={i} style={{backgroundColor:'#'+color.dark}} />)}</figure>}
+            <fieldset className="creator-colors" aria-label="Auditkleuren">
+              <legend>Hoofdkleur · alle werkbladen</legend>
+              {Object.entries(exportPalettes).filter(([id])=>id.startsWith('audit-')).map(([id, palette]) => (
+                <Button
+                  key={id}
+                  variant="outline"
+                  title={'#' + palette.dark}
+                  aria-pressed={accent === id}
+                  onClick={() => setAccent(id)}
+                >
+                  <span style={{ backgroundColor: '#' + palette.dark }} />
+                  {palette.label}
+                </Button>
+              ))}
+            </fieldset>
+            <details><summary>Overige paletten{!accent.startsWith('audit-') ? ' · '+(Object.entries(exportPalettes).find(([id])=>id===accent)?.[1].label || '') : ''}</summary>
+              <fieldset className="creator-colors" aria-label="Overige accentkleuren">
+                {Object.entries(exportPalettes).filter(([id])=>!id.startsWith('audit-')).map(([id,palette])=>(
+                  <Button key={id} variant="outline" aria-pressed={accent===id} onClick={()=>setAccent(id)} title={'#'+palette.dark}><span style={{backgroundColor:'#'+palette.dark}}/>{palette.label}</Button>
+                ))}
+              </fieldset>
+            </details>
+            <div className="creator-two creator-typography">
+              <label htmlFor="export-font">Lettertype<select id="export-font" value={fontFamily} onChange={e=>setFontFamily(e.target.value)}>{exportFonts.map(f=><option key={f}>{f}</option>)}</select></label>
+              <label htmlFor="export-font-size">Tekstgrootte<select id="export-font-size" value={fontSize} onChange={e=>setFontSize(Number(e.target.value))}>{exportFontSizes.map(s=><option key={s} value={s}>{s} pt{s===11?' · standaard':''}</option>)}</select></label>
+            </div>
+          </details>
         </div>
         <aside id="guide-export-preview" tabIndex={-1} className="creator-preview creator-card" aria-label="Exportvoorbeeld" aria-busy={!ready}>
           <div className="creator-preview-heading">

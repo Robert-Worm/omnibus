@@ -261,3 +261,60 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .catalogue-tool-option{white-space:normal;overflow-wrap:anywhere}
 .catalogue-tool-value{max-width:14rem}
 .catalogue-pill[data-tone=primair]{--pill:#1d5c8f}.catalogue-pill[data-tone=ondersteunend]{--pill:#5b6b7c}.catalogue-pill[data-tone=wetenschappelijk]{--pill:#2f7d4f}.catalogue-pill[data-tone=bedrijfskundig]{--pill:#b0640f}
+
+/* ===== 0.1.49: lijst strakker (expertpanel 14 november 2026) ===== */
+/* De naam neemt de overige ruimte; de vier kolomplekken hebben een vaste breedte (zie SLOTS in catalogue-table.tsx). */
+.catalogue-table thead th[data-column=title]{width:auto}
+/* Groepsbalk: wit met een smalle accentstreep, pijltje vóór de naam, aantal rechts op een vaste plek. */
+.catalogue-table-group>*{background:var(--card)!important;border-top:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important}
+.catalogue-table-group th{box-shadow:inset 3px 0 0 var(--primary)}
+.catalogue-table-group .catalogue-table-check{box-shadow:inset 3px 0 0 var(--primary)}
+.catalogue-table-group .catalogue-table-check+th{box-shadow:none}
+.catalogue-table-group th>div{flex-wrap:nowrap;min-height:2.6rem}
+.catalogue-table-group th button{gap:.4rem}
+.catalogue-table-group th button svg{transition:transform .15s}
+.catalogue-table-group th button span{font:600 .8125rem/1.3 var(--font-ui)!important;color:var(--primary);letter-spacing:.01em}
+.catalogue-table-group th small{margin-left:auto;padding-right:3.6rem;font:500 .75rem/1 var(--font-ui);color:var(--muted-foreground)}
+.catalogue-table-group th em{margin-left:auto;padding:.25rem .55rem}
+.catalogue-table-group th em+small{margin-left:.75rem}
+/* Zoekbalk en keuzeknoppen: één rij van 44 px, het zoekveld groeit mee. */
+.catalogue-table .catalogue-table-search{flex:1 1 20rem;max-width:30rem;height:2.75rem;border-radius:10px}
+.catalogue-table .catalogue-table-search input{font-size:.875rem!important}
+.catalogue-table .catalogue-tool{height:2.75rem;border-radius:10px}
+.catalogue-table.directory-search-row .catalogue-table-search{flex:1 1 20rem;max-width:30rem;height:2.75rem}
+/* Naam in de rij: één maat (15 px), ID-label rustig grijs. */
+.catalogue-table .catalogue-table-name>button{font:600 .9375rem/1.35 var(--font-ui)!important}
+.catalogue-id{font:500 .6875rem/1.6 var(--font-ui);letter-spacing:.02em;font-variant-numeric:tabular-nums;border:0;background:color-mix(in srgb,var(--muted) 80%,var(--card));color:color-mix(in srgb,var(--foreground) 75%,var(--muted-foreground));border-radius:4px;padding:0 .4rem}
+/* Labels in de tabel neutraal, met alleen een gekleurde stip. */
+.catalogue-pill{background:color-mix(in srgb,var(--muted) 70%,var(--card));color:var(--foreground);border-color:transparent;font-weight:500;padding:.12rem .55rem .12rem .5rem}
+.catalogue-pill::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pill,var(--primary));margin-right:.4rem;vertical-align:.1em}
+:is(.dark,[data-appearance=dark],[data-theme=dark]) .catalogue-pill{background:color-mix(in srgb,var(--muted) 60%,var(--card));color:var(--foreground);border-color:transparent}
+
+/* ===== 0.1.49: stap 4 rustiger (expertpanel 14 november 2026) ===== */
+/* Werkvormkaarten lager. */
+.framework-app #main-workspace .creator-presets .creator-preset{padding:14px 18px;min-height:0}
+/* Wat wil je toetsen: gewone vinkregels in drie kolommen, zonder eigen kaders. */
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label{border:0!important;background:none!important;padding:0!important;gap:.55rem}
+.framework-app #main-workspace .creator-card .creator-testing-aspects>div>label small{font:400 .8125rem/1.45 var(--font-ui);color:var(--rm-muted)}
+/* Witruimte in plaats van scheidingslijnen binnen een blok. */
+.framework-app #main-workspace .creator-card .creator-selection-summary{border-top:0;padding-top:0;margin-top:1.25rem}
+.framework-app #main-workspace .creator-extras{border-top:0!important;padding-top:0!important;margin:0!important}
+/* Automatisch koppelen: een vinkregel in dezelfde stijl als de Excel-opties. */
+.framework-app #main-workspace .creator-autolink{display:flex;align-items:flex-start;gap:.6rem;margin-top:.75rem;cursor:pointer}
+.framework-app #main-workspace .creator-autolink [role=checkbox]{flex-shrink:0;margin-top:.15rem}
+.framework-app #main-workspace .creator-autolink>span{display:grid;gap:.1rem}
+.framework-app #main-workspace .creator-autolink strong{font:500 .875rem/1.45 var(--font-ui);color:var(--foreground)}
+.framework-app #main-workspace .creator-autolink small{font:400 .8125rem/1.5 var(--font-ui);color:var(--rm-muted)}
+/* Toetslabels: twee keuzerondjes, net als de andere opties. */
+.framework-app #main-workspace .creator-terminology{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.25rem;margin:0 0 .35rem}
+.framework-app #main-workspace .creator-terminology>span{flex-basis:100%;font:500 .875rem/1.45 var(--font-ui);color:var(--foreground)}
+.framework-app #main-workspace .creator-radio{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;font:400 .875rem/1.4 var(--font-ui);color:var(--foreground)}
+.framework-app #main-workspace .creator-radio input{width:1rem;height:1rem;margin:0;accent-color:var(--primary)}
+.framework-app #main-workspace .creator-radio small{color:var(--rm-muted);font-size:.8125rem;margin-left:.15rem}
+.framework-app #main-workspace .creator-options>.creator-extras{display:grid;gap:.75rem}
+/* Melding rustiger: geen eigen kopregel-kader. */
+.framework-app #main-workspace .export-input-guidance{background:#fff8eb;border:0;border-left:3px solid #d99a2b;border-radius:6px;padding:.75rem 1rem;font-size:.875rem}
+html[data-appearance=dark] .framework-app #main-workspace .export-input-guidance{background:#3a2f17}
+/* Overal dezelfde kaartrand. */
+.framework-app #main-workspace .export-creator .creator-card{border-radius:12px}

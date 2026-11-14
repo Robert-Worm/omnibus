@@ -21,7 +21,10 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
     questions: [{id: 'q-1', parent_id: null, text: exportTitle(draft), origin: 'user'}],
     links: draft.included.map(line_id => ({question_id: 'q-1', line_id}))}};
   // Niets valt stil weg: niet-gekoppelde bouwstenen gaan mee onder de centrale vraag (alleen in de export).
-  const autoLink = linkUnlinkedForExport(draft, framework) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null; placed: Record<string, string>};
+  // Aan te zetten en uit te zetten (besluit B-054). Uit: bouwstenen zonder vraag gaan niet mee.
+  const autoLinkOn = config.autoLink !== false;
+  const autoLink = (autoLinkOn ? linkUnlinkedForExport(draft, framework) : {draft, autoLinked: [], central: null, placed: {}}) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null; placed: Record<string, string>};
+  const unlinkedCount = autoLinkOn ? autoLink.autoLinked.length : (linkUnlinkedForExport(draft, framework) as {autoLinked: string[]}).autoLinked.length;
   draft = autoLink.draft;
   const get = <T,>(key: string, fallback: T): T => (config[key] as T) ?? fallback;
   const selection = scopedExportSelection(framework, draft);
@@ -69,7 +72,7 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
     ...(withoutQuestions && !modelBasis ? {withoutQuestions:true} : {}),
     ...(!modelBasis && hasCriteria && accountability ? {accountability:true} : {})};
   const planningIssues = planningReview(framework, draft, exportedNormIds);
-  return {withoutQuestions, selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
+  return {withoutQuestions, autoLinkOn, unlinkedCount, selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', autoLinkUnderSub: autoLinked.filter((id: string) => autoLink.placed[id] && autoLink.placed[id] !== autoLink.central?.id).length, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};

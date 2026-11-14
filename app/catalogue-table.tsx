@@ -12,6 +12,7 @@ import './catalogue-table.css';
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
 export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[]};
 export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;/** Vaste volgorde van de groepen; zonder is het alfabetisch. */order?:(name:string)=>number;};
+const SLOTS=['11.5rem','12rem','7.5rem','10rem'];
 export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean};
 
 /** Breed scherm: de lijst heeft ruimte nodig. Op een telefoon blijven het tegels. */
@@ -60,7 +61,11 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
  useEffect(()=>{const el=box.current;if(!el)return;const observer=new ResizeObserver(entries=>setWidth(Math.round(entries[0].contentRect.width)));observer.observe(el);return()=>observer.disconnect();},[]);
- const columns=allColumns.filter(c=>(!c.groupKey||c.groupKey!==view.group)&&(!c.hideBelow||width>=c.hideBelow));
+ // Vier vaste kolomplekken tussen de naam en "Gekozen", op elk tabblad even breed (besluit B-054). Heeft een lijst er
+ // minder, dan blijft de plek leeg; zo staat elke kolom op elk tabblad op dezelfde plaats.
+ const shownColumns=allColumns.filter(c=>c.key!=='spacer'&&(!c.groupKey||c.groupKey!==view.group)&&(!c.hideBelow||width>=c.hideBelow));
+ const columns:CatalogueColumn<Row>[]=[...shownColumns,...Array.from({length:Math.max(0,SLOTS.length-shownColumns.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
+  .map((c,i)=>({...c,width:SLOTS[Math.min(i,SLOTS.length-1)]}));
  const active=filters.filter(f=>view.filters[f.key]);
  const shown=rows.filter(row=>active.every(f=>f.value(row).includes(view.filters[f.key])));
  const sortOf=(key:string)=>key==='title'?(row:Row)=>row.title.toLocaleLowerCase('nl'):key==='selected'?(row:Row)=>row.selected:columns.find(c=>c.key===key)?.sort;
@@ -103,8 +108,8 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
      return <span className="catalogue-check-area" title={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${noun[1]}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${shown.length===1?noun[0]:noun[1]}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span>;})()}</th>}
     {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
     {head('title',nameLabel)}
-    {columns.map(c=>head(c.key,c.label,c.numeric,Boolean(c.sort),c.width))}
-    {head('selected',countLabel,true,true,'10.4rem')}
+    {columns.map(c=>head(c.key,c.label,c.numeric,Boolean(c.sort)&&!c.key.startsWith('slot-'),c.width))}
+    {head('selected',countLabel,true,true,'9.5rem')}
     <th scope="col" className="catalogue-table-open"><span className="sr-only">Openen</span></th>
    </tr></thead>
    {sections.map((section,index)=>{const closed=Boolean(section.name)&&view.closed.includes(view.group+':'+section.name),pickable=section.rows.filter(r=>r.total>0),all=pickable.length>0&&pickable.every(r=>r.all),some=pickable.some(r=>r.selected>0),chosen=section.rows.filter(r=>r.selected>0).length,key=view.group+':'+section.name,describe=group?.describe?.(section.name);
@@ -112,7 +117,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
     {section.name&&<tr className="catalogue-table-group" data-closed={closed||undefined}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={`Kies alle ${unit[1]} in ${section.name}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} in ${section.name}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
-     <th colSpan={span-(lead?1:0)} scope="rowgroup" title={describe||undefined} aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}><span>{section.name}</span>{closed?<ChevronRight size={16} aria-hidden="true"/>:<ChevronDown size={16} aria-hidden="true"/>}</button><small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small>{describe&&<p id={`${id}-group-${index}`} className="sr-only">{describe}</p>}{chosen>0&&<em>keuze in {chosen} {chosen===1?noun[0]:noun[1]}</em>}</div></th></tr>}
+     <th colSpan={span-(lead?1:0)} scope="rowgroup" title={describe||undefined} aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}>{closed?<ChevronRight size={15} aria-hidden="true"/>:<ChevronDown size={15} aria-hidden="true"/>}<span>{section.name}</span></button>{describe&&<p id={`${id}-group-${index}`} className="sr-only">{describe}</p>}{chosen>0&&<em>keuze in {chosen}</em>}<small>{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small></div></th></tr>}
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id);}}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
