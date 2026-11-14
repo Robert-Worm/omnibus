@@ -273,8 +273,6 @@ html[data-appearance=dark] .law-browse-intro .law-audience-notice{color:inherit}
 /*  --- Verfijningen die eerder in een aparte herstellaag stonden (B-063) ---  */
 html[data-appearance=dark] .framework-app .law-audience-notice,html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice{background:#1c2a3d!important;border-color:#33445c!important;color:#c9d6e5!important}
 html[data-appearance=dark] .framework-app .law-audience-notice *{color:inherit!important}
-/* Uitzondering: keuzeknoppen die in licht wel een rand hebben (Kolommen), houden die in donker ook. */
-html[data-appearance=dark] .framework-app .law-column-control button{border-color:var(--hb-line)!important}
 /* --- Viewer: filters in één rustige regel, zonder losse labels erboven. --- */
 .framework-app .law-browse-filters{align-items:center!important;gap:.5rem!important;padding:.5rem!important;background:color-mix(in srgb,var(--muted) 45%,var(--card))!important;border-color:var(--border)!important}
 .framework-app .law-browse-filters>.law-search{position:relative;flex:1 1 18rem;min-width:14rem;display:flex;align-items:center}

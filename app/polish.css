@@ -1,5 +1,7 @@
 /* Donker: kolomkoppen van de normtabel neutraal, alleen de gekleurde lijn bovenaan. */
 html[data-appearance=dark] .framework-app table thead th[class*="text-foreground"]{background:#1a2638!important;color:#d6e0ec!important}
+/* Uitzondering: keuzeknoppen die in licht wel een rand hebben (Kolommen), houden die in donker ook. */
+html[data-appearance=dark] .framework-app .law-column-control button{border-color:var(--hb-line)!important}
 /* Selectiemenu in de viewer. */
 .selection-menu-trigger{gap:.4rem}
 .selection-menu-trigger .selection-menu-flag{color:var(--rm-muted);font-weight:400}
