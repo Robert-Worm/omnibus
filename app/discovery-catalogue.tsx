@@ -11,7 +11,7 @@ import {TermText} from './term-help';
 import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueSelection} from '@/lib/catalogue-selection.mjs';
 import CatalogueTable,{CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
-import {processClasses,processKinds,processClassesOf} from '@/lib/process-taxonomy.mjs';
+import {processClasses,processKinds,processClassesOf,processMainClass} from '@/lib/process-taxonomy.mjs';
 import {organisationsOf,reportOrganisations} from '@/lib/report-organisations.mjs';
 import {SymbolRow} from './audience-icons';
 import {Building,Compass,Euro,Gavel,ScrollText,Server,ShoppingCart} from 'lucide-react';
@@ -39,17 +39,19 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  const reportById=new Map(reports.map(r=>[r.id,r]));
  const listRows=listMode?groups.flatMap(group=>group.children.filter((item:View)=>!seen.has(item.id)&&Boolean(seen.add(item.id))).map((item:View)=>{const selection=catalogueSelection({included},item.lineIds);
   const sources=item.reportIds.map(id=>reportById.get(id)).filter((r):r is {id:string;title:string;year:number}=>Boolean(r)).sort((a,b)=>b.year-a.year||a.title.localeCompare(b.title,'nl')),years=sources.map(r=>r.year);
-  const classes=(processClassesOf(item.categoryId) as ClassId[]).map(id=>({id,...processClasses[id]}));
+  const classes=(processClassesOf(item.categoryId) as ClassId[]).map(id=>({id,...processClasses[id]})),mainId=processMainClass(item.categoryId) as ClassId|'',mainClass=mainId?processClasses[mainId]:null;
   return {id:item.id,title:item.title,opened:openIds.includes(item.id),selected:selection.selected,total:item.lineIds.length,all:selection.all,partial:selection.partial,group:group.title,description:item.description||'',lines:item.lineIds.length,reports:item.reportIds.length,lineIds:item.lineIds,
    sources,period:years.length?(Math.min(...years)===Math.max(...years)?String(years[0]):Math.min(...years)+'–'+Math.max(...years)):'',
-   classes,kind:classes.some(c=>c.kind==='primair')?'Primair':classes.length?'Ondersteunend':'',
+   classes,main:mainClass?processKinds[mainClass.kind as 'primair'|'ondersteunend'].label.replace(' proces','')+' · '+mainClass.label:'',kind:mainClass?(mainClass.kind==='primair'?'Primair':'Ondersteunend'):'',
    orgs:(organisationsOf(item.reportIds) as {id:string;label:string;name:string;reports:string[]}[])};})):[];
  type ListRow=typeof listRows[number];
+ const classOrder=Object.values(processClasses as Record<string,{kind:'primair'|'ondersteunend';label:string}>).map(c=>processKinds[c.kind].label.replace(' proces','')+' · '+c.label);
  const strength=(n:number)=>n>=10?4:n>=5?3:n>=2?2:n?1:0;
  const reportLine=(id:string)=>{const r=reportById.get(id),at=(reportOrganisations as Record<string,{at:string}>)[id]?.at;return r?`${r.year} · ${at?at+': ':''}${r.title}`:id;};
  const listColumns:CatalogueColumn<ListRow>[]=[
   {key:'group',label:groupLabel,width:'14%',groupKey:'group',sort:r=>r.group,render:r=>r.group},
-  {key:'kind',label:'Soort proces',width:'11.5rem',groupKey:'kind',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
+  {key:'type',label:'Primair of ondersteunend',width:'11.5rem',groupKey:'main',sort:r=>r.kind||'zzz',render:r=>r.kind?<CellTip plain label={r.kind+': '+processKinds[r.kind==='Primair'?'primair':'ondersteunend'].description} tip={<><strong>{processKinds[r.kind==='Primair'?'primair':'ondersteunend'].label}</strong><span>{processKinds[r.kind==='Primair'?'primair':'ondersteunend'].description}</span></>}><span className="catalogue-pill" data-tone={r.kind==='Primair'?'primair':'ondersteunend'}>{r.kind}</span></CellTip>:<small>–</small>},
+  {key:'kind',label:'Soort proces',width:'8.5rem',sort:r=>(r.kind==='Primair'?'a':'b')+r.classes.map((c:{label:string})=>c.label).join(' '),
    render:r=>r.classes.length?<SymbolRow items={r.classes.map((c:{id:ClassId;kind:'primair'|'ondersteunend';label:string;description:string})=>({id:c.id,Icon:classIcons[c.id],label:c.label,active:true,solid:c.kind==='primair',
     lines:[processKinds[c.kind].label+': '+processKinds[c.kind].description.toLowerCase(),c.description]}))}/>:<small>–</small>},
   {key:'reports',label:'Rapporten',width:'6.6rem',sort:r=>r.reports,
@@ -79,15 +81,15 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
   {!listMode&&<DirectorySearch id="directory-search" label={axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie'} value={query} onChange={value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})} placeholder={axis==='themes'?'Zoek thema…':'Zoek proces…'}/>}
-  {listMode?<CatalogueTable dense id={'discovery-'+axis} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
+  {listMode?<CatalogueTable dense id={'discovery2-'+axis} describe={r=>r.description||null} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}
    filters={[{key:'group',label:groupLabel,all:'Alle groepen',value:r=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:r=>r.classes.map((c:{label:string})=>c.label)}]}
-   groups={[{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''},{key:'kind',label:'Primair of ondersteunend',plural:'soorten',value:r=>r.kind,describe:name=>name==='Primair'?processKinds.primair.description:name==='Ondersteunend'?processKinds.ondersteunend.description:''}]}
+   groups={[{key:'main',label:'Soort proces',plural:'soorten proces',value:r=>r.main,order:name=>classOrder.indexOf(name),describe:name=>Object.values(processClasses).find(c=>name.endsWith(' · '+c.label))?.description||''},{key:'group',label:groupLabel,plural:axis==='themes'?'themagroepen':'procesfamilies',value:r=>r.group,describe:name=>groups.find(g=>g.title===name)?.description||''}]}
    nameLabel={axis==='themes'?'Thema':'Proces'} nameMeta={()=>null} countLabel="Gekozen bouwstenen" hint={`Een vinkje kiest alle bouwstenen van dat ${axis==='themes'?'thema':'proces'}. Open het om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} bouwstenen van ${r.title}`} chosenUnique={new Set(listRows.flatMap(r=>r.lineIds).filter(id=>included.includes(id))).size}
    onOpen={onOpen} onSelect={onSelect?(ids,checked)=>onSelect([...new Set(listRows.filter(r=>ids.includes(r.id)).flatMap(r=>r.lineIds))],checked):undefined}
    empty={<p>Geen passend onderdeel gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>:<>
   {!query&&!selectedGroup&&!showAll&&<div className="directory-family-cards" ref={cards}>{groups.map(group=>{const Icon=familyIcons[group.id]||Layers;return <button type="button" key={group.id} data-family={group.id} className="directory-family-card" onClick={()=>{focusRequest.current=true;onViewChange({expanded:[group.id]});}}>
-   <Icon size={24} aria-hidden="true"/><strong>{group.title}</strong><span>{group.description}</span><small>Verken {countLabel(group.children.length,noun)}<ArrowRight size={16} aria-hidden="true"/></small>
+   <Icon size={24} aria-hidden="true"/><strong>{group.title}</strong><span>{group.description}</span><small>{countLabel(group.children.length,noun)}<ArrowRight size={16} aria-hidden="true"/></small>
   </button>;})}</div>}
   {!query&&(selectedGroup||showAll)&&<div className="directory-view-actions">
    {(selectedGroup||showAll)&&<Button variant="ghost" className="directory-back" onClick={()=>{returnCard.current=selectedGroup?selectedGroup.id:'';onViewChange({expanded:[]});}}><ArrowLeft size={15} aria-hidden="true"/>Alle {axis==='themes'?'themagroepen':'procesfamilies'}</Button>}

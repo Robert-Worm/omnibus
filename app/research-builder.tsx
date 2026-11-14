@@ -12,7 +12,8 @@ import {ResearchDisclosure, ResearchMaterialGroup, ResearchMaterialList} from '.
 import { WorkflowIntro, WorkflowOutcome } from './workflow-patterns';
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions -- Drag surfaces supplement explicit keyboard/touch controls and retain section/list semantics. */
 import { useRef, useState, useEffect, useMemo, useCallback, useId } from "react";
-import { GripVertical, Plus, MoreHorizontal, X, PenLine, Layers, ArrowRight, ArrowLeft } from "lucide-react";
+import { GripVertical, Plus, MoreHorizontal, X, PenLine, Layers, ArrowRight, ArrowLeft, Link2 } from "lucide-react";
+import { CellTip } from "./catalogue-table";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Sheet,
@@ -1028,24 +1029,25 @@ export default function ResearchBuilder({
         </AlertDialogContent>
       </AlertDialog>
       {roots.length > 0 && <div className="research-toolbar">
-        <span>{draft.included.length - free.length} van {countLabel(draft.included.length,'bouwstenen')} gekoppeld</span>
-        {/* Niet-gekoppelde bouwstenen gaan in de export mee onder de centrale vraag (besluit 8 november 2026). */}
-        {!choosing && free.length>0 && <output className="research-unlinked-notice">{countLabel(free.length,'bouwstenen')} {free.length===1?'hoort':'horen'} nog bij geen vraag. In de export {free.length===1?'komt hij':'komen ze'} bij een deelvraag met een verwant toetspunt, of anders onder je centrale vraag.</output>}
+        {/* De stand van het koppelen staat als klein symbool op de knoppenregel; de uitleg verschijnt bij aanwijzen.
+            Niet-gekoppelde bouwstenen gaan in de export mee onder de centrale vraag (besluit 8 november 2026). */}
+        <CellTip plain label={`${draft.included.length - free.length} van ${countLabel(draft.included.length,'bouwstenen')} gekoppeld${free.length?`. ${countLabel(free.length,'bouwstenen')} ${free.length===1?'hoort':'horen'} nog bij geen vraag`:''}`}
+          tip={<><strong>{draft.included.length - free.length} van {countLabel(draft.included.length,'bouwstenen')} gekoppeld</strong>{free.length>0&&<span>{countLabel(free.length,'bouwstenen')} {free.length===1?'hoort':'horen'} nog bij geen vraag. In de export {free.length===1?'komt hij':'komen ze'} bij een verwante deelvraag, of anders onder je centrale vraag.</span>}</>}>
+          <span className="research-link-status" data-open={free.length>0||undefined}><Link2 size={15} aria-hidden="true"/>{draft.included.length - free.length}/{draft.included.length}</span>
+        </CellTip>
         {!choosing && <div className="research-route-actions">{roots.length===1&&<Button variant="outline" disabled={disabled} onClick={()=>chooseCentral(roots[0].id)}><ArrowLeft size={15}/>Terug naar mijn vraagopzet</Button>}<Button variant="outline" disabled={disabled || r.questions.length >= 200} onClick={() => chooseCentral()}><Plus size={16}/>Nieuwe vraagopzet</Button></div>}
       </div>}
       {(!roots.length || choosing) && startRoute==='choice' && <section className="question-entry" aria-label="Kies hoe je je vraag wilt maken">
-        <WorkflowIntro id="question-entry-title" title="Hoe wil je je vraag opbouwen?">Schrijf je vragen zelf, of gebruik een voorstel bij je gekozen bouwstenen.{roots.length>0&&' Een bestaande vraagopzet kun je opnieuw openen; een nieuwe vraag komt erbij.'}</WorkflowIntro>
+        <WorkflowIntro id="question-entry-title" title="Hoe wil je je vraag opbouwen?">{roots.length>0?'Een bestaande vraagopzet kun je opnieuw openen; een nieuwe vraag komt erbij.':'Je kunt je vragen later altijd aanpassen.'}</WorkflowIntro>
         <div className="question-entry-cards entry-options">
           <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><PenLine size={25} aria-hidden="true"/></span><span>Zelf formuleren</span></div><h3>Ik bouw mijn eigen vraag</h3><p>Formuleer je <TermHelp id="central">centrale vraag</TermHelp> en <TermHelp id="subquestion">deelvragen</TermHelp>, met voorbeelden als hulp.</p>
-            <div className="entry-path" aria-label="Stappen bij zelf formuleren"><span>Vraag formuleren</span><ArrowRight size={14} aria-hidden="true"/><span>Deelvragen toevoegen</span><ArrowRight size={14} aria-hidden="true"/><span>Bouwstenen koppelen</span></div>
             <div className="entry-card-footer"><Button disabled={disabled} onClick={startOwn}>Zelf een vraag maken <ArrowRight size={16}/></Button></div></article>
           <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><Layers size={25} aria-hidden="true"/></span><span>Vanuit je selectie</span></div><h3>Ik begin met mijn selectie</h3><p>Start met een voorstel en passende <TermHelp id="subquestion">deelvragen</TermHelp> bij je gekozen <TermHelp id="block">bouwstenen</TermHelp>.</p>
-            <p className="entry-choice-note">{!selected.length ? 'Kies eerst bouwstenen om een voorstel te krijgen.' : !starts.length ? 'Bij deze selectie is nog geen passend vraagvoorstel beschikbaar. Maak links je eigen vraagopzet; je bouwstenen blijven behouden.' : `${selected.length} ${selected.length===1?'bouwsteen':'bouwstenen'} beschikbaar voor je vraagopzet.`}</p>
-            <div className="entry-path" aria-label="Stappen vanuit je selectie"><span>Vraagvoorstel</span><ArrowRight size={14} aria-hidden="true"/><span>Vragen aanpassen</span><ArrowRight size={14} aria-hidden="true"/><span>Koppelingen controleren</span></div>
+            {(!selected.length||!starts.length)&&<p className="entry-choice-note">{!selected.length ? 'Kies eerst bouwstenen om een voorstel te krijgen.' : !starts.length ? 'Bij deze selectie is nog geen passend vraagvoorstel beschikbaar. Maak links je eigen vraagopzet; je bouwstenen blijven behouden.' : ''}</p>}
             <div className="entry-card-footer"><Button disabled={disabled||!starts.length} onClick={()=>pickProposal(starts[0].proposal)}>Bekijk mijn vraagopzet <ArrowRight size={16}/></Button></div>
           </article>
         </div>
-        <WorkflowOutcome title="Je vraagopzet blijft aanpasbaar" action={!selected.length && onExplore ? <Button variant="link" onClick={onExplore}>Verken bouwstenen <ArrowRight size={16}/></Button> : undefined}>Je kunt je vragen later aanpassen. Gekozen bouwstenen blijven beschikbaar; koppel ze aan de vragen waarin je ze wilt onderzoeken.</WorkflowOutcome>
+        {!selected.length && onExplore && <WorkflowOutcome title="Nog geen bouwstenen gekozen" action={<Button variant="link" onClick={onExplore}>Verken bouwstenen <ArrowRight size={16}/></Button>}>Kies eerst bouwstenen; daarna kun je ze aan je vragen koppelen.</WorkflowOutcome>}
         {choosing && roots.length>0 && <Button variant="ghost" onClick={()=>setChoosing(false)}>Terug naar mijn vragen</Button>}
       </section>}
       {(!roots.length || choosing) && startRoute!=='choice' && <section className="question-composer" aria-label="Vraagopzet voorbereiden">

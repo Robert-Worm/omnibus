@@ -13,13 +13,20 @@ import type {InterviewSettingsValue} from './interview-settings';
 
 /** Immediate controls and validation inputs; never builds workbook worksheets. */
 export function exportInputs(framework: Framework, draft: Draft, config: Record<string, unknown>, models: LibraryModel[]) {
+  // Een risico-controlmatrix heeft geen onderzoeksvragen nodig. Zijn er geen vragen, dan gaat elke gekozen bouwsteen mee
+  // en vervalt het blad Onderzoeksvragen. Alleen in de export: het project zelf krijgt geen vraag.
+  const withoutQuestions = (config.profile ?? 'risk') === 'risk' && (config.basis ?? 'norms') === 'norms' &&
+    !(draft.research?.questions?.length) && draft.included.length > 0;
+  if (withoutQuestions) draft = {...draft, research: {
+    questions: [{id: 'q-1', parent_id: null, text: exportTitle(draft), origin: 'user'}],
+    links: draft.included.map(line_id => ({question_id: 'q-1', line_id}))}};
   // Niets valt stil weg: niet-gekoppelde bouwstenen gaan mee onder de centrale vraag (alleen in de export).
   const autoLink = linkUnlinkedForExport(draft, framework) as {draft: Draft; autoLinked: string[]; central: {id: string; text: string} | null; placed: Record<string, string>};
   draft = autoLink.draft;
   const get = <T,>(key: string, fallback: T): T => (config[key] as T) ?? fallback;
   const selection = scopedExportSelection(framework, draft);
   const selectedLines = framework.lines.filter(l => selection.included.includes(l.id));
-  const profile = get('profile', suggestedExportProfile(selectedLines)), basis = get('basis', 'norms');
+  const profile = get('profile', withoutQuestions ? 'risk' : suggestedExportProfile(selectedLines)), basis = get('basis', 'norms');
   const testScope = get<string[]>('testingAspects', []), testingTerminology = get('testingTerminology', 'obw');
   const keyControl = get<boolean>('keyControl', false), riskProfile = String(profile) === 'risk';
   // Verantwoording van het referentiekader (GIAS 13.4 en 13.6): alleen als de gebruiker het blad aanzet. Niet elk
@@ -59,9 +66,10 @@ export function exportInputs(framework: Framework, draft: Draft, config: Record<
     researchInterview:!modelBasis && profile === 'interview' ? interview : undefined,
     testingAspects:!modelBasis && profile === 'testing' && hasCriteria ? testScope : undefined, testingTerminology,
     ...(!modelBasis && riskProfile && keyControl ? {keyControl:true} : {}),
+    ...(withoutQuestions && !modelBasis ? {withoutQuestions:true} : {}),
     ...(!modelBasis && hasCriteria && accountability ? {accountability:true} : {})};
   const planningIssues = planningReview(framework, draft, exportedNormIds);
-  return {selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
+  return {withoutQuestions, selection, selectedLines, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
     excludedNorms, fields, notes, accent, colorMode, fontFamily, fontSize, preset, selectedModels, selectedModel,
     modelBasis, modelTitle, themes, exportedNormIds, autoLinked, autoLinkCentral: autoLink.central?.text ?? '', autoLinkUnderSub: autoLinked.filter((id: string) => autoLink.placed[id] && autoLink.placed[id] !== autoLink.central?.id).length, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     requiredFields, choices, selectionError, planningIssues};

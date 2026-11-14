@@ -137,7 +137,7 @@
 .creator-table-scroll table { border-collapse: collapse; table-layout: fixed; width: max-content; }
 .creator-table-scroll th, .creator-table-scroll td { width: 230px; min-width: 230px; max-width: 230px; padding: 12px; text-align: left; vertical-align: top; font: .875rem/1.5 Arial, Helvetica, sans-serif; white-space: pre-wrap; overflow-wrap: anywhere; border-bottom: 1px solid #d4dfea; }
 .creator-table-scroll th { font-weight: 700; }
-.creator-table-scroll th:first-child, .creator-table-scroll td:first-child { width: 90px; min-width: 90px; max-width: 90px; }
+.creator-table-scroll th:first-child, .creator-table-scroll td:first-child { width: 120px; min-width: 120px; max-width: 120px; }
 .creator-table-scroll.is-question-preview :is(th,td):first-child { width: 330px; min-width: 330px; max-width: 330px; }
 .creator-table-scroll.is-question-preview :is(th,td):nth-child(2) { width: 390px; min-width: 390px; max-width: 390px; }
 .creator-table-scroll.is-question-preview :is(th,td):nth-child(3) { width: 95px; min-width: 95px; max-width: 95px; }

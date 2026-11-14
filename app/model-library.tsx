@@ -13,7 +13,8 @@ import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueDescription} from '@/lib/catalogue-directory.mjs';
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
-import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import CatalogueTable,{CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import {modelOrigin,modelKinds} from '@/lib/model-origins.mjs';
 import {SymbolRow} from './audience-icons';
 import {modelUses,modelUsesOf} from '@/lib/model-uses.mjs';
 import {Compass,HandHeart,LifeBuoy,MessagesSquare,ShieldAlert,TriangleAlert,Users as UsersIcon} from 'lucide-react';
@@ -100,12 +101,14 @@ export default function ModelLibrary({
   // Lijstweergave: alle modellen in één tabel, als alternatief voor de tegels per categorie.
   const catalogueView=useCatalogueView(),listMode=mode==='catalogue'&&catalogueView.list;
   const listRows=listMode?directory.filter(m=>m.searchText.includes(query.trim().toLowerCase())).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
-    summary:m.summary,uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
+    summary:m.summary,origin:modelOrigin(m.id) as null|{authors:string;year:number;kind:string;kindLabel:string;kindDescription:string},uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
   type ListRow=typeof listRows[number];
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
     {key:'uses',label:'Helpt bij',width:'11.5rem',sort:r=>r.uses.map(u=>modelUses[u].label).join(' ')||'zzz',render:r=>r.uses.length?<SymbolRow items={r.uses.map(u=>({id:u,Icon:useIcons[u],label:modelUses[u].label,active:true,lines:[modelUses[u].description,...(r.summary?['Dit model: '+r.summary]:[])]}))}/>:<small>–</small>},
-    {key:'items',label:'Variabelen',width:'7rem',sort:r=>r.items,render:r=>r.items||<small>–</small>},
+    {key:'kind',label:'Soort model',width:'9.5rem',groupKey:'kind',sort:r=>r.origin?.kindLabel||'zzz',render:r=>r.origin?<CellTip plain label={r.origin.kindLabel+': '+r.origin.kindDescription} tip={<><strong>{r.origin.kindLabel}</strong><span>{r.origin.kindDescription}</span></>}><span className="catalogue-pill" data-tone={r.origin.kind}>{r.origin.kindLabel}</span></CellTip>:<small>–</small>},
+    {key:'year',label:'Sinds',width:'5rem',sort:r=>r.origin?.year||9999,title:()=>'Jaar van de eerste publicatie over dit model',render:r=>r.origin?.year||<small>–</small>},
+    {key:'items',label:'Variabelen',width:'6rem',sort:r=>r.items,render:r=>r.items||<small>–</small>},
     {key:'spacer',label:'',render:()=>null},
   ];
   const openModels = openIds.map((id:string) => value.models.find(m => m.id === id)!);
@@ -144,9 +147,9 @@ export default function ModelLibrary({
       {!guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}
       {listMode&&<CatalogueTable id="models" noun={['model','modellen']} unit={['vraag','vragen']}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
-        filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)}]}
-        groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''}]}
-        gutter dense nameLabel="Model" nameMeta={()=>null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
+        filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:r=>r.origin?[r.origin.kindLabel]:[]}]}
+        groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''},{key:'kind',label:'Soort model',plural:'soorten',value:r=>r.origin?.kindLabel||'',describe:name=>Object.values(modelKinds as Record<string,{label:string;description:string}>).find(k=>k.label===name)?.description||''}]}
+        gutter nameLabel="Model" nameMeta={r=>r.origin?<span title="Auteur(s) van het model">{r.origin.authors}</span>:null} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}
@@ -513,7 +516,7 @@ export default function ModelLibrary({
           </section>
         ) : null}
       </div>
-      {mode==='catalogue'&&<p className="directory-note"><TermText text="Modellen helpen je onderzoek structureren. De uitgewerkte voorbeeldvragen zijn geen gevalideerde meetinstrumenten; beoordeel of ze passen bij jouw context."/></p>}
+      {mode==='catalogue'&&<p className="directory-note"><TermText text="De voorbeeldvragen zijn geen gevalideerde meetinstrumenten; beoordeel of ze bij jouw context passen."/></p>}
       {current && !usesQuestionWorkbench(current) && overview==='questions' && <output className="creator-help">Je vraagselectie wordt direct in je kader bewaard.</output>}
     </section>
   );

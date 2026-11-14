@@ -503,10 +503,10 @@ export function FoundationCatalogue({
       </>}
       {listMode&&<CatalogueTable id="foundations-v5" defaultSort="title" noun={scope==='frameworks'?['kader','kaders']:['wet','wetten']} unit={['toetspunt','toetspunten']}
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
-        filters={[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[r.record.issuer]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
+        filters={[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories}]}
         groups={[{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''},{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''}]}
         nameLabel={scope==='frameworks'?'Kader':'Wet'} nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
-        countLabel="Gekozen toetspunten" hint={`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
+        describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
         onOpen={id=>{if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
         onSelect={(ids,checked)=>prepareSources(ids,()=>{try{const next=ids.reduce((value,id)=>chooseFoundationSource(value,id,checked) as Draft,draft);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}
         empty={<p>Geen wet of kader gevonden. Wis je zoekopdracht of pas de filters aan.</p>}/>}
@@ -583,7 +583,7 @@ export function FoundationCatalogue({
         page={criteriaPage} onPage={setCriteriaPage} disabled={disabled}
         onOpen={(id,criterionId)=>{if(!wb.sourceIds.includes(id)) toggle(id,true);onCriteria(id,criterionId);}}/>}
       </>}
-      <p className="directory-note"><TermText text="Wetten en kaders bieden aanknopingspunten voor je onderzoek. Controleer de oorspronkelijke bron, actualiteit en toepasselijkheid voor jouw organisatie. Een geselecteerde norm is nog geen oordeel over naleving."/></p>
+      <p className="directory-note"><TermText text="Controleer altijd de oorspronkelijke bron en of die voor jouw organisatie geldt. Een gekozen norm is nog geen oordeel over naleving."/></p>
       <Sheet
         open={!!current}
         onOpenChange={(open) => {

@@ -186,7 +186,7 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .framework-app .catalogue-explorer .catalogue-table.directory-search-row,.catalogue-table.directory-search-row{display:flex;align-items:center;gap:.6rem;margin:1rem 0 1.25rem;padding:calc(.75rem + 1px) 0 0 calc(var(--ct-pad) + 1px)}
 .catalogue-groups>.catalogue-group-heading:has(>div:empty:only-child){display:none}
 .framework-app .catalogue-explorer .catalogue-groups{margin-top:0}
-.catalogue-table.directory-search-row .catalogue-table-search{flex:0 0 17rem}
+.catalogue-table.directory-search-row .catalogue-table-search{flex:0 0 17rem;height:2.5rem}
 /* Zelfde lucht boven de kop in stap 2 (onder de tabbalk) als in stap 1 */
 .framework-app .directory-heading[data-below-tabs]{margin-top:1.15rem!important}
 .catalogue-table thead td{border-bottom:1px solid var(--border);background:var(--card)}
@@ -221,3 +221,43 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:#94c8f5}
 .framework-app #main-workspace .creator-settings .creator-card>:last-child{margin-bottom:0}
 .framework-app #main-workspace .export-creator .creator-presets+.creator-layout,.framework-app #main-workspace .export-creator .creator-presets+.creator-hint{margin-top:1.25rem}
 .framework-app #main-workspace .creator-selection-summary .creator-sheet-list:empty{display:none}
+
+/* Stap 4: eigen vak voor wat in het Excelbestand komt te staan, en de toetslabels altijd zichtbaar. */
+.framework-app #main-workspace .creator-context h2 small{font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted);margin-left:.5rem}
+.framework-app #main-workspace .creator-context{display:grid;gap:.75rem}
+.framework-app #main-workspace .creator-context h2{margin:0}
+.framework-app #main-workspace .creator-context>label{margin:0}
+.framework-app #main-workspace .creator-context textarea{min-height:2.5rem;height:2.5rem}
+.framework-app #main-workspace .creator-terminology{border:0;padding:0;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.6rem}
+.framework-app #main-workspace .creator-terminology>legend{float:left;padding:0;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted);margin-right:.25rem}
+.framework-app #main-workspace .creator-terminology button{font:400 .8125rem/1.3 var(--font-ui);min-height:1.9rem;padding:.2rem .65rem;border:1px solid var(--border);border-radius:999px;background:var(--workflow-card,var(--card));color:var(--foreground);cursor:pointer}
+.framework-app #main-workspace .creator-terminology button[aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--workflow-card,#fff));color:var(--primary);font-weight:600}
+.framework-app #main-workspace .creator-card #testing-aspects-help{margin:.4rem 0 0;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted)}
+
+/* Stap 3: stand van het koppelen als klein symbool rechts op de knoppenregel. */
+.framework-app .research-toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.framework-app .research-toolbar>.research-route-actions{order:1}
+.framework-app .research-toolbar>.catalogue-cell-tip{order:2;margin-left:auto}
+.framework-app .research-link-status{display:inline-flex;align-items:center;gap:.35rem;font:500 .8125rem/1 var(--font-ui);color:var(--rm-muted);border:1px solid var(--border);border-radius:999px;padding:.35rem .6rem;background:var(--card,#fff)}
+.framework-app .research-link-status[data-open]{color:#8a5a00;border-color:#e3c27a;background:#fff8e8}
+html[data-appearance=dark] .framework-app .research-link-status[data-open]{color:#f1cf85;border-color:#7a6230;background:#3a2f17}
+.framework-app .research-toolbar .audience-tip{left:auto;right:0;transform:none;width:19rem;text-align:left}
+.framework-app .research-toolbar .audience-tip strong{display:block;margin-bottom:.2rem}
+
+/* Tegels in hetzelfde kader als de lijst: zoekbalk bovenin, tegels eronder, één rand eromheen die meegroeit. */
+.framework-app .catalogue-explorer .catalogue-table.directory-search-row,.catalogue-table.directory-search-row{flex-direction:row;flex-wrap:wrap;margin:1rem 0 0;padding:.75rem var(--ct-pad);border:1px solid var(--border);border-bottom:1px solid var(--ct-line);border-radius:14px 14px 0 0;background:var(--card)}
+.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout){margin-top:0!important;margin-bottom:0!important;padding:0 var(--ct-pad,1rem);border:solid var(--border);border-width:0 1px;background:var(--card)}
+.directory-search-row+*{padding-top:1rem!important}
+.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):has(+.directory-note),.directory-search-row~:is(.catalogue-groups,.directory-family-cards,.directory-families,.model-library-layout):last-child{border-bottom-width:1px;border-radius:0 0 14px 14px;padding-bottom:1rem;box-shadow:0 1px 2px color-mix(in srgb,var(--foreground) 5%,transparent)}
+@media (max-width:640px){.catalogue-table.directory-search-row .catalogue-table-search{flex:1 1 100%}}
+/* Omschrijving bij aanwijzen van de naam in de lijst. */
+.catalogue-table-name{position:relative}
+.catalogue-table .catalogue-table-name>.catalogue-name-tip{display:none;font:400 .75rem/1.45 var(--font-ui);color:var(--card);white-space:normal;overflow:visible}
+.catalogue-table-name .catalogue-name-tip{left:0;right:auto;top:calc(100% - .2rem);max-width:26rem;width:max-content;transition-delay:.25s}
+.catalogue-table .catalogue-table-name:is(:hover,:focus-within)>.catalogue-name-tip{display:block}
+.catalogue-table tbody:last-child tr[data-row]:nth-last-child(-n+2) .catalogue-name-tip{top:auto;bottom:calc(100% - .2rem)}
+.catalogue-table .catalogue-table-name>button{font-size:.9rem!important;color:var(--primary)}
+/* Keuzelijst: lange namen lopen door op een volgende regel in plaats van af te kappen. */
+.catalogue-tool-option{white-space:normal;overflow-wrap:anywhere}
+.catalogue-tool-value{max-width:14rem}
+.catalogue-pill[data-tone=primair]{--pill:#1d5c8f}.catalogue-pill[data-tone=ondersteunend]{--pill:#5b6b7c}.catalogue-pill[data-tone=wetenschappelijk]{--pill:#2f7d4f}.catalogue-pill[data-tone=bedrijfskundig]{--pill:#b0640f}

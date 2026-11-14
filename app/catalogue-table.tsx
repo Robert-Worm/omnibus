@@ -11,7 +11,7 @@ import './catalogue-table.css';
 
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
 export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[]};
-export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;};
+export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;/** Vaste volgorde van de groepen; zonder is het alfabetisch. */order?:(name:string)=>number;};
 export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean};
 
 /** Breed scherm: de lijst heeft ruimte nodig. Op een telefoon blijven het tegels. */
@@ -51,11 +51,11 @@ function ToolSelect({label,value,onChange,options,active=false}:{label:string;va
  </Select>;
 }
 
-export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
+export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
  groups:CatalogueGroup<Row>[];
- nameLabel?:string;nameMeta:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
+ nameLabel?:string;nameMeta:(row:Row)=>ReactNode;/** Korte omschrijving die verschijnt als je de naam aanwijst. */describe?:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
  onOpen:(id:string)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
@@ -73,7 +73,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const sections:{name:string;rows:Row[]}[]=[];
  if(!group)sections.push({name:'',rows:sorted});
  else{const map=new Map<string,Row[]>();for(const row of sorted){const name=group.value(row)||'Overig';if(!map.has(name))map.set(name,[]);map.get(name)!.push(row);}
-  sections.push(...[...map].sort((a,b)=>a[0]==='Overig'?1:b[0]==='Overig'?-1:a[0].localeCompare(b[0],'nl')).map(([name,rows])=>({name,rows})));}
+  sections.push(...[...map].sort((a,b)=>a[0]==='Overig'?1:b[0]==='Overig'?-1:(group.order?group.order(a[0])-group.order(b[0]):0)||a[0].localeCompare(b[0],'nl')).map(([name,rows])=>({name,rows})));}
  const setSort=(key:string,numeric=false)=>setView(v=>({...v,sort:key,dir:v.sort===key?(v.dir==='asc'?'desc':'asc'):numeric?'desc':'asc'}));
  const head=(key:string,label:string,numeric=false,sortable=true,width?:string)=><th key={key} scope="col" data-column={key} data-numeric={numeric||undefined} style={width?{width}:undefined} aria-sort={view.sort===key?(view.dir==='asc'?'ascending':'descending'):undefined}>
   {sortable?<button type="button" onClick={()=>setSort(key,numeric)}>{label}{view.sort===key?(view.dir==='asc'?<ArrowUp size={13} aria-hidden="true"/>:<ArrowDown size={13} aria-hidden="true"/>):<ChevronsUpDown size={13} aria-hidden="true" data-idle=""/>}</button>:<span>{label}</span>}</th>;
@@ -95,7 +95,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
     {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Groepen uitklappen':'Groepen inklappen'}</button>}
    </div>}
   </div>
-  <output className="catalogue-table-count"><span><strong>{shown.length}</strong>{(filtered||searching)&&shown.length!==rows.length?` van ${rows.length}`:''} {shown.length===1&&!((filtered||searching)&&shown.length!==rows.length)?noun[0]:noun[1]}{group&&sections.length>1?` in ${sections.length} ${group.plural||'groepen'}`:''}</span>{chosenTotal>0?<em>{chosenUnique===undefined?`${chosenTotal} ${chosenTotal===1?unit[0]:unit[1]} gekozen uit ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`:`${chosenUnique} ${chosenUnique===1?unit[0]:unit[1]} gekozen, te zien bij ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`}</em>:null}{hint&&<small>{hint}</small>}</output>
+  <output className="catalogue-table-count"><span><strong>{shown.length}</strong>{(filtered||searching)&&shown.length!==rows.length?` van ${rows.length}`:''} {shown.length===1&&!((filtered||searching)&&shown.length!==rows.length)?noun[0]:noun[1]}{group&&sections.length>1?` · ${sections.length} ${group.plural||'groepen'}`:''}</span>{chosenTotal>0?<em>{chosenUnique===undefined?`${chosenTotal} ${chosenTotal===1?unit[0]:unit[1]} gekozen uit ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`:`${chosenUnique} ${chosenUnique===1?unit[0]:unit[1]} gekozen, te zien bij ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`}</em>:null}{hint&&<small className="sr-only">{hint}</small>}</output>
   {shown.length===0?<div className="catalogue-table-empty">{empty}</div>:
   <div className="catalogue-table-scroll"><table data-dense={dense||undefined}>
    <thead><tr>
@@ -116,7 +116,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id);}}>
      {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
-     <th scope="row" className="catalogue-table-name"><button type="button" onClick={()=>onOpen(row.id)}>{row.title}</button><span>{nameMeta(row)}{row.opened&&<em><FolderOpen size={12} aria-hidden="true"/>Geopend</em>}</span></th>
+     <th scope="row" className="catalogue-table-name">{(()=>{const text=describeRow?.(row);return <><button type="button" aria-describedby={text?`${id}-about-${row.id}`:undefined} onClick={()=>onOpen(row.id)}>{row.title}</button>{text&&<span id={`${id}-about-${row.id}`} role="tooltip" className="audience-tip catalogue-name-tip">{text}</span>}</>;})()}<span>{nameMeta(row)}{row.opened&&<em><FolderOpen size={12} aria-hidden="true"/>Geopend</em>}</span></th>
      {columns.map(c=><td key={c.key} data-numeric={c.numeric||undefined} data-column={c.key} title={c.title?.(row)}>{c.render(row)}</td>)}
      <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.total?<><span><strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
      <td className="catalogue-table-open"><Button variant="ghost" tabIndex={-1} aria-hidden="true" onClick={()=>onOpen(row.id)}><ArrowRight size={16}/></Button></td>
