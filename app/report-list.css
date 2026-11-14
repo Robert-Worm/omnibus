@@ -1,4 +1,4 @@
-/* --- Rapporten: compacte lijst in de vorm van de andere overzichten. --- */
+/*  Rapportenlijst: de compacte lijst van bronrapporten en het themamenu per rapport.  */
 .report-table{margin-top:0}
 .report-table tbody td,.report-table tbody th{vertical-align:middle!important;padding-top:.55rem!important;padding-bottom:.55rem!important}
 .report-table .catalogue-table-name>button{all:unset;cursor:pointer;font-weight:600;color:var(--primary);line-height:1.4}
@@ -14,13 +14,6 @@
 .report-context-none{color:var(--muted-foreground)}
 .report-context-menu{overflow:auto;min-width:16rem}
 .report-context-kind{display:inline-block;min-width:3.6rem;margin-right:.35rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-foreground)}
-.framework-app .creator-markdown{width:100%;margin-top:.5rem;height:2.5rem;gap:.5rem}
-.framework-app .creator-saved{display:block;margin-top:.5rem;font-size:.8125rem;color:var(--muted-foreground)}
-.product-footer-compact .product-footer-line{display:flex;align-items:baseline;gap:.35rem .9rem;flex-wrap:wrap;min-width:0}
-/* Vensters uit de voettekst: zelfde opmaak als Begrippen. */
-.footer-about-dialog .footer-about-body{display:grid;gap:.75rem;font-size:.875rem;line-height:1.55}
-.footer-about-dialog .footer-about-body p{margin:0}
-.footer-about-dialog .footer-contact{display:grid;gap:.5rem}
 .report-context-trigger{white-space:nowrap}
 html[data-appearance=dark] .framework-app .report-context-trigger{background:transparent!important;border:0!important;color:#e6edf5!important}
 html[data-appearance=dark] .framework-app .report-context-trigger:hover{background:#22364d!important}
@@ -47,23 +40,8 @@ html[data-appearance=dark] .report-context-menu :is(.report-context-kind,[data-s
  .report-table td.report-row-actions{grid-row:4;grid-column:1/-1;text-align:left!important}
  .report-table td[data-column=date]{justify-self:end}
 }
-
-/* --- Tweede panelronde (B-058) --- */
-/* Donker: primaire knoppen overal donkerblauw met witte tekst, zoals "Naar stap …". */
-html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled){background:#265c89!important;color:#fff!important;border-color:#265c89!important}
-html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled):hover{background:#2f6d9f!important}
 .report-context-menu{max-height:18rem}
 .report-table td[data-column=date]{font-variant-numeric:tabular-nums;font-family:var(--font-ui)}
 /* Eindcontrole (B-058) */
 .report-context-menu{overflow-y:auto!important;box-shadow:0 8px 24px rgba(15,27,43,.18)!important}
 .report-choice-hint{font-size:.8125rem;color:var(--muted-foreground)}
-/* Overgangen: de werkruimte is altijd minstens schermhoog, zodat de voettekst niet even in beeld springt terwijl een
-   stap of viewer laadt (gemeten verspringing bij stap 3 en 4, B-058). */
-.framework-app:has(>.product-footer-compact) main#main-workspace{min-height:100vh}
-/* Smalle voettekst: links naam en versie met de regel eronder, rechts de onderwerpen op één regel. */
-.product-footer-compact .product-footer-line{row-gap:.1rem!important}
-.framework-app .export-detail-preview{display:grid;gap:.25rem;min-width:0}
-/* Focusrand: --ring was nergens gedefinieerd, waardoor lijsten, filters en kolomkoppen bij toetsenbordgebruik geen
-   zichtbare focus hadden (gevonden in de testronde, B-060). */
-:root{--ring:#396fa4}
-html[data-appearance=dark]{--ring:#94c8f5}
