@@ -236,7 +236,7 @@ try {
       assert.equal(await page.evaluate(()=>localStorage.getItem('rijksmap-project-v1-recovery-123')),seed);
       assert.equal(await page.evaluate(()=>localStorage.getItem('rijksmap-project-v1-before-open')),seed);
       assert.equal(await page.evaluate(()=>localStorage.getItem('rijksmap-model-library-v1')),'fictional legacy value');
-      await page.getByRole('button',{name:'Ongedaan maken',exact:true}).click();await saved(page);
+      await page.getByRole('button',{name:/^Ongedaan maken: /}).click();await saved(page);
       assert.deepEqual((await read(page)).draft,fixture.draft);
       await page.getByText('Lokale opslag en privacy',{exact:true}).click();
       const privacy=await page.locator('.product-footer').innerText();

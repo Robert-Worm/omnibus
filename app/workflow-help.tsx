@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from 'react';
 import { X, ArrowRight, Compass, PencilLine } from 'lucide-react';
-import {claimGuideIntroduction, contextualGuidance, GUIDE_SEEN_KEY} from '@/lib/contextual-guidance.mjs';
+import {claimGuideIntroduction, contextualGuidance} from '@/lib/contextual-guidance.mjs';
 import {workflowInstructions} from '@/lib/workflow-instructions.mjs';
 import type { Draft } from '@/lib/framework-types';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,6 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
   onAction: (action: GuideAction) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [introduction, setIntroduction] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const nextAction = useRef<GuideAction | null>(null);
@@ -31,13 +30,10 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
   const instructions = workflowInstructions(page);
   function changeOpen(value: boolean) {
     if (value) {
-      let firstOpening = !introducedThisSession.current;
-      try {
-        firstOpening = firstOpening && !window.localStorage.getItem(GUIDE_SEEN_KEY);
-        claimGuideIntroduction(window.localStorage);
-      } catch { /* With unavailable storage, show the hint once per session on manual opening. */ }
+      // De welkomsttip ('Nieuw hier? ...') is weg (besluit B-055); de eerste opening wordt nog wel vastgelegd.
+      try { claimGuideIntroduction(window.localStorage); } catch { /* Optional. */ }
       introducedThisSession.current = true;
-      navigating.current = false; setIntroduction(firstOpening);
+      navigating.current = false;
     }
     setOpen(value);
   }
@@ -74,7 +70,6 @@ export default function WorkflowHelp({page, draft, ready, pendingQuestion = fals
         }}>{action.label}<ArrowRight size={16} aria-hidden="true" /></Button>}
         <DialogClose render={<Button variant="ghost" className="guide-dismiss" />}>Sluiten</DialogClose>
       </div>
-      {introduction && <p className="guide-welcome-note">Nieuw hier? Open ‘Alle stappen in het kort’. Begrippen staan onder ‘Over Omnibus’ onderaan.</p>}
       <details className="guide-overview"><summary>Alle stappen in het kort</summary>
       {adviceText !== guidance.explanation && <p>{guidance.explanation}</p>}
       {action?.reason && <p>{action.reason}</p>}

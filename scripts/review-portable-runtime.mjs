@@ -130,7 +130,7 @@ try {
       // Install the export clock only after native performance entries have been read.
       await page.clock.setFixedTime(new Date('2026-10-17T12:00:00Z'));
       await page.getByLabel('Open lokaal project of oud concept').setInputFiles(resolve(out,'current-project.json'));
-      await page.getByText('Project geopend, inclusief modellen en werkplek.',{exact:false}).waitFor();
+      await page.locator('.investigation-steps').waitFor();
       let project=await read(page);
       assertImportedDraft(project.draft,fixtures.project.draft,edition==='separated'?pilotContentHash:undefined);
       assert.deepEqual(project.modelLibrary,fixtures.project.modelLibrary);

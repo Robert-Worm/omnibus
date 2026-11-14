@@ -135,7 +135,7 @@ export default function ModelLibrary({
   return (
     <section className={`export-creator models-workspace${mode==='catalogue'?' catalogue-explorer':''}`} data-mode={mode}>
       {error && <p role="alert">{error}</p>}
-      {!guided&&mode==='catalogue'&&<><CatalogueHeader title="Verken modellen" description="Open een model om de begrippen, variabelen en bijbehorende interviewvragen te bekijken." action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/>}/><ModelChoice onReset={()=>{setSubject('');setQuery('');setProcessId('');setSelectedOnly(false);}}/></>}
+      {!guided&&mode==='catalogue'&&<><CatalogueHeader title="Verken modellen" description="" action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={catalogueView.setMode}/>}/><ModelChoice onReset={()=>{setSubject('');setQuery('');setProcessId('');setSelectedOnly(false);}}/></>}
       {!guided&&mode==='workspace'&&<div className="model-open-navigation">
         {mode==='workspace'&&<OpenItemStrip id="models" items={openModels.map((model:LibraryModel)=>({id:model.id,title:modelDisplayName(model)}))} activeId={current?.id||null} onActivate={setActive} onClose={id=>{onCloseModel(id);if(id===current?.id)setActive(openIds.find(other=>other!==id)||null);}} onExplore={onCatalogue} exploreLabel="Terug naar alle modellen" disabled={!ready}/>}
       </div>}

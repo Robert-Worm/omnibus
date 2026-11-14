@@ -401,7 +401,7 @@ export default function ExportCreator({
               </label>
             </div>
             <details>
-              <summary>Teamleden en wijziging invullen</summary>
+              <summary>Teamleden</summary>
               <div className="creator-two">
                 {Array.from({ length: 5 }, (_, i) => (
                   <label key={i} htmlFor={"creator-member-" + i}>
@@ -509,7 +509,7 @@ export default function ExportCreator({
             <p>{draft.included.length ? 'Maak onderzoeksvragen in stap 3, of kies de risico-controlmatrix: die kan zonder vragen.' : 'Kies eerst bouwstenen in stap 2.'}</p>
             <a href="#mijn-kader">Naar stap 3: Bouw je kader →</a>
           </div> : <p className="creator-help">
-            Voorbeeld. Schuif voor meer kolommen.
+            Voorbeeld
           </p>}
           {!emptyFramework && register?.viewer && register.detailRecords && <div className="export-preview-navigation">
             <label htmlFor="export-detail-point">Onderdeel bekijken

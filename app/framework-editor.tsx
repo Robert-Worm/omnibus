@@ -37,7 +37,7 @@ import { investigationFramework, prepareInvestigationFramework, foundations, fou
 import {admittedMaterialTarget} from '@/lib/admitted-foundation.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
 import { flushSync } from "react-dom";
-import { BookOpen, Download, FolderOpen, FilePlus2, ArrowRight, Link2, PencilLine, X, Save, CircleAlert, LoaderCircle } from "lucide-react";
+import { BookOpen, Download, FolderOpen, FilePlus2, ArrowRight, Link2, PencilLine, X, Save, CircleAlert, LoaderCircle, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {Dialog,DialogClose} from '@/components/ui/dialog';
 import {AlertDialog,AlertDialogTrigger,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
@@ -818,7 +818,7 @@ export default function FrameworkEditor() {
         ? 'Project lokaal opgeslagen. Bewaar project voor een overdraagbare reservekopie.'
         : 'Project geopend. Automatisch bewaren is niet gelukt; gebruik Bewaar project. De eerdere opslag is niet overschreven.'});
       setScopeNotice(accepted.notice);
-      setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; je huidige modellen blijven behouden.' : 'Project geopend, inclusief modellen en werkplek.');
+      setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; je huidige modellen blijven behouden.' : '');
     } catch (e) {
       if(request!==importRequest.current)return;
       setImportFeedback(e instanceof SyntaxError ? "Dit bestand is geen leesbaar projectbestand. Kies een JSON-bestand dat met Bewaar project is gemaakt. Je huidige onderzoek is behouden."
@@ -1088,12 +1088,15 @@ export default function FrameworkEditor() {
               </Button>
               <output className="sr-only">{storageBlocked.current?'Let op: je huidige werk wordt niet automatisch opgeslagen. Kies Bewaar project.':savedLocally?'Project automatisch opgeslagen in deze browser.':''}</output>
             </fieldset>
-            {recovery.length>0 && <fieldset className="project-action-group" aria-label="Project herstellen"><Button variant="ghost" title={recovery.at(-1)?.label} onClick={()=>{
+            {/* Altijd op dezelfde plek, als icoon; uitgeschakeld als er niets terug te zetten is (besluit B-055). */}
+            <fieldset className="project-action-group" aria-label="Project herstellen"><Button variant="outline" className="project-undo" disabled={!recovery.length}
+              aria-label={recovery.length?'Ongedaan maken: '+recovery.at(-1)?.label:'Niets om ongedaan te maken'} title={recovery.length?'Ongedaan maken: '+recovery.at(-1)?.label:'Niets om ongedaan te maken'} onClick={()=>{
               const previous=recoveryRef.current.at(-1);if(!previous)return;
               recoveryRef.current=recoveryRef.current.slice(0,-1);setRecovery(recoveryRef.current);typingRecoveryRef.current=null;
               applyProject(previous.draft);saveProject(previous.draft);
-              setResetNotice(previous.label+' ongedaan gemaakt.');
-            }}>Ongedaan maken</Button></fieldset>}
+              // Geen melding: het scherm laat zelf zien dat de wijziging is teruggedraaid (besluit B-055).
+              setResetNotice('');
+            }}><Undo2 aria-hidden="true"/></Button></fieldset>
             <fieldset className="project-action-group project-utility-group" aria-label="AI, hulp en weergave">
               <AiConnection />
               <WorkflowHelp page={page} draft={draft} ready={loaded && modelsReady}

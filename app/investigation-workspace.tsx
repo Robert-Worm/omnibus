@@ -487,7 +487,7 @@ export function FoundationCatalogue({
   ];
   return (
     <section className="catalogue-explorer foundation-catalogue">
-      {!guided&&<CatalogueHeader title="Verken bronnen" description="Open een wet of kader om de bijbehorende normen en oorspronkelijke bron te bekijken." action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
+      {!guided&&<CatalogueHeader title="Verken bronnen" description="" action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
       {guided&&!listMode&&<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>}
       {!guided&&<>

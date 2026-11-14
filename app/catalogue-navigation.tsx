@@ -5,8 +5,8 @@ export function CatalogueHeader({title,description,action}:{title:string;descrip
  return <header className="directory-heading" data-below-tabs=""><div><h2>{title}</h2>{description&&<p className="directory-lead"><TermText text={description}/></p>}</div>{action}</header>;
 }
 export function SourceChoices({value,onChange}:{value:string;onChange:(value:'laws'|'frameworks')=>void}){
- return <fieldset className="directory-axis"  aria-label="Bronnen verkennen"><button type="button" aria-pressed={value==='laws'} onClick={()=>onChange('laws')}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Verken wettelijke eisen</small></span></button><button type="button" aria-pressed={value==='frameworks'} onClick={()=>onChange('frameworks')}><BookOpen size={22} aria-hidden="true"/><span><strong>Kaders</strong><small>Verken beheersing en normen</small></span></button></fieldset>;
+ return <fieldset className="directory-axis"  aria-label="Bronnen verkennen"><button type="button" aria-pressed={value==='laws'} onClick={()=>onChange('laws')}><Scale size={22} aria-hidden="true"/><span><strong>Wetten</strong><small>Wettelijke eisen</small></span></button><button type="button" aria-pressed={value==='frameworks'} onClick={()=>onChange('frameworks')}><BookOpen size={22} aria-hidden="true"/><span><strong>Kaders</strong><small>Beheersing en normen</small></span></button></fieldset>;
 }
 export function ModelChoice({onReset}:{onReset:()=>void}){
- return <fieldset className="directory-axis"  aria-label="Modellen verkennen"><button type="button" aria-pressed={true} onClick={onReset}><Brain size={22} aria-hidden="true"/><span><strong>Wetenschappelijke modellen</strong><small>Verken begrippen, variabelen en vragen</small></span></button></fieldset>;
+ return <fieldset className="directory-axis"  aria-label="Modellen verkennen"><button type="button" aria-pressed={true} onClick={onReset}><Brain size={22} aria-hidden="true"/><span><strong>Modellen</strong><small>Wetenschappelijke modellen</small></span></button></fieldset>;
 }

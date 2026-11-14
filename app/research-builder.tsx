@@ -1040,9 +1040,9 @@ export default function ResearchBuilder({
       {(!roots.length || choosing) && startRoute==='choice' && <section className="question-entry" aria-label="Kies hoe je je vraag wilt maken">
         <WorkflowIntro id="question-entry-title" title="Hoe wil je je vraag opbouwen?">{roots.length>0?'Een bestaande vraagopzet kun je opnieuw openen; een nieuwe vraag komt erbij.':'Je kunt je vragen later altijd aanpassen.'}</WorkflowIntro>
         <div className="question-entry-cards entry-options">
-          <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><PenLine size={25} aria-hidden="true"/></span><span>Zelf formuleren</span></div><h3>Ik bouw mijn eigen vraag</h3><p>Formuleer je <TermHelp id="central">centrale vraag</TermHelp> en <TermHelp id="subquestion">deelvragen</TermHelp>, met voorbeelden als hulp.</p>
+          <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><PenLine size={25} aria-hidden="true"/></span></div><h3>Ik bouw mijn eigen vraag</h3><p>Formuleer je <TermHelp id="central">centrale vraag</TermHelp> en <TermHelp id="subquestion">deelvragen</TermHelp>, met voorbeelden als hulp.</p>
             <div className="entry-card-footer"><Button disabled={disabled} onClick={startOwn}>Zelf een vraag maken <ArrowRight size={16}/></Button></div></article>
-          <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><Layers size={25} aria-hidden="true"/></span><span>Vanuit je selectie</span></div><h3>Ik begin met mijn selectie</h3><p>Start met een voorstel en passende <TermHelp id="subquestion">deelvragen</TermHelp> bij je gekozen <TermHelp id="block">bouwstenen</TermHelp>.</p>
+          <article className="entry-card"><div className="entry-card-top"><span className="discovery-icon"><Layers size={25} aria-hidden="true"/></span></div><h3>Ik begin met mijn selectie</h3><p>Start met een voorstel en passende <TermHelp id="subquestion">deelvragen</TermHelp> bij je gekozen <TermHelp id="block">bouwstenen</TermHelp>.</p>
             {(!selected.length||!starts.length)&&<p className="entry-choice-note">{!selected.length ? 'Kies eerst bouwstenen om een voorstel te krijgen.' : !starts.length ? 'Bij deze selectie is nog geen passend vraagvoorstel beschikbaar. Maak links je eigen vraagopzet; je bouwstenen blijven behouden.' : ''}</p>}
             <div className="entry-card-footer"><Button disabled={disabled||!starts.length} onClick={()=>pickProposal(starts[0].proposal)}>Bekijk mijn vraagopzet <ArrowRight size={16}/></Button></div>
           </article>
@@ -1051,7 +1051,7 @@ export default function ResearchBuilder({
         {choosing && roots.length>0 && <Button variant="ghost" onClick={()=>setChoosing(false)}>Terug naar mijn vragen</Button>}
       </section>}
       {(!roots.length || choosing) && startRoute!=='choice' && <section className="question-composer" aria-label="Vraagopzet voorbereiden">
-        <header className="composer-top"><div><span className="composer-eyebrow">Bouw je kader</span><h2 id="composer-title" tabIndex={-1}>{ownCentral?'Formuleer je onderzoeksvragen':centralTarget?'Pas je vraagopzet aan':'Maak het voorstel passend'}</h2>{selected.length>0&&<p className="composer-selection-context">Je {selected.length===1?'gekozen bouwsteen blijft':'gekozen bouwstenen blijven'} beschikbaar.</p>}</div><Button variant="ghost" onClick={()=>{setStartRoute('choice');setFocusId('__choice__');}}><ArrowLeft size={16}/>Terug naar de keuze</Button>{roots.length>0&&<Button variant="ghost" onClick={()=>setChoosing(false)}>Terug naar mijn vragen</Button>}</header>
+        <header className="composer-top"><div><h2 id="composer-title" tabIndex={-1}>{ownCentral?'Formuleer je onderzoeksvragen':centralTarget?'Pas je vraagopzet aan':'Maak het voorstel passend'}</h2></div><Button variant="ghost" onClick={()=>{setStartRoute('choice');setFocusId('__choice__');}}><ArrowLeft size={16}/>Terug naar de keuze</Button>{roots.length>0&&<Button variant="ghost" onClick={()=>setChoosing(false)}>Terug naar mijn vragen</Button>}</header>
         <div className={'composer-main'+(ownCentral?'':' composer-from-selection')}>
           <div className="composer-writing">
           <QuestionSubjectInput value={subject} disabled={disabled} onChange={value=>{setSubject(value);if(ownCentral)ownSubject.current=value;}}/>
@@ -1085,7 +1085,7 @@ export default function ResearchBuilder({
           </section>
           </div>
         </div>
-        <footer className="composer-actions"><span>{ownCentral?'Je kunt je vragen daarna blijven aanpassen.':centralTarget?'Uitgevinkte deelvragen worden verwijderd. De bouwstenen blijven in je selectie.':'Je gekozen deelvragen krijgen hun passende bouwstenen. Bestaande koppelingen blijven behouden.'}</span><Button disabled={disabled||!firstText.trim()||alreadyAdded||(!centralTarget&&r.questions.length>=200)} onClick={acceptCentral}>{alreadyAdded?'Al opgenomen':centralTarget?'Wijzigingen bewaren':ownCentral?'Vragen toevoegen':'Gebruik deze opzet'}<ArrowRight size={16}/></Button></footer>
+        <footer className="composer-actions"><span>{ownCentral?'':centralTarget?'Uitgevinkte deelvragen worden verwijderd. De bouwstenen blijven in je selectie.':'Je gekozen deelvragen krijgen hun passende bouwstenen. Bestaande koppelingen blijven behouden.'}</span><Button disabled={disabled||!firstText.trim()||alreadyAdded||(!centralTarget&&r.questions.length>=200)} onClick={acceptCentral}>{alreadyAdded?'Al opgenomen':centralTarget?'Wijzigingen bewaren':ownCentral?'Vragen toevoegen':'Gebruik deze opzet'}<ArrowRight size={16}/></Button></footer>
       </section>}
       <div className={"research-columns" + ((!roots.length || choosing) ? " question-workbench-hidden" : "")}>
         <div className="research-canvas workflow-working-panel">

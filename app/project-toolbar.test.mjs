@@ -48,7 +48,7 @@ test('project controls keep lifecycle and native keyboard order', () => {
   assert(save.indexOf('Bewaar project') < save.indexOf('<ShareProject'));
   assert(save.indexOf('<ShareProject') < save.indexOf('project-save-indicator'));
   assert.match(save, /onClick=\{openStorageHelp\}/);
-  assert.match(header, /recovery\.length>0 && <fieldset/);
+  assert.match(header, /<fieldset className="project-action-group" aria-label="Project herstellen"><Button variant="outline" className="project-undo" disabled=\{!recovery\.length\}/);
   assert.doesNotMatch(header, /role="toolbar"|tabIndex=\{?[1-9]/);
 });
 
