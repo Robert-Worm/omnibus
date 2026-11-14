@@ -159,10 +159,19 @@ html[data-appearance=dark] .framework-app .cev-selection{background:transparent!
 html[data-appearance=dark] .framework-app .investigation-steps a[aria-current] .step-number{border-color:#cfe3f7!important;color:#f0f7ff!important}
 /* Overgangen: de werkruimte is altijd minstens schermhoog, zodat de voettekst niet even in beeld springt terwijl een
    stap of viewer laadt (gemeten verspringing bij stap 3 en 4, B-058). */
-.framework-app main#main-workspace{min-height:100vh}
+.framework-app:has(>.product-footer-compact) main#main-workspace{min-height:100vh}
 /* Smalle voettekst: links naam en versie met de regel eronder, rechts de onderwerpen op één regel. */
 .product-footer-compact .product-footer-line{row-gap:.1rem!important}
 .product-footer-compact .product-footer-line .product-footer-attribution{flex-basis:100%;font-size:.75rem}
 .framework-app .product-footer.product-footer-compact a.product-footer-repository{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:.4rem!important;margin:0!important}
 .framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0!important}
 .framework-app .product-footer.product-footer-compact .product-footer-line{flex:1 1 22rem;max-width:36rem}
+.framework-app .export-detail-preview{display:grid;gap:.25rem;min-width:0}
+/* Telefoon: de knoppen in de kop lopen door in één blok, zonder een knop alleen op een regel. */
+@media (max-width:760px){.framework-app .brand-bar .project-actions .project-action-group{display:contents}}
+/* Focusrand: --ring was nergens gedefinieerd, waardoor lijsten, filters en kolomkoppen bij toetsenbordgebruik geen
+   zichtbare focus hadden (gevonden in de testronde, B-060). */
+:root{--ring:#396fa4}
+html[data-appearance=dark]{--ring:#94c8f5}
+.framework-app :is([role=tabpanel],.creator-preset):focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}
+.framework-app .creator-presets button:focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}

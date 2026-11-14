@@ -465,6 +465,8 @@ export function ReportCatalogue({
                         data-report=""
                         data-active={enabled}
                         onClick={(event) => {
+                          // Een klik in het themamenu komt via React ook hier aan, al staat het menu buiten de rij.
+                          if (!event.currentTarget.contains(event.target as Node)) return;
                           if (!(event.target as HTMLElement).closest("button,a,input,summary,details,[role=checkbox],.catalogue-table-check"))
                             onOpen(f.report.id);
                         }}

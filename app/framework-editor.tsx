@@ -83,7 +83,8 @@ import SourceControlReference from "./source-control-reference";
 import ExcelExport from "./lazy-export";
 import ModelLibrary, { type ModelLibraryState } from "./model-library";
 import { initialModelLibrary, restoreModelLibrary } from "@/lib/model-library.mjs";
-import { workspaceRoute } from "@/lib/workspace-view.mjs";
+import { workspaceRoute as knownRoute, isWorkspaceHash } from "@/lib/workspace-view.mjs";
+const workspaceRoute = (hash: string) => (isWorkspaceHash(hash) ? knownRoute(hash) : "entry");
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {assertNoRemovedReportContent} from '@/lib/removed-report-content.mjs';
 import {
@@ -450,6 +451,7 @@ export default function FrameworkEditor() {
     const reading=new AbortController();
     void Promise.resolve().then(async () => {
       if (cancelled) return;
+      if(!isWorkspaceHash(window.location.hash))window.history.replaceState(null,"","#begin");
       setPage(workspaceRoute(window.location.hash || "#begin"));
       const reportRoute = window.location.hash.replace("#rapport-", "");
       if (corpus.some((c) => c.framework.report.id === reportRoute)) setReaderId(reportRoute);
@@ -536,6 +538,11 @@ export default function FrameworkEditor() {
   }, [setMessage,setProblem]);
   useEffect(() => {
     const sync = () => {
+      if(!isWorkspaceHash(window.location.hash)){
+        // Een anker binnen de pagina wisselt niet van scherm; een onbekend adres gaat naar het begin.
+        if(document.getElementById(window.location.hash.slice(1)))return;
+        window.history.replaceState(null,"","#begin");
+      }
       const route=workspaceRoute(window.location.hash || "#begin");
       const current=projectRef.current;
       const reportId=window.location.hash.replace('#rapport-','');

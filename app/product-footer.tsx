@@ -8,7 +8,7 @@ import {openMailto} from '@/lib/mail-handoff.mjs';
 import {Popover, PopoverTrigger, PopoverContent, PopoverDescription} from '@/components/ui/popover';
 import {Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
-import {ArrowUpRight, BookOpen, Check, ChevronDown, ClipboardList, Code, Compass, Copy, Download, FileText, Globe, Info, Layers, LockKeyhole, Mail, Target, UserRound, MessageSquareWarning, X} from 'lucide-react';
+import {ArrowUpRight, BookOpen, Check, ClipboardList, Code, Compass, Copy, Download, FileText, Globe, Info, Layers, LockKeyhole, Mail, Target, UserRound, MessageSquareWarning, X} from 'lucide-react';
 
 // Een mailto-koppeling opent niets wanneer er geen e-mailprogramma aan het
 // mailto-schema is gekoppeld; de klik doet dan stil niets. Er is geen manier om
@@ -94,12 +94,7 @@ const aboutSections=[
   {key:'privacy',title:'Lokale opslag en privacy',Icon:LockKeyhole,Body:PrivacyText},
   {key:'about',title:'Over & contact',Icon:UserRound,Body:AboutText},
 ] as const;
-function AboutDetails() {
-  return <>
-    {aboutSections.map(({key,title,Icon,Body})=><details key={key} className={key==='about'?'footer-about-contact':undefined}><summary><Icon aria-hidden="true"/>{title}<ChevronDown className="footer-disclosure" aria-hidden="true"/></summary><Body/></details>)}
-  </>;
-}
-/** In de smalle voettekst opent elk onderwerp als venster, zoals Begrippen; uitklappen onderaan de pagina sprong weg (B-058). */
+/** Elk onderwerp opent als venster, zoals Begrippen; uitklappen onderaan de pagina sprong weg (B-059). */
 function AboutDialogs() {
   return <>
     {aboutSections.map(({key,title,Icon,Body})=><Dialog key={key}>
@@ -156,7 +151,7 @@ export default function ProductFooter({compact=false}:{compact?:boolean}) {
       <section className="product-footer-column" aria-label="Over en contact">
         <h2>Over Omnibus</h2>
         <Glossary />
-        <AboutDetails/>
+        <AboutDialogs/>
       </section>
     </div>
   </footer>;

@@ -313,7 +313,7 @@ export default function ExportCreator({
                   {emptyFramework ? <p>{draft.included.length ? 'Voor deze werkvorm heb je onderzoeksvragen nodig. De risico-controlmatrix kan zonder.' : 'Kies eerst bouwstenen in stap 2.'}</p> : <>
                   <p>{countLabel(exportedNormIds.length,'bouwstenen')} in deze export{withoutQuestions ? ' · zonder onderzoeksvragen' : ''} · <a href="#mijn-kader">wijzigen</a></p>
                   </>}
-                  {emptyFramework && <a href="#mijn-kader">Naar stap 3: Bouw je kader</a>}
+                  {emptyFramework && (draft.included.length ? <a href="#mijn-kader">Naar stap 3: Bouw je kader</a> : <a href="#grondslagen">Naar stap 2: Verzamel</a>)}
                   {!emptyFramework && !withoutQuestions && unlinkedCount > 0 && <label className="creator-check creator-autolink" htmlFor="export-autolink">
                     <Checkbox id="export-autolink" checked={autoLinkOn} onCheckedChange={(v) => { setAutoLink(v === true); setSaved(false); setError(""); }}/>
                     <span><strong>Koppel bouwstenen zonder onderzoeksvraag automatisch</strong>
@@ -508,12 +508,17 @@ export default function ExportCreator({
           {emptyFramework ? <div className="creator-empty-state">
             <h3>Hier verschijnt je werkdocument</h3>
             <p>{draft.included.length ? 'Maak onderzoeksvragen in stap 3, of kies de risico-controlmatrix: die kan zonder vragen.' : 'Kies eerst bouwstenen in stap 2.'}</p>
-            <a href="#mijn-kader">Naar stap 3: Bouw je kader →</a>
+            {draft.included.length ? <a href="#mijn-kader">Naar stap 3: Bouw je kader →</a> : <a href="#grondslagen">Naar stap 2: Verzamel →</a>}
           </div> : <p className="creator-help">
             Voorbeeld
           </p>}
-          {!emptyFramework && register?.viewer && register.detailRecords && <div className="export-preview-navigation">
-            {register.detailRecords.length>0&&<div className="export-preview-navigation"><ToolSelect label="Onderdeel:" value={String(detailPoint)} onChange={value=>setDetailPointIndex(Number(value))} options={register.detailRecords.map((entry: {pointId:string}, i:number)=>({value:String(i),label:String(workbookPreviewValue(register.rows[i+1][6]))}))}/></div>}
+          {!emptyFramework && register?.viewer && register.detailRecords && <div className="export-detail-preview">
+            {register.detailRecords.length>0&&<div className="export-preview-navigation">
+              <Button variant="outline" size="icon" aria-label="Vorige" title="Vorige" disabled={detailPoint===0} onClick={()=>setDetailPointIndex(detailPoint-1)}><ChevronLeft size={16} aria-hidden="true"/></Button>
+              <ToolSelect label="" name="Onderdeel:" value={String(detailPoint)} onChange={value=>setDetailPointIndex(Number(value))} options={register.detailRecords.map((entry: {pointId:string}, i:number)=>({value:String(i),label:`${i+1}. ${String(workbookPreviewValue(register.rows[i+1]?.[6])||entry.pointId)}`}))}/>
+              <span aria-live="polite">{detailPoint+1} van {register.detailRecords.length}</span>
+              <Button variant="outline" size="icon" aria-label="Volgende" title="Volgende" disabled={detailPoint>=register.detailRecords.length-1} onClick={()=>setDetailPointIndex(detailPoint+1)}><ChevronRight size={16} aria-hidden="true"/></Button>
+            </div>}
             <article aria-live="polite" aria-label="Detail van je export" style={{whiteSpace:'pre-wrap',fontFamily,fontSize:fontSize+'pt',lineHeight:1.6,maxHeight:'28rem',overflowY:'auto',padding:'1rem',border:'1px solid var(--border)',borderRadius:8}}>
               {register.viewer.labels.map((label:string, i:number)=><section key={label} style={{marginBottom:'1rem'}}>
                 <h4 style={{fontWeight:600,marginBottom:'0.75rem',borderBottom:'1px solid var(--border)',paddingBottom:'0.5rem'}}>{label}</h4>
