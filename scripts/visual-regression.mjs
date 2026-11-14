@@ -5,7 +5,8 @@
 //   node scripts/visual-regression.mjs vastleggen <map> [url]     legt alle toestanden vast in <map>
 //   node scripts/visual-regression.mjs vergelijken <mapA> <mapB>  meldt elk beeld dat niet byte-gelijk is
 // Werkwijze: leg de toestand vóór de wijziging vast, bouw de wijziging, leg opnieuw vast en vergelijk.
-// Eén beeld (donker, 1440, open modellen) kan een paar pixels verschillen door afronding in de browser.
+// Vergelijk met hetzelfde versienummer: de voettekst toont de versie, dus een ander nummer geeft op veel beelden
+// een verschil van één cijfer. Eén beeld (donker, 1440, open modellen) kan een paar pixels verschillen door afronding.
 import {createRequire} from 'node:module';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
