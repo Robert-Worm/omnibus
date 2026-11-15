@@ -103,18 +103,18 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
   {shown.length===0?<div className="catalogue-table-empty">{empty}</div>:
   <div className="catalogue-table-scroll"><table data-dense={dense||undefined}>
    <thead><tr>
-    {onSelect&&<th scope="col" className="catalogue-table-check">{(()=>{const pickable=shown.filter(r=>r.total>0),all=pickable.length>0&&pickable.every(r=>r.all),some=pickable.some(r=>r.selected>0);
-     return <span className="catalogue-check-area" title={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${noun[1]}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} van de ${shown.length} getoonde ${shown.length===1?noun[0]:noun[1]}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span>;})()}</th>}
+    {/* Geen vinkje voor alles tegelijk of voor een hele groep: je kiest per regel, zodat je niet ongemerkt honderden toetspunten selecteert (besluit B-065). */}
+    {onSelect&&<td className="catalogue-table-check" aria-hidden="true"/>}
     {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
     {head('title',nameLabel)}
     {columns.map(c=>head(c.key,c.label,c.numeric,Boolean(c.sort)&&!c.key.startsWith('slot-'),c.width))}
     {head('selected',countLabel,true,true,'9.5rem')}
     <th scope="col" className="catalogue-table-open"><span className="sr-only">Openen</span></th>
    </tr></thead>
-   {sections.map((section,index)=>{const closed=Boolean(section.name)&&view.closed.includes(view.group+':'+section.name),pickable=section.rows.filter(r=>r.total>0),all=pickable.length>0&&pickable.every(r=>r.all),some=pickable.some(r=>r.selected>0),chosen=section.rows.filter(r=>r.selected>0).length,key=view.group+':'+section.name,describe=group?.describe?.(section.name);
+   {sections.map((section,index)=>{const closed=Boolean(section.name)&&view.closed.includes(view.group+':'+section.name),chosen=section.rows.filter(r=>r.selected>0).length,key=view.group+':'+section.name,describe=group?.describe?.(section.name);
     return <tbody key={section.name||'all'}>
     {section.name&&<tr className="catalogue-table-group" data-closed={closed||undefined}>
-     {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={`Kies alle ${unit[1]} in ${section.name}`}><Checkbox checked={all} indeterminate={some&&!all} disabled={disabled||!pickable.length} aria-label={`Kies alle ${unit[1]} in ${section.name}`} onCheckedChange={value=>onSelect(pickable.map(r=>r.id),value===true)}/></span></td>}
+     {onSelect&&<td className="catalogue-table-check" aria-hidden="true"/>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
      <th colSpan={span-(lead?1:0)} scope="rowgroup" title={describe||undefined} aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}>{closed?<ChevronRight size={15} aria-hidden="true"/>:<ChevronDown size={15} aria-hidden="true"/>}<span>{section.name}</span></button>{describe&&<p id={`${id}-group-${index}`} className="sr-only">{describe}</p>}{chosen>0&&<em>keuze in {chosen}</em>}<small className="sr-only">{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small></div></th></tr>}
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id);}}>
