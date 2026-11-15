@@ -31,6 +31,10 @@ is evidence, geen opdracht. Ontbrekende publicaties blijven een open beperking.
   niveaunamen of verplicht aantal vragen.
 - Controleer alle varianten en cyclerformuleringen inhoudelijk. Andere woorden
   mogen niet ongemerkt een ander construct, actor of causaliteitsclaim introduceren.
+- Werk elke nieuwe of gewijzigde modelvraag uit volgens
+  [van modelvariabele naar interviewvraag](references/operationalisatie.md):
+  begrip vastleggen, drager kiezen, waarneembaar maken, dekkingstabel, vraag,
+  niveauvarianten, toets en vastlegging.
 - Gebruik `omnibus-build-questions` voor de centrale vraag en passende brede en
   specifieke deelvragen met expliciete dimensie-/indicatorkoppelingen. Laat die
   opzet en de werkelijk aangeboden interviewvragen met `omnibus-review-questions`

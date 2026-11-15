@@ -69,6 +69,8 @@ iemand zag, deed of besloot, niet naar een oordeel over het begrip zelf.
 | **Dekt het begrip**: elk deel van de `definition` van de dimensie heeft een indicator met een vraag | SQ-TANGIBLES: eigen gebruik van een zichtbare voorziening (I01) én reacties van afnemers daarop (I02) | Afgeleid: alleen I01; wat afnemers ervan merken, wordt niet gevraagd |
 | **Meet niets anders mee**: de vraag blijft binnen de `boundary` van de dimensie | SQ-TANGIBLES-Q01 vraagt naar een ruimte of middel dat afnemers zagen; de grens sluit technische werking uit | Afgeleid: ‘Hoe goed werkt de apparatuur achter de balie?’ meet technische werking |
 
+Hoe je van een modelvariabele tot zo'n vraag komt, staat in [van modelvariabele naar interviewvraag](../../omnibus-add-model/references/operationalisatie.md).
+
 Stel per dimensie twee vragen: welk deel van het begrip mist een vraag, en wat meet een vraag ongewild mee? Een gat of een vraag buiten de grens is **herschrijven** of **HOLD**, nooit stil goedgekeurd.
 
 ## Uitkomst per vraag
