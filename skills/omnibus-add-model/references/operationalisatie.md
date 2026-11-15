@@ -50,6 +50,25 @@ De antwoorden op 1 en 2 worden de indicator en de verwachte antwoorden. Het
 antwoord op 3 komt in `documents` en `observation`. Kun je bij 1 en 2 geen
 verschil bedenken, dan is de indicator te vaag.
 
+Een bevestiging is een suggestie, geen verplicht bewijsverzoek. Neem haar
+alleen op als ze deze toets doorstaat; anders blijft het veld leeg:
+
+1. Bestaat het stuk of het moment al, zonder dat iemand het voor ons maakt?
+2. Zou het er anders uitzien als het antwoord anders was?
+3. Kunnen we het vragen zonder persoonsgegevens en met weinig werk? Geen
+   personeelsdossiers, individuele beoordelingen of dossiers van losse zaken;
+   wel totalen en algemeen beleid.
+4. Bij welk niveau hoort het? Een mandaatregeling bevestigt hoe iets is
+   geregeld (strategisch), niet wie die dag besliste (operationeel). Zet het
+   niveau ervoor als het maar voor één niveau geldt.
+
+Houd stukken en cijfers (`documents`) gescheiden van meekijken of een geval
+doorlopen (`observation`). Gebruik de naam die de organisatie zelf voor het
+stuk gebruikt, met 'als die er is'. Schrijf erbij wat het stuk niet laat zien
+('toont dat de regeling bestaat, niet dat ze wordt gebruikt'). Bij cultuur en
+beleving is er vaak geen stuk; vergelijk dan wat anderen in hetzelfde team
+vertellen.
+
 ## Stap 4. Maak een dekkingstabel
 
 Zet de onderdelen van de definitie in de rijen en de vragen in de kolommen.
@@ -69,6 +88,17 @@ Zet de onderdelen van de definitie in de rijen en de vragen in de kolommen.
   ‘rationalisatie’ of ‘psychologische veiligheid’ gaat, geeft het nette antwoord.
 - **Laat beide uitkomsten toe.** De respondent kan vertellen dat het goed ging,
   dat het niet speelde of dat het anders liep.
+- **Noem de waarde niet waar je naar zoekt.** 'Een moment waarop regels de
+  doorslag gaven' levert altijd een voorbeeld op. Vraag neutraal ('wat gaf de
+  doorslag?') en plaats het antwoord daarna zelf. Gaat het model om een accent
+  ten opzichte van iets anders, vraag dan ook wat minder aandacht kreeg.
+- **Veronderstel geen zeldzame of gevoelige gebeurtenis.** Begin breed ('toen
+  iemand zich niet aan een afspraak hield') en vraag door naar het bijzondere
+  geval. Zeg 'zonder namen te noemen' waar dat helpt.
+- **Eén vraag per zin.** Een staart die iets anders vraagt (', en wat blijft
+  onopgemerkt?') wordt een doorvraag.
+- **Vraag wat iemand zelf kan weten.** Niet wat er gebeurde toen de respondent
+  er niet bij was, en niet wat anderen dachten of zagen.
 - **Gevoelig onderwerp?** Vraag naar de situatie en de werkwijze, niet naar
   personen of motieven.
 - **Doorvragen** volgen de gebeurtenis: wat was de situatie, wat deed u, hoe
@@ -84,6 +114,15 @@ De variabele blijft gelijk; het gezichtspunt verandert.
 | Operationeel | Wat ik zelf deed en meemaakte. |
 | Management | Wat ik in mijn team zag, wat ik zelf deed om het mogelijk te maken, en hoe ik het weet. |
 | Strategisch | Hoe wij richting geven, welke signalen ons bereiken en wat wij daarmee doen. |
+
+Spreek de strategische respondent aan met 'u', niet met 'het bestuur' of 'de
+top': die persoon hoort daar zelf bij. Drie valkuilen bij varianten:
+
+- dezelfde zin met een andere functietitel is geen variant;
+- 'hoe reageerde u?' meet bij een leidinggevende diens eigen gedrag: dat is
+  vaak een voorwaarde, niet de variabele zelf;
+- 'hoe is geregeld?' en 'hoe komt u te weten?' meten een regeling of een
+  informatiestroom. Vraag naar een keer dat het speelde en wat er toen gebeurde.
 
 Controleer bij elke variant of het begrip niet verschuift. ‘Wat gebeurde er toen
 u een fout besprak?’ en ‘Welk beleid heeft u voor het melden van fouten?’ gaan
@@ -103,7 +142,14 @@ verzinnen.
 - **Proefgesprek** waar dat kan, en daarna de afzonderlijke reviews uit de
   rubriek.
 
+Bij meer dan ongeveer tien vragen per model: wijs een kernset aan van vier of
+vijf vragen voor één gesprek.
+
 ## Stap 8. Leg vast
+
+Komt een onderdeel uit een andere publicatie dan de bronnen van het model, leg
+die keuze dan uit en werk bronnenlijst, definitie en beperkingstekst bij. Schrijf
+een eigen keuze voor auditgebruik niet op als uitkomst van de literatuur.
 
 Per vraag: variabele, onderdeel van de definitie, bronplaats, etiket (kern,
 voorwaarde, gevolg of aanvulling buiten het model), verwachte antwoorden en
