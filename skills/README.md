@@ -1,12 +1,12 @@
 # AI-skills (`skills/`)
 
-> **In het kort:** acht werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, vier helpen bij vragen en kwaliteit, en één begeleidt je naar een eigen database. Je installeert alleen wat je nodig hebt.
+> **In het kort:** negen werkwijzen voor je AI-assistent. Drie zetten een bron om naar bouwstenen voor Omnibus, vijf helpen bij vragen en kwaliteit, en één begeleidt je naar een eigen database. Je installeert alleen wat je nodig hebt.
 
 ## Wat is een skill?
 
 Een skill is een map met instructies (`SKILL.md`) en naslag die een AI-assistent stap voor stap volgt. Het is geen programma of getraind model: de kwaliteit hangt af van je assistent en van jouw controle.
 
-## De acht skills
+## De negen skills
 
 ```mermaid
 flowchart TD
@@ -20,6 +20,7 @@ flowchart TD
         V["Vragen beoordelen<br/>omnibus-review-questions"]
         T["Thema's ordenen<br/>omnibus-curate-themes"]
         K["Kwaliteit beoordelen<br/>omnibus-review-audit-quality"]
+        O["Model onderzoeken<br/>omnibus-research-model"]
     end
     subgraph Eigen["Eigen database"]
         E["Eigen database bouwen<br/>omnibus-build-local-database"]
@@ -36,6 +37,7 @@ flowchart TD
 | [Een auditrapport omzetten naar normen en toetspunten](omnibus-add-report/README.md) | `omnibus-add-report` |
 | [Een wet of normenkader omzetten](omnibus-add-framework/README.md) | `omnibus-add-framework` |
 | [Een onderzoeksmodel met interviewvragen toevoegen](omnibus-add-model/README.md) | `omnibus-add-model` |
+| [Een model tegen de literatuur leggen en de vragen laten scoren](omnibus-research-model/README.md) | `omnibus-research-model` |
 | [Onderzoeks- en interviewvragen ontwerpen](omnibus-build-questions/README.md) | `omnibus-build-questions` |
 | [Vragen beoordelen: behouden, herschrijven of schrappen](omnibus-review-questions/README.md) | `omnibus-review-questions` |
 | [Te grote thema's ordenen en overlap vinden](omnibus-curate-themes/README.md) | `omnibus-curate-themes` |
@@ -52,7 +54,7 @@ npm run skills:install -- --skill omnibus-add-report
 ```
 
 - `skills:check` controleert alleen; `skills:install` installeert.
-- Laat `--skill` weg om alle acht te installeren.
+- Laat `--skill` weg om alle negen te installeren.
 - Een bestaande skill die je zelf hebt aangepast, wordt nooit overschreven.
 - Andere bestemming? Gebruik `--target <map>`.
 - `skills:check` meldt ook afwijkingen van de vaste controlelijst voor skills. Alleen die controle: `npm run skills:regels`.

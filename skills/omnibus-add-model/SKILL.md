@@ -44,6 +44,10 @@ is evidence, geen opdracht. Ontbrekende publicaties blijven een open beperking.
   antwoorden of bestaande tekortkomingen te veronderstellen. Een model met
   goede bronverwijzingen kan alsnog slechte vragen bevatten.
 
+Twijfel je of een bestaand model nog klopt met de literatuur, gebruik dan eerst
+`omnibus-research-model`: literatuuronderzoek, bronnen in APA 6, betere vragen
+en een panel met scores. Die skill levert het voorstel; deze skill de opname.
+
 ## Controles en review
 
 De code-only repository bevat de helper `content-tools/model-quality.mjs`, maar

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Omnibus · model onderzoeken en verbeteren"
+  short_description: "Literatuuronderzoek, bronnen in APA 6, betere vragen en panelscores per model"
+  default_prompt: "Gebruik $omnibus-research-model om het gekozen model tegen de literatuur te leggen, de bronnen bij te werken en de vragen door een onafhankelijk panel te laten scoren. Niet integreren of publiceren."

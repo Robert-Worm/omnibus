@@ -8,7 +8,7 @@ De applicatie en de MCP-server hebben een eigen document: [AUDIT-CRITERIA.md](..
 
 | Veld | Waarde |
 | --- | --- |
-| Onderdeel | De acht skills in `skills/` (zie [het overzicht](README.md)) |
+| Onderdeel | De negen skills in `skills/` (zie [het overzicht](README.md)) |
 | Repository | https://github.com/Robert-Worm/omnibus |
 | Maintainer | Robert Worm, beheerder ([B-027](../docs/beheer/besluiten.md#b-027)) |
 | Verantwoordelijkheid | Geen aparte eigenaar: de criteria zijn afgeleid van kaders die van hun uitgevers blijven. De gebruiker blijft verantwoordelijk voor het oordeel. De criteria groeien mee met betere modellen en skills |

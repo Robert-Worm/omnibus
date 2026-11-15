@@ -5,7 +5,7 @@ import { resolve, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { reportSkillRuntimeFiles } from "./report-skill-runtime.mjs";
 
-export const skillNames = ["omnibus-add-report", "omnibus-add-framework", "omnibus-add-model", "omnibus-build-questions", "omnibus-review-questions", "omnibus-curate-themes", "omnibus-review-audit-quality", "omnibus-build-local-database"];
+export const skillNames = ["omnibus-add-report", "omnibus-add-framework", "omnibus-add-model", "omnibus-research-model", "omnibus-build-questions", "omnibus-review-questions", "omnibus-curate-themes", "omnibus-review-audit-quality", "omnibus-build-local-database"];
 const sourceRoot = fileURLToPath(new URL("../skills/", import.meta.url));
 
 async function filesUnder(root, prefix = "") {
