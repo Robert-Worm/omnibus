@@ -149,7 +149,7 @@ export default function ModelVariable({
               />
             </label>
             <label htmlFor={indicator.id + "-documents"}>
-              Documenten / cijfers die je kunt opvragen
+              Mogelijke bevestiging (optioneel): stukken en cijfers
               <Textarea
                 id={indicator.id + "-documents"}
                 value={indicator.documents}
@@ -161,7 +161,7 @@ export default function ModelVariable({
               />
             </label>
             <label htmlFor={indicator.id + "-observation"}>
-              Mogelijke observatie
+              Mogelijke bevestiging (optioneel): meekijken of doorlopen
               <Textarea
                 id={indicator.id + "-observation"}
                 value={indicator.observation}

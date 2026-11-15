@@ -31,3 +31,8 @@ html[data-appearance=dark] [data-slot=button].bg-primary:not(:disabled):hover{ba
    zichtbare focus hadden (gevonden in de testronde, B-060). */
 :root{--ring:#396fa4}
 html[data-appearance=dark]{--ring:var(--donker-lijn-8)}
+/* Bronnenlijst bij een model in APA 6, per groep (B-066). */
+.model-sources h4{margin:.9rem 0 .3rem;font-size:.95rem}
+.model-sources ul{margin:0;padding-left:1.1rem}
+.model-sources li{margin-bottom:.45rem;line-height:1.45}
+.model-sources a{overflow-wrap:anywhere}

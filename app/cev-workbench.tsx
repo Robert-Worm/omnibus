@@ -329,10 +329,10 @@ export default function CevWorkbench({
                 {evidence && (
                   <div className="cev-evidence">
                     <p>
-                      <strong>Documenten</strong> {indicator?.documents}
+                      <strong>Stukken en cijfers (optioneel)</strong> {indicator?.documents}
                     </p>
                     <p>
-                      <strong>Observatie</strong> {indicator?.observation}
+                      <strong>Meekijken of doorlopen (optioneel)</strong> {indicator?.observation}
                     </p>
                     <p>
                       Vraag alleen noodzakelijke, zo mogelijk geanonimiseerde informatie. Een
