@@ -14,7 +14,7 @@ import CriterionSearchResults from './criterion-search-results';
 import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
 import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
 import { chooseFoundationSource, chooseFoundationItems, preparedFoundationItems, foundationSelection, sourceNarrowing } from '@/lib/foundation-workspace.mjs';
-import { useState } from "react";
+import {useState, useRef, useEffect} from 'react';
 import {
   ArrowRight,
   FolderOpen,
@@ -50,7 +50,9 @@ import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
 import {DoraTopicBand,DoraTopicPanel} from './dora-topics';
-import {isDoraTopicSource,doraSourceTopicLabels,doraTopicFromLabel,doraTopicCounts,requestDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
+import {isDoraTopicSource,doraSourceTopicLabels,doraTopicFromLabel,doraTopicCounts,doraTopicNormIds,doraTopicTitle,requestDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
+import {topicalPackage as doraPackage} from '@/lib/topical-content.mjs';
+import {topicalSelection as doraSelection,chooseTopicalPoints as chooseDoraPoints} from '@/lib/topical-selection.mjs';
 import {frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
 import type { Draft } from "@/lib/framework-types";
 
@@ -436,7 +438,7 @@ export function FoundationCatalogue({
   // De hulp is geen hoofdingang. In de lijst is zij een vervolgfilter: kies Familie: DORA en het filter Onderwerp verschijnt.
   // Met een onderwerp gekozen toont de lijst alleen de bronnen met normen daarvoor, en opent een bron met dat onderwerp als filter.
   const doraBanner=(_shown:unknown[],filters:Record<string,string>)=>{const id=doraAvailable?doraTopicFromLabel(filters.doraTopic||''):'';if(!id)return null;const counts=doraTopicCounts(id);
-   return <p className="dora-topic-line"><span><strong>{filters.doraTopic}</strong>: {counts.wet} normen in {counts.bronnen} bronnen onder Wetten en Kaders, en {counts.praktijk} in NOREA. Open een bron om alleen de normen van dit onderwerp te zien.</span>
+   return <p className="dora-topic-line"><span><strong>{filters.doraTopic}</strong>: {counts.wet} normen in {counts.bronnen} bronnen onder Wetten en Kaders, en {counts.praktijk} in NOREA. Telling en vinkje per bron gelden nu voor dit onderwerp.</span>
     <Button variant="outline" onClick={()=>setDoraTopic(id)}>Bekijk het hele onderwerp<ArrowRight size={14} aria-hidden="true"/></Button></p>;};
   const openDoraSource=(id:string)=>{if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);};
   const criteriaFilter = JSON.stringify([kind,domain,processId,selectedOnly]);
@@ -477,9 +479,22 @@ export function FoundationCatalogue({
   const listSources=scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws') as typeof foundations;
   const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
   const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  // Met het lijstfilter Onderwerp gelden de telling en het vinkje van een DORA-bron alleen voor dat onderwerp: de lijst toont
+  // en kiest dan hetzelfde als de viewer van die bron laat zien. De toetspunten per norm staan in de bron zelf, dus die laden we.
+  const [listFilters,setListFilters]=useState<Record<string,string>>({});
+  const listTopic=listMode&&doraAvailable?doraTopicFromLabel(listFilters.doraTopic||''):'';
+  const topicPoints=(sourceId:string):string[]|null=>{const pack=doraPackage(sourceId);if(!pack?.catalogue?.points?.length)return null;
+   const norms=new Set(doraTopicNormIds(sourceId,listTopic));return pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id);};
+  const loadTopicSources=useRef(prepareSources);
+  useEffect(()=>{loadTopicSources.current=prepareSources;});
+  const listSourceKey=listSources.map((s:{id:string})=>s.id).filter(isDoraTopicSource).join('|');
+  useEffect(()=>{if(listTopic&&listSourceKey)loadTopicSources.current(listSourceKey.split('|').filter(id=>doraTopicNormIds(id,listTopic).length),()=>{});},[listTopic,listSourceKey]);
   const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
    const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);
-   return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:selection.selected,total:selection.total,all:selection.all,partial:selection.partial,
+   const scoped=listTopic&&isDoraTopicSource(s.id)&&doraTopicNormIds(s.id,listTopic).length>0,points=scoped?topicPoints(s.id):null,part=points?doraSelection(draft,s.id,points):null;
+   const shownSelection=part||selection;
+   return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:shownSelection.selected,total:shownSelection.total,all:shownSelection.all,partial:shownSelection.partial,
+    narrowed:scoped?`Alleen het onderwerp ${doraTopicTitle(listTopic)}`:undefined,counting:Boolean(scoped&&!part),
     kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',audiences:sourceAudiences(s.id) as (keyof typeof audienceGroups)[],usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
    .flatMap(row=>{if(!query.trim())return [row];const q=query.trim().toLocaleLowerCase('nl');
     const own=[...row.audiences.map(a=>audienceGroups[a].label),row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
@@ -524,9 +539,14 @@ export function FoundationCatalogue({
          {key:'doraTopic',label:'Onderwerp',all:'Alle onderwerpen',when:f=>f.family==='DORA'||f.category===sourceDomains.financial.title,value:r=>doraSourceTopicLabels(r.id)}]}
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
         nameLabel={scope==='frameworks'?'Kader':'Wet'} nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
-        describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
+        describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={listTopic?'Een vinkje kiest de toetspunten van het gekozen onderwerp.':`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
         onOpen={(id,filters)=>{const topic=doraTopicFromLabel(filters.doraTopic||'');if(topic&&isDoraTopicSource(id))requestDoraViewerFilter(id,topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
-        onSelect={(ids,checked)=>prepareSources(ids,()=>{try{const next=ids.reduce((value,id)=>chooseFoundationSource(value,id,checked) as Draft,draft);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}
+        onFiltersChange={setListFilters}
+        onSelect={(ids,checked)=>prepareSources(ids,()=>{try{const next=ids.reduce((value,id)=>{
+          // Staat het onderwerpfilter aan, dan kiest het vinkje alleen de toetspunten van dat onderwerp.
+          const points=listTopic&&isDoraTopicSource(id)?topicPoints(id):null;
+          if(listTopic&&isDoraTopicSource(id)&&!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');
+          return (points?chooseDoraPoints(value,id,points,checked):chooseFoundationSource(value,id,checked)) as Draft;},draft);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}
         banner={doraBanner} empty={<p>Geen wet of kader gevonden. Wis je zoekopdracht of pas de filters aan.</p>}/>}
       {listMode&&searchError&&<p role="alert">{searchError}</p>}
       {!listMode&&!topicOpen&&<CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" value={directoryGroup} searching={Boolean(query.trim())}

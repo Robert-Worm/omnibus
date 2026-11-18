@@ -2,7 +2,7 @@
 // Lijstweergave van een catalogus: één tabel over de volle breedte, als alternatief voor de tegels.
 // Sorteren, filteren en groeperen gebeurt hier; openen en selecteren blijft bij de pagina die de rijen levert.
 import {useEffect,useRef,useState,type ReactNode} from 'react';
-import {ArrowDown,ArrowRight,ArrowUp,ChevronDown,ChevronRight,ChevronsUpDown,FolderOpen,LayoutGrid,List,Search,X} from 'lucide-react';
+import {ArrowDown,ArrowRight,ArrowUp,ChevronDown,ChevronRight,ChevronsUpDown,Filter,FolderOpen,LayoutGrid,List,Search,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/select';
@@ -12,7 +12,7 @@ export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width
 export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[];/** Vervolgfilter: alleen zichtbaar en actief als een ander filter een bepaalde waarde heeft (bijvoorbeeld Onderwerp bij Familie: DORA). */when?:(filters:Record<string,string>)=>boolean};
 export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;/** Vaste volgorde van de groepen; zonder is het alfabetisch. */order?:(name:string)=>number;};
 const SLOTS=['11.5rem','12rem','7.5rem','10rem'];
-export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean};
+export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean;/** De telling en het vinkje gelden voor een deel van de rij (bijvoorbeeld één onderwerp). De tekst zegt welk deel. */narrowed?:string;/** De telling wordt nog opgehaald. */counting?:boolean};
 
 /** Breed scherm: de lijst heeft ruimte nodig. Op een telefoon blijven het tegels. */
 export function useWideScreen(min=980){
@@ -51,12 +51,12 @@ export function ToolSelect({label,value,onChange,options,active=false,name}:{lab
  </Select>;
 }
 
-export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns,banner}:{
+export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns,banner,onFiltersChange}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
  groups:CatalogueGroup<Row>[];
  nameLabel?:string;nameMeta:(row:Row)=>ReactNode;/** Korte omschrijving die verschijnt als je de naam aanwijst. */describe?:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
- onOpen:(id:string,filters:Record<string,string>)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string;/** Extra hulp boven de rijen, afhankelijk van wat de lijst na zoeken en filteren toont. */banner?:(shown:Row[],filters:Record<string,string>)=>ReactNode}){
+ onOpen:(id:string,filters:Record<string,string>)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string;/** Extra hulp boven de rijen, afhankelijk van wat de lijst na zoeken en filteren toont. */banner?:(shown:Row[],filters:Record<string,string>)=>ReactNode;/** Meldt de actieve filters, zodat de rijen hun telling en vinkje eraan kunnen aanpassen. */onFiltersChange?:(filters:Record<string,string>)=>void}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
  useEffect(()=>{const el=box.current;if(!el)return;const observer=new ResizeObserver(entries=>setWidth(Math.round(entries[0].contentRect.width)));observer.observe(el);return()=>observer.disconnect();},[]);
@@ -66,7 +66,10 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const columns:CatalogueColumn<Row>[]=[...shownColumns,...Array.from({length:Math.max(0,SLOTS.length-shownColumns.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
   .map((c,i)=>({...c,width:SLOTS[Math.min(i,SLOTS.length-1)]}));
  const usable=filters.filter(f=>!f.when||f.when(view.filters)),active=usable.filter(f=>view.filters[f.key]);
- const activeFilters=Object.fromEntries(active.map(f=>[f.key,view.filters[f.key]]));
+ const activeFilters=Object.fromEntries(active.map(f=>[f.key,view.filters[f.key]])),filterKey=JSON.stringify(activeFilters);
+ const reportFilters=useRef(onFiltersChange);
+ useEffect(()=>{reportFilters.current=onFiltersChange;});
+ useEffect(()=>{reportFilters.current?.(JSON.parse(filterKey));},[filterKey]);
  const shown=rows.filter(row=>active.every(f=>f.value(row).includes(view.filters[f.key])));
  const sortOf=(key:string)=>key==='title'?(row:Row)=>row.title.toLocaleLowerCase('nl'):key==='selected'?(row:Row)=>row.selected:columns.find(c=>c.key===key)?.sort;
  const pick=sortOf(view.sort)||sortOf('title')!,sign=view.dir==='asc'?1:-1,blank=(v:string|number)=>v===''||v===undefined;
@@ -88,7 +91,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const chosenRows=shown.filter(r=>r.selected>0).length,chosenTotal=shown.reduce((sum,r)=>sum+r.selected,0);
  return <section className="catalogue-table" aria-label={`Lijst van ${noun[1]}`} ref={box}>
   <div className="catalogue-table-frame">
-  <div className="catalogue-table-tools">
+  <div className="catalogue-table-tools" data-rows={filters.length>=4?2:undefined}>
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
     {usable.map(f=>{const chosen=view.filters[f.key]||'',options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
@@ -120,11 +123,11 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
      <th colSpan={span-(lead?1:0)} scope="rowgroup" title={describe||undefined} aria-describedby={describe?`${id}-group-${index}`:undefined}><div><button type="button" aria-expanded={!closed} onClick={()=>setView(v=>({...v,closed:closed?v.closed.filter(k=>k!==key):[...v.closed,key]}))}>{closed?<ChevronRight size={15} aria-hidden="true"/>:<ChevronDown size={15} aria-hidden="true"/>}<span>{section.name}</span></button>{describe&&<p id={`${id}-group-${index}`} className="sr-only">{describe}</p>}{chosen>0&&<em>keuze in {chosen}</em>}<small className="sr-only">{section.rows.length} {section.rows.length===1?noun[0]:noun[1]}</small></div></th></tr>}
     {!closed&&section.rows.map(row=><tr key={row.id} data-row="" data-open={row.opened||undefined} data-chosen={row.selected>0||undefined} onClick={event=>{if(!(event.target as HTMLElement).closest('button,a,input,[role=checkbox],.catalogue-table-check'))onOpen(row.id,activeFilters);}}>
-     {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
+     {onSelect&&<td className="catalogue-table-check"><span className="catalogue-check-area" title={selectLabel(row)}><Checkbox checked={row.all} indeterminate={row.partial} disabled={disabled||!row.total||row.counting} aria-label={selectLabel(row)} onCheckedChange={value=>onSelect([row.id],value===true)}/></span></td>}
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
      <th scope="row" className="catalogue-table-name">{(()=>{const text=describeRow?.(row);return <><button type="button" aria-describedby={text?`${id}-about-${row.id}`:undefined} onClick={()=>onOpen(row.id,activeFilters)}>{row.title}</button>{text&&<span id={`${id}-about-${row.id}`} role="tooltip" className="audience-tip catalogue-name-tip">{text}</span>}</>;})()}<span>{nameMeta(row)}{row.opened&&<em><FolderOpen size={12} aria-hidden="true"/>Geopend</em>}</span></th>
      {columns.map(c=><td key={c.key} data-numeric={c.numeric||undefined} data-column={c.key} title={c.title?.(row)}>{c.render(row)}</td>)}
-     <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.total?<><span><strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
+     <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.counting?<small>tellen…</small>:row.total?<><span title={row.narrowed}>{row.narrowed&&<Filter size={12} aria-label={row.narrowed} className="catalogue-table-narrowed"/>}<strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
      <td className="catalogue-table-open"><Button variant="ghost" tabIndex={-1} aria-hidden="true" onClick={()=>onOpen(row.id,activeFilters)}><ArrowRight size={16}/></Button></td>
     </tr>)}
    </tbody>;})}
