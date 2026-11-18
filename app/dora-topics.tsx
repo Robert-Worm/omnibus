@@ -8,21 +8,21 @@ import {Popover} from '@base-ui/react/popover';
 import {Check,ChevronDown} from 'lucide-react';
 import {Checkbox} from '@/components/ui/checkbox';
 import './dora-topics.css';
-import {doraTopics,doraChoiceCounts,doraChoiceNormIds,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated,doraSourceTopicIds,doraSourceHasRegimes} from '@/lib/dora-onderwerpen.mjs';
+import {doraTopics,doraChoiceCounts,doraChoiceNormIds,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated,doraTopicHasSector,doraSourceTopicIds,doraSourceHasRegimes} from '@/lib/dora-onderwerpen.mjs';
 
-type Choice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean};
+type Choice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean;sector:boolean};
 
 /** Het filter Onderwerp. `sourceId`: in de viewer van één bron; dan staan alleen de onderwerpen van die bron in de lijst.
  * `showValue`: toon het gekozen onderwerp in de knop. In de lijst staat het al in de regel boven de rijen. */
 export function TopicFilter({value,onChange,sourceId,showValue=true}:{value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean}){
  const [open,setOpen]=useState(false);
  const choice=decodeDoraChoice(value) as Choice|null,current=choice?doraChoiceLabel(value):'Alle';
- const regime=choice?.regime||'volledig',related=Boolean(choice?.related);
+ const regime=choice?.regime||'volledig',related=Boolean(choice?.related),sector=Boolean(choice?.sector);
  // Het kader en de verwante normen blijven staan als je van onderwerp wisselt.
- const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime,related,...choice,...next}));
+ const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime,related,sector,...choice,...next}));
  const pick=(topic:string,sub='')=>{set({topic,sub});setOpen(false);};
  const topics=sourceId?doraTopics.filter(topic=>doraSourceTopicIds(sourceId).includes(topic.id)):doraTopics;
- const count=(topic:string,sub:string)=>{const at={topic,sub,regime,related:related&&!sub};return sourceId?doraChoiceNormIds(sourceId,at).length:doraChoiceCounts(at).normen;};
+ const count=(topic:string,sub:string)=>{const at={topic,sub,regime,related:related&&!sub,sector};return sourceId?doraChoiceNormIds(sourceId,at).length:doraChoiceCounts(at).normen;};
  const row=(key:string,label:string,amount:number,chosen:boolean,indent:boolean,onClick:()=>void)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
   <span>{label}</span>{amount>=0&&<small title={amount===1?'1 norm':amount+' normen'}>{amount}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
  return <Popover.Root open={open} onOpenChange={setOpen}>
@@ -39,6 +39,7 @@ export function TopicFilter({value,onChange,sourceId,showValue=true}:{value:stri
     <div className="topic-filter-options">
      {(!sourceId||doraSourceHasRegimes(sourceId))&&<label className="catalogue-tool-option" htmlFor="topic-filter-regime" data-disabled={!choice||undefined}><Checkbox id="topic-filter-regime" checked={regime==='vereenvoudigd'} disabled={!choice} onCheckedChange={checked=>set({regime:checked===true?'vereenvoudigd':'volledig'})}/><span>Vereenvoudigd kader (artikel 16)</span></label>}
      <label className="catalogue-tool-option" htmlFor="topic-filter-related" data-disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)||undefined}><Checkbox id="topic-filter-related" checked={related} disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)} onCheckedChange={checked=>set({related:checked===true})}/><span>Ook verwante normen</span></label>
+     {choice&&doraTopicHasSector(choice.topic,sourceId||'')&&<label className="catalogue-tool-option" htmlFor="topic-filter-sector" title="Normen voor één soort instelling, zoals een centrale tegenpartij, effectenbewaarinstelling of handelsplatform."><Checkbox id="topic-filter-sector" checked={sector} onCheckedChange={checked=>set({sector:checked===true})}/><span>Ook sectorspecifieke normen</span></label>}
     </div>
    </Popover.Popup>
   </Popover.Positioner></Popover.Portal>
