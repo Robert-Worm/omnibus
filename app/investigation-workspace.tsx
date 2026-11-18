@@ -535,7 +535,7 @@ export function FoundationCatalogue({
     }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
    const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
    const what=basis==='wet'?`${own.length} ${labels.lawNoun[own.length===1?0:1]}`:labels.practice?.full||'';
-   return <div className="catalogue-topic-bar"><p><strong>{listFamily!.label(listChoice)}</strong><span>{what}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
+   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
      <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>

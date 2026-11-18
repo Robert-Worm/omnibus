@@ -354,11 +354,13 @@ html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background
 html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:var(--donker-lijn-8)!important}
 .framework-app .creator-presets button:focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}
 /* Eén regel (B-070): zoeken, filters en groeperen naast elkaar. Het zoekveld geeft ruimte af, lange waarden worden afgekapt. */
-.catalogue-table .catalogue-table-search{flex:1 1 10rem;min-width:10rem}
+.catalogue-table .catalogue-table-search{flex:1 1 7rem;min-width:7rem}
 .catalogue-table-filters{flex-wrap:nowrap}
 .catalogue-table-filters .catalogue-tool-value{max-width:7rem}
 .catalogue-table .catalogue-table-grouping .catalogue-tool{min-width:0}
 .catalogue-table-tools .catalogue-tool-clear{padding:0 .25rem}
+/* Smaller scherm: kortere waarden, zodat drie gezette filters op één regel blijven (panel 18 november 2026). */
+@media (max-width:1340px){.catalogue-table-filters .catalogue-tool-value{max-width:4.75rem}.catalogue-table-grouping .catalogue-tool-label{display:none}}
 @media (max-width:1180px){.catalogue-table-filters{flex-wrap:wrap}}
 .catalogue-table-narrowed{display:inline-block;vertical-align:-1px;margin-right:.3rem;color:var(--primary)}
 /* De balk boven de tegels (B-074): dezelfde knoppen als in de lijst, zonder het kader van de tabel. */

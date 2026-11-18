@@ -138,6 +138,10 @@ Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **
 
 Het volledige en het vereenvoudigde kader gaan niet samen. Kies je een onderwerp onder het ene kader, dan vervallen de normen van dat onderwerp die alleen onder het andere gelden.
 
+In de export staat het onderwerp voorop in de kolom *Element*. Bij een toetspunt uit NOREA noemt de kolom *Artikel / pagina* ook de verwante normen uit de wet, met het artikel als de koppeling dat noemt; bij een toetspunt uit de wet staat daar de verwante NOREA-norm.
+
+De vraagvoorstellen in stap 3 volgen het onderwerp nog niet: je krijgt het voorstel van de bron of het thema met de meeste gekozen toetspunten. Kijk dus onder *Ander voorstel* of er een beter past, en controleer welke toetspunten los blijven.
+
 De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. De bronnen over het toezicht op kritieke ICT-dienstverleners hebben geen onderwerp; die kies je in de gewone lijst.
 
 ## Op telefoon of tablet
