@@ -9,7 +9,7 @@ import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/sel
 import {useBrowseState} from './browse-state';
 
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
-export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[];/** Vervolgfilter: alleen zichtbaar en actief als een ander filter een bepaalde waarde heeft (bijvoorbeeld Onderwerp bij Familie: DORA). */when?:(filters:Record<string,string>)=>boolean;/** Eigen vergelijking, als de waarde meer is dan één van de waarden van de rij. */match?:(row:Row,value:string)=>boolean;/** Eigen bediening in plaats van de keuzelijst, bijvoorbeeld een overzicht met opties. */render?:(value:string,set:(value:string)=>void)=>ReactNode};
+export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[];/** Vervolgfilter: alleen zichtbaar en actief als een ander filter een bepaalde waarde heeft (bijvoorbeeld Onderwerp bij Familie: DORA). */when?:(filters:Record<string,string>)=>boolean;/** Eigen vergelijking, als de waarde meer is dan één van de waarden van de rij. */match?:(row:Row,value:string)=>boolean;/** Eigen bediening in plaats van de keuzelijst, bijvoorbeeld een overzicht met opties. */render?:(value:string,set:(value:string)=>void)=>ReactNode;/** Dit filter snijdt dwars door de rijen heen en vraagt daarom de lijst: boven de tegels springt de weergave naar de lijst zodra het een waarde krijgt. */needsList?:boolean};
 export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;/** Vaste volgorde van de groepen; zonder is het alfabetisch. */order?:(name:string)=>number;};
 const SLOTS=['11.5rem','12rem','7.5rem','10rem'];
 export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean;/** De telling en het vinkje gelden voor een deel van de rij (bijvoorbeeld één onderwerp). De tekst zegt welk deel. */narrowed?:string;/** De telling wordt nog opgehaald. */counting?:boolean};
@@ -51,6 +51,41 @@ export function ToolSelect({label,value,onChange,options,active=false,name}:{lab
  </Select>;
 }
 
+/** De filters van een catalogus, gedeeld door de lijst en de balk boven de tegels: zelfde knoppen, zelfde bewaarde stand. */
+function filterStep<Row>(filters:CatalogueFilter<Row>[],current:Record<string,string>,key:string,value:string){
+ const next={...current,[key]:value};
+ // Een vervolgfilter waarvan de voorwaarde vervalt, verliest zijn waarde; anders komt een oude keuze later stil terug.
+ for(const f of filters)if(f.when&&!f.when(next))delete next[f.key];
+ return next;
+}
+function FilterControls<Row>({filters,rows,values,group,search,onFilter,onClear}:{filters:CatalogueFilter<Row>[];rows:Row[];values:Record<string,string>;group:string;search?:CatalogueSearch;onFilter:(key:string,value:string)=>void;onClear:()=>void}){
+ const usable=filters.filter(f=>!f.when||f.when(values)),filtered=usable.some(f=>values[f.key]);
+ return <div className="catalogue-table-filters">
+  {usable.map(f=>{const chosen=values[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>onFilter(f.key,value))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===group)&&!chosen)return null;
+   return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>onFilter(f.key,value)} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
+  {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" title={search?.value?'Wis zoeken en filters':'Filters wissen'} aria-label={search?.value?'Wis zoeken en filters':'Filters wissen'} onClick={onClear}><X size={14} aria-hidden="true"/>Wissen</button>}
+ </div>;
+}
+type CatalogueSearch={id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};
+/**
+ * Dezelfde zoek- en filterbalk als de lijst, voor boven de tegels. Zij bewaart haar stand onder dezelfde sleutel als de
+ * lijst met dit id, dus wisselen tussen tegels en lijst behoudt de filters. Tegels tonen hele bronnen: een filter met
+ * `needsList` (zoals Onderwerp) meldt zich via `onNeedsList`, waarna de catalogus naar de lijst springt.
+ */
+export function CatalogueFilterBar<Row extends {id:string}>({id,rows,filters,groups,defaultSort='title',search,onFiltersChange,onNeedsList}:{id:string;rows:Row[];filters:CatalogueFilter<Row>[];groups:{key:string}[];defaultSort?:string;search?:CatalogueSearch;onFiltersChange?:(filters:Record<string,string>)=>void;/** Een filter dat de lijst vraagt, kreeg een waarde. De catalogus zet die waarde in de lijst en wisselt van weergave. */onNeedsList?:(key:string,value:string)=>void}){
+ const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
+ const usable=filters.filter(f=>!f.when||f.when(view.filters)),filterKey=JSON.stringify(Object.fromEntries(usable.filter(f=>view.filters[f.key]).map(f=>[f.key,view.filters[f.key]])));
+ const report=useRef(onFiltersChange);
+ useEffect(()=>{report.current=onFiltersChange;});
+ useEffect(()=>{report.current?.(JSON.parse(filterKey));},[filterKey]);
+ return <div className="catalogue-table catalogue-filter-bar"><div className="catalogue-table-tools">
+  {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
+  <FilterControls filters={filters} rows={rows} values={view.filters} group={view.group} search={search}
+   onFilter={(key,value)=>{setView(v=>({...v,filters:filterStep(filters,v.filters,key,value)}));if(value&&filters.find(f=>f.key===key)?.needsList)onNeedsList?.(key,value);}}
+   onClear={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}/>
+ </div></div>;
+}
+
 export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns,banner,onFiltersChange,preset}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
@@ -71,8 +106,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const columns:CatalogueColumn<Row>[]=[...fitting,...Array.from({length:Math.max(0,slots-fitting.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
   .map((c,i)=>({...c,width:SLOTS[Math.min(i,SLOTS.length-1)]}));
  const usable=filters.filter(f=>!f.when||f.when(view.filters)),active=usable.filter(f=>view.filters[f.key]);
- // Een vervolgfilter waarvan de voorwaarde vervalt, verliest zijn waarde; anders komt een oude keuze later stil terug.
- const setFilter=(key:string,value:string)=>setView(v=>{const next={...v.filters,[key]:value};for(const f of filters)if(f.when&&!f.when(next))delete next[f.key];return {...v,filters:next};});
+ const setFilter=(key:string,value:string)=>setView(v=>({...v,filters:filterStep(filters,v.filters,key,value)}));
  const activeFilters=Object.fromEntries(active.map(f=>[f.key,view.filters[f.key]])),filterKey=JSON.stringify(activeFilters);
  const reportFilters=useRef(onFiltersChange);
  useEffect(()=>{reportFilters.current=onFiltersChange;});
@@ -100,11 +134,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
   <div className="catalogue-table-frame">
   <div className="catalogue-table-tools">
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
-   <div className="catalogue-table-filters">
-    {usable.map(f=>{const chosen=view.filters[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>setFilter(f.key,value))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
-     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setFilter(f.key,value)} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
-    {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" title={search?.value?'Wis zoeken en filters':'Filters wissen'} aria-label={search?.value?'Wis zoeken en filters':'Filters wissen'} onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>Wissen</button>}
-   </div>
+   <FilterControls filters={filters} rows={rows} values={view.filters} group={view.group} search={search} onFilter={setFilter} onClear={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}/>
    {groups.length>0&&<div className="catalogue-table-grouping">
     <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label})),{value:'',label:'Niet groeperen'}]}/>
     {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Uitklappen':'Inklappen'}</button>}

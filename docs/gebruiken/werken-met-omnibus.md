@@ -122,7 +122,7 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 
 Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. Het filter **Onderwerp** zet ze bij elkaar.
 
-1. Kies in de weergave **Lijst** bij **Familie** voor **DORA**. Het filter **Onderwerp** verschijnt. In de weergave **Tegels** open je de categorie **Financiële sector & DORA** en klik je op een tegel onder **Kies per onderwerp**.
+1. Kies bij **Familie** voor **DORA**. Het filter **Onderwerp** verschijnt. Dat kan in de weergave **Lijst** en in de balk boven de **Tegels**; kies je boven de tegels een onderwerp, dan springt Omnibus naar de lijst. In de weergave **Tegels** open je de categorie **Financiële sector & DORA** en klik je op een tegel onder **Kies per onderwerp**.
 2. Kies een onderwerp. Het getal erachter is het aantal toetspunten. De lijst toont de wetten en kaders met normen voor dat onderwerp; de kolom **Gekozen toetspunten** telt alleen dat onderwerp. Klik nog een keer op het onderwerp om het filter uit te zetten.
 3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt.
 4. Klik op **Open in viewer** om alle normen van het onderwerp onder elkaar te lezen, per bron een sectie. Het onderwerp staat dan onder **Open wetten & kaders**, naast de bronnen die je los opent. Wat je daar kiest, is ook in de bron zelf gekozen.

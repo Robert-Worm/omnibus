@@ -43,6 +43,14 @@ Neem de inhoudelijke waarborgen over, niet historische opdrachten om actieve
 bronnen te vervangen. Verifieer actuele juridische status aan officiële bronnen;
 een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 
+## Familie met onderwerpen
+
+Hoort de bron bij een familie met meer onderdelen (een hoofdwet met uitvoeringsregelingen, richtsnoeren of een
+praktijkkader), bepaal dan na toelating of de familie het regime *kiezen per onderwerp* krijgt en werk de
+onderwerpindeling bij. Lees daarvoor [de onderwerpmethode](references/topic-method.md). Een kader uit één stuk slaat
+dit over. Draai na elke nieuwe database `npm run check:onderwerpen -- --database <catalogue.sqlite>`: een nieuwe norm
+van een ingedeelde bron moet een plek krijgen, in een onderwerp of bewust erbuiten.
+
 ## Extractie en review
 
 - Bevries bronidentiteit, uitgave, officiële URL, publicatie/ingang/peildatum,

@@ -361,3 +361,7 @@ html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:var(--donk
 .catalogue-table-tools .catalogue-tool-clear{padding:0 .25rem}
 @media (max-width:1180px){.catalogue-table-filters{flex-wrap:wrap}}
 .catalogue-table-narrowed{display:inline-block;vertical-align:-1px;margin-right:.3rem;color:var(--primary)}
+/* De balk boven de tegels (B-074): dezelfde knoppen als in de lijst, zonder het kader van de tabel. */
+.catalogue-table.catalogue-filter-bar{margin:0 0 1rem}
+.catalogue-filter-bar .catalogue-table-tools{padding:0}
+.catalogue-filter-bar .catalogue-table-search{flex:1 1 14rem;max-width:34rem}
