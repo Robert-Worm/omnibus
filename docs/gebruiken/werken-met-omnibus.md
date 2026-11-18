@@ -129,10 +129,13 @@ Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De e
 
 Onderaan de keuzelijst van het filter staan twee opties:
 
-- **Vereenvoudigd kader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
+- **Vereenvoudigd in plaats van volledig kader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
 - **Ook verwante normen**: normen die bij een ander onderwerp horen maar hier ook over gaan.
+- **Ook sectorspecifieke normen**: normen voor één soort instelling, zoals een centrale tegenpartij of handelsplatform. Het vinkje staat er alleen als het onderwerp zulke normen heeft.
 
-Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**.
+Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**. Ga je terug naar de lijst, dan staat het onderwerp daar ook.
+
+Het volledige en het vereenvoudigde kader gaan niet samen. Kies je een onderwerp onder het ene kader, dan vervallen de normen van dat onderwerp die alleen onder het andere gelden.
 
 De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. De bronnen over het toezicht op kritieke ICT-dienstverleners hebben geen onderwerp; die kies je in de gewone lijst.
 
