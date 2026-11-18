@@ -1,52 +1,48 @@
 'use client';
-// Kies per onderwerp (B-068, herzien in B-069). Een familie kan een indeling in onderwerpen hebben; nu heeft alleen DORA
-// die. Er is geen eigen scherm: het onderwerp is een filter in de gewone lijst en in de gewone viewer. Dit bestand levert
-// de bediening van dat filter (één knop in de filterbalk met een overzicht van de onderwerpen en twee opties) en de
-// tegels waarmee je vanuit de categorie in de gefilterde lijst komt.
+// Kies per onderwerp (B-068, B-069, B-070). Een familie kan een indeling in onderwerpen hebben; nu heeft alleen DORA die.
+// Er is geen eigen scherm: het onderwerp is één filter in de gewone lijst en in de gewone viewer. Dit bestand levert dat
+// filter (één knop met een keuzelijst in de vorm van de andere filters, met onderaan twee opties) en de tegels waarmee
+// je vanuit de categorie in de gefilterde lijst komt.
 import {useState} from 'react';
-import {Check} from 'lucide-react';
+import {Popover} from '@base-ui/react/popover';
+import {Check,ChevronDown} from 'lucide-react';
 import {Checkbox} from '@/components/ui/checkbox';
-import {Popover,PopoverTrigger,PopoverContent,PopoverTitle} from '@/components/ui/popover';
 import './dora-topics.css';
-import {doraTopics,doraChoiceCounts,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated} from '@/lib/dora-onderwerpen.mjs';
+import {doraTopics,doraChoiceCounts,doraChoiceNormIds,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated,doraSourceTopicIds,doraSourceHasRegimes} from '@/lib/dora-onderwerpen.mjs';
 
-const plural=(count:number,one:string,many:string)=>`${count} ${count===1?one:many}`;
 type Choice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean};
 
-/** Het filter Onderwerp: een knop in de filterbalk. Het overzicht toont alle onderwerpen met hun omvang en de opties. */
-export function TopicFilter({value,onChange}:{value:string;onChange:(value:string)=>void}){
+/** Het filter Onderwerp. `sourceId`: in de viewer van één bron; dan staan alleen de onderwerpen van die bron in de lijst.
+ * `showValue`: toon het gekozen onderwerp in de knop. In de lijst staat het al in de regel boven de rijen. */
+export function TopicFilter({value,onChange,sourceId,showValue=true}:{value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean}){
  const [open,setOpen]=useState(false);
  const choice=decodeDoraChoice(value) as Choice|null,current=choice?doraChoiceLabel(value):'Alle';
+ const regime=choice?.regime||'volledig',related=Boolean(choice?.related);
  // Het kader en de verwante normen blijven staan als je van onderwerp wisselt.
- const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime:choice?.regime||'volledig',related:choice?.related||false,...choice,...next}));
+ const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime,related,...choice,...next}));
  const pick=(topic:string,sub='')=>{set({topic,sub});setOpen(false);};
- return <Popover open={open} onOpenChange={setOpen}>
-  <PopoverTrigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} aria-label={`Onderwerp: ${current}`}/>}>
-   <span className="catalogue-tool-label">Onderwerp:</span><span className="catalogue-tool-value">{current}</span>
-  </PopoverTrigger>
-  <PopoverContent className="topic-filter" align="start">
-   <PopoverTitle>Kies per onderwerp</PopoverTitle>
-   <ul className="topic-filter-list">
-    {doraTopics.map((topic,index)=>{const counts=doraChoiceCounts({topic:topic.id,sub:'',regime:choice?.regime||'volledig',related:choice?.related||false}),active=choice?.topic===topic.id;
-     return <li key={topic.id}>
-      <button type="button" title={topic.includes} data-active={active&&!choice?.sub||undefined} aria-pressed={active&&!choice?.sub} onClick={()=>pick(topic.id)}>
-       <span className="topic-filter-number">{index+1}</span>
-       <span className="topic-filter-text"><strong>{topic.title}</strong></span>
-       <span className="topic-filter-count">{plural(counts.normen,'norm','normen')}<small>{plural(counts.bronnen,'bron','bronnen')}</small></span>
-       {active&&!choice?.sub&&<Check size={15} aria-hidden="true"/>}
-      </button>
-      {topic.subs&&<ul>{topic.subs.map(sub=>{const chosen=active&&choice?.sub===sub.id;
-       return <li key={sub.id}><button type="button" data-active={chosen||undefined} aria-pressed={chosen} onClick={()=>pick(topic.id,sub.id)}><span className="topic-filter-text"><strong>{sub.title}</strong></span>
-        <span className="topic-filter-count">{plural(doraChoiceCounts({topic:topic.id,sub:sub.id,regime:choice?.regime||'volledig',related:false}).normen,'norm','normen')}</span>{chosen&&<Check size={15} aria-hidden="true"/>}</button></li>;})}</ul>}
-     </li>;})}
-   </ul>
-   <div className="topic-filter-options">
-    <label className="filter-option" htmlFor="topic-filter-regime"><Checkbox id="topic-filter-regime" checked={choice?.regime==='vereenvoudigd'} disabled={!choice} onCheckedChange={checked=>set({regime:checked===true?'vereenvoudigd':'volledig'})}/><span>Vereenvoudigd ICT-risicobeheerkader (artikel 16)</span></label>
-    <label className="filter-option" htmlFor="topic-filter-related"><Checkbox id="topic-filter-related" checked={Boolean(choice?.related)} disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)} onCheckedChange={checked=>set({related:checked===true})}/><span>Ook verwante normen uit andere onderwerpen</span></label>
-   </div>
-   {choice&&<button type="button" className="topic-filter-clear" onClick={()=>{onChange('');setOpen(false);}}>Alle onderwerpen tonen</button>}
-  </PopoverContent>
- </Popover>;
+ const topics=sourceId?doraTopics.filter(topic=>doraSourceTopicIds(sourceId).includes(topic.id)):doraTopics;
+ const count=(topic:string,sub:string)=>{const at={topic,sub,regime,related:related&&!sub};return sourceId?doraChoiceNormIds(sourceId,at).length:doraChoiceCounts(at).normen;};
+ const row=(key:string,label:string,amount:number,chosen:boolean,indent:boolean,onClick:()=>void)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
+  <span>{label}</span>{amount>=0&&<small title={amount===1?'1 norm':amount+' normen'}>{amount}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
+ return <Popover.Root open={open} onOpenChange={setOpen}>
+  <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-label={`Onderwerp: ${current}`}/>}>
+   <span className="catalogue-tool-label">{showValue||!choice?'Onderwerp:':'Onderwerp'}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
+  </Popover.Trigger>
+  <Popover.Portal><Popover.Positioner side="bottom" align="start" sideOffset={4} collisionAvoidance={{side:'none',align:'shift'}} className="isolate z-50">
+   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp">
+    <div>
+     {row('alle','Alle onderwerpen',-1,!choice,false,()=>{onChange('');setOpen(false);})}
+     {topics.filter(topic=>count(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,count(topic.id,''),choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id)),
+      ...(topic.subs||[]).filter(sub=>count(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,count(topic.id,sub.id),choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id)))])}
+    </div>
+    <div className="topic-filter-options">
+     {(!sourceId||doraSourceHasRegimes(sourceId))&&<label className="catalogue-tool-option" htmlFor="topic-filter-regime" data-disabled={!choice||undefined}><Checkbox id="topic-filter-regime" checked={regime==='vereenvoudigd'} disabled={!choice} onCheckedChange={checked=>set({regime:checked===true?'vereenvoudigd':'volledig'})}/><span>Vereenvoudigd kader (artikel 16)</span></label>}
+     <label className="catalogue-tool-option" htmlFor="topic-filter-related" data-disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)||undefined}><Checkbox id="topic-filter-related" checked={related} disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)} onCheckedChange={checked=>set({related:checked===true})}/><span>Ook verwante normen</span></label>
+    </div>
+   </Popover.Popup>
+  </Popover.Positioner></Popover.Portal>
+ </Popover.Root>;
 }
 
 /** Tegels binnen de categorie: een klik opent de lijst met dat onderwerp als filter. Zelfde tegelvorm als de bronnen. */

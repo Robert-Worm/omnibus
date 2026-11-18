@@ -4,7 +4,7 @@ import SelectionMenu from './selection-menu';
 import {normId} from '@/lib/norm-navigation.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 
-import {useEffect,useLayoutEffect,useState,useRef,useSyncExternalStore,startTransition,type ComponentType} from 'react';
+import {useEffect,useLayoutEffect,useState,useRef,useSyncExternalStore,startTransition,type ComponentType,type ReactNode} from 'react';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,Users,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -41,7 +41,7 @@ import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
 
-export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;topicFilter?:{options:{value:string;label:string}[];label:(value:string)=>string;matches:(criterionId:string,value:string)=>boolean;take:()=>string|undefined;variant?:(value:string)=>null|{label:string;value:string;options:{value:string;label:string}[];set:(value:string)=>string};merge?:(current:string,next:string)=>string;base?:(value:string)=>string};analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
+export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;topicFilter?:{matches:(criterionId:string,value:string)=>boolean;take:()=>string|undefined;render:(value:string,set:(value:string)=>void)=>ReactNode};analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void;onOpenSource?:(id:string)=>void};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[];navigationSubjects?:string[]};
 type Tab='points'|'source'|'approach';
@@ -120,7 +120,6 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  // Zoeken op de code zoals de gebruiker die ziet (DORA-G10-N02-P01); een oud voorvoegsel "TP-" uit een eerdere export mag ervoor staan.
  // Onderwerpfilter (alleen bronnen die er een aanbieden, nu DORA; B-068).
  const topicValue=adapter?.topicFilter?view.topic||'':'';
- const topicBase=topicValue?(adapter?.topicFilter?.base?.(topicValue)??topicValue):'',topicVariant=topicValue?adapter?.topicFilter?.variant?.(topicValue)??null:null;
  const topicIds=topicValue?[...new Set(rows.filter(r=>adapter!.topicFilter!.matches(r.criterionId,topicValue)).flatMap(r=>r.pointIds))]:[],topicState=topicValue?select(draft,topicIds):null;
  const query=view.query.trim().toLocaleLowerCase('nl').replace(/^tp-(?=[a-z])/u,'');
  const matches=rows.filter(r=>{
@@ -207,8 +206,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
    <div className="law-browse-filters" aria-label="Normen filteren">
     <div className="law-search"><Search size={16} aria-hidden="true"/><Input id="law-search" aria-label="Zoeken in dit kader" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div>
     {groupsForSource.length>1&&<ToolSelect label="Groep:" active={Boolean(view.group)} value={view.group} onChange={group=>setView(v=>({...v,group}))} options={[{value:'',label:'Alle groepen'},...groupsForSource.map(group=>({value:group.id,label:group.title}))]}/>}
-    {adapter?.topicFilter&&adapter.topicFilter.options.length>0&&<ToolSelect label="Onderwerp:" active={Boolean(topicValue)} value={topicBase} onChange={topic=>setView(v=>({...v,topic:adapter.topicFilter!.merge?adapter.topicFilter!.merge(v.topic||'',topic):topic}))} options={[{value:'',label:'Alle onderwerpen'},...adapter.topicFilter.options,...(topicBase&&!adapter.topicFilter.options.some(o=>o.value===topicBase)?[{value:topicBase,label:adapter.topicFilter.label(topicBase)}]:[])]}/>}
-    {topicVariant&&<ToolSelect label={topicVariant.label} active={topicVariant.value!==topicVariant.options[0].value} value={topicVariant.value} onChange={next=>setView(v=>({...v,topic:topicVariant.set(next)}))} options={topicVariant.options}/>}
+    {adapter?.topicFilter?.render(topicValue,topic=>setView(v=>({...v,topic})))}
     <div className="law-column-control"><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
     <LawReadingControls value={readingDensity} onChange={setReadingDensity}/>
     {(query||view.group||topicValue||view.selectedOnly)&&<Button className="law-reset-filters" variant="ghost" onClick={resetFilters}>Filters wissen</Button>}

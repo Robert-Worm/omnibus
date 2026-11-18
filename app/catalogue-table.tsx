@@ -96,16 +96,16 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const chosenRows=shown.filter(r=>r.selected>0).length,chosenTotal=shown.reduce((sum,r)=>sum+r.selected,0);
  return <section className="catalogue-table" aria-label={`Lijst van ${noun[1]}`} ref={box}>
   <div className="catalogue-table-frame">
-  <div className="catalogue-table-tools" data-rows={filters.length>=4?2:undefined}>
+  <div className="catalogue-table-tools">
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
     {usable.map(f=>{const chosen=view.filters[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}})))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
      return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
-    {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>{search?.value?'Wis zoeken en filters':'Filters wissen'}</button>}
+    {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" title={search?.value?'Wis zoeken en filters':'Filters wissen'} aria-label={search?.value?'Wis zoeken en filters':'Filters wissen'} onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>Wissen</button>}
    </div>
    {groups.length>0&&<div className="catalogue-table-grouping">
     <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label})),{value:'',label:'Niet groeperen'}]}/>
-    {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Groepen uitklappen':'Groepen inklappen'}</button>}
+    {group&&<button type="button" className="catalogue-tool-clear" disabled={sections.length<1} onClick={()=>setView(v=>({...v,closed:allClosed?v.closed.filter(k=>!closedKeys.includes(k)):[...new Set([...v.closed,...closedKeys])]}))}>{allClosed?'Uitklappen':'Inklappen'}</button>}
    </div>}
   </div>
   <output className="catalogue-table-count"><span><strong>{shown.length}</strong>{(filtered||searching)&&shown.length!==rows.length?` van ${rows.length}`:''} {shown.length===1&&!((filtered||searching)&&shown.length!==rows.length)?noun[0]:noun[1]}{group&&sections.length>1?` · ${sections.length} ${group.plural||'groepen'}`:''}</span>{chosenTotal>0?<em>{chosenUnique===undefined?`${chosenTotal} ${chosenTotal===1?unit[0]:unit[1]} gekozen uit ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`:`${chosenUnique} ${chosenUnique===1?unit[0]:unit[1]} gekozen, te zien bij ${chosenRows} ${chosenRows===1?noun[0]:noun[1]}`}</em>:null}{hint&&<small className="sr-only">{hint}</small>}</output>

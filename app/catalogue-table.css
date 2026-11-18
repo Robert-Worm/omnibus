@@ -353,9 +353,11 @@ html[data-appearance=dark] .framework-app :is(.catalogue-tool-clear,.catalogue-c
 html[data-appearance=dark] .framework-app .catalogue-tool-clear:hover{background:var(--donker-vlak-5)!important}
 html[data-appearance=dark] .framework-app .catalogue-tool-clear{color:var(--donker-lijn-8)!important}
 .framework-app .creator-presets button:focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}
-/* Lijsten met veel filters (B-068): zoeken en groeperen op de eerste regel, de filters op de tweede. Zo verspringt er niets
-   als er een vervolgfilter bij komt, en houdt het zoekveld zijn breedte. */
-.catalogue-table-tools[data-rows="2"] .catalogue-table-search{order:1}
-.catalogue-table-tools[data-rows="2"] .catalogue-table-grouping{order:2}
-.catalogue-table-tools[data-rows="2"] .catalogue-table-filters{order:3;flex:1 0 100%}
+/* Eén regel (B-070): zoeken, filters en groeperen naast elkaar. Het zoekveld geeft ruimte af, lange waarden worden afgekapt. */
+.catalogue-table .catalogue-table-search{flex:1 1 10rem;min-width:10rem}
+.catalogue-table-filters{flex-wrap:nowrap}
+.catalogue-table-filters .catalogue-tool-value{max-width:7rem}
+.catalogue-table .catalogue-table-grouping .catalogue-tool{min-width:0}
+.catalogue-table-tools .catalogue-tool-clear{padding:0 .25rem}
+@media (max-width:1180px){.catalogue-table-filters{flex-wrap:wrap}}
 .catalogue-table-narrowed{display:inline-block;vertical-align:-1px;margin-right:.3rem;color:var(--primary)}

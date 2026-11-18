@@ -293,3 +293,6 @@ html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice
 .framework-app #main-workspace .open-item-workspace[data-single]~* .law-browser,.framework-app #main-workspace .open-item-workspace[data-single]~.law-browser>:not(.law-view-actions){clear:both}
 .wwke-browser .law-group-heading :is(.law-group-location,.law-group-count){display:inline;margin:0}
 .wwke-browser .law-group-heading .law-group-location::after{content:' · '}
+/* Eén regel (B-070): het zoekveld geeft ruimte af en lange waarden worden afgekapt, zodat de filters naast elkaar blijven. */
+@media (min-width:1100px){.framework-app .law-browse-filters{flex-wrap:nowrap}.framework-app .law-browse-filters>.law-search{flex:1 1 10rem;min-width:10rem}
+ .law-browse-filters .catalogue-tool .catalogue-tool-value{max-width:11rem}.law-browse-filters .law-reset-filters{flex:none;white-space:nowrap}}

@@ -127,10 +127,10 @@ Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De e
 3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt. NOREA DORA in Control is een praktijkkader en geen wet; het staat in de lijst en je kiest het zelf.
 4. Open een bron om de normen te lezen. De viewer toont alleen het onderwerp. Met **Filters wissen** zie je de hele bron.
 
-In het overzicht van het filter staan twee opties:
+Onderaan de keuzelijst van het filter staan twee opties:
 
-- **Vereenvoudigd ICT-risicobeheerkader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
-- **Ook verwante normen uit andere onderwerpen**: normen die bij een ander onderwerp horen maar hier ook over gaan.
+- **Vereenvoudigd kader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
+- **Ook verwante normen**: normen die bij een ander onderwerp horen maar hier ook over gaan.
 
 Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**.
 
