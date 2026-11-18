@@ -29,7 +29,7 @@ import type {Point,Criterion} from './cio-law-workspace';
 import {Approach} from './cio-law-workspace';
 import {auditReadingText,currentAuditGuidance,sourceSnapshotStatus,zonderHold} from '@/lib/audit-reading.mjs';
 import {requestNormJump} from '@/lib/norm-jump.mjs';
-import {isDoraTopicSource,doraChoiceMatches,doraChoiceLabel,doraGroupNote,takeDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
+import {isDoraTopicSource,doraChoiceMatches,doraChoiceLabel,doraGroupNote,doraOtherRegimeNormIds,rememberDoraListTopic,takeDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
 import {TopicFilter} from './dora-topics';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
@@ -143,7 +143,9 @@ export default function TopicalLawBrowser({sourceId,...props}:Props){
  const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const bundle=topicalPackage(sourceId)!;
  const openSource=props.onOpenSource;
- const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),relatedNorms:(id:string)=>verwanteNormen(sourceId,id),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',topicFilter:isDoraTopicSource(sourceId)?{matches:doraChoiceMatches,take:()=>takeDoraViewerFilter(sourceId),label:doraChoiceLabel,render:(value:string,set:(value:string)=>void)=><TopicFilter value={value} onChange={set} sourceId={sourceId} showValue={false}/>}:undefined,
+ const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),relatedNorms:(id:string)=>verwanteNormen(sourceId,id),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',topicFilter:isDoraTopicSource(sourceId)?{matches:doraChoiceMatches,take:()=>takeDoraViewerFilter(sourceId),label:doraChoiceLabel,excludes:(value:string)=>doraOtherRegimeNormIds(sourceId,value),
+   // Het onderwerp dat je hier kiest, staat bij terugkeren ook in de lijst.
+   render:(value:string,set:(value:string)=>void)=><TopicFilter value={value} onChange={next=>{rememberDoraListTopic(next);set(next);}} sourceId={sourceId} showValue={false}/>}:undefined,
   groupNote:isDoraTopicSource(sourceId)?doraGroupNote:undefined,
   catalogue:{...bundle.catalogue,criteria:bundle.catalogue.criteria.map(c=>({...c,text:auditReadingText(c.text)}))},points:bundle.catalogue.points,records:bundle.bank.records,rows:topicalRows(bundle),groups:topicalGroups(bundle),
   goalFor:(id:string)=>topicalGoal(bundle,id),measureFor:(id:string)=>topicalMeasure(bundle,id),
