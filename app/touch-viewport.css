@@ -1,0 +1,69 @@
+/* Desktopweergave op telefoon en tablet (B-067). Alles hier geldt alleen als touch-viewport.ts
+   html[data-touch] heeft gezet; een computer met muis merkt er niets van. */
+
+/* Mobiele browsers vergroten losse tekstblokken op een brede pagina. Dat laat knoppen in de
+   bovenbalk ongelijk worden en verspringen. De pagina bepaalt de lettergrootte zelf. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* De laadmelding staat onderaan de pagina. Ingezoomd valt die plek buiten beeld; laat haar
+   meelopen met het zichtbare deel en houd haar leesbaar bij elke zoomstand. */
+html[data-touch] .project-notice.is-loading {
+  left: calc(var(--vv-left, 0px) + var(--vv-width, 100vw) / 2);
+  top: calc(var(--vv-top, 0px) + var(--vv-height, 100vh));
+  bottom: auto;
+  transform-origin: 50% 100%;
+  transform: translate(-50%, calc(-100% - 12px * 1 / var(--vv-scale, 1))) scale(calc(1 / var(--vv-scale, 1)));
+  max-width: 20rem;
+}
+
+/* Eenmalige aanwijzing op een smal scherm. De maat is in schermpixels: gedeeld door de zoomstand. */
+.touch-hint {
+  position: fixed;
+  z-index: 70;
+  left: calc(var(--vv-left, 0px) + var(--vv-width, 100vw) / 2);
+  top: calc(var(--vv-top, 0px) + var(--vv-height, 100vh));
+  width: 21rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .7rem .8rem .7rem 1rem;
+  border-radius: .75rem;
+  background: #17324d;
+  color: #fff;
+  box-shadow: 0 6px 20px rgb(15 35 55 / .3);
+  font: 400 .875rem/1.4 var(--font-ui, system-ui, sans-serif);
+  transform-origin: 50% 100%;
+  transform: translate(-50%, calc(-100% - 14px / var(--vv-scale, 1))) scale(calc(1 / var(--vv-scale, 1)));
+}
+.touch-hint p { margin: 0; flex: 1; }
+.touch-hint button {
+  flex: none;
+  min-height: 2.5rem;
+  padding: 0 .85rem;
+  border: 1px solid rgb(255 255 255 / .55);
+  border-radius: .5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+}
+.touch-hint button:focus-visible { outline: 3px solid #9cc3ee; outline-offset: 2px; }
+
+/* Uitleg bij een symbool of cel verschijnt bij aanwijzen. Een vinger wijst niet aan: toon de uitleg
+   ook na een tik (de knop heeft dan focus), tot de bezoeker ergens anders tikt. */
+html[data-touch] :is(.audience-icon, .catalogue-cell-tip):focus .audience-tip { display: block; }
+
+/* Vensters krijgen op een aanraakscherm hun plek van touch-viewport.ts. Een openingsanimatie zou die plek
+   één tel overschrijven en het venster laten verspringen. */
+html[data-touch] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"]) {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Slepen met een vinger (touch-drag.ts). Lang indrukken mag geen tekst selecteren of een menu openen. */
+html[data-touch] [draggable="true"] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.touch-drag-ghost { background: var(--card, #fff); opacity: .94; box-shadow: 0 10px 28px rgb(15 35 55 / .28); border-radius: 8px; transform-origin: 0 0; will-change: transform; }
+html[data-touch-dragging] { -webkit-user-select: none; user-select: none; }
+/* De aanwijzing bij de bouwstenen zegt hoe slepen met een vinger gaat. */
+html[data-touch] .bank-instruction::after { content: " Slepen: houd een bouwsteen of groep even vast en beweeg dan je vinger."; }

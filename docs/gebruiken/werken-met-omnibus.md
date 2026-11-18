@@ -118,6 +118,17 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 
 **Gelukt als:** je Excel-bestand is gedownload.
 
+## Op telefoon of tablet
+
+Op een telefoon of tablet zie je dezelfde weergave als op een computer. De pagina past bij openen in je scherm; de tekst is dan klein.
+
+- Zoom in met twee vingers en schuif naar het deel dat je wilt lezen.
+- Draai je scherm voor een groter beeld.
+- Een venster opent altijd in het deel dat je op dat moment ziet, op een leesbare grootte. Je kunt er daarna gewoon in- en uitzoomen.
+- Wil je de uitleg bij een symbool lezen, tik er dan op.
+
+In stap 3 kun je bouwstenen ook met je vinger slepen. Houd een bouwsteen of een groep even vast tot er een kopie onder je vinger verschijnt, beweeg naar een vraag en laat los. Beweeg je meteen, dan schuif je gewoon de pagina. De knop **Koppelen** blijft ook werken.
+
 ## Je werk bewaren en delen
 
 | Knop | Wat het doet |

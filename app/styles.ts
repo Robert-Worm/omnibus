@@ -24,5 +24,6 @@ import './rijksmap-theme.css';
 import './appearance.css';
 import './collection-layout.css';
 import './mobile.css';
+import './touch-viewport.css';
 import './report-list.css';
 import './app-wide.css';
