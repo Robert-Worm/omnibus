@@ -1,46 +1,42 @@
-/* DORA per onderwerp (B-068). Gebruikt de bestaande kleurtokens en de kaartvorm van de catalogus. */
-.dora-topic-band { margin: 0 0 1.25rem; padding: 1rem 1.1rem 1.1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
-.dora-topic-band > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; margin-bottom: .8rem; }
-.dora-topic-band h3 { display: inline-flex; align-items: center; gap: .45rem; margin: 0; font: 600 1.05rem/1.3 var(--font-heading, var(--font-ui)); color: var(--primary); }
-.dora-topic-band > header p { margin: 0; font-size: .875rem; color: var(--muted-foreground); }
-.dora-topic-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; }
-.dora-topic-cards button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: auto 1fr; gap: .1rem .6rem; align-items: start; padding: .65rem .75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--background); cursor: pointer; font: 400 .875rem/1.35 var(--font-ui); color: var(--foreground); }
-.dora-topic-cards button:hover, .dora-topic-cards button[data-active] { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 6%, var(--card)); }
-.dora-topic-cards button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
-.dora-topic-number { grid-row: span 2; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; border: 1px solid var(--primary); color: var(--primary); font-weight: 600; font-size: .8125rem; }
-.dora-topic-cards strong { font-weight: 600; }
-.dora-topic-cards small { grid-column: 2; color: var(--muted-foreground); font-size: .78rem; }
-@media (max-width: 900px) { .dora-topic-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Kies per onderwerp (B-069). Geen eigen huisstijl: de knop is een gewoon filter (.catalogue-tool), het overzicht gebruikt
+   het uiterlijk van de filterkeuze (.navigation-filter), de tegels dat van de bronnen (.catalogue-card-*). */
+.topic-filter-tool{height:2.75rem;border-radius:10px}
+.topic-filter{width:min(30rem,calc(100vw - 2rem));max-height:min(36rem,calc(100vh - 4rem));overflow-y:auto;padding:.9rem;display:grid;gap:.6rem;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--foreground);box-shadow:0 10px 28px rgb(32 52 75 / .18);z-index:60}
+html[data-appearance=dark] .topic-filter{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2)}
+.topic-filter [data-slot="popover-title"]{font:600 .9375rem/1.3 var(--font-ui);margin:0}
+.topic-filter ul{list-style:none;margin:0;padding:0;display:grid;gap:.15rem}
+.topic-filter li ul{margin:0 0 .25rem 2.35rem}
+.topic-filter li button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:.65rem;width:100%;min-height:2.1rem;padding:.25rem .55rem;border-radius:8px;cursor:pointer;font:400 .8125rem/1.35 var(--font-ui);color:var(--foreground)}
+.topic-filter li button:hover{background:color-mix(in srgb,var(--primary) 7%,transparent)}
+.topic-filter li button:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+.topic-filter li button[data-active]{background:color-mix(in srgb,var(--primary) 11%,transparent)}
+.topic-filter li button[data-active] strong{color:var(--primary)}
+.topic-filter li button>svg{flex:none;color:var(--primary)}
+.topic-filter-number{flex:none;display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:999px;border:1px solid var(--border);font-weight:600;font-size:.75rem;color:var(--muted-foreground)}
+.topic-filter-text{flex:1;min-width:0;display:grid}
+.topic-filter-text strong{font-weight:600}
+.topic-filter-text small{color:var(--muted-foreground);font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topic-filter-count{flex:none;display:flex;gap:.5rem;align-items:baseline;font-variant-numeric:tabular-nums;white-space:nowrap}
+.topic-filter-count small{color:var(--muted-foreground);font-size:.75rem}
+.topic-filter-options{display:grid;gap:.1rem;padding-top:.5rem;border-top:1px solid var(--border)}
+.topic-filter-options .filter-option{display:flex;align-items:center;gap:.6rem;padding:.4rem .55rem;border-radius:8px;font:400 .8125rem/1.35 var(--font-ui);cursor:pointer}
+.topic-filter-options .filter-option:has([data-disabled]){color:var(--muted-foreground);cursor:default}
+.topic-filter-clear{all:unset;justify-self:start;padding:.25rem .55rem;border-radius:6px;font:500 .8125rem/1.3 var(--font-ui);color:var(--primary);cursor:pointer}
+.topic-filter-clear:hover{text-decoration:underline;text-underline-offset:3px}
+.topic-filter-clear:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
 
-.dora-topic-panel { margin: 0 0 1.5rem; padding: 1rem 1.25rem 1.25rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
-.dora-topic-crumbs { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; margin-bottom: .6rem; }
-.dora-topic-crumbs label, .dora-topic-sub { display: inline-flex; align-items: center; gap: .5rem; font-size: .875rem; color: var(--muted-foreground); }
-.dora-topic-panel select { height: 2.25rem; padding: 0 .6rem; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: var(--foreground); font: inherit; }
-.dora-topic-eyebrow { margin: 0; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
-.dora-topic-panel > header h3 { margin: .15rem 0 .7rem; font: 600 1.45rem/1.25 var(--font-heading, var(--font-ui)); color: var(--primary); }
-.dora-topic-scope { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem 1.5rem; margin: 0 0 1rem; }
-.dora-topic-scope dt { font-weight: 600; font-size: .8125rem; }
-.dora-topic-scope dd { margin: .15rem 0 0; font-size: .875rem; color: var(--muted-foreground); }
-.dora-topic-options legend { padding: 0 .35rem; font-weight: 600; font-size: .8125rem; }
-.dora-topic-options { min-width: 0; margin-inline: 0; display: grid; gap: .45rem; padding: .8rem .9rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--background); font-size: .875rem; }
-.dora-topic-options label { display: flex; align-items: flex-start; gap: .55rem; }
-.dora-topic-options input { margin-top: .2rem; }
-.dora-topic-options strong { font-weight: 600; }
-.dora-topic-sources h4 { margin: 1rem 0 .5rem; font: 600 1rem/1.3 var(--font-ui); }
-.dora-topic-note { margin: 0 0 .6rem; padding: .55rem .75rem; border-left: 3px solid #bea15c; background: color-mix(in srgb, #bea15c 12%, var(--card)); font-size: .8125rem; }
-.dora-topic-sources ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
-.dora-topic-sources li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1rem; padding: .7rem .85rem; border: 1px solid var(--border); border-radius: 10px; background: var(--background); }
-.dora-topic-sources li[data-chosen] { border-color: var(--primary); }
-.dora-topic-sources li > div:first-child { display: grid; gap: .15rem; min-width: 0; flex: 1 1 22rem; }
-.dora-topic-sources small { color: var(--muted-foreground); font-size: .8125rem; }
-.dora-topic-kind { justify-self: start; padding: .05rem .5rem; border-radius: 999px; font-size: .72rem; font-weight: 600; background: color-mix(in srgb, var(--primary) 10%, var(--card)); color: var(--primary); }
-.dora-topic-kind[data-laag="praktijk"] { background: color-mix(in srgb, #bea15c 22%, var(--card)); color: var(--foreground); }
-.dora-topic-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
-.dora-topic-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--border); }
-.dora-topic-footer p { margin: 0; font-size: .9rem; color: var(--foreground); }
-.dora-topic-transparency { margin-top: .9rem; font-size: .875rem; color: var(--muted-foreground); }
-.dora-topic-transparency summary { cursor: pointer; color: var(--foreground); font-weight: 600; }
-.dora-topic-transparency ul { margin: .5rem 0 0; padding-left: 1.2rem; display: grid; gap: .25rem; }
-@media (max-width: 760px) { .dora-topic-scope { grid-template-columns: 1fr; } }
-.dora-topic-touching { margin: .6rem 0 0; font-size: .8125rem; color: var(--muted-foreground); }
-.dora-topic-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; margin: .6rem 1rem; padding: .55rem .8rem; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 8px; background: var(--card); font-size: .875rem; }
+/* Eén regel boven de rijen, in de vorm van een groepskop van de lijst: het gekozen onderwerp en de ene handeling. */
+.catalogue-topic-bar{display:flex;align-items:center;justify-content:space-between;gap:.5rem 1rem;flex-wrap:wrap;padding:.5rem var(--ct-pad);border-top:1px solid var(--border);background:color-mix(in srgb,var(--muted) 35%,var(--card));box-shadow:inset 3px 0 0 var(--primary)}
+.catalogue-topic-bar p{margin:0;display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;font:400 .8125rem/1.4 var(--font-ui)}
+.catalogue-topic-bar p strong{font-weight:600;font-size:.875rem}
+.catalogue-topic-bar p span{color:var(--muted-foreground);font-variant-numeric:tabular-nums}
+
+.topic-tiles{margin:0 0 1.25rem}
+.topic-tiles h4{margin:0 0 .6rem;font:600 .9375rem/1.3 var(--font-ui)}
+.topic-tiles-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
+.topic-tiles-grid button{all:unset;box-sizing:border-box;display:grid;gap:.3rem;align-content:start;padding:.7rem .85rem;border:1px solid var(--border);border-radius:9px;background:var(--card);cursor:pointer;font:400 .875rem/1.35 var(--font-ui);color:var(--foreground)}
+.topic-tiles-grid button:hover{border-color:var(--primary)}
+.topic-tiles-grid button:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+.topic-tiles-grid button>strong{font-weight:600}
+.topic-tiles-grid .catalogue-card-stats{margin-top:.15rem}
+@media (max-width:900px){.topic-tiles-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

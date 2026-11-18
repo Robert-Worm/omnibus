@@ -1,7 +1,7 @@
 'use client';
 // Lijstweergave van een catalogus: één tabel over de volle breedte, als alternatief voor de tegels.
 // Sorteren, filteren en groeperen gebeurt hier; openen en selecteren blijft bij de pagina die de rijen levert.
-import {useEffect,useRef,useState,type ReactNode} from 'react';
+import {Fragment,useEffect,useRef,useState,type ReactNode} from 'react';
 import {ArrowDown,ArrowRight,ArrowUp,ChevronDown,ChevronRight,ChevronsUpDown,Filter,FolderOpen,LayoutGrid,List,Search,X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -9,7 +9,7 @@ import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/sel
 import {useBrowseState} from './browse-state';
 
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
-export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[];/** Vervolgfilter: alleen zichtbaar en actief als een ander filter een bepaalde waarde heeft (bijvoorbeeld Onderwerp bij Familie: DORA). */when?:(filters:Record<string,string>)=>boolean};
+export type CatalogueFilter<Row>={key:string;label:string;all:string;value:(row:Row)=>string[];/** Vervolgfilter: alleen zichtbaar en actief als een ander filter een bepaalde waarde heeft (bijvoorbeeld Onderwerp bij Familie: DORA). */when?:(filters:Record<string,string>)=>boolean;/** Eigen vergelijking, als de waarde meer is dan één van de waarden van de rij. */match?:(row:Row,value:string)=>boolean;/** Eigen bediening in plaats van de keuzelijst, bijvoorbeeld een overzicht met opties. */render?:(value:string,set:(value:string)=>void)=>ReactNode};
 export type CatalogueGroup<Row>={key:string;label:string;/** Meervoud voor de teller, bijvoorbeeld 'families'. */plural?:string;value:(row:Row)=>string;describe?:(name:string)=>string;/** Vaste volgorde van de groepen; zonder is het alfabetisch. */order?:(name:string)=>number;};
 const SLOTS=['11.5rem','12rem','7.5rem','10rem'];
 export type CatalogueRowBase={id:string;title:string;opened:boolean;selected:number;total:number;all:boolean;partial:boolean;/** De telling en het vinkje gelden voor een deel van de rij (bijvoorbeeld één onderwerp). De tekst zegt welk deel. */narrowed?:string;/** De telling wordt nog opgehaald. */counting?:boolean};
@@ -51,26 +51,31 @@ export function ToolSelect({label,value,onChange,options,active=false,name}:{lab
  </Select>;
 }
 
-export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns,banner,onFiltersChange}:{
+export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,unit,search,rows,filters,groups,nameLabel='Naam',nameMeta,describe:describeRow,countLabel='Gekozen',selectLabel,hint,chosenUnique,onOpen,onSelect,gutter=false,dense=false,disabled=false,empty,searching=false,defaultSort='title',columns:allColumns,banner,onFiltersChange,preset}:{
  id:string;noun:[string,string];/** Wat er gekozen wordt, bijvoorbeeld ['toetspunt','toetspunten']. */unit:[string,string];
  /** Zoekveld in de werkbalk: zoeken en filteren horen bij elkaar. */search?:{id:string;label:string;placeholder:string;value:string;onChange:(value:string)=>void};rows:Row[];columns:CatalogueColumn<Row>[];filters:CatalogueFilter<Row>[];
  groups:CatalogueGroup<Row>[];
  nameLabel?:string;nameMeta:(row:Row)=>ReactNode;/** Korte omschrijving die verschijnt als je de naam aanwijst. */describe?:(row:Row)=>ReactNode;countLabel?:string;selectLabel:(row:Row)=>string;/** Korte uitleg in de telregel zolang er niets gekozen is. */hint?:string;/** Aantal unieke gekozen onderdelen, als hetzelfde onderdeel in meer rijen voorkomt. */chosenUnique?:number;
- onOpen:(id:string,filters:Record<string,string>)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string;/** Extra hulp boven de rijen, afhankelijk van wat de lijst na zoeken en filteren toont. */banner?:(shown:Row[],filters:Record<string,string>)=>ReactNode;/** Meldt de actieve filters, zodat de rijen hun telling en vinkje eraan kunnen aanpassen. */onFiltersChange?:(filters:Record<string,string>)=>void}){
+ onOpen:(id:string,filters:Record<string,string>)=>void;onSelect?:(ids:string[],checked:boolean)=>void;/** Lege eerste kolom als er geen vinkjes zijn, zodat de naam in elke lijst op dezelfde plek begint. */gutter?:boolean;/** Lagere rijen, voor lijsten met alleen symbolen en cijfers. */dense?:boolean;disabled?:boolean;empty:ReactNode;searching?:boolean;defaultSort?:string;/** Extra hulp boven de rijen, afhankelijk van wat de lijst na zoeken en filteren toont. */banner?:(shown:Row[],filters:Record<string,string>)=>ReactNode;/** Meldt de actieve filters, zodat de rijen hun telling en vinkje eraan kunnen aanpassen. */onFiltersChange?:(filters:Record<string,string>)=>void;/** Zet filters van buitenaf, bijvoorbeeld vanuit een tegel. Een nieuw nummer past ze één keer toe. */preset?:{token:number;filters:Record<string,string>}}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
+ const presetToken=preset?.token??0,presetDone=useRef(0),presetFilters=useRef(preset?.filters);
+ useEffect(()=>{presetFilters.current=preset?.filters;});
+ useEffect(()=>{if(presetToken&&presetToken!==presetDone.current&&presetFilters.current){presetDone.current=presetToken;const next=presetFilters.current;setView(v=>({...v,filters:{...next}}));}},[presetToken,setView]);
  const box=useRef<HTMLElement>(null),[width,setWidth]=useState(1400);
  useEffect(()=>{const el=box.current;if(!el)return;const observer=new ResizeObserver(entries=>setWidth(Math.round(entries[0].contentRect.width)));observer.observe(el);return()=>observer.disconnect();},[]);
  // Vier vaste kolomplekken tussen de naam en "Gekozen", op elk tabblad even breed (besluit B-054). Heeft een lijst er
  // minder, dan blijft de plek leeg; zo staat elke kolom op elk tabblad op dezelfde plaats.
  const shownColumns=allColumns.filter(c=>c.key!=='spacer'&&(!c.groupKey||c.groupKey!==view.group)&&(!c.hideBelow||width>=c.hideBelow));
- const columns:CatalogueColumn<Row>[]=[...shownColumns,...Array.from({length:Math.max(0,SLOTS.length-shownColumns.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
+ // Op een smalle tabel vervallen de laatste kolomplekken, zodat de naam leesbaar blijft (was 14 px breed op 1024 px).
+ const slots=width>=1100?SLOTS.length:width>=960?3:2,fitting=shownColumns.slice(0,slots);
+ const columns:CatalogueColumn<Row>[]=[...fitting,...Array.from({length:Math.max(0,slots-fitting.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
   .map((c,i)=>({...c,width:SLOTS[Math.min(i,SLOTS.length-1)]}));
  const usable=filters.filter(f=>!f.when||f.when(view.filters)),active=usable.filter(f=>view.filters[f.key]);
  const activeFilters=Object.fromEntries(active.map(f=>[f.key,view.filters[f.key]])),filterKey=JSON.stringify(activeFilters);
  const reportFilters=useRef(onFiltersChange);
  useEffect(()=>{reportFilters.current=onFiltersChange;});
  useEffect(()=>{reportFilters.current?.(JSON.parse(filterKey));},[filterKey]);
- const shown=rows.filter(row=>active.every(f=>f.value(row).includes(view.filters[f.key])));
+ const shown=rows.filter(row=>active.every(f=>f.match?f.match(row,view.filters[f.key]):f.value(row).includes(view.filters[f.key])));
  const sortOf=(key:string)=>key==='title'?(row:Row)=>row.title.toLocaleLowerCase('nl'):key==='selected'?(row:Row)=>row.selected:columns.find(c=>c.key===key)?.sort;
  const pick=sortOf(view.sort)||sortOf('title')!,sign=view.dir==='asc'?1:-1,blank=(v:string|number)=>v===''||v===undefined;
  const sorted=[...shown].sort((a,b)=>{const x=pick(a),y=pick(b);
@@ -94,7 +99,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
   <div className="catalogue-table-tools" data-rows={filters.length>=4?2:undefined}>
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
-    {usable.map(f=>{const chosen=view.filters[f.key]||'',options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
+    {usable.map(f=>{const chosen=view.filters[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}})))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
      return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
     {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>{search?.value?'Wis zoeken en filters':'Filters wissen'}</button>}
    </div>

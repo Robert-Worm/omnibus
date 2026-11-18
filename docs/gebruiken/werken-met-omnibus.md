@@ -120,22 +120,21 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 
 ## DORA per onderwerp
 
-Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. De ingang **DORA per onderwerp** zet ze bij elkaar.
+Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. Het filter **Onderwerp** zet ze bij elkaar.
 
-1. Open onder **Wetten** of **Kaders** de categorie **Financiële sector & DORA**. Werk je in de weergave **Lijst**, kies dan bij **Familie** voor **DORA**. Er verschijnt een filter **Onderwerp**; kies een onderwerp en klik boven de lijst op **Bekijk het hele onderwerp**. Je kunt ook direct een bron uit de lijst openen: de viewer toont dan alleen de normen van dat onderwerp.
-2. Kies een van de acht onderwerpen. Je ziet wat erbij hoort, wat niet, en per bron hoeveel normen en toetspunten het zijn.
-3. Klik op **Bekijk in viewer** om de normen van één bron te lezen. De viewer opent met het filter **Onderwerp**; met **Filters wissen** zie je weer de hele bron.
-4. Klik op **Kies deze normen** bij een bron, of onderaan op **Kies alle normen**.
+1. Kies in de weergave **Lijst** bij **Familie** voor **DORA**. Het filter **Onderwerp** verschijnt. In de weergave **Tegels** open je de categorie **Financiële sector & DORA** en klik je op een tegel onder **Kies per onderwerp**.
+2. Kies een onderwerp. De lijst toont de wetten en kaders met normen voor dat onderwerp. De kolom **Gekozen toetspunten** telt alleen dat onderwerp.
+3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt. NOREA DORA in Control is een praktijkkader en geen wet; het staat in de lijst en je kiest het zelf.
+4. Open een bron om de normen te lezen. De viewer toont alleen het onderwerp. Met **Filters wissen** zie je de hele bron.
 
-Drie opties passen de keuze aan:
+In het overzicht van het filter staan twee opties:
 
-- **Vereenvoudigd raamwerk**: voor de kleine instellingen uit artikel 16. Het vervangt dan het gewone raamwerk.
-- **Ook normen die dit onderwerp raken**: normen die bij een ander onderwerp horen maar hier ook over gaan.
-- **Toon NOREA DORA in Control**: het praktijkkader van NOREA als verduidelijking. Dit is geen wettelijke norm. Kies de wet of NOREA als toetsgrondslag; beide kiezen geeft dubbele toetspunten.
+- **Vereenvoudigd ICT-risicobeheerkader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
+- **Ook verwante normen uit andere onderwerpen**: normen die bij een ander onderwerp horen maar hier ook over gaan.
 
-Er is één selectie. Wat je hier kiest, staat ook als gekozen in de viewer van de bron.
+Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**.
 
-De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. Onder **Wat zit er niet in deze onderwerpen?** staat welke bronnen erbuiten vallen, zoals de regels over toezicht op kritieke ICT-dienstverleners. Die kies je in de gewone bronnenlijst.
+De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. De bronnen over het toezicht op kritieke ICT-dienstverleners hebben geen onderwerp; die kies je in de gewone lijst.
 
 ## Op telefoon of tablet
 
