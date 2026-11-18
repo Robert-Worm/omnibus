@@ -1,0 +1,9 @@
+/* Een onderwerp als één geheel (B-072). De secties gebruiken de groepen van de gewone viewer; alleen de kop per bron is nieuw. */
+.topic-viewer{display:grid;gap:1.25rem}
+.topic-viewer-heading{display:flex;align-items:center;justify-content:space-between;gap:.75rem 1rem;flex-wrap:wrap}
+.topic-viewer-source{display:grid;gap:.6rem;min-width:0}
+.topic-viewer-source>header{display:flex;align-items:center;justify-content:space-between;gap:.5rem 1rem;flex-wrap:wrap;padding:.55rem .9rem;border:1px solid var(--border);border-radius:10px;background:color-mix(in srgb,var(--muted) 35%,var(--card));box-shadow:inset 3px 0 0 var(--primary)}
+.topic-viewer-source>header h3{margin:0;font:600 .9375rem/1.35 var(--font-ui);color:var(--foreground)}
+.topic-viewer-source>header p{margin:.2rem 0 0;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font:400 .8125rem/1.4 var(--font-ui);color:var(--muted-foreground);font-variant-numeric:tabular-nums}
+.topic-viewer-source .law-browser{margin:0}
+.topic-viewer-loading{margin:0;padding:.75rem .9rem;color:var(--muted-foreground);font-size:.875rem}

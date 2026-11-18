@@ -123,17 +123,18 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. Het filter **Onderwerp** zet ze bij elkaar.
 
 1. Kies in de weergave **Lijst** bij **Familie** voor **DORA**. Het filter **Onderwerp** verschijnt. In de weergave **Tegels** open je de categorie **Financiële sector & DORA** en klik je op een tegel onder **Kies per onderwerp**.
-2. Kies een onderwerp. De lijst toont de wetten en kaders met normen voor dat onderwerp. De kolom **Gekozen toetspunten** telt alleen dat onderwerp.
-3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt. NOREA DORA in Control is een praktijkkader en geen wet; het staat in de lijst en je kiest het zelf.
-4. Open een bron om de normen te lezen. De viewer toont alleen het onderwerp. Met **Filters wissen** zie je de hele bron.
+2. Kies een onderwerp. Het getal erachter is het aantal toetspunten. De lijst toont de wetten en kaders met normen voor dat onderwerp; de kolom **Gekozen toetspunten** telt alleen dat onderwerp. Klik nog een keer op het onderwerp om het filter uit te zetten.
+3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt.
+4. Klik op **Open in viewer** om alle normen van het onderwerp onder elkaar te lezen, per bron een sectie. Het onderwerp staat dan onder **Open wetten & kaders**, naast de bronnen die je los opent. Wat je daar kiest, is ook in de bron zelf gekozen.
 
-Onderaan de keuzelijst van het filter staan twee opties:
+Na je keuze staan onder de onderwerpen de opties:
 
-- **Vereenvoudigd in plaats van volledig kader (artikel 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
+- **Vereenvoudigd kader (art. 16)**: voor de kleine instellingen uit artikel 16. Het vervangt het volledige kader van de artikelen 5 tot en met 15.
 - **Ook verwante normen**: normen die bij een ander onderwerp horen maar hier ook over gaan.
 - **Ook sectorspecifieke normen**: normen voor één soort instelling, zoals een centrale tegenpartij of handelsplatform. Het vinkje staat er alleen als het onderwerp zulke normen heeft.
+- **NOREA in plaats van de wet**: neem NOREA DORA in Control als toetsgrondslag. **Kies alle toetspunten** kiest dan NOREA. Had je voor dit onderwerp al toetspunten uit de wet gekozen, dan vraagt Omnibus of die vervangen moeten worden; beide kiezen geeft dubbele toetspunten.
 
-Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**. Ga je terug naar de lijst, dan staat het onderwerp daar ook.
+Zit je al in een bron? Kies daar bij **Onderwerp** wat je zoekt en klik naast **Selectie** op **Kies toetspunten van dit onderwerp**. Ga je terug naar de lijst, dan staat het onderwerp daar ook. Achter elke groepsnaam staat een i-icoon met de artikelen waaruit de groep komt.
 
 Het volledige en het vereenvoudigde kader gaan niet samen. Kies je een onderwerp onder het ene kader, dan vervallen de normen van dat onderwerp die alleen onder het andere gelden.
 

@@ -4,6 +4,7 @@ import { linkNewSelections } from "@/lib/research-proposals.mjs";
 import {focusWorkflowHeading} from '@/lib/workflow-focus.mjs';
 import {collectionDestination,rememberCollectionPage} from '@/lib/collection-start.mjs';
 import FoundationWorkspace from "./foundation-workspace";
+import {openTopic,openTopics,subscribeOpenTopics,closeAllTopics} from "@/lib/open-topics.mjs";
 import CollectionChoice,{CollectionContext} from './collection-choice';
 import {availableCollections} from '@/lib/application-catalogue.mjs';
 import {collectionAllows,collectionViews,bindCollectionPreference,assertProjectCollections,type CollectionPreference} from '@/lib/source-collections.mjs';
@@ -279,6 +280,8 @@ export default function FrameworkEditor() {
   const [openModelIds,setOpenModelIds]=useState<string[]>([]);
   const [choiceThemeId, setChoiceThemeId] = useState<string | null>(null);
   const [foundationFocus, setFoundationFocus] = useState("");
+  // Geopende onderwerpen tellen mee bij de geopende wetten en kaders (B-072).
+  const openTopicCount=(useSyncExternalStore(subscribeOpenTopics,openTopics,openTopics) as string[]).length;
   const [foundationCriterion,setFoundationCriterion] = useState("");
   const [catalogueSearch,setCatalogueSearch] = useState("");
   const [foundationBrowse,setFoundationBrowse] = useState(()=>projectView().foundationBrowse);
@@ -792,6 +795,7 @@ export default function FrameworkEditor() {
     const empty=newProject(baseFramework) as Project;
     rememberProject('Nieuw project starten');
     try { clearProjectBrowsePreferences(sessionStorage); } catch { /* Optional browse preferences. */ }
+    closeAllTopics();
     setNewProjectOpen(false);setOwnMaterialOpen(false);setAdoptingModel('');setAdoptionError('');
     setAdoptionChoices({});setImportFeedback('');setScopeNotice('');setReportNotice('');setReveal(undefined);
     applyProject(empty);
@@ -996,6 +1000,7 @@ export default function FrameworkEditor() {
               directoryGroup={catalogueGroups.foundations} onDirectoryGroup={id=>setCatalogueGroups(v=>({...v,foundations:id}))}
               key={page==='risk-start'?`risk-${builderGeneration}-${riskBrowseGeneration}`:builderGeneration}
               searchQuery={catalogueSearch} onSearchQuery={setCatalogueSearch}
+              onOpenTopic={value=>{openTopic(value,true);navigate('foundation-workspace');}}
               onCriteria={(id,criterionId) => withContent(['catalogue',foundationOverviewKey(id,Boolean(criterionId||aboutViews.laws))],()=>{ setFoundationFocus(id);setFoundationCriterion(criterionId||'');
                 if(criterionId) setFoundationBrowse({sourceId:id,query:criterionId,topic:'',groupId:'',page:0,selectedOnly:false,reviewedOnly:false,grouped:false});
                 navigate("foundation-workspace"); })}
@@ -1170,7 +1175,7 @@ export default function FrameworkEditor() {
             page={page}
             navigate={(next)=>{if(next==='reports')setReportScope('all');navigate(next);}}
             openCounts={{
-              foundations:foundations.filter(source=>(draft.investigation?.sourceIds||[]).includes(source.id)).length,
+              foundations:foundations.filter(source=>(draft.investigation?.sourceIds||[]).includes(source.id)).length+openTopicCount,
               models:normalizeOpenModelIds(openModelIds,modelLibrary.models).length,
               // Count the same opened tabs as this viewer, including report analyses.
               topics:workspaces.filter(item=>workspace.openIds.includes(item.id)).length,

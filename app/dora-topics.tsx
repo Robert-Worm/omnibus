@@ -3,47 +3,68 @@
 // Er is geen eigen scherm: het onderwerp is één filter in de gewone lijst en in de gewone viewer. Dit bestand levert dat
 // filter (één knop met een keuzelijst in de vorm van de andere filters, met onderaan twee opties) en de tegels waarmee
 // je vanuit de categorie in de gefilterde lijst komt.
-import {useState} from 'react';
+import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {Popover} from '@base-ui/react/popover';
 import {Check,ChevronDown} from 'lucide-react';
 import {Checkbox} from '@/components/ui/checkbox';
 import './dora-topics.css';
-import {doraTopics,doraChoiceCounts,doraChoiceNormIds,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated,doraTopicHasSector,doraSourceTopicIds,doraSourceHasRegimes} from '@/lib/dora-onderwerpen.mjs';
+import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
+import {topicalPackage} from '@/lib/topical-content.mjs';
+import {doraChoiceSources,doraTopics,doraChoiceCounts,doraChoiceNormIds,decodeDoraChoice,encodeDoraChoice,doraChoiceLabel,doraTopicHasRelated,doraTopicHasSector,doraSourceTopicIds,doraSourceHasRegimes} from '@/lib/dora-onderwerpen.mjs';
 
-type Choice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean;sector:boolean};
+type Choice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean;sector:boolean;norea:boolean};
+
+/** Toetspunten van een keuze: in één bron, of in alle bronnen van de toetsgrondslag samen. `null` zolang een bron nog laadt. */
+function choicePointCount(choice:{topic:string;sub:string;regime:string;related:boolean;sector:boolean;norea?:boolean},sourceId?:string):number|null{
+ const sources=doraChoiceSources(choice).filter((source:{id:string;laag:string})=>sourceId?source.id===sourceId:source.laag===(choice.norea?'praktijk':'wet'));
+ let total=0;
+ for(const source of sources as {id:string;normIds:string[]}[]){const pack=topicalPackage(source.id);if(!pack?.catalogue?.points?.length)return null;
+  const norms=new Set(source.normIds);total+=pack.catalogue.points.filter((point:{criterion_id:string;selection_status?:string})=>norms.has(point.criterion_id)&&point.selection_status==='SELECTABLE').length;}
+ return total;
+}
 
 /** Het filter Onderwerp. `sourceId`: in de viewer van één bron; dan staan alleen de onderwerpen van die bron in de lijst.
- * `showValue`: toon het gekozen onderwerp in de knop. In de lijst staat het al in de regel boven de rijen. */
-export function TopicFilter({value,onChange,sourceId,showValue=true}:{value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean}){
+ * `showValue`: toon het gekozen onderwerp in de knop. `onOpen`: de lijst opent; laad dan wat nodig is om te tellen. */
+export function TopicFilter({value,onChange,sourceId,showValue=true,onOpen}:{value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean;onOpen?:()=>void}){
  const [open,setOpen]=useState(false);
+ // Zodra het filter in beeld is, laadt de app wat nodig is om toetspunten te tellen; de lijst opent dan met getallen.
+ const preload=useRef(onOpen);
+ useEffect(()=>{preload.current=onOpen;});
+ useEffect(()=>{preload.current?.();},[]);
+ useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const choice=decodeDoraChoice(value) as Choice|null,current=choice?doraChoiceLabel(value):'Alle';
- const regime=choice?.regime||'volledig',related=Boolean(choice?.related),sector=Boolean(choice?.sector);
- // Het kader en de verwante normen blijven staan als je van onderwerp wisselt.
- const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime,related,sector,...choice,...next}));
- const pick=(topic:string,sub='')=>{set({topic,sub});setOpen(false);};
+ const regime=choice?.regime||'volledig',related=Boolean(choice?.related),sector=Boolean(choice?.sector),norea=Boolean(choice?.norea);
+ // De opties blijven staan als je van onderwerp wisselt.
+ const set=(next:Partial<Choice>)=>onChange(encodeDoraChoice({topic:'',sub:'',regime,related,sector,norea,...choice,...next}));
+ // Nog een klik op het gekozen onderwerp zet het filter uit. De lijst blijft open, zodat de opties in beeld komen.
+ const pick=(topic:string,sub='')=>{if(choice?.topic===topic&&choice.sub===sub)onChange('');else set({topic,sub,related:related&&!sub});};
  const topics=sourceId?doraTopics.filter(topic=>doraSourceTopicIds(sourceId).includes(topic.id)):doraTopics;
- const count=(topic:string,sub:string)=>{const at={topic,sub,regime,related:related&&!sub,sector};return sourceId?doraChoiceNormIds(sourceId,at).length:doraChoiceCounts(at).normen;};
- const row=(key:string,label:string,amount:number,chosen:boolean,indent:boolean,onClick:()=>void)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
-  <span>{label}</span>{amount>=0&&<small title={amount===1?'1 norm':amount+' normen'}>{amount}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
- return <Popover.Root open={open} onOpenChange={setOpen}>
+ const at=(topic:string,sub:string)=>({topic,sub,regime,related:related&&!sub,sector,norea});
+ const norms=(topic:string,sub:string)=>sourceId?doraChoiceNormIds(sourceId,at(topic,sub)).length:(c=>norea?c.praktijk:c.normen)(doraChoiceCounts(at(topic,sub)));
+ const row=(key:string,label:string,chosen:boolean,indent:boolean,onClick:()=>void,amount?:number|null)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
+  <span>{label}</span>{amount!==undefined&&<small>{amount??'…'}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
+ const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void)=><label className="catalogue-tool-option" htmlFor={id} title={title}><Checkbox id={id} checked={checked} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
+ return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next)onOpen?.();}}>
   <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-label={`Onderwerp: ${current}`}/>}>
    <span className="catalogue-tool-label">{showValue||!choice?'Onderwerp:':'Onderwerp'}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
   </Popover.Trigger>
   <Popover.Portal><Popover.Positioner side="bottom" align="start" sideOffset={4} collisionAvoidance={{side:'none',align:'shift'}} className="isolate z-50">
    <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp" onKeyDown={event=>{if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
      // Pijltjes lopen door de regels, net als in de andere filters.
-     const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],at=items.indexOf(document.activeElement as HTMLElement);
-     event.preventDefault();items[(at+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
-    <div className="topic-filter-list"><p className="topic-filter-unit" aria-hidden="true">normen</p>
-     {row('alle','Alle onderwerpen',-1,!choice,false,()=>{onChange('');setOpen(false);})}
-     {topics.filter(topic=>count(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,count(topic.id,''),choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id)),
-      ...(topic.subs||[]).filter(sub=>count(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,count(topic.id,sub.id),choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id)))])}
+     const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],index=items.indexOf(document.activeElement as HTMLElement);
+     event.preventDefault();items[(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
+    <div className="topic-filter-list"><p className="topic-filter-unit" aria-hidden="true">toetspunten</p>
+     {row('alle','Alle onderwerpen',!choice,false,()=>onChange(''))}
+     {topics.filter(topic=>norms(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id),choicePointCount(at(topic.id,''),sourceId)),
+      ...(topic.subs||[]).filter(sub=>norms(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id),choicePointCount(at(topic.id,sub.id),sourceId)))])}
     </div>
-    <div className="topic-filter-options">
-     {(!sourceId||doraSourceHasRegimes(sourceId))&&<label className="catalogue-tool-option" htmlFor="topic-filter-regime" title="Voor de kleine instellingen uit artikel 16 van DORA. Vervangt de normen van het volledige kader (artikelen 5 tot en met 15)." data-disabled={!choice||undefined}><Checkbox id="topic-filter-regime" checked={regime==='vereenvoudigd'} disabled={!choice} onCheckedChange={checked=>set({regime:checked===true?'vereenvoudigd':'volledig'})}/><span>Vereenvoudigd in plaats van volledig kader (artikel 16)</span></label>}
-     <label className="catalogue-tool-option" htmlFor="topic-filter-related" title="Normen die bij een ander onderwerp horen maar ook over dit onderwerp gaan." data-disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)||undefined}><Checkbox id="topic-filter-related" checked={related} disabled={!choice||Boolean(choice.sub)||!doraTopicHasRelated(choice.topic)} onCheckedChange={checked=>set({related:checked===true})}/><span>Ook verwante normen</span></label>
-     {choice&&doraTopicHasSector(choice.topic,sourceId||'')&&<label className="catalogue-tool-option" htmlFor="topic-filter-sector" title="Normen voor één soort instelling, zoals een centrale tegenpartij, effectenbewaarinstelling of handelsplatform."><Checkbox id="topic-filter-sector" checked={sector} onCheckedChange={checked=>set({sector:checked===true})}/><span>Ook sectorspecifieke normen</span></label>}
-    </div>
+    {/* De opties horen bij een onderwerp en verschijnen dus pas als er een gekozen is. */}
+    {choice&&<div className="topic-filter-options">
+     {(!sourceId||doraSourceHasRegimes(sourceId))&&option('topic-filter-regime','Vereenvoudigd kader (art. 16)','Voor de kleine instellingen uit artikel 16 van DORA. Vervangt de normen van het volledige kader (artikelen 5 tot en met 15).',regime==='vereenvoudigd',checked=>set({regime:checked?'vereenvoudigd':'volledig'}))}
+     {!choice.sub&&doraTopicHasRelated(choice.topic)&&option('topic-filter-related','Ook verwante normen','Normen die bij een ander onderwerp horen maar ook over dit onderwerp gaan.',related,checked=>set({related:checked}))}
+     {doraTopicHasSector(choice.topic,sourceId||'')&&option('topic-filter-sector','Ook sectorspecifieke normen','Normen voor één soort instelling, zoals een centrale tegenpartij, effectenbewaarinstelling of handelsplatform.',sector,checked=>set({sector:checked}))}
+     {!sourceId&&option('topic-filter-norea','NOREA in plaats van de wet','NOREA DORA in Control beschrijft dezelfde eisen als beheersmaatregelen. Het is een praktijkkader, geen wet. Beide kiezen geeft dubbele toetspunten.',norea,checked=>set({norea:checked}))}
+    </div>}
    </Popover.Popup>
   </Popover.Positioner></Popover.Portal>
  </Popover.Root>;
@@ -56,7 +77,7 @@ export function TopicTiles({onChoose}:{onChoose:(value:string)=>void}){
   <div className="topic-tiles-grid">{doraTopics.map((topic,index)=>{const counts=doraChoiceCounts(topic.id);
    return <button type="button" key={topic.id} onClick={()=>onChoose(topic.id)}>
     <span className="catalogue-card-id">Onderwerp {index+1}</span><strong>{topic.title}</strong>
-    <span className="catalogue-card-stats"><span><strong>{counts.normen}</strong> normen</span><span><strong>{counts.bronnen}</strong> {counts.bronnen===1?'bron':'bronnen'}</span></span>
+    <span className="catalogue-card-stats"><span><strong>{counts.bronnen}</strong> {counts.bronnen===1?'wet of regeling':'wetten en regelingen'}</span></span>
    </button>;})}</div>
  </section>;
 }
