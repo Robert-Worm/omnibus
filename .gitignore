@@ -644,7 +644,6 @@ __pycache__/
 /lib/process-catalogue.mjs
 /lib/product-contact.test.mjs
 /lib/product-presentation.test.mjs
-/lib/product-release.test.mjs
 /lib/product-scope-snapshots.json
 /lib/product-scope.test.mjs
 /lib/project-session.test.mjs
