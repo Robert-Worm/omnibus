@@ -30,8 +30,11 @@ export function TopicFilter({value,onChange,sourceId,showValue=true}:{value:stri
    <span className="catalogue-tool-label">{showValue||!choice?'Onderwerp:':'Onderwerp'}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
   </Popover.Trigger>
   <Popover.Portal><Popover.Positioner side="bottom" align="start" sideOffset={4} collisionAvoidance={{side:'none',align:'shift'}} className="isolate z-50">
-   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp">
-    <div>
+   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp" onKeyDown={event=>{if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
+     // Pijltjes lopen door de regels, net als in de andere filters.
+     const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],at=items.indexOf(document.activeElement as HTMLElement);
+     event.preventDefault();items[(at+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
+    <div className="topic-filter-list"><p className="topic-filter-unit" aria-hidden="true">normen</p>
      {row('alle','Alle onderwerpen',-1,!choice,false,()=>{onChange('');setOpen(false);})}
      {topics.filter(topic=>count(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,count(topic.id,''),choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id)),
       ...(topic.subs||[]).filter(sub=>count(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,count(topic.id,sub.id),choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id)))])}

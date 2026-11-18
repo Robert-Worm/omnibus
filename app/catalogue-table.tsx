@@ -71,6 +71,8 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  const columns:CatalogueColumn<Row>[]=[...fitting,...Array.from({length:Math.max(0,slots-fitting.length)},(_,i)=>({key:'slot-'+i,label:'',render:()=>null}))]
   .map((c,i)=>({...c,width:SLOTS[Math.min(i,SLOTS.length-1)]}));
  const usable=filters.filter(f=>!f.when||f.when(view.filters)),active=usable.filter(f=>view.filters[f.key]);
+ // Een vervolgfilter waarvan de voorwaarde vervalt, verliest zijn waarde; anders komt een oude keuze later stil terug.
+ const setFilter=(key:string,value:string)=>setView(v=>{const next={...v.filters,[key]:value};for(const f of filters)if(f.when&&!f.when(next))delete next[f.key];return {...v,filters:next};});
  const activeFilters=Object.fromEntries(active.map(f=>[f.key,view.filters[f.key]])),filterKey=JSON.stringify(activeFilters);
  const reportFilters=useRef(onFiltersChange);
  useEffect(()=>{reportFilters.current=onFiltersChange;});
@@ -99,8 +101,8 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
   <div className="catalogue-table-tools">
    {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
    <div className="catalogue-table-filters">
-    {usable.map(f=>{const chosen=view.filters[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}})))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
-     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setView(v=>({...v,filters:{...v.filters,[f.key]:value}}))} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
+    {usable.map(f=>{const chosen=view.filters[f.key]||'';if(f.render)return <Fragment key={f.key}>{f.render(chosen,value=>setFilter(f.key,value))}</Fragment>;const options=[...new Set([...rows.flatMap(f.value),chosen])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'nl'));if((options.length<2||f.key===view.group)&&!chosen)return null;
+     return <ToolSelect key={f.key} label={f.label+':'} active={Boolean(chosen)} value={chosen} onChange={value=>setFilter(f.key,value)} options={[{value:'',label:'Alle'},...options.map(o=>({value:o,label:o}))]}/>;})}
     {(filtered||Boolean(search?.value))&&<button type="button" className="catalogue-tool-clear" title={search?.value?'Wis zoeken en filters':'Filters wissen'} aria-label={search?.value?'Wis zoeken en filters':'Filters wissen'} onClick={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}><X size={14} aria-hidden="true"/>Wissen</button>}
    </div>
    {groups.length>0&&<div className="catalogue-table-grouping">

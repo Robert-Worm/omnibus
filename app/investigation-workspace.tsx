@@ -472,7 +472,9 @@ export function FoundationCatalogue({
   const [listFilters,setListFilters]=useState<Record<string,string>>({});
   const listChoice=listMode&&doraAvailable&&decodeDoraChoice(listFilters.topic||'')?listFilters.topic:'';
   // Met een onderwerp staan wetten en kaders samen in de lijst: de normen van één onderwerp staan in beide.
-  const listSources=(listChoice?allowedSources:scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws')) as typeof foundations;
+  const scopeSources=scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws') as typeof foundations;
+  const choiceIds=new Set<string>(listChoice?doraChoiceSources(listChoice).map((source:{id:string})=>source.id):[]);
+  const listSources=(listChoice?[...scopeSources,...allowedSources.filter(source=>choiceIds.has(source.id)&&!scopeSources.some((own:{id:string})=>own.id===source.id))]:scopeSources) as typeof foundations;
   const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
   const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   // Met het filter Onderwerp gelden de telling en het vinkje van een bron alleen voor dat onderwerp: de lijst toont en kiest
@@ -483,16 +485,18 @@ export function FoundationCatalogue({
   useEffect(()=>{loadTopicSources.current=prepareSources;});
   const choiceSourceKey=listChoice?doraChoiceSources(listChoice).map((source:{id:string})=>source.id).filter((id:string)=>allowedSources.some(source=>source.id===id)).join('|'):'';
   useEffect(()=>{if(choiceSourceKey)loadTopicSources.current(choiceSourceKey.split('|'),()=>{});},[choiceSourceKey]);
-  // Eén handeling voor het hele onderwerp: alle wetten en regelingen. NOREA is een praktijkkader en kies je bewust zelf.
-  const choiceLaw=listChoice?doraChoiceSources(listChoice).filter((source:{id:string;laag:string})=>source.laag==='wet'&&allowedSources.some(s=>s.id===source.id)).map((source:{id:string})=>({id:source.id,points:choicePoints(source.id)})):[];
-  const choiceReady=choiceLaw.length>0&&choiceLaw.every(part=>part.points),choiceState=choiceLaw.map(part=>part.points?doraSelection(draft,part.id,part.points):null);
-  const choiceTotal=choiceState.reduce((sum,state)=>sum+(state?.total||0),0),choiceSelected=choiceState.reduce((sum,state)=>sum+(state?.selected||0),0);
-  const chooseChoice=(include:boolean)=>prepareSources(choiceLaw.map(part=>part.id),()=>{try{
-    const next=choiceLaw.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseDoraPoints(value,part.id,points,include) as Draft;},draft);
-    onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');
-   }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
-  const topicBar=()=>listChoice?<div className="catalogue-topic-bar"><p><strong>{doraChoiceLabel(listChoice)}</strong><span>{choiceLaw.length} {choiceLaw.length===1?'wet of regeling':'wetten en regelingen'}{choiceReady&&<> · {choiceTotal} toetspunten{choiceSelected>0&&<> · {choiceSelected} gekozen</>}</>}</span></p>
-   <Button disabled={disabled||!choiceReady||!choiceTotal} onClick={()=>chooseChoice(choiceSelected<choiceTotal)}>{choiceReady&&choiceTotal>0&&choiceSelected>=choiceTotal?'Deselecteer':choiceReady?`Kies alle ${choiceTotal} toetspunten`:'Toetspunten tellen…'}</Button></div>:null;
+  // Eén handeling voor het hele onderwerp: de wetten en regelingen die de lijst nu toont (zoeken en andere filters tellen mee).
+  // NOREA is een praktijkkader en kies je bewust zelf.
+  const topicBar=(shown:{id:string}[])=>{if(!listChoice)return null;
+   const law=doraChoiceSources(listChoice).filter((source:{id:string;laag:string})=>source.laag==='wet'&&shown.some(row=>row.id===source.id)).map((source:{id:string;normIds:string[]})=>({id:source.id,norms:source.normIds.length,points:choicePoints(source.id)}));
+   const ready=law.length>0&&law.every(part=>part.points),states=law.map(part=>part.points?doraSelection(draft,part.id,part.points):null);
+   const total=states.reduce((sum,state)=>sum+(state?.total||0),0),selected=states.reduce((sum,state)=>sum+(state?.selected||0),0),norms=law.reduce((sum,part)=>sum+part.norms,0);
+   const choose=(include:boolean)=>prepareSources(law.map(part=>part.id),()=>{try{
+     const next=law.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseDoraPoints(value,part.id,points,include) as Draft;},draft);
+     onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');
+    }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
+   return <div className="catalogue-topic-bar"><p><strong>{doraChoiceLabel(listChoice)}</strong><span>{law.length} {law.length===1?'wet of regeling':'wetten en regelingen'} · {norms} {norms===1?'norm':'normen'}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
+    <Button disabled={disabled||!ready||!total} onClick={()=>choose(selected<total)}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:law.length?'Toetspunten tellen…':'Geen wetten in deze lijst'}</Button></div>;};
   const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
    const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);
    const scoped=Boolean(listChoice)&&doraChoiceNormIds(s.id,listChoice).length>0,points=scoped?choicePoints(s.id):null,part=points?doraSelection(draft,s.id,points):null;
