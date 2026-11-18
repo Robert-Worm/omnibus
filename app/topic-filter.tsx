@@ -25,7 +25,7 @@ function choicePointCount(family:TopicFamily,choice:Choice,sourceId?:string):num
 
 /** Het filter Onderwerp. `sourceId`: in de viewer van één bron; dan staan alleen de onderwerpen van die bron in de lijst.
  * `showValue`: toon het gekozen onderwerp in de knop. `onOpen`: de lijst opent; laad dan wat nodig is om te tellen. */
-export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpen}:{family:TopicFamily;value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean;onOpen?:()=>void}){
+export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpen,jumps=false}:{family:TopicFamily;value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean;onOpen?:()=>void;/** Boven de tegels: een keuze opent de lijst. */jumps?:boolean}){
  const [open,setOpen]=useState(false);
  // Zodra het filter in beeld is, laadt de app wat nodig is om toetspunten te tellen; de lijst opent dan met getallen.
  const preload=useRef(onOpen);
@@ -45,15 +45,15 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
   <span>{label}</span>{amount!==undefined&&<small>{amount??'…'}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
  const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void)=><label className="catalogue-tool-option" htmlFor={id} title={title}><Checkbox id={id} checked={checked} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
  return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next)onOpen?.();}}>
-  <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-label={`Onderwerp: ${current}`}/>}>
+  <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-haspopup="dialog" aria-label={`Onderwerp: ${current}`}/>}>
    <span className="catalogue-tool-label">{showValue||!choice?'Onderwerp:':'Onderwerp'}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
   </Popover.Trigger>
   <Popover.Portal><Popover.Positioner side="bottom" align="start" sideOffset={4} collisionAvoidance={{side:'none',align:'shift'}} className="isolate z-50">
-   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp" onKeyDown={event=>{if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
-     // Pijltjes lopen door de regels, net als in de andere filters.
+   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp" onKeyDown={event=>{if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+     // Pijltjes, Home en End lopen door de regels, net als in de andere filters.
      const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],index=items.indexOf(document.activeElement as HTMLElement);
-     event.preventDefault();items[(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
-    <div className="topic-filter-list"><p className="topic-filter-unit" aria-hidden="true">toetspunten</p>
+     event.preventDefault();items[event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
+    <div className="topic-filter-list"><p className="topic-filter-unit">{jumps&&<span>Een keuze opent de lijst</span>}<span aria-hidden="true">toetspunten</span></p>
      {row('alle','Alle onderwerpen',!choice,false,()=>onChange(''))}
      {topics.filter(topic=>norms(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id),choicePointCount(family,at(topic.id,''),sourceId)),
       ...(topic.subs||[]).filter(sub=>norms(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id),choicePointCount(family,at(topic.id,sub.id),sourceId)))])}

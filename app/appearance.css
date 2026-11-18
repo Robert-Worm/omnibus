@@ -436,3 +436,7 @@ html[data-appearance=dark] .composer-detail-toggle{background:var(--donker-vlak-
 html[data-appearance=dark] .composer-detail-toggle button{color:var(--muted-foreground)}
 html[data-appearance=dark] .composer-detail-toggle button[aria-pressed="true"]{background:var(--donker-vlak-7);color:var(--donker-tekst-9);border-color:var(--primary)}
 html[data-appearance=dark] .composer-detail-controls>span{color:var(--muted-foreground)}
+/* Donker: grijze hulptekst in stap 3 (was 2,7:1) en het pijltje van de tooltip. */
+html[data-appearance=dark] :is(.composer-top,.composer-note,.composer-branches header>span,.composer-subquestion small,.composer-actions>span,.proposal-switch,.composer-alternatives small,.question-project-settings>summary,.entry-explore,.composer-eyebrow,.composer-subject label span,.composer-detail-hint,.proposal-coverage,.example-guidance,.example-card small,.example-controls,.question-examples>small,.example-check,.bank-empty-state p,.question-edit-subject label span){color:var(--muted-foreground)}
+html[data-appearance=dark] .question-edit-subject label{color:var(--donker-tekst-6)}
+html[data-appearance=dark] [data-slot="tooltip-content"] .rotate-45{background:var(--donker-vlak-2);fill:var(--donker-vlak-2)}

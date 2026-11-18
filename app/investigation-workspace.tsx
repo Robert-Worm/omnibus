@@ -464,14 +464,18 @@ export function FoundationCatalogue({
          // Vervolgfilter: verschijnt pas als de lijst op een familie met onderwerpen staat.
          {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,when:f=>Boolean(filterFamily(f)),value:()=>[],
           match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
-          render:(value,set)=>{const family=filterFamily(listMode?listFilters:tileFilters)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false}
+          render:(value,set)=>{const family=filterFamily(listMode?listFilters:tileFilters)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
            onOpen={()=>prepareSources(family.sources.map(source=>source.id).filter(id=>allowedSources.some(own=>own.id===id)),()=>{})}/>:null;}}];
   const filterRow=(source:{id:string}):FilterRow=>({id:source.id,record:frameworkRecord(source.id),audiences:sourceAudiences(source.id) as (keyof typeof audienceGroups)[],
    categories:Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(source.id)).map(d=>(d as {title:string}).title)});
-  const search=searchCatalogue(query,browseSources.map(s=>s.id));
   // Filters uit de balk boven de tegels versmallen de tegels, behalve filters die de lijst vragen.
   const tileActive=!listMode&&catalogueView.available?sourceFilters.filter(f=>!f.needsList&&tileFilters[f.key]):[];
   const tilePass=(source:{id:string})=>{if(!tileActive.length)return true;const row=filterRow(source);return tileActive.every(f=>f.match?f.match(row,tileFilters[f.key]):f.value(row).includes(tileFilters[f.key]));};
+  // Een filter dat de lijst vraagt: de lijst opent met die keuze en de focus gaat mee naar dezelfde knop.
+  const jumpToList=(key:string,value:string)=>{setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');
+   window.setTimeout(()=>document.querySelector<HTMLElement>('.foundation-catalogue .topic-filter-tool')?.focus(),80);};
+  // Zoeken blijft binnen de filters, ook voor treffers in normen.
+  const search=searchCatalogue(query,browseSources.filter(tilePass).map(s=>s.id));
   const filtered: typeof foundations = (query.trim() ? search.sources : browseSources).filter(tilePass);
   const showList=Boolean(directoryGroup||query.trim()||processId||kind!=='all'||selectedOnly||tileActive.length);
   function changeSearch(value:string) {
@@ -567,12 +571,12 @@ export function FoundationCatalogue({
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
       {guided&&!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
-        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={(key,value)=>{setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');}}/>
+        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList}/>
        :<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
       {!guided&&<>
         {!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
-        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={(key,value)=>{setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');}}/>
+        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList}/>
        :<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
         {query.trim() && <div className="catalogue-search-tools">
           {search.suggestions.length>0 && <fieldset className="catalogue-search-suggestions"  aria-label="Zoeksuggesties">

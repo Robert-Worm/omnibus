@@ -80,8 +80,9 @@ export function CatalogueFilterBar<Row extends {id:string}>({id,rows,filters,gro
  useEffect(()=>{report.current?.(JSON.parse(filterKey));},[filterKey]);
  return <div className="catalogue-table catalogue-filter-bar"><div className="catalogue-table-tools">
   {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
-  <FilterControls filters={filters} rows={rows} values={view.filters} group={view.group} search={search}
-   onFilter={(key,value)=>{setView(v=>({...v,filters:filterStep(filters,v.filters,key,value)}));if(value&&filters.find(f=>f.key===key)?.needsList)onNeedsList?.(key,value);}}
+  {/* Een filter dat de lijst vraagt, werkt boven de tegels niet en staat hier dus nooit aan; kiezen opent de lijst. */}
+  <FilterControls filters={filters} rows={rows} values={Object.fromEntries(Object.entries(view.filters).filter(([key])=>!filters.find(f=>f.key===key)?.needsList))} group={view.group} search={search}
+   onFilter={(key,value)=>{if(filters.find(f=>f.key===key)?.needsList){if(value)onNeedsList?.(key,value);return;}setView(v=>({...v,filters:filterStep(filters,v.filters,key,value)}));}}
    onClear={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}/>
  </div></div>;
 }
