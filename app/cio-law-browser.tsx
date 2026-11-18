@@ -41,7 +41,7 @@ import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
 
-export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
+export type LawBrowserAdapter={sourceId:string;title:string;heading:string;viewKey:string;topicFilter?:{options:{value:string;label:string}[];label:(value:string)=>string;matches:(criterionId:string,value:string)=>boolean;take:()=>string|undefined};analysisNotice?:string;relatedNorms?:(criterionId:string)=>Verwant[];catalogue:{objectives:Objective[];criteria:Criterion[]};points:Point[];records:RecordEntry[];rows:FunctionRow[];groups:{id:string;title:string}[];goalFor:(id:string)=>{text:string}|null;measureFor:(id:string,group:string)=>{text:string}|null;selection:typeof cioSelection;choose:typeof chooseCioPoints;About:ComponentType<{onPoint:(id:string)=>void}>;Source:ComponentType<{point:Point;parent:Criterion}>;Approach?:ComponentType<{point:Point}>;readNorm?:(text:string)=>string;groupLinks?:(groupTitle:string)=>{id:string;label:string;grondslag:string}[];sourceLinks?:{id:string;label:string;grondslag:string}[]};
 type Props=LawOverviewProps&{draft:Draft;onChange:(d:Draft)=>void;disabled?:boolean;navigate:(p:string)=>void;initialPointId?:string;viewerOnly?:boolean;onClose?:()=>void;hideOpenStrip?:boolean;adapter?:LawBrowserAdapter;prepareDetails?:(action:()=>void)=>void;onOpenSource?:(id:string)=>void};
 type FunctionRow=Line&{criterionId:string;groupId:string;pointIds:string[];articleReferences?:string[];navigationSubjects?:string[]};
 type Tab='points'|'source'|'approach';
@@ -102,7 +102,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const [tab,setTab]=useState<Tab>('points');
  const [error,setError]=useState('');
  const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('compact');
- const [view,setView,viewReady]=useBrowseState(adapter?.viewKey||'cio-source-groups-v3',{query:'',group:'',selectedOnly:false,density:'compact',columns:columns.map(c=>c.id),columnsVersion:0});
+ const [view,setView,viewReady]=useBrowseState(adapter?.viewKey||'cio-source-groups-v3',{query:'',group:'',topic:'',selectedOnly:false,density:'compact',columns:columns.map(c=>c.id),columnsVersion:0});
  const currentGroup=remapTopicalGroup(view.group,sourceRows,groupsForSource);
  useEffect(()=>{if(viewReady&&currentGroup!==view.group)setView(v=>v.group===view.group?{...v,group:currentGroup}:v);},[viewReady,currentGroup,view.group,setView]);
  // Expand only the previous default; deliberately customised column choices stay intact.
@@ -118,9 +118,12 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const objectives=catalogue.objectives.filter(o=>point?.objective_ids.includes(o.id));
  const state=select(draft,children.map(p=>p.id));
  // Zoeken op de code zoals de gebruiker die ziet (DORA-G10-N02-P01); een oud voorvoegsel "TP-" uit een eerdere export mag ervoor staan.
+ // Onderwerpfilter (alleen bronnen die er een aanbieden, nu DORA; B-068).
+ const topicValue=adapter?.topicFilter?view.topic||'':'';
  const query=view.query.trim().toLocaleLowerCase('nl').replace(/^tp-(?=[a-z])/u,'');
  const matches=rows.filter(r=>{
   if(view.group&&r.groupId!==view.group)return false;
+  if(topicValue&&!adapter?.topicFilter?.matches(r.criterionId,topicValue))return false;
   if(view.selectedOnly&&!r.pointIds.some(id=>selected.has(id)))return false;
   if(!query)return true;
   const content=[r.id,normId(r.id),r.title,r.entity,...(r.articleReferences||[]),r.objective.text,r.risk.text,r.controlObjective?.text,r.control.text,r.criterion.text,...r.pointIds.flatMap(id=>{
@@ -138,7 +141,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  }
  function open(id:string){withDetails(()=>{const next=rows.find(r=>r.id===id);setOpenId(id);setPointId(next?.pointIds[0]||'');setTab('points');});}
  function close(){setOpenId('');onClose?.();}
- const resetFilters=()=>setView(v=>({...v,query:'',group:'',selectedOnly:false}));
+ const resetFilters=()=>setView(v=>({...v,query:'',group:'',topic:'',selectedOnly:false}));
  // De aangeklikte tab (Normen / Over dit kader) licht direct op; de inhoud volgt als overgang.
  const [wantedOverview,setWantedOverview]=useState<{from:string;to:string}|null>(null);
  // Alle verwijzingen naar andere kaders staan bij de norm, onder "Verwant", elk met de reden (besluit beheerder
@@ -153,17 +156,20 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  };
  // Sprong vanuit "Verwant" in een ander kader: naar de norm of groep, die kort oplicht.
  const jumpDone=useRef(false);
- const jumpContext=useRef({overview,setOverview,groupsForSource,rows,view,resetFilters});
- useLayoutEffect(()=>{jumpContext.current={overview,setOverview,groupsForSource,rows,view,resetFilters};});
+ const jumpContext=useRef({overview,setOverview,groupsForSource,rows,view,resetFilters,setView,takeTopic:adapter?.topicFilter?.take});
+ useLayoutEffect(()=>{jumpContext.current={overview,setOverview,groupsForSource,rows,view,resetFilters,setView,takeTopic:adapter?.topicFilter?.take};});
  useEffect(()=>{
   if(jumpDone.current||!adapter?.sourceId||!viewReady)return;
-  const {overview,setOverview,groupsForSource,rows,view,resetFilters}=jumpContext.current;
+  const {overview,setOverview,groupsForSource,rows,view,resetFilters,setView,takeTopic}=jumpContext.current;
   const jump=takeNormJump(adapter.sourceId) as null|{norm?:string;groep?:string};
   jumpDone.current=true;
+  // De onderwerppagina vraagt de viewer met dat onderwerp als filter; zoekterm en groep van een eerder bezoek gaan dan weg.
+  const asked=takeTopic?.();
+  if(asked&&!jump){if(overview!=='norms')setOverview('norms');setView(v=>({...v,query:'',group:'',selectedOnly:false,topic:asked}));return;}
   if(!jump)return;
   if(overview!=='norms')setOverview('norms');
   // Een zoekopdracht of groepsfilter van een eerder bezoek kan het doel verbergen.
-  if(view.query||view.group||view.selectedOnly)resetFilters();
+  if(view.query||view.group||view.topic||view.selectedOnly)resetFilters();
   const doelGroep=jump.norm?groupsForSource.find(g=>rows.some(r=>r.groupId===g.id&&r.id===jump.norm)):groupsForSource.find(g=>g.title===jump.groep);
   let pogingen=0,timer=0;const nazorg:number[]=[];
   const zoek=()=>{
@@ -199,9 +205,10 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
    <div className="law-browse-filters" aria-label="Normen filteren">
     <div className="law-search"><Search size={16} aria-hidden="true"/><Input id="law-search" aria-label="Zoeken in dit kader" placeholder="Zoek op norm, functie of artikel…" value={view.query} onChange={e=>setView(v=>({...v,query:e.target.value}))}/></div>
     {groupsForSource.length>1&&<ToolSelect label="Groep:" active={Boolean(view.group)} value={view.group} onChange={group=>setView(v=>({...v,group}))} options={[{value:'',label:'Alle groepen'},...groupsForSource.map(group=>({value:group.id,label:group.title}))]}/>}
+    {adapter?.topicFilter&&adapter.topicFilter.options.length>0&&<ToolSelect label="Onderwerp:" active={Boolean(topicValue)} value={topicValue} onChange={topic=>setView(v=>({...v,topic}))} options={[{value:'',label:'Alle onderwerpen'},...adapter.topicFilter.options,...(topicValue&&!adapter.topicFilter.options.some(o=>o.value===topicValue)?[{value:topicValue,label:adapter.topicFilter.label(topicValue)}]:[])]}/>}
     <div className="law-column-control"><FilterPicker subtle label="Kolommen" options={columns} value={visibleColumns} onChange={next=>setView(v=>({...v,columns:next}))}/></div>
     <LawReadingControls value={readingDensity} onChange={setReadingDensity}/>
-    {(query||view.group||view.selectedOnly)&&<Button className="law-reset-filters" variant="ghost" onClick={resetFilters}>Filters wissen</Button>}
+    {(query||view.group||topicValue||view.selectedOnly)&&<Button className="law-reset-filters" variant="ghost" onClick={resetFilters}>Filters wissen</Button>}
    </div>
    <div className="law-group-stack">{groups.map((group,index)=>{
     const ids=unique(group.allRows.flatMap(r=>r.pointIds)),groupState=select(draft,ids),hold=ids.length-groupState.total;

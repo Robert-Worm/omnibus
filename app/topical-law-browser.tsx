@@ -29,6 +29,7 @@ import type {Point,Criterion} from './cio-law-workspace';
 import {Approach} from './cio-law-workspace';
 import {auditReadingText,currentAuditGuidance,sourceSnapshotStatus,zonderHold} from '@/lib/audit-reading.mjs';
 import {requestNormJump} from '@/lib/norm-jump.mjs';
+import {isDoraTopicSource,doraSourceFilterOptions,doraFilterLabel,doraFilterMatches,takeDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
 import type {Draft} from '@/lib/framework-types';
 import type {LawOverviewProps} from './law-overview-state';
 
@@ -141,7 +142,7 @@ export default function TopicalLawBrowser({sourceId,...props}:Props){
  const revision=useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const bundle=topicalPackage(sourceId)!;
  const openSource=props.onOpenSource;
- const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),relatedNorms:(id:string)=>verwanteNormen(sourceId,id),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',
+ const adapter=useMemo(()=>({revision,sourceId,readNorm:auditReadingText,groupLinks:(t:string)=>uitwerkingenBijGroep(sourceId,t),relatedNorms:(id:string)=>verwanteNormen(sourceId,id),sourceLinks:uitgewerktVanuit(sourceId).map(u=>({id:u.sourceId,label:u.groep,grondslag:u.grondslag})),title:bundle.context.title,heading:bundle.context.title,viewKey:'topical-'+sourceId+'-r2',topicFilter:isDoraTopicSource(sourceId)?{options:doraSourceFilterOptions(sourceId),label:doraFilterLabel,matches:doraFilterMatches,take:()=>takeDoraViewerFilter(sourceId)}:undefined,
   catalogue:{...bundle.catalogue,criteria:bundle.catalogue.criteria.map(c=>({...c,text:auditReadingText(c.text)}))},points:bundle.catalogue.points,records:bundle.bank.records,rows:topicalRows(bundle),groups:topicalGroups(bundle),
   goalFor:(id:string)=>topicalGoal(bundle,id),measureFor:(id:string)=>topicalMeasure(bundle,id),
   selection:(draft:Draft,ids?:string[])=>topicalSelection(draft,sourceId,ids),choose:(draft:Draft,ids:string[],include:boolean)=>chooseTopicalPoints(draft,sourceId,ids,include),

@@ -118,6 +118,25 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 
 **Gelukt als:** je Excel-bestand is gedownload.
 
+## DORA per onderwerp
+
+Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. De ingang **DORA per onderwerp** zet ze bij elkaar.
+
+1. Open onder **Wetten** of **Kaders** de categorie **Financiële sector & DORA**. Werk je in de weergave **Lijst**, kies dan bij **Familie** voor **DORA**. Er verschijnt een filter **Onderwerp**; kies een onderwerp en klik boven de lijst op **Bekijk het hele onderwerp**. Je kunt ook direct een bron uit de lijst openen: de viewer toont dan alleen de normen van dat onderwerp.
+2. Kies een van de acht onderwerpen. Je ziet wat erbij hoort, wat niet, en per bron hoeveel normen en toetspunten het zijn.
+3. Klik op **Bekijk in viewer** om de normen van één bron te lezen. De viewer opent met het filter **Onderwerp**; met **Filters wissen** zie je weer de hele bron.
+4. Klik op **Kies deze normen** bij een bron, of onderaan op **Kies alle normen**.
+
+Drie opties passen de keuze aan:
+
+- **Vereenvoudigd raamwerk**: voor de kleine instellingen uit artikel 16. Het vervangt dan het gewone raamwerk.
+- **Ook normen die dit onderwerp raken**: normen die bij een ander onderwerp horen maar hier ook over gaan.
+- **Toon NOREA DORA in Control**: het praktijkkader van NOREA als verduidelijking. Dit is geen wettelijke norm. Kies de wet of NOREA als toetsgrondslag; beide kiezen geeft dubbele toetspunten.
+
+Er is één selectie. Wat je hier kiest, staat ook als gekozen in de viewer van de bron.
+
+De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. Onder **Wat zit er niet in deze onderwerpen?** staat welke bronnen erbuiten vallen, zoals de regels over toezicht op kritieke ICT-dienstverleners. Die kies je in de gewone bronnenlijst.
+
 ## Op telefoon of tablet
 
 Op een telefoon of tablet zie je dezelfde weergave als op een computer. De pagina past bij openen in je scherm; de tekst is dan klein.
