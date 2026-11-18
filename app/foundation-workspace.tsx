@@ -56,7 +56,7 @@ import {topicalIds} from '@/lib/topical-content.mjs';
 import TopicalLawBrowser from './topical-law-browser';
 import TopicViewer from './topic-viewer';
 import {openTopics,subscribeOpenTopics,closeTopic,takeWantedTopic,openTopicId,openTopicValue} from '@/lib/open-topics.mjs';
-import {decodeDoraChoice,doraChoiceLabel,requestDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
+import {topicFamilyOfChoice,requestViewerTopic} from '@/lib/topic-families.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
@@ -73,6 +73,7 @@ function ViewerSkeleton({title}:{title:string}){
 }
 
 const overviewMemory:Record<string,'norms'|'source'>={};
+function rememberOverview(id:string,value:'norms'|'source'){overviewMemory[id]=value;}
 export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void,about?:boolean)=>void;prepareDetails?:(id:string,action:()=>void)=>void;onSourceShown?:(id:string)=>void;onSourcesOpened?:(ids:string[])=>void}) {
   const [,setSharedOverview]=useLawOverview(props);
   // Een kader dat je voor het eerst opent, begint bij de normen. Daarna onthoudt elk kader zijn eigen weergave
@@ -87,7 +88,8 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   const known=[cioSourceId,wwkeSourceId,...topicalIds,...admitted].filter(id=>allows('foundation',id)),opened=foundations.filter(s=>known.includes(s.id)&&props.draft.investigation?.sourceIds.includes(s.id));
   // Geopende onderwerpen staan naast de geopende bronnen (B-072). Een onderwerp is een weergave over meer bronnen heen.
   const topicValues=useSyncExternalStore(subscribeOpenTopics,openTopics,openTopics) as string[];
-  const topics=known.includes('DORA-2022-2554')?topicValues.filter(value=>decodeDoraChoice(value)):[];
+  // Alleen onderwerpen van een familie waarvan bronnen in deze verzameling zitten.
+  const topics=topicValues.filter(value=>topicFamilyOfChoice(value)?.sources.some(source=>known.includes(source.id)));
   const [active,setActive]=useState(()=>{const wantedTopic=takeWantedTopic();return wantedTopic?openTopicId(wantedTopic):props.initialSource||props.initialBrowse.sourceId||opened[0]?.id||(topics[0]?openTopicId(topics[0]):'');});
   const [wanted,setWanted]=useState<string|null>(null);
   const [previousSource,setPreviousSource]=useState(props.initialSource);
@@ -99,7 +101,7 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   const current=activeTopic?active:known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active||openTopicValue(active)?opened[0]?.id||(topics[0]?openTopicId(topics[0]):undefined):undefined);
   const currentTopic=openTopicValue(current||'');
   overviewProps.overview=overviewVan(current||'');
-  overviewProps.onOverviewChange=value=>{if(current){overviewMemory[current]=value;setPerSource(v=>({...v,[current]:value}));}setSharedOverview(value);};
+  overviewProps.onOverviewChange=value=>{if(current){rememberOverview(current,value);setPerSource(v=>({...v,[current]:value}));}setSharedOverview(value);};
   // Zodra een kader in beeld is, haalt de app op de achtergrond ook de toetspunten op; een toetspunt openen hoeft dan niet te wachten.
   const shown=props.onSourceShown;
   useEffect(()=>{
@@ -122,10 +124,10 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   // Zo voelt wisselen direct, ook bij een groot kader of snel doorklikken (besluit beheerder 12 november 2026).
   const pending=wanted&&wanted!==current&&known.includes(wanted)?wanted:null;
   if(current){const onActivate=(id:string)=>{if(openTopicValue(id)){setWanted(null);startTransition(()=>setActive(id));return;}setWanted(id);const apply=()=>startTransition(()=>{setActive(id);props.onBrowseChange({...props.initialBrowse,sourceId:id});});if(props.prepareSource)props.prepareSource(id,apply,overviewVan(id)==='source');else apply();};return <>
-   <OpenItemStrip id="reviewed-law-open" items={[...topics.map(value=>({id:openTopicId(value),title:'Onderwerp: '+doraChoiceLabel(value)})),...opened.map(s=>({id:s.id,title:frameworkTitle(s.title)}))]} activeId={current} onActivate={onActivate} onIntent={id=>{if(!openTopicValue(id))setWanted(id);}} onClose={id=>{const topic=openTopicValue(id);if(topic)closeTopic(topic);else props.onChange(closeFoundation(props.draft,id) as Draft);const rest=[...topics.filter(value=>value!==topic).map(openTopicId),...opened.filter(s=>s.id!==id).map(s=>s.id)];if(id!==current)return;if(rest[0])onActivate(rest[0]);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Terug naar alle wetten &amp; kaders" disabled={props.disabled}/>
-   {currentTopic&&!pending?<TopicViewer key={currentTopic} value={currentTopic} draft={props.draft} onChange={props.onChange} disabled={props.disabled} navigate={props.navigate} allowed={id=>known.includes(id)}
+   <OpenItemStrip id="reviewed-law-open" items={[...topics.map(value=>({id:openTopicId(value),title:'Onderwerp: '+(topicFamilyOfChoice(value)?.label(value)||'')})),...opened.map(s=>({id:s.id,title:frameworkTitle(s.title)}))]} activeId={current} onActivate={onActivate} onIntent={id=>{if(!openTopicValue(id))setWanted(id);}} onClose={id=>{const topic=openTopicValue(id);if(topic)closeTopic(topic);else props.onChange(closeFoundation(props.draft,id) as Draft);const rest=[...topics.filter(value=>value!==topic).map(openTopicId),...opened.filter(s=>s.id!==id).map(s=>s.id)];if(id!==current)return;if(rest[0])onActivate(rest[0]);else props.navigate('foundations');}} onExplore={()=>props.navigate('foundations')} exploreLabel="Terug naar alle wetten &amp; kaders" disabled={props.disabled}/>
+   {currentTopic&&!pending?<TopicViewer key={currentTopic} family={topicFamilyOfChoice(currentTopic)!} value={currentTopic} draft={props.draft} onChange={props.onChange} disabled={props.disabled} navigate={props.navigate} allowed={id=>known.includes(id)}
      prepare={(id,action)=>props.prepareDetails?props.prepareDetails(id,action):action()}
-     onOpenSource={id=>{requestDoraViewerFilter(id,currentTopic);const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}}/>
+     onOpenSource={id=>{requestViewerTopic(id,currentTopic);const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}}/>
    :pending?<ViewerSkeleton title={frameworkTitle(foundations.find(s=>s.id===pending)?.title||'')}/>:admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId} onOpenSource={known.includes('DORA-2022-2554')?(id:string)=>{if(!known.includes(id))return;const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}:undefined} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
   </>;}
   return <LegacyFoundationWorkspace {...props} />;

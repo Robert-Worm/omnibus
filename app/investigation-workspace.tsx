@@ -49,12 +49,12 @@ import {cioSourceId} from '@/lib/cio-law-data.mjs';
 import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueViewToggle,useCatalogueView,type CatalogueColumn} from './catalogue-table';
-import {TopicFilter,TopicTiles} from './dora-topics';
-import {isDoraTopicSource,decodeDoraChoice,doraChoiceNormIds,doraChoiceSources,doraChoiceLabel,doraChoiceBasis,doraTopicSources,doraOtherRegimeNormIds,takeDoraListTopic,requestDoraViewerFilter} from '@/lib/dora-onderwerpen.mjs';
-import {topicalPackage as doraPackage} from '@/lib/topical-content.mjs';
+import {TopicFilter,TopicTiles} from './topic-filter';
+import {topicFamilies,topicFamilyOfChoice,topicFamilyOfFilters,takeListTopic,requestViewerTopic} from '@/lib/topic-families.mjs';
+import {topicalPackage as topicPackage} from '@/lib/topical-content.mjs';
 import {openTopic} from '@/lib/open-topics.mjs';
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
-import {topicalSelection as doraSelection,chooseTopicalPoints as chooseDoraPoints} from '@/lib/topical-selection.mjs';
+import {topicalSelection as topicSelection,chooseTopicalPoints as chooseTopicPoints} from '@/lib/topical-selection.mjs';
 import {frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
 import type { Draft } from "@/lib/framework-types";
 
@@ -436,11 +436,13 @@ export function FoundationCatalogue({
   const crossScope=otherScope&&domain!=='all'&&!query.trim()&&filterSources(scopeFoundationSources(allowedSources,otherScope),{domain}).length>0?otherScope:undefined;
   // Kies per onderwerp (B-068, B-069). Geen eigen scherm: het onderwerp is een filter in de lijst en in de viewer.
   // De tegels staan alleen binnen de categorie van DORA en openen de lijst met dat filter.
-  const doraDomain='financial';
-  const doraAvailable=allowedSources.some(source=>isDoraTopicSource(source.id));
+  // Alleen families waarvan bronnen in deze verzameling zitten.
+  const availableFamilies=topicFamilies.filter(family=>allowedSources.some(source=>family.isSource(source.id)));
+  const categoryTitle=(category:string)=>(sourceDomains as Record<string,{title:string}>)[category]?.title||'';
+  const filterFamily=(filters:Record<string,string>)=>{const family=topicFamilyOfFilters(filters,categoryTitle);return family&&availableFamilies.includes(family)?family:null;};
   const [listPreset,setListPreset]=useState<{token:number;filters:Record<string,string>}|null>(()=>{
    // Kwam je terug uit een bron waarin je een onderwerp koos of wiste? Dan volgt de lijst.
-   const fromViewer=takeDoraListTopic();return fromViewer===undefined?null:{token:Date.now(),filters:(fromViewer?{family:'DORA',topic:fromViewer}:{topic:''}) as Record<string,string>};});
+   const fromViewer=takeListTopic(),family=fromViewer&&topicFamilies.find(item=>item.id===fromViewer.family);return !fromViewer?null:{token:Date.now(),filters:(fromViewer.value&&family?{family:family.listFamily,topic:fromViewer.value}:{topic:''}) as Record<string,string>};});
   const criteriaFilter = JSON.stringify([kind,domain,processId,selectedOnly]);
   const [criteriaPagination,setCriteriaPagination] = useState({filter:criteriaFilter,page:0});
   if(criteriaPagination.filter!==criteriaFilter)setCriteriaPagination({filter:criteriaFilter,page:0});
@@ -477,53 +479,54 @@ export function FoundationCatalogue({
   // Lijstweergave: alle wetten en kaders in één tabel, met familie, uitgever en datums uit het register.
   const catalogueView=useCatalogueView(),listMode=catalogueView.list;
   const [listFilters,setListFilters]=useState<Record<string,string>>({});
-  const listChoice=listMode&&doraAvailable&&decodeDoraChoice(listFilters.topic||'')?listFilters.topic:'';
+  const choiceFamily=listMode?topicFamilyOfChoice(listFilters.topic||''):null,listFamily=choiceFamily&&availableFamilies.includes(choiceFamily)?choiceFamily:null;
+  const listChoice=listFamily?listFilters.topic:'';
   // Met een onderwerp staan wetten en kaders samen in de lijst: de normen van één onderwerp staan in beide.
   const scopeSources=scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws') as typeof foundations;
-  const choiceIds=new Set<string>(listChoice?doraChoiceSources(listChoice).map((source:{id:string})=>source.id):[]);
+  const choiceIds=new Set<string>(listChoice?listFamily!.choiceSources(listChoice).map((source:{id:string})=>source.id):[]);
   const listSources=(listChoice?[...scopeSources,...allowedSources.filter(source=>choiceIds.has(source.id)&&!scopeSources.some((own:{id:string})=>own.id===source.id))]:scopeSources) as typeof foundations;
   const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
   const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   // Met het filter Onderwerp gelden de telling en het vinkje van een bron alleen voor dat onderwerp: de lijst toont en kiest
   // dan hetzelfde als de viewer van die bron. De toetspunten per norm staan in de bron zelf, dus die laden we.
-  const choicePoints=(sourceId:string):string[]|null=>{const pack=doraPackage(sourceId);if(!pack?.catalogue?.points?.length)return null;
-   const norms=new Set(doraChoiceNormIds(sourceId,listChoice));return pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id);};
-  const pointsOf=(sourceId:string,normIds:string[]):string[]=>{const pack=doraPackage(sourceId),norms=new Set(normIds);return norms.size&&pack?.catalogue?.points?pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id):[];};
+  const choicePoints=(sourceId:string):string[]|null=>{const pack=topicPackage(sourceId);if(!pack?.catalogue?.points?.length)return null;
+   const norms=new Set((listFamily?listFamily.normIds(sourceId,listChoice):[]));return pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id);};
+  const pointsOf=(sourceId:string,normIds:string[]):string[]=>{const pack=topicPackage(sourceId),norms=new Set(normIds);return norms.size&&pack?.catalogue?.points?pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id):[];};
   // Volledig en vereenvoudigd kader gaan niet samen: kiezen onder het ene laat de normen van dat onderwerp onder het andere los.
-  const chooseInChoice=(value:Draft,sourceId:string,points:string[],include:boolean)=>{const next=chooseDoraPoints(value,sourceId,points,include) as Draft,other=include?pointsOf(sourceId,doraOtherRegimeNormIds(sourceId,listChoice)):[];return other.length?chooseDoraPoints(next,sourceId,other,false) as Draft:next;};
+  const chooseInChoice=(value:Draft,sourceId:string,points:string[],include:boolean)=>{const next=chooseTopicPoints(value,sourceId,points,include) as Draft,other=include?pointsOf(sourceId,(listFamily?listFamily.otherRegimeNormIds(sourceId,listChoice):[])):[];return other.length?chooseTopicPoints(next,sourceId,other,false) as Draft:next;};
   const loadTopicSources=useRef(prepareSources);
   useEffect(()=>{loadTopicSources.current=prepareSources;});
-  const choiceSourceKey=listChoice?doraChoiceSources(listChoice).map((source:{id:string})=>source.id).filter((id:string)=>allowedSources.some(source=>source.id===id)).join('|'):'';
+  const choiceSourceKey=listChoice?listFamily!.choiceSources(listChoice).map((source:{id:string})=>source.id).filter((id:string)=>allowedSources.some(source=>source.id===id)).join('|'):'';
   useEffect(()=>{if(choiceSourceKey)loadTopicSources.current(choiceSourceKey.split('|'),()=>{});},[choiceSourceKey]);
   // Eén handeling voor het hele onderwerp: de bronnen van de toetsgrondslag (de wet, of NOREA als de keuze dat zegt) die de
   // lijst nu toont. Zoeken en andere filters tellen dus mee. Staat er voor dit onderwerp al iets uit de andere grondslag,
   // dan vraagt de app eerst of dat vervangen moet worden: beide kiezen geeft dubbele toetspunten.
-  const [swap,setSwap]=useState<null|{from:string;to:string;count:number;run:()=>void}>(null);
+  const [swap,setSwap]=useState<null|{from:string;to:string;count:number;why:string;run:()=>void}>(null);
   const topicBar=(shown:{id:string}[])=>{if(!listChoice)return null;
-   const basis=doraChoiceBasis(listChoice),layers=doraChoiceSources(listChoice).filter((source:{id:string})=>allowedSources.some(own=>own.id===source.id)) as {id:string;laag:string;normIds:string[]}[];
+   const basis=listFamily!.basis(listChoice),layers=listFamily!.choiceSources(listChoice).filter((source:{id:string})=>allowedSources.some(own=>own.id===source.id)) as {id:string;laag:string;normIds:string[]}[];
    const own=layers.filter(source=>source.laag===basis&&shown.some(row=>row.id===source.id)).map(source=>({id:source.id,points:choicePoints(source.id)}));
    const other=layers.filter(source=>source.laag!==basis).map(source=>({id:source.id,points:choicePoints(source.id)}));
-   const ready=own.length>0&&own.every(part=>part.points),states=own.map(part=>part.points?doraSelection(draft,part.id,part.points):null);
+   const ready=own.length>0&&own.every(part=>part.points),states=own.map(part=>part.points?topicSelection(draft,part.id,part.points):null);
    const total=states.reduce((sum,state)=>sum+(state?.total||0),0),selected=states.reduce((sum,state)=>sum+(state?.selected||0),0);
-   const otherSelected=other.reduce((sum,part)=>sum+(part.points?doraSelection(draft,part.id,part.points).selected:0),0);
+   const otherSelected=other.reduce((sum,part)=>sum+(part.points?topicSelection(draft,part.id,part.points).selected:0),0);
    const choose=(include:boolean,replace:boolean)=>prepareSources([...own,...(replace?other:[])].map(part=>part.id),()=>{try{
      let next=own.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseInChoice(value,part.id,points,include);},draft);
-     if(include&&replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseDoraPoints(value,part.id,points,false) as Draft:value;},next);
+     if(include&&replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
      onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');if(include)openTopic(listChoice);
     }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
-   const names=(layer:string)=>layer==='wet'?'de wet':'NOREA';
-   const what=basis==='wet'?`${own.length} ${own.length===1?'wet of regeling':'wetten en regelingen'}`:'NOREA DORA in Control (praktijkkader)';
-   return <div className="catalogue-topic-bar"><p><strong>{doraChoiceLabel(listChoice)}</strong><span>{what}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
+   const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
+   const what=basis==='wet'?`${own.length} ${labels.lawNoun[own.length===1?0:1]}`:labels.practice?.full||'';
+   return <div className="catalogue-topic-bar"><p><strong>{listFamily!.label(listChoice)}</strong><span>{what}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
-     <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>
+     <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>
     </div></div>;};
   const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
    const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);
-   const scoped=Boolean(listChoice)&&doraChoiceNormIds(s.id,listChoice).length>0,points=scoped?choicePoints(s.id):null,part=points?doraSelection(draft,s.id,points):null;
+   const scoped=Boolean(listChoice)&&listFamily!.normIds(s.id,listChoice).length>0,points=scoped?choicePoints(s.id):null,part=points?topicSelection(draft,s.id,points):null;
    const shownSelection=part||selection;
    return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:shownSelection.selected,total:shownSelection.total,all:shownSelection.all,partial:shownSelection.partial,
-    narrowed:scoped?`Alleen het onderwerp ${doraChoiceLabel(listChoice)}`:undefined,counting:Boolean(scoped&&!part),
+    narrowed:scoped?`Alleen het onderwerp ${listFamily!.label(listChoice)}`:undefined,counting:Boolean(scoped&&!part),
     kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',audiences:sourceAudiences(s.id) as (keyof typeof audienceGroups)[],usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
    .flatMap(row=>{if(!query.trim())return [row];const q=query.trim().toLocaleLowerCase('nl');
     const own=[...row.audiences.map(a=>audienceGroups[a].label),row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
@@ -563,24 +566,38 @@ export function FoundationCatalogue({
         search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
         filters={[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories},
          // Vervolgfilter (B-068): verschijnt pas als de lijst op DORA staat. Eén knop met een overzicht en twee opties.
-         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',when:f=>doraAvailable&&(f.family==='DORA'||f.category===sourceDomains.financial.title),value:()=>[],
-          match:(r,value)=>!decodeDoraChoice(value)||doraChoiceNormIds(r.id,value).length>0,render:(value,set)=><TopicFilter value={value} onChange={set} showValue={false} onOpen={()=>prepareSources(doraTopicSources.map((source:{id:string})=>source.id).filter((id:string)=>allowedSources.some(own=>own.id===id)),()=>{})}/>}]}
+         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',when:f=>Boolean(filterFamily(f)),value:()=>[],
+          match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
+          render:(value,set)=>{const family=filterFamily(listFilters)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false}
+           onOpen={()=>prepareSources(family.sources.map(source=>source.id).filter(id=>allowedSources.some(own=>own.id===id)),()=>{})}/>:null;}}]}
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
         nameLabel={listChoice?'Bron':scope==='frameworks'?'Kader':'Wet'} nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
         describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={listChoice?'':`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
-        onOpen={(id,filters)=>{if(decodeDoraChoice(filters.topic||'')&&isDoraTopicSource(id))requestDoraViewerFilter(id,filters.topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
+        onOpen={(id,filters)=>{if(topicFamilyOfChoice(filters.topic||'')?.isSource(id))requestViewerTopic(id,filters.topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
         onFiltersChange={filters=>{setListFilters(filters);if(listPreset&&(filters.topic||'')===(listPreset.filters.topic||''))setListPreset(null);}}
-        onSelect={(ids,checked)=>prepareSources(ids,()=>{try{const next=ids.reduce((value,id)=>{
+        onSelect={(ids,checked)=>{
+          // Met een onderwerp: staat er al iets uit de andere toetsgrondslag (wet of praktijkkader), dan eerst de vraag of
+          // dat vervangen moet worden, net als bij "Kies alle". Beide kiezen geeft dubbele toetspunten.
+          const layers=listFamily?listFamily.choiceSources(listChoice).filter(source=>allowedSources.some(own=>own.id===source.id)):[];
+          const tickedLayers=new Set(layers.filter(source=>ids.includes(source.id)).map(source=>source.laag)),layer=tickedLayers.size===1?[...tickedLayers][0]:'';
+          const other=layer?layers.filter(source=>source.laag!==layer).map(source=>({id:source.id,points:choicePoints(source.id)})):[];
+          const otherSelected=other.reduce((sum,part)=>sum+(part.points?topicSelection(draft,part.id,part.points).selected:0),0);
+          const run=(replace:boolean)=>prepareSources([...ids,...(replace?other.map(part=>part.id):[])],()=>{try{let next=ids.reduce((value,id)=>{
           // Staat het onderwerpfilter aan, dan kiest het vinkje alleen de toetspunten van dat onderwerp.
-          const inChoice=Boolean(listChoice)&&doraChoiceNormIds(id,listChoice).length>0,points=inChoice?choicePoints(id):null;
+          const inChoice=Boolean(listChoice)&&listFamily!.normIds(id,listChoice).length>0,points=inChoice?choicePoints(id):null;
           if(inChoice&&!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');
-          return (points?chooseInChoice(value,id,points,checked):chooseFoundationSource(value,id,checked)) as Draft;},draft);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}
+          return (points?chooseInChoice(value,id,points,checked):chooseFoundationSource(value,id,checked)) as Draft;},draft);
+           if(replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
+           onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
+          const labels=listFamily?.labels;
+          if(checked&&otherSelected>0&&labels?.practice)setSwap({from:layer==='wet'?labels.practice.name:labels.law,to:layer==='wet'?labels.law:labels.practice.name,count:otherSelected,why:layer==='wet'?labels.practice.toLaw:labels.practice.toPractice,run:()=>run(true)});
+          else run(false);}}
         banner={topicBar} empty={<p>Geen wet of kader gevonden. Wis je zoekopdracht of pas de filters aan.</p>}/>}
       {listMode&&searchError&&<p role="alert">{searchError}</p>}
       <AlertDialog open={Boolean(swap)} onOpenChange={open=>{if(!open)setSwap(null);}}>
         <AlertDialogContent className="project-utility-dialog">
           <AlertDialogHeader className="project-utility-header"><div><AlertDialogTitle>Vervangen door {swap?.to}?</AlertDialogTitle>
-            <AlertDialogDescription>Je hebt voor dit onderwerp al {swap?.count} toetspunten uit {swap?.from} gekozen. {swap?.to==='NOREA'?'NOREA beschrijft dezelfde eisen als beheersmaatregelen':'De wet stelt dezelfde eisen als NOREA beschrijft'}; beide kiezen geeft dubbele toetspunten.</AlertDialogDescription></div></AlertDialogHeader>
+            <AlertDialogDescription>Je hebt voor dit onderwerp al {swap?.count} toetspunten uit {swap?.from} gekozen. {swap?.why}; beide kiezen geeft dubbele toetspunten.</AlertDialogDescription></div></AlertDialogHeader>
           <AlertDialogFooter className="project-utility-footer"><AlertDialogCancel>Annuleren</AlertDialogCancel>
             <AlertDialogAction onClick={()=>{swap?.run();setSwap(null);}}>Vervang door {swap?.to}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
@@ -592,7 +609,7 @@ export function FoundationCatalogue({
       {searchError && <p role="alert">{searchError}</p>}
       {query.trim() && <h2>Wetten &amp; kaders <small>({filtered.length})</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
-      {doraAvailable&&catalogueView.available&&domain===doraDomain&&!query.trim()&&<TopicTiles onChoose={value=>{setListPreset({token:Date.now(),filters:{family:'DORA',topic:value}});catalogueView.setMode('list');}}/>}
+      {catalogueView.available&&!query.trim()&&availableFamilies.filter(family=>family.category&&family.category===domain).map(family=><TopicTiles key={family.id} family={family} onChoose={value=>{setListPreset({token:Date.now(),filters:{family:family.listFamily,topic:value}});catalogueView.setMode('list');}}/>)}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
         action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
       <div className="foundation-list">

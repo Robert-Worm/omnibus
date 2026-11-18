@@ -39,7 +39,7 @@
 .law-source-info h3{margin:1.5rem 0 .5rem;font-weight:650;color:#293f55}
 .law-source-info p{margin:.75rem 0;line-height:1.7}
 .law-source-info a{text-decoration:underline;text-underline-offset:3px}
-.law-list-footer{padding:1.25rem 0;color:#657a91;font-size:.8rem}
+.law-list-footer{padding:1.25rem 0;color:var(--muted-foreground);font-size:.8rem}
 .law-hold-help{margin-top:.4rem;max-width:55rem;font-size:.75rem}.law-hold-help summary{cursor:pointer}.law-hold-help p{margin:.5rem 0}.law-hold-help ul{list-style:disc;padding-left:1.2rem}.law-hold-help li{margin:.4rem 0}.law-hold-help li button{text-decoration:underline;text-underline-offset:2px;color:#385f80;cursor:pointer}
 .law-empty{padding:2.5rem;text-align:center;background:#f8fafc;border:1px dashed #bfccda;border-radius:.7rem}
 .law-empty h3{font-size:1rem;font-weight:650}.law-empty p{margin:.5rem 0 1rem}

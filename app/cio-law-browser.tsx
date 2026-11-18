@@ -244,7 +244,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
    })}</div>
    {!groups.length&&<section className="law-empty"><h3>Geen normen gevonden</h3><p>Pas je zoekterm of filters aan om de onderdelen van dit kader weer te zien.</p><Button variant="outline" onClick={resetFilters}>Alle normen tonen</Button></section>}
   </>}
-  <footer className="law-list-footer"><span>{selection.selected} van {countLabel(selection.total,'toetspunten')} uit dit kader gekozen</span></footer>
+  {!embedTopic&&<footer className="law-list-footer"><span>{selection.selected} van {countLabel(selection.total,'toetspunten')} uit dit kader gekozen</span></footer>}
   </>}
   <Sheet open={Boolean(row&&parent)} onOpenChange={value=>{if(!value)close();}}>
    <SheetContent className="audit-detail bd-pilot-detail law-detail" showCloseButton={false} aria-modal="true">

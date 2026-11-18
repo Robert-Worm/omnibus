@@ -9,6 +9,7 @@
     "release:prepare": "node scripts/prepare-release.mjs",
     "test:release-prepare": "node --test scripts/prepare-release.test.mjs scripts/fetch-release-database.test.mjs scripts/database-ophalen.test.mjs scripts/padregel.test.mjs",
     "check:docs": "node scripts/check-docs.mjs",
+    "check:onderwerpen": "node scripts/check-topic-coverage.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "test:voortgang": "node --test .github/scripts/voortgang.test.mjs .github/scripts/rapportvoorstel-lib.test.mjs .github/scripts/backlog.test.mjs .github/scripts/overdracht.test.mjs .github/scripts/gezondheid.test.mjs .github/scripts/geschiktheid.test.mjs .github/scripts/issue-gesloten.test.mjs",
     "test:docs": "node --test scripts/check-docs.test.mjs scripts/check-feiten.test.mjs scripts/check-links.test.mjs scripts/docs-screenshots.test.mjs scripts/check-contrast.test.mjs scripts/installeer.test.mjs scripts/testdekking.test.mjs && node scripts/check-docs.mjs",

@@ -1,0 +1,9 @@
+import type {TopicFamily} from './family-topics.mjs';
+export const topicFamilies:TopicFamily[];
+export function topicFamilyOfSource(sourceId:string):TopicFamily|null;
+export function topicFamilyOfChoice(value:string):TopicFamily|null;
+export function topicFamilyOfFilters(filters:Record<string,string>,categoryTitle?:(category:string)=>string):TopicFamily|null;
+export function requestViewerTopic(sourceId:string,value:string):void;
+export function takeViewerTopic(sourceId:string):string|undefined;
+export function rememberListTopic(value:string,family:TopicFamily|null):void;
+export function takeListTopic():{value:string;family:string}|undefined;

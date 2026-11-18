@@ -419,3 +419,20 @@ html[data-appearance=dark] :is([data-slot=alert-dialog-content],[data-slot=dialo
 .project-utility-dialog .project-utility-body>.guide-overview{margin-left:-56px}
 /* Telefoon: de knoppen in de kop lopen door in één blok, zonder een knop alleen op een regel. */
 @media (max-width:760px){.framework-app .brand-bar .project-actions .project-action-group{display:contents}}
+
+/* Donkere weergave: vlakken die een vaste lichte kleur hadden (B-073). De uitklapmenu's en tooltips van de bouwstenen
+   gebruiken de kleuren popover en accent. Die zijn bij het bouwen als vaste lichte waarde ingevuld, dus een donkere
+   waarde voor het token helpt niet: de vlakken en de aangewezen regel krijgen hier zelf hun donkere kleur. */
+html[data-appearance=dark] :is([data-slot=select-content],[data-slot=dropdown-menu-content],[data-slot=dropdown-menu-sub-content],[data-slot=popover-content],[data-slot=context-menu-content],.bg-popover){background-color:var(--donker-vlak-2);color:var(--foreground);border-color:var(--donker-lijn-2)}
+html[data-appearance=dark] :is([data-slot=select-item],[data-slot=dropdown-menu-item],[data-slot=dropdown-menu-checkbox-item],[data-slot=dropdown-menu-radio-item],[data-slot=dropdown-menu-sub-trigger]):is(:focus,[data-highlighted],[data-popup-open]){background-color:var(--donker-vlak-7);color:var(--donker-tekst-9)}
+html[data-appearance=dark] :is([data-slot=select-item],[data-slot=dropdown-menu-item],[data-slot=dropdown-menu-checkbox-item],[data-slot=dropdown-menu-radio-item],[data-slot=dropdown-menu-sub-trigger]):is(:focus,[data-highlighted],[data-popup-open]) *{color:inherit}
+html[data-appearance=dark] [data-slot="tooltip-content"]{background:var(--donker-vlak-2);color:var(--foreground);border:1px solid var(--donker-lijn-2)}
+html[data-appearance=dark] [data-slot="tooltip-content"].full-text-popup{background:var(--donker-vlak-2);color:var(--foreground)}
+html[data-appearance=dark] .navigation-filter .filter-option{background:var(--donker-vlak-3);border-color:var(--donker-lijn-2);color:var(--foreground)}
+html[data-appearance=dark] .navigation-filter .filter-option:hover{background:var(--donker-vlak-4)}
+html[data-appearance=dark] .navigation-filter .filter-option[data-selected="true"]{background:var(--donker-vlak-7);border-color:var(--primary)}
+html[data-appearance=dark] .basis-tag{background:var(--donker-vlak-4);color:var(--donker-tekst-9);border-color:var(--donker-lijn-2)}
+html[data-appearance=dark] .composer-detail-toggle{background:var(--donker-vlak-3);border-color:var(--donker-lijn-2)}
+html[data-appearance=dark] .composer-detail-toggle button{color:var(--muted-foreground)}
+html[data-appearance=dark] .composer-detail-toggle button[aria-pressed="true"]{background:var(--donker-vlak-7);color:var(--donker-tekst-9);border-color:var(--primary)}
+html[data-appearance=dark] .composer-detail-controls>span{color:var(--muted-foreground)}

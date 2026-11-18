@@ -1,0 +1,18 @@
+export type TopicChoice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean;sector:boolean;practice:boolean};
+export type TopicSource={id:string;soort:string;laag:'wet'|'praktijk'};
+export type TopicOption={label:string;title:string};
+export type TopicLabels={lawNoun:[string,string];law:string;related:TopicOption;regime?:TopicOption&{short:string};sector?:TopicOption;
+  practice?:TopicOption&{name:string;full:string;toPractice:string;toLaw:string};groupNotes?:{pattern:RegExp;text:string}[]};
+export type TopicDefinition={id:string;listFamily:string;category?:string;tone?:string;
+  topics:{id:string;title:string;includes:string;excludes:string;subs?:{id:string;title:string}[]}[];sources:TopicSource[];outside:{id:string;reason:string}[];
+  index:{review:{status:string;date:string;normen:number;note:string};norms:Record<string,[string,string,string,string[],string,boolean|number]>};labels:TopicLabels};
+export type TopicFamily={id:string;listFamily:string;category:string;tone:string;topics:TopicDefinition['topics'];sources:TopicSource[];outside:TopicDefinition['outside'];
+  review:TopicDefinition['index']['review'];labels:TopicLabels;isSource:(id:string)=>boolean;owns:(value:string)=>boolean;
+  normTopic:(normId:string)=>null|{id:string;sourceId:string;main:string;sub:string;also:string[];regime:string;sector:boolean|number};
+  topicTitle:(topicId:string,sub?:string)=>string;encode:(choice:Partial<TopicChoice>&{topic:string})=>string;decode:(value:string)=>TopicChoice|null;
+  normIds:(sourceId:string,value:string|TopicChoice)=>string[];matches:(normId:string,value:string|TopicChoice)=>boolean;label:(value:string|TopicChoice)=>string;
+  choiceSources:(value:string|TopicChoice)=>(TopicSource&{normIds:string[]})[];counts:(value:string|TopicChoice)=>{normen:number;bronnen:number;praktijk:number};
+  otherRegimeNormIds:(sourceId:string,value:string|TopicChoice)=>string[];coverage:(databaseNorms:Record<string,string[]>)=>{ok:boolean;missing:string[];stale:string[];unknownSources:string[]};
+  basis:(value:string|TopicChoice)=>'wet'|'praktijk';sourceHasRegimes:(sourceId:string)=>boolean;topicHasRelated:(topicId:string)=>boolean;topicHasSector:(topicId:string,sourceId?:string)=>boolean;
+  sourceTopicIds:(sourceId:string)=>string[];unassigned:string[];groupNote:(title:string)=>string};
+export function createTopicFamily(definition:TopicDefinition):TopicFamily;
