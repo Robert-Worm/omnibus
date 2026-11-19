@@ -43,7 +43,7 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
  const norms=(topic:string,sub:string)=>sourceId?family.normIds(sourceId,at(topic,sub)).length:(c=>practice?c.praktijk:c.normen)(family.counts(at(topic,sub)));
  const row=(key:string,label:string,chosen:boolean,indent:boolean,onClick:()=>void,amount?:number|null)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
   <span>{label}</span>{amount!==undefined&&<small>{amount??'…'}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
- const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void)=><label className="catalogue-tool-option" htmlFor={id} title={title}><Checkbox id={id} checked={checked} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
+ const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void,disabled=false)=><label className="catalogue-tool-option" htmlFor={id} title={title} data-disabled={disabled||undefined}><Checkbox id={id} checked={checked} disabled={disabled} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
  return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next)onOpen?.();}}>
   <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-haspopup="dialog" aria-label={`Onderwerp: ${current}`}/>}>
    <span className="catalogue-tool-label">{showValue||!choice?facet+':':facet}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
@@ -60,7 +60,9 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
     </div>
     {/* De opties horen bij een onderwerp en verschijnen dus pas als er een gekozen is. */}
     {choice&&<div className="topic-filter-options">
-     {labels.regime&&(!sourceId||family.sourceHasRegimes(sourceId))&&option('topic-filter-regime',labels.regime.label,labels.regime.title,regime==='vereenvoudigd',checked=>set({regime:checked?'vereenvoudigd':'volledig'}))}
+     {/* NOREA kent geen vereenvoudigd kader: met NOREA staat de optie uit, met de reden erbij (testronde 19 november 2026). */}
+     {labels.regime&&(!sourceId||family.sourceHasRegimes(sourceId))&&option('topic-filter-regime',labels.regime.label,practice?(labels.regime.practiceNote||'Niet beschikbaar bij NOREA: NOREA kent geen vereenvoudigd kader.'):labels.regime.title,regime==='vereenvoudigd'&&!practice,checked=>set({regime:checked?'vereenvoudigd':'volledig'}),practice)}
+     {labels.regime&&practice&&!sourceId&&<p className="topic-filter-note">{labels.regime.practiceNote||'Niet beschikbaar bij NOREA: NOREA kent geen vereenvoudigd kader.'}</p>}
      {!choice.sub&&family.topicHasRelated(choice.topic)&&option('topic-filter-related',labels.related.label,labels.related.title,related,checked=>set({related:checked}))}
      {labels.sector&&family.topicHasSector(choice.topic,sourceId||'')&&option('topic-filter-sector',labels.sector.label,labels.sector.title,sector,checked=>set({sector:checked}))}
      {labels.practice&&!sourceId&&option('topic-filter-practice',labels.practice.label,labels.practice.title,practice,checked=>set({practice:checked}))}

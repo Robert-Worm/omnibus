@@ -105,7 +105,7 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
     {about.sourcesIntro&&<p>{about.sourcesIntro.replaceAll('{dit}',sub?'dit deelonderwerp':'dit onderwerp')}</p>}
     <ul className="topic-about-sources">{law.map(part=><li key={part.id}><strong>{title(part.id)}</strong><span>{part.soort} · {part.normIds.length} {part.normIds.length===1?'norm':'normen'}</span></li>)}</ul>
     {practice.length>0&&<p>{basis==='wet'?(about.practiceLaw?fill(about.practiceLaw):<>Hetzelfde onderwerp staat ook in {practice.map(part=>title(part.id)).join(', ')}. Dat is een praktijkkader, geen wet; kies het met de optie <em>{labels.practice?.label}</em>.</>)
-     :(about.practicePractice?fill(about.practicePractice):<>Je kijkt naar het praktijkkader. De wet stelt dezelfde eisen.</>)}</p>}</section>
+     :(about.practicePractice?fill(about.practicePractice):<>Je toetst nu aan het praktijkkader, niet aan de wet.</>)}</p>}</section>
    {(options.length>0||relatedOnWhole)&&<section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
     <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul>
     {relatedOnWhole&&<p>Verwante normen uit andere onderwerpen voeg je toe bij het hele onderwerp {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic!.id,related:true}))}>{topic!.title}</button>:topic!.title}.</p>}</section>}

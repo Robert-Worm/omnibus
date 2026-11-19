@@ -1,7 +1,7 @@
 export type TopicChoice={topic:string;sub:string;regime:'volledig'|'vereenvoudigd';related:boolean;sector:boolean;practice:boolean};
 export type TopicSource={id:string;soort:string;laag:'wet'|'praktijk'};
 export type TopicOption={label:string;title:string};
-export type TopicLabels={/** Naam van het filter, bijvoorbeeld Onderwerp (DORA) of Functie (CIO-stelsel); standaard Onderwerp. */facet?:string;lawNoun:[string,string];law:string;related:TopicOption;regime?:TopicOption&{short:string};sector?:TopicOption;
+export type TopicLabels={/** Naam van het filter, bijvoorbeeld Onderwerp (DORA) of Functie (CIO-stelsel); standaard Onderwerp. */facet?:string;lawNoun:[string,string];law:string;related:TopicOption;regime?:TopicOption&{short:string;/** Waarom de optie niet beschikbaar is bij het praktijkkader. */practiceNote?:string};sector?:TopicOption;
   practice?:TopicOption&{name:string;full:string;toPractice:string;toLaw:string};groupNotes?:{pattern:RegExp|string;flags?:string;text:string}[]};
 export type TopicDefinition={id:string;listFamily:string;category?:string;tone?:string;
   topics:{id:string;title:string;includes:string;excludes:string;about?:string[];notIn?:{text:string}[];subs?:{id:string;title:string;description?:string}[]}[];sources:TopicSource[];outside:{id:string;reason:string}[];

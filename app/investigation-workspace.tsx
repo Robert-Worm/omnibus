@@ -544,7 +544,7 @@ export function FoundationCatalogue({
   useEffect(()=>{if(choiceSourceKey)loadTopicSources.current(choiceSourceKey.split('|'),()=>{});},[choiceSourceKey]);
   // Eén handeling voor het hele onderwerp: de bronnen van de toetsgrondslag (de wet, of NOREA als de keuze dat zegt) die de
   // lijst nu toont. Zoeken en andere filters tellen dus mee. Staat er voor dit onderwerp al iets uit de andere grondslag,
-  // dan vraagt de app eerst of dat vervangen moet worden: beide kiezen geeft dubbele toetspunten.
+  // dan vraagt de app eerst of dat vervangen moet worden: beide kiezen geeft deels dubbele toetspunten.
   const [swap,setSwap]=useState<null|{from:string;to:string;count:number;why:string;run:()=>void}>(null);
   const topicBar=(shown:{id:string}[])=>{if(!listChoice)return null;
    const basis=listFamily!.basis(listChoice),layers=listFamily!.choiceSources(listChoice).filter((source:{id:string})=>allowedSources.some(own=>own.id===source.id)) as {id:string;laag:string;normIds:string[]}[];
@@ -628,7 +628,7 @@ export function FoundationCatalogue({
         onFiltersChange={filters=>{setListFilters(filters);if(listPreset&&(filters.topic||'')===(listPreset.filters.topic||''))setListPreset(null);}}
         onSelect={(ids,checked)=>{
           // Met een onderwerp: staat er al iets uit de andere toetsgrondslag (wet of praktijkkader), dan eerst de vraag of
-          // dat vervangen moet worden, net als bij "Kies alle". Beide kiezen geeft dubbele toetspunten.
+          // dat vervangen moet worden, net als bij "Kies alle". Beide kiezen geeft deels dubbele toetspunten.
           const layers=listFamily?listFamily.choiceSources(listChoice).filter(source=>allowedSources.some(own=>own.id===source.id)):[];
           const tickedLayers=new Set(layers.filter(source=>ids.includes(source.id)).map(source=>source.laag)),layer=tickedLayers.size===1?[...tickedLayers][0]:'';
           const other=layer?layers.filter(source=>source.laag!==layer).map(source=>({id:source.id,points:choicePoints(source.id)})):[];
@@ -648,7 +648,7 @@ export function FoundationCatalogue({
       <AlertDialog open={Boolean(swap)} onOpenChange={open=>{if(!open)setSwap(null);}}>
         <AlertDialogContent className="project-utility-dialog">
           <AlertDialogHeader className="project-utility-header"><div><AlertDialogTitle>Vervangen door {swap?.to}?</AlertDialogTitle>
-            <AlertDialogDescription>Je hebt voor dit onderwerp al {swap?.count} toetspunten uit {swap?.from} gekozen. {swap?.why}; beide kiezen geeft dubbele toetspunten.</AlertDialogDescription></div></AlertDialogHeader>
+            <AlertDialogDescription>Je hebt voor dit onderwerp al {swap?.count} toetspunten uit {swap?.from} gekozen. {swap?.why}; beide kiezen geeft deels dubbele toetspunten.</AlertDialogDescription></div></AlertDialogHeader>
           <AlertDialogFooter className="project-utility-footer"><AlertDialogCancel>Annuleren</AlertDialogCancel>
             <AlertDialogAction onClick={()=>{swap?.run();setSwap(null);}}>Vervang door {swap?.to}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>

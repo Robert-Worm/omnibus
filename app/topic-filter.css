@@ -28,3 +28,4 @@ html[data-appearance=dark] :is(.topic-filter-option:hover,.topic-filter-option:f
 .catalogue-topic-actions{display:flex;gap:.5rem;flex:none}
 /* Eén regel, ook met opties aan: de naam kort af, de aantallen en knoppen blijven staan. */
 @media (min-width:900px){.catalogue-topic-bar{flex-wrap:nowrap}.catalogue-topic-bar p{flex:1 1 auto;flex-wrap:nowrap;white-space:nowrap}.catalogue-topic-bar p strong{min-width:0;overflow:hidden;text-overflow:ellipsis}.catalogue-topic-bar p span{flex:none}}
+.topic-filter-note{margin:.1rem .5rem .4rem 2.1rem;font-size:.8125rem;color:var(--muted-foreground);line-height:1.4}
