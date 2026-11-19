@@ -25,15 +25,6 @@ html[data-appearance=dark] :is(.topic-filter-option:hover,.topic-filter-option:f
 .catalogue-topic-bar p strong{font-weight:600;font-size:.875rem}
 .catalogue-topic-bar p span{color:var(--muted-foreground);font-variant-numeric:tabular-nums}
 
-.topic-tiles{margin:0 0 1.25rem}
-.topic-tiles h4{margin:0 0 .6rem;font:600 .9375rem/1.3 var(--font-ui)}
-.topic-tiles-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
-.topic-tiles-grid button{all:unset;box-sizing:border-box;display:grid;gap:.3rem;align-content:start;padding:.7rem .85rem;border:1px solid var(--border);border-radius:9px;background:var(--card);cursor:pointer;font:400 .875rem/1.35 var(--font-ui);color:var(--foreground)}
-.topic-tiles-grid button:hover{border-color:var(--primary)}
-.topic-tiles-grid button:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
-.topic-tiles-grid button>strong{font-weight:600}
-.topic-tiles-grid .catalogue-card-stats{margin-top:.15rem}
-@media (max-width:900px){.topic-tiles-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .catalogue-topic-actions{display:flex;gap:.5rem;flex:none}
 /* Eén regel, ook met opties aan: de naam kort af, de aantallen en knoppen blijven staan. */
 @media (min-width:900px){.catalogue-topic-bar{flex-wrap:nowrap}.catalogue-topic-bar p{flex:1 1 auto;flex-wrap:nowrap;white-space:nowrap}.catalogue-topic-bar p strong{min-width:0;overflow:hidden;text-overflow:ellipsis}.catalogue-topic-bar p span{flex:none}}

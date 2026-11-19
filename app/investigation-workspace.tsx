@@ -49,7 +49,7 @@ import {cioSourceId} from '@/lib/cio-law-data.mjs';
 import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,useCatalogueView,type CatalogueColumn,type CatalogueFilter} from './catalogue-table';
-import {TopicFilter,TopicTiles} from './topic-filter';
+import {TopicFilter} from './topic-filter';
 import {topicFamilies,topicFamilyOfChoice,topicFamilyOfFilters,takeListTopic,requestViewerTopic} from '@/lib/topic-families.mjs';
 import {topicalPackage as topicPackage} from '@/lib/topical-content.mjs';
 import {openTopic} from '@/lib/open-topics.mjs';
@@ -440,6 +440,10 @@ export function FoundationCatalogue({
   const availableFamilies=topicFamilies.filter(family=>allowedSources.some(source=>family.isSource(source.id)));
   const categoryTitle=(category:string)=>(sourceDomains as Record<string,{title:string}>)[category]?.title||'';
   const filterFamily=(filters:Record<string,string>)=>{const family=topicFamilyOfFilters(filters,categoryTitle);return family&&availableFamilies.includes(family)?family:null;};
+  // De familie met onderwerpen waar wat in beeld is grotendeels uit komt: minstens twee bronnen en minstens de helft.
+  const contentFamily=({rows,narrowed}:{rows:{id:string}[];narrowed:boolean})=>{if(!narrowed||rows.length<2)return null;
+   for(const family of availableFamilies){const own=rows.filter(row=>family.isSource(row.id)).length;if(own>=2&&own*2>=rows.length)return family;}
+   return null;};
   const [listPreset,setListPreset]=useState<{token:number;filters:Record<string,string>}|null>(()=>{
    // Kwam je terug uit een bron waarin je een onderwerp koos of wiste? Dan volgt de lijst.
    const fromViewer=takeListTopic(),family=fromViewer&&topicFamilies.find(item=>item.id===fromViewer.family);return !fromViewer?null:{token:Date.now(),filters:(fromViewer.value&&family?{family:family.listFamily,topic:fromViewer.value}:{topic:''}) as Record<string,string>};});
@@ -461,10 +465,11 @@ export function FoundationCatalogue({
   const [listFilters,setListFilters]=useState<Record<string,string>>({});
   const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
   const sourceFilters:CatalogueFilter<FilterRow>[]=[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories},
-         // Vervolgfilter: verschijnt pas als de lijst op een familie met onderwerpen staat.
-         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,when:f=>Boolean(filterFamily(f)),value:()=>[],
+         // Vervolgfilter: verschijnt als de lijst op een familie met onderwerpen staat, of zodra wat je na zoeken of filteren
+         // ziet grotendeels uit zo'n familie komt (B-077). Zonder zoeken of filter blijft het weg, zodat DORA niet overheerst.
+         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,when:(f,context)=>Boolean(filterFamily(f)||contentFamily(context)),value:()=>[],
           match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
-          render:(value,set)=>{const family=filterFamily(listMode?listFilters:tileFilters)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
+          render:(value,set,context)=>{const family=filterFamily(listMode?listFilters:tileFilters)||contentFamily(context)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
            onOpen={()=>prepareSources(family.sources.map(source=>source.id).filter(id=>allowedSources.some(own=>own.id===id)),()=>{})}/>:null;}}];
   const filterRow=(source:{id:string}):FilterRow=>({id:source.id,record:frameworkRecord(source.id),audiences:sourceAudiences(source.id) as (keyof typeof audienceGroups)[],
    categories:Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(source.id)).map(d=>(d as {title:string}).title)});
@@ -535,7 +540,10 @@ export function FoundationCatalogue({
     }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
    const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
    const what=basis==='wet'?`${own.length} ${labels.lawNoun[own.length===1?0:1]}`:labels.practice?.full||'';
-   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
+   // Staat de andere laag ook in de lijst (bijvoorbeeld NOREA naast de wet), dan zegt de regel dat, zodat het aantal rijen klopt
+   // met wat er staat; Kies alle kiest alleen uit de eigen laag.
+   const beside=other.some(part=>shown.some(row=>row.id===part.id))?`, ${names(basis==='wet'?'praktijk':'wet')} ernaast`:'';
+   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{beside}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
      <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>
@@ -629,7 +637,6 @@ export function FoundationCatalogue({
       {searchError && <p role="alert">{searchError}</p>}
       {query.trim() && <h2>Wetten &amp; kaders <small>({filtered.length})</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
-      {catalogueView.available&&!query.trim()&&availableFamilies.filter(family=>family.category&&family.category===domain).map(family=><TopicTiles key={family.id} family={family} onChoose={value=>{setListPreset({token:Date.now(),filters:{family:family.listFamily,topic:value}});catalogueView.setMode('list');}}/>)}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
         action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
       <div className="foundation-list">

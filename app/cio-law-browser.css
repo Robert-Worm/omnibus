@@ -298,3 +298,8 @@ html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice
  .law-browse-filters .catalogue-tool .catalogue-tool-value{max-width:11rem}.law-browse-filters .law-reset-filters{flex:none;white-space:nowrap}}
 .law-group-heading h3 .law-group-origin{display:inline-grid;place-items:center;vertical-align:-2px;margin-left:.4rem;color:var(--muted-foreground)}
 .law-viewer-heading output strong{font-weight:600;color:var(--primary)}
+
+/* Van het onderwerp in één bron naar hetzelfde onderwerp in alle bronnen van de familie (B-077). Een stille link in de kopregel. */
+.law-topic-elsewhere{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:.25rem;margin-left:.6rem;font:500 .8125rem/1.3 var(--font-ui);color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.law-topic-elsewhere:hover{text-decoration-thickness:2px}
+.law-topic-elsewhere:focus-visible{outline:3px solid var(--ring);outline-offset:2px;border-radius:2px}

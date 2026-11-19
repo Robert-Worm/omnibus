@@ -1,7 +1,7 @@
 import {useState} from 'react';
 
 export type LawOverview='norms'|'source';
-export type LawOverviewProps={overview?:LawOverview;onOverviewChange?:(overview:LawOverview)=>void};
+export type LawOverviewProps={overview?:LawOverview;onOverviewChange?:(overview:LawOverview)=>void;/** Open een onderwerp als geheel, over alle bronnen van de familie (B-077). */onShowTopic?:(value:string)=>void};
 
 // The open-source workspace owns this choice across source tabs. Standalone
 // point viewers retain a local fallback without changing the workspace mode.

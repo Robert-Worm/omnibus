@@ -32,7 +32,7 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
  useEffect(()=>{preload.current=onOpen;});
  useEffect(()=>{preload.current?.();},[]);
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
- const choice=family.decode(value),current=choice?family.label(value):'Alle',labels=family.labels;
+ const choice=family.decode(value),current=choice?family.label(value):'Alle',labels=family.labels,facet=family.labels.facet||'Onderwerp';
  const regime=choice?.regime||'volledig',related=Boolean(choice?.related),sector=Boolean(choice?.sector),practice=Boolean(choice?.practice);
  // De opties blijven staan als je van onderwerp wisselt.
  const set=(next:Partial<Choice>)=>onChange(family.encode({topic:'',sub:'',regime,related,sector,practice,...choice,...next}));
@@ -46,10 +46,10 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
  const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void)=><label className="catalogue-tool-option" htmlFor={id} title={title}><Checkbox id={id} checked={checked} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
  return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next)onOpen?.();}}>
   <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-haspopup="dialog" aria-label={`Onderwerp: ${current}`}/>}>
-   <span className="catalogue-tool-label">{showValue||!choice?'Onderwerp:':'Onderwerp'}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
+   <span className="catalogue-tool-label">{showValue||!choice?facet+':':facet}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
   </Popover.Trigger>
   <Popover.Portal><Popover.Positioner side="bottom" align="start" sideOffset={4} collisionAvoidance={{side:'none',align:'shift'}} className="isolate z-50">
-   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label="Onderwerp" onKeyDown={event=>{if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+   <Popover.Popup className="catalogue-tool-menu topic-filter" aria-label={facet} onKeyDown={event=>{if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
      // Pijltjes, Home en End lopen door de regels, net als in de andere filters.
      const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],index=items.indexOf(document.activeElement as HTMLElement);
      event.preventDefault();items[event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
@@ -70,14 +70,3 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
  </Popover.Root>;
 }
 
-/** Tegels binnen de categorie: een klik opent de lijst met dat onderwerp als filter. Zelfde tegelvorm als de bronnen. */
-export function TopicTiles({family,onChoose}:{family:TopicFamily;onChoose:(value:string)=>void}){
- return <section className="topic-tiles" aria-labelledby="topic-tiles-title">
-  <h4 id="topic-tiles-title">Kies per onderwerp</h4>
-  <div className="topic-tiles-grid">{family.topics.map((topic,index)=>{const value=family.encode({topic:topic.id}),counts=family.counts(value);
-   return <button type="button" key={topic.id} onClick={()=>onChoose(value)}>
-    <span className="catalogue-card-id">Onderwerp {index+1}</span><strong>{topic.title}</strong>
-    <span className="catalogue-card-stats"><span><strong>{counts.bronnen}</strong> {family.labels.lawNoun[counts.bronnen===1?0:1]}</span></span>
-   </button>;})}</div>
- </section>;
-}

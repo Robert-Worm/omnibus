@@ -55,7 +55,7 @@ import {foundations} from '@/lib/investigation.mjs';
 import {topicalIds} from '@/lib/topical-content.mjs';
 import TopicalLawBrowser from './topical-law-browser';
 import TopicViewer from './topic-viewer';
-import {openTopics,subscribeOpenTopics,closeTopic,takeWantedTopic,openTopicId,openTopicValue} from '@/lib/open-topics.mjs';
+import {openTopic,openTopics,subscribeOpenTopics,closeTopic,takeWantedTopic,openTopicId,openTopicValue} from '@/lib/open-topics.mjs';
 import {topicFamilyOfChoice,requestViewerTopic} from '@/lib/topic-families.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
@@ -101,6 +101,8 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   const current=activeTopic?active:known.includes(active)&&(opened.some(s=>s.id===active)||props.initialSource===active)?active:(!active||openTopicValue(active)?opened[0]?.id||(topics[0]?openTopicId(topics[0]):undefined):undefined);
   const currentTopic=openTopicValue(current||'');
   overviewProps.overview=overviewVan(current||'');
+  // Uit de viewer van één bron: het gekozen onderwerp als geheel openen, over alle bronnen van de familie (B-077).
+  (overviewProps as LawOverviewProps).onShowTopic=value=>{openTopic(value);setWanted(null);startTransition(()=>setActive(openTopicId(value)));window.scrollTo({top:0});};
   overviewProps.onOverviewChange=value=>{if(current){rememberOverview(current,value);setPerSource(v=>({...v,[current]:value}));}setSharedOverview(value);};
   // Zodra een kader in beeld is, haalt de app op de achtergrond ook de toetspunten op; een toetspunt openen hoeft dan niet te wachten.
   const shown=props.onSourceShown;
