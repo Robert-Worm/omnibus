@@ -173,6 +173,9 @@ export function checkTopicPackage(pkg, runtime, {reviews = true} = {}) {
   const definition = pkg.family, invalid = validateTopicDefinition(definition);
   if (invalid.length) return {problems: [...problems, ...invalid.map(item => 'Indeling: ' + item)], plans: []};
   const family = createTopicFamily(definition);
+  // De overkoepelende vraag voor gecombineerde onderwerpen hoort bij precies deze tekst (B-081).
+  const combo = definition.combination;
+  if (combo && combo.review?.textHash !== topicHash({template: combo.template, phrases: combo.phrases, join: combo.join ?? 'en'})) say('combination: de review hoort bij een andere tekst van het kader of de frasen.');
   for (const source of definition.sources) if (!runtime.sources[source.id]) say(`Bron ontbreekt in de database: ${source.id}`);
   const coverage = family.coverage(Object.fromEntries(Object.entries(runtime.sources).filter(([, source]) => source).map(([id, source]) => [id, source.norms.map(norm => norm.id)])));
   for (const id of coverage.missing) say(`Norm zonder plek in de indeling: ${id}`);

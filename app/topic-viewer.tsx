@@ -9,6 +9,7 @@ import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import {foundations} from '@/lib/investigation.mjs';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
+import {countLabel} from '@/lib/display-count.mjs';
 import {topicalPackage} from '@/lib/topical-content.mjs';
 import {topicalSelection,chooseTopicalPoints} from '@/lib/topical-selection.mjs';
 import type {TopicFamily} from '@/lib/family-topics.mjs';
@@ -41,7 +42,7 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
   onChange({...next,investigation:{...next.investigation,sourceIds:open}} as Draft);};
  const title=(id:string)=>frameworkTitle(foundations.find(source=>source.id===id)?.title||id);
  const beside=basis==='wet'&&parts.some(part=>part.laag!=='wet')&&family.labels.practice?.name?`, ${family.labels.practice.name} ernaast`:'';
- const what=basis==='wet'?`${own.length} ${family.labels.lawNoun[own.length===1?0:1]}${beside}`:family.labels.practice?.full||'';
+ const what=basis==='wet'?`${countLabel(own.length,'bronnen')}${beside}`:family.labels.practice?.full||'';
  const notice=(()=>{const found=own.map(part=>sourceAudienceNotice(part.id)).find(Boolean);return found?{...found,text:found.text.replace(/^Dit kader/u,'Dit onderwerp')}:null;})();
  const topic=family.topics.find(item=>item.id===family.decode(value)?.topic);
  const allChosen=ready&&total>0&&selected>=total;
@@ -51,7 +52,7 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
     <button aria-pressed={tab==='norms'} onClick={()=>setTab('norms')}>Normen</button><button aria-pressed={tab==='about'} onClick={()=>setTab('about')}>Over dit onderwerp</button></nav>
    {onBack&&<Button variant="outline" className="topic-viewer-back" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button>}</div>
   <div className="law-browse-intro"><div className="law-viewer-heading"><h2 id="topic-viewer-title">{family.label(value)}</h2>
-    <output aria-live="polite">{what}{ready&&<> · {total} toetspunten · {selected} gekozen</>}</output></div>
+    <output aria-live="polite">{what}{ready&&<> · {selected} van {total} toetspunten gekozen</>}</output></div>
    {notice&&<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>}
    <div className="law-selection-actions"><Button variant="outline" className="law-topic-choose" disabled={disabled||!ready||!total} aria-pressed={allChosen} onClick={()=>chooseAll(!allChosen)}>{allChosen?'Deselecteer onderwerp':ready?`Kies alle ${total} toetspunten`:'Toetspunten tellen…'}</Button></div></div>
   {tab==='about'?<TopicAbout family={family} value={value} topic={topic} parts={parts} basis={basis} title={title} onSwitch={onSwitch} onBack={onBack}/>:parts.map(part=><section className="topic-viewer-source" key={part.id} aria-label={title(part.id)}>

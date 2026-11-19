@@ -14,6 +14,7 @@ import CriterionSearchResults from './criterion-search-results';
 import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
 import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
 import { chooseFoundationSource, chooseFoundationItems, preparedFoundationItems, foundationSelection, sourceNarrowing } from '@/lib/foundation-workspace.mjs';
+import {countLabel} from '@/lib/display-count.mjs';
 import {useState, useRef, useEffect} from 'react';
 import {
   ArrowRight,
@@ -124,7 +125,7 @@ export function InvestigationNavigation({
           >
             <span className="step-number">{i + 1}</span>
             <span>{label}</span>
-            {id === "framework" && count > 0 && <span className="step-count" title="Gekozen bouwstenen uit alle bronnen; elke bouwsteen telt één keer.">{count} {count===1?'bouwsteen':'bouwstenen'}</span>}
+            {id === "framework" && count > 0 && <span className="step-count" title="Je gekozen toetspunten en modelvragen. In stap 3 heten ze bouwstenen; elke bouwsteen telt één keer.">{count} gekozen</span>}
             {i < stages.length - 1 && <ChevronRight className="step-connector" size={18} aria-hidden="true" />}
           </a>
         ))}
@@ -331,7 +332,7 @@ export function InvestigationStart({
           {
             id: "foundations",
             title: "Wet of kader",
-            description: "Zoek grondslagen en normen die passen bij je doelstelling.",
+            description: "Zoek bronnen en normen die passen bij je doel.",
             icon: Scale,
             action: "Verken wetten & kaders",
           },
@@ -483,7 +484,15 @@ export function FoundationCatalogue({
   const filterRow=(source:{id:string}):FilterRow=>({id:source.id,record:frameworkRecord(source.id),audiences:sourceAudiences(source.id) as (keyof typeof audienceGroups)[],
    categories:Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(source.id)).map(d=>(d as {title:string}).title)});
   // Filters uit de balk boven de tegels versmallen de tegels, behalve filters die de lijst vragen.
-  const tileActive=!listMode&&catalogueView.available?sourceFilters.filter(f=>!f.needsList&&tileFilters[f.key]):[];
+  // Een filter dat de lijst vraagt (Onderwerp) telt in de tegels mee als het een bronfilter heeft: de tegels tonen dan
+  // de bronnen van dat onderwerp. Kiezen gebeurt in de lijst; wisselen tussen lijst en tegels houdt de filters vast.
+  const tileActive=!listMode&&catalogueView.available?sourceFilters.filter(f=>(!f.needsList||f.match)&&tileFilters[f.key]):[];
+  const [tilePreset,setTilePreset]=useState<{token:number;filters:Record<string,string>}|null>(null);
+  const shownMode=useRef(listMode),lastFilters=useRef({list:listFilters,tiles:tileFilters});
+  useEffect(()=>{lastFilters.current={list:listFilters,tiles:tileFilters};});
+  useEffect(()=>{if(shownMode.current===listMode)return;shownMode.current=listMode;
+   const from=listMode?lastFilters.current.tiles:lastFilters.current.list;if(!Object.values(from).some(Boolean))return;
+   if(listMode)setListPreset({token:Date.now(),filters:from});else setTilePreset({token:Date.now(),filters:from});},[listMode]);
   const tilePass=(source:{id:string})=>{if(!tileActive.length)return true;const row=filterRow(source);return tileActive.every(f=>f.match?f.match(row,tileFilters[f.key]):f.value(row).includes(tileFilters[f.key]));};
   // Een filter dat de lijst vraagt: de lijst opent met die keuze en de focus gaat mee naar dezelfde knop.
   const jumpToList=(key:string,value:string)=>{const family=key==='topic'?topicFamilyOfChoice(value):null;if(family&&query)setQuery('');
@@ -550,11 +559,11 @@ export function FoundationCatalogue({
      onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');if(include)openTopic(listChoice);
     }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
    const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
-   const what=basis==='wet'?`${own.length} ${labels.lawNoun[own.length===1?0:1]}`:labels.practice?.full||'';
+   const what=basis==='wet'?countLabel(own.length,'bronnen'):labels.practice?.full||'';
    // Staat de andere laag ook in de lijst (bijvoorbeeld NOREA naast de wet), dan zegt de regel dat, zodat het aantal rijen klopt
    // met wat er staat; Kies alle kiest alleen uit de eigen laag.
    const beside=other.some(part=>shown.some(row=>row.id===part.id))?`, ${names(basis==='wet'?'praktijk':'wet')} ernaast`:'';
-   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{beside}{ready&&<> · {total} toetspunten{selected>0&&<> · {selected} gekozen</>}</>}</span></p>
+   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{beside}{ready&&<> · {selected} van {total} toetspunten gekozen</>}</span></p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
      <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>
@@ -585,18 +594,18 @@ export function FoundationCatalogue({
      return <><span className={d>today?'catalogue-future':undefined}>{shortDate(d)}</span>{d>today&&<span className="catalogue-sub catalogue-future-note">geldt nog niet</span>}{published}</>;}},
   ];
   return (
-    <section className="catalogue-explorer foundation-catalogue">
+    <section className="catalogue-explorer foundation-catalogue" data-tiles={!listMode&&catalogueView.available||undefined}>
       {!guided&&<CatalogueHeader title="Verken bronnen" description="" action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
       {guided&&!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
-        search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
-        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList}/>
-       :<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
+        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList} preset={tilePreset||undefined}/>
+       :<DirectorySearch id="foundation-search" label="Zoek bron" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
       {!guided&&<>
         {!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
-        search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
-        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList}/>
-       :<DirectorySearch id="foundation-search" label="Zoek wet of kader" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
+        onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList} preset={tilePreset||undefined}/>
+       :<DirectorySearch id="foundation-search" label="Zoek bron" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
         {query.trim() && <div className="catalogue-search-tools">
           {search.suggestions.length>0 && <fieldset className="catalogue-search-suggestions"  aria-label="Zoeksuggesties">
             <span>Zoeksuggesties:</span>
@@ -606,12 +615,12 @@ export function FoundationCatalogue({
           </fieldset>}
         </div>}
       </>}
-      {listMode&&<CatalogueTable id="foundations-v6" defaultSort="title" noun={listChoice?['bron','bronnen']:scope==='frameworks'?['kader','kaders']:['wet','wetten']} unit={['toetspunt','toetspunten']} preset={listPreset||undefined}
-        search={{id:'foundation-search',label:'Zoek wet of kader',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
+      {listMode&&<CatalogueTable id="foundations-v6" defaultSort="title" noun={['bron','bronnen']} base={listSources.length} unit={['toetspunt','toetspunten']} preset={listPreset||undefined}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
         filters={sourceFilters}
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
-        nameLabel={listChoice?'Bron':scope==='frameworks'?'Kader':'Wet'} nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
-        describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={listChoice?'':`Een vinkje kiest alle toetspunten van ${scope==='frameworks'?'dat kader':'die wet'}. Open ${scope==='frameworks'?'het kader':'de wet'} om er een paar te kiezen.`} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
+        nameLabel="Bron" nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
+        describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={listChoice?'':'Een vinkje kiest alle toetspunten van die bron. Open de bron om er een paar te kiezen.'} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
         onOpen={(id,filters)=>{if(topicFamilyOfChoice(filters.topic||'')?.isSource(id))requestViewerTopic(id,filters.topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
         onFiltersChange={filters=>{setListFilters(filters);if(listPreset&&(filters.topic||'')===(listPreset.filters.topic||''))setListPreset(null);}}
         onSelect={(ids,checked)=>{
@@ -641,12 +650,14 @@ export function FoundationCatalogue({
             <AlertDialogAction onClick={()=>{swap?.run();setSwap(null);}}>Vervang door {swap?.to}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Tegels: zoekbalk en tegels vormen één paneel, zoals de lijst (B-081). */}
+      {!listMode&&<div className="catalogue-tiles-body">
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" value={directoryGroup} searching={Boolean(query.trim())} filtered={tileActive.length>0}
         groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
         onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>}
       {!listMode&&showList&&<>
       {searchError && <p role="alert">{searchError}</p>}
-      {query.trim() && <h2>Wetten &amp; kaders <small>({filtered.length})</small></h2>}
+      {query.trim() && <h2>Zoekresultaten <small>{filtered.length} van {countLabel(browseSources.length,'bronnen')}</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
         action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
@@ -667,7 +678,7 @@ export function FoundationCatalogue({
                 {scopeOfSource(s.id)&&<p className="catalogue-card-scope"><Users size={14} aria-hidden="true"/><span>Voor: <strong>{scopeOfSource(s.id)!.text}</strong>{scopeOfSource(s.id)!.role==='toezichthouder'&&<em className="catalogue-card-role"> · onderzoek bij een toezichthouder</em>}</span></p>}
                 <p>{s.usage}</p>
                 {search.contextSourceIds.includes(s.id) && <span className="source-meta">Gevonden via normen in deze bron</span>}
-                <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> {lawCounts.groups===1?'groep':'groepen'}</span><span><strong>{lawCounts.norms}</strong> {lawCounts.norms===1?'norm':'normen'}</span><span><strong>{selection.total}</strong> selecteerbare toetspunten</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>
+                <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> {lawCounts.groups===1?'groep':'groepen'}</span><span><strong>{lawCounts.norms}</strong> {lawCounts.norms===1?'norm':'normen'}</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> van {selection.total} {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>
               </div>
               <CatalogueCardActions layout="buttons" title={frameworkTitle(s.title)} opened={wb.sourceIds.includes(s.id)} disabled={disabled} onPrepare={()=>onPrepareSource?.(s.id)}
                 onOpen={()=>{if(!wb.sourceIds.includes(s.id))toggle(s.id,true);onCriteria(s.id);}} onToggle={value=>toggle(s.id,value)}
@@ -684,7 +695,7 @@ export function FoundationCatalogue({
         </p>
       )}
       {filtered.length>sourcePageSize && <div className="foundation-pagination">
-        <span>{filtered.length} {filtered.length===1?'grondslag':'grondslagen'}</span>
+        <span>{filtered.length===browseSources.length?countLabel(filtered.length,'bronnen'):`${filtered.length} van ${countLabel(browseSources.length,'bronnen')}`}</span>
         <Button variant="outline" disabled={index === 0} onClick={() => setPage(index - 1)}>
           Vorige
         </Button>
@@ -713,6 +724,7 @@ export function FoundationCatalogue({
         page={criteriaPage} onPage={setCriteriaPage} disabled={disabled}
         onOpen={(id,criterionId)=>{if(!wb.sourceIds.includes(id)) toggle(id,true);onCriteria(id,criterionId);}}/>}
       </>}
+      </div>}
       <p className="directory-note"><TermText text="Controleer altijd de oorspronkelijke bron en of die voor jouw organisatie geldt. Een gekozen norm is nog geen oordeel over naleving."/></p>
       <Sheet
         open={!!current}
@@ -736,7 +748,7 @@ export function FoundationCatalogue({
               <p>
                 {current.kind === "audit"
                   ? "Deze bron richt zich op de audit. Een dekkingspunt is niet automatisch een eis aan de organisatie."
-                  : "Gebruik als grondslag bevestigt nog niet dat alle bepalingen op jouw onderzoek van toepassing zijn."}
+                  : "Dat je een bron gebruikt, betekent nog niet dat alle bepalingen voor jouw onderzoek gelden."}
               </p>
               {![cioSourceId,wwkeSourceId].includes(current.id) && <FoundationSourceReader reference={{sourceId:current.id}}/>}
               <a className="external-source" href={current.url} target="_blank" rel="noreferrer">

@@ -72,6 +72,10 @@ Omnibus de korte omschrijving uit de indeling.
 - `[[T6]]` in een tekst wordt een link naar dat onderwerp; `**Kies alle toetspunten**` wordt vet (voor knopnamen). Het hulpmiddel weigert een verwijzing naar een onderwerp
   dat niet bestaat.
 
+- `combination`: de centrale vraag voor twee of meer onderwerpen samen. `template` bevat `{onderwerpen}`; `phrases` geeft
+  per onderwerp een korte frase die zegt wat je onderzoekt. Omnibus vult in: "A en B", of "A, B en C". `review`
+  (`reviewer`, `reviewDate`, `textHash`) hoort bij precies dit kader en deze frasen; anders weigert het hulpmiddel het pakket.
+
 Een nieuwe tekst vraagt geen nieuwe beoordeling van de vraagplannen. Geef het pakket daarvoor een nieuwe `edition` en
 laat `planEdition` staan op de editie waarvoor de plannen zijn beoordeeld. Zonder `planEdition` gelden de plannen voor
 `edition`, en vraagt een nieuwe editie ook nieuwe reviews.

@@ -13,8 +13,8 @@
 | <a id="referentiekader"></a>Referentiekader | De normen en toetspunten waarmee je een organisatie, proces of onderwerp onderzoekt, gekoppeld aan je onderzoeksvragen. Elders heet dit toetsingskader of auditkader. |
 | <a id="norm"></a>Norm | Waar de organisatie aan zou moeten voldoen. |
 | <a id="toetspunt"></a>Toetspunt | Een concrete controle bij een norm: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
-| <a id="bouwsteen"></a>Bouwsteen | Alles wat je in Omnibus kunt kiezen: normen, toetspunten en modelvragen. |
-| <a id="bron"></a>Bron | Waar een bouwsteen vandaan komt: een rapport, een wet, een kader of een onderzoeksmodel. |
+| <a id="bouwsteen"></a>Bouwsteen | Wat je gekozen hebt voor je kader: een toetspunt, modelvraag of eigen bouwsteen. Een gekozen toetspunt is een bouwsteen. |
+| <a id="bron"></a>Bron | Een document waaruit je normen of vragen kiest, zoals een wet, kader, rapport of model. Wet en kader zijn soorten bronnen. |
 | <a id="bronpassage"></a>Bronpassage | Het stuk tekst in de bron waarop een bouwsteen is gebaseerd. Omnibus markeert het in de oorspronkelijke tekst. |
 | <a id="vraaggestuurd"></a>Vraaggestuurd | Een onderzoek dat begint bij een vraag van de opdrachtgever. |
 | <a id="risk-based"></a>Risk-based | Een onderzoek dat begint bij signalen of zorgen, en eerst de risico's verkent. |

@@ -661,7 +661,7 @@ export default function ResearchBuilder({
               <div className="group-drag-handle" draggable={!disabled} onPointerDown={()=>{controlPointer.current=false;}}
                 aria-label={'Sleep gekoppelde groep '+group.title} title="Sleep deze groep naar een andere vraag om de koppelingen te verplaatsen."
                 onDragStart={e=>start(e,{type:'group',lineId:group.title,lineIds:group.lines.map(l=>l.id),from:q.id})} onDragEnd={end}>
-                <GripVertical size={16} aria-hidden="true"/> Sleep groep ({group.lines.length})
+                <GripVertical size={16} aria-hidden="true"/> Sleep {countLabel(group.lines.length,'bouwstenen')}
               </div>
               <ResearchMaterialGroup open={direct.length<=5} lines={group.lines}
                 summary={<span className="group-summary-copy">{group.sourceTitle && <small>{group.sourceTitle}</small>}{group.title} ({group.lines.length})</span>}
@@ -715,7 +715,7 @@ export default function ResearchBuilder({
             {numbers[q.id]} · <TermHelp id={q.parent_id ? 'subquestion' : 'central'}>{q.parent_id ? "Deelvraag" : "Centrale vraag"}</TermHelp>
           </span>
           <span className="question-count">
-            {children.length ? `${direct.length} rechtstreeks · ${total} totaal` : `${direct.length} ${direct.length===1 ? 'bouwsteen' : 'bouwstenen'}`}
+            {children.length ? `${countLabel(total,'bouwstenen')}${direct.length?` · ${direct.length} rechtstreeks`:''}` : countLabel(direct.length,'bouwstenen')}
             {children.length > 0 && <QuestionCountHelp/>}
           </span>
           <QuestionWordingCycle text={q.text} label={questionLabel(draft,q)} disabled={disabled}
@@ -1033,7 +1033,7 @@ export default function ResearchBuilder({
             Niet-gekoppelde bouwstenen gaan in de export mee onder de centrale vraag (besluit 8 november 2026). */}
         <CellTip plain label={`${draft.included.length - free.length} van ${countLabel(draft.included.length,'bouwstenen')} gekoppeld${free.length?`. ${countLabel(free.length,'bouwstenen')} ${free.length===1?'hoort':'horen'} nog bij geen vraag`:''}`}
           tip={<><strong>{draft.included.length - free.length} van {countLabel(draft.included.length,'bouwstenen')} gekoppeld</strong>{free.length>0&&<span>{countLabel(free.length,'bouwstenen')} {free.length===1?'hoort':'horen'} nog bij geen vraag. In de export {free.length===1?'komt hij':'komen ze'} bij een verwante deelvraag, of anders onder je centrale vraag.</span>}</>}>
-          <span className="research-link-status" data-open={free.length>0||undefined}><Link2 size={15} aria-hidden="true"/>{draft.included.length - free.length}/{draft.included.length}</span>
+          <span className="research-link-status" data-open={free.length>0||undefined}><Link2 size={15} aria-hidden="true"/>{draft.included.length - free.length} van {draft.included.length} gekoppeld</span>
         </CellTip>
         {!choosing && <div className="research-route-actions">{roots.length===1&&<Button variant="outline" disabled={disabled} onClick={()=>chooseCentral(roots[0].id)}><ArrowLeft size={15}/>Terug naar mijn vraagopzet</Button>}<Button variant="outline" disabled={disabled || r.questions.length >= 200} onClick={() => chooseCentral()}><Plus size={16}/>Nieuwe vraagopzet</Button></div>}
       </div>}
@@ -1072,7 +1072,7 @@ export default function ResearchBuilder({
           </div>
           <section className="composer-branches" aria-label="Deelvragen in deze opzet">
             <header><h3><TermHelp id="subquestion">Deelvragen</TermHelp></h3><div className="composer-detail-controls"><span aria-live="polite">{ownCentral?'optioneel':chosenSubs.length+' gekozen'+(canSwitchDetail&&chosenSubs.length?' · '+broadChosen+' breed, '+(chosenSubs.length-broadChosen)+' specifiek':'')}</span>{canSwitchDetail&&<fieldset className="composer-detail-toggle"  aria-label="Detailniveau van voorgestelde deelvragen"><button type="button" aria-pressed={subquestionDetail==='broad'} disabled={disabled} onClick={()=>switchSubquestionDetail('broad')}>Breed</button><button type="button" aria-pressed={subquestionDetail==='specific'} disabled={disabled} onClick={()=>switchSubquestionDetail('specific')}>Specifiek</button></fieldset>}</div></header>
-            {canSwitchDetail&&<p className="composer-detail-hint">Combineer brede en specifieke deelvragen. Je keuzes blijven behouden bij het wisselen. Een toetspunt kan bij meerdere vragen horen en telt maar één keer mee in je selectie.</p>}
+            {canSwitchDetail&&<p className="composer-detail-hint">Combineer brede en specifieke deelvragen. Je keuzes blijven behouden bij het wisselen. Een bouwsteen kan bij meerdere vragen horen en telt één keer mee.</p>}
             <>
               {ownSubs.map((text,i)=><div className="own-subquestion" key={i}><span>{i+1}</span><Textarea rows={2} aria-label={'Nieuwe deelvraag '+(i+1)} placeholder="Wat wil je hiervoor weten?" value={text} disabled={disabled} maxLength={2000} onChange={e=>setOwnSubs(items=>items.map((t,j)=>j===i?e.target.value:t))}/><Button variant="ghost" aria-label={'Deelvraag '+(i+1)+' verwijderen'} disabled={disabled} onClick={()=>setOwnSubs(items=>items.filter((_,j)=>j!==i))}><X size={16}/></Button></div>)}
               <button type="button" className="add-branch" disabled={disabled||r.questions.length+chosenSubs.length+ownSubs.length+(centralTarget?0:1)>=200} onClick={()=>setOwnSubs(items=>[...items,''])}><Plus size={18}/>Deelvraag toevoegen</button>
@@ -1152,7 +1152,7 @@ export default function ResearchBuilder({
                     aria-label={'Sleep groep '+group.title} title="Sleep de groep naar een vraag. Alleen geselecteerde bouwstenen binnen het huidige zoekfilter worden gekoppeld."
                     onDragStart={e=>start(e,{type:'group',lineId:group.title,lineIds:filtered.filter(l=>l.collectionGroup?.id===group.id).map(l=>l.id),from:null})} onDragEnd={end}>
                     <small>{group.sourceTitle}</small><strong>{group.title}</strong>
-                    <span><GripVertical size={16} aria-hidden="true"/> Sleep groep ({filtered.filter(l=>l.collectionGroup?.id===group.id).length})</span>
+                    <span><GripVertical size={16} aria-hidden="true"/> Sleep {countLabel(filtered.filter(l=>l.collectionGroup?.id===group.id).length,'bouwstenen')}</span>
                   </div>}
                   {group.lines.map(l=>item(l.id,null))}
                 </section>)}</div>

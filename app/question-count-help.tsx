@@ -7,12 +7,12 @@ export default function QuestionCountHelp() {
   const [open,setOpen]=useState(false);
   return <Popover open={open} onOpenChange={setOpen}>
     <PopoverTrigger className="term-help-trigger question-count-help" openOnHover delay={350} closeDelay={150}
-      aria-label="Totaal: uitleg over overlap" title="">
+      aria-label="Aantal bouwstenen: uitleg" title="">
       <Info size={13} aria-hidden="true"/>
     </PopoverTrigger>
     <PopoverContent className="term-help-popup" side="bottom" align="end" initialFocus={false}>
-      <PopoverTitle>Unieke bouwstenen</PopoverTitle>
-      <PopoverDescription>Het totaal omvat deze vraag en de deelvragen. Toetspunten en modelvragen die aan meerdere vragen zijn gekoppeld, tellen maar één keer mee.</PopoverDescription>
+      <PopoverTitle>Zo tellen we</PopoverTitle>
+      <PopoverDescription>Alle bouwstenen van deze vraag en haar deelvragen. Een bouwsteen bij meerdere vragen telt één keer. Rechtstreeks: gekoppeld aan de centrale vraag zelf.</PopoverDescription>
       <button type="button" className="term-help-close" onClick={()=>setOpen(false)}>Sluiten</button>
     </PopoverContent>
   </Popover>;

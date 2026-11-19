@@ -5,10 +5,10 @@ export type TopicLabels={/** Naam van het filter, bijvoorbeeld Onderwerp (DORA) 
   practice?:TopicOption&{name:string;full:string;toPractice:string;toLaw:string};groupNotes?:{pattern:RegExp|string;flags?:string;text:string}[]};
 export type TopicDefinition={id:string;listFamily:string;category?:string;tone?:string;
   topics:{id:string;title:string;includes:string;excludes:string;about?:string[];notIn?:{text:string}[];subs?:{id:string;title:string;description?:string}[]}[];sources:TopicSource[];outside:{id:string;reason:string}[];
-  about?:TopicAboutTexts;
+  about?:TopicAboutTexts;combination?:{template:string;phrases:Record<string,string>;join?:'en'|'en aan';review:{reviewer:string;reviewDate:string;textHash:string}};
   index:{review:{status:string;date:string;normen:number;note:string};norms:Record<string,[string,string,string,string[],string,boolean|number]>};labels:TopicLabels};
 export type TopicAboutTexts={method?:string[];choose?:string[];sourcesIntro?:string;practiceLaw?:string;practicePractice?:string};
-export type TopicFamily={about:TopicAboutTexts;id:string;listFamily:string;category:string;tone:string;topics:TopicDefinition['topics'];sources:TopicSource[];outside:TopicDefinition['outside'];
+export type TopicFamily={about:TopicAboutTexts;combination:{template:string;phrases:Record<string,string>;join:'en'|'en aan'}|null;id:string;listFamily:string;category:string;tone:string;topics:TopicDefinition['topics'];sources:TopicSource[];outside:TopicDefinition['outside'];
   review:TopicDefinition['index']['review'];labels:TopicLabels;isSource:(id:string)=>boolean;owns:(value:string)=>boolean;
   normTopic:(normId:string)=>null|{id:string;sourceId:string;main:string;sub:string;also:string[];regime:string;sector:boolean|number};
   questionPlans:{id:string;family:string;topic:string;sub:string;title:string}[];topicTitle:(topicId:string,sub?:string)=>string;encode:(choice:Partial<TopicChoice>&{topic:string})=>string;decode:(value:string)=>TopicChoice|null;
@@ -19,3 +19,5 @@ export type TopicFamily={about:TopicAboutTexts;id:string;listFamily:string;categ
   sourceTopicIds:(sourceId:string)=>string[];unassigned:string[];groupNote:(title:string)=>string};
 export function createTopicFamily(definition:TopicDefinition):TopicFamily;
 export function validateTopicDefinition(definition:unknown):string[];
+
+export function combinationQuestion(combination:TopicFamily['combination'],topicIds:string[]):string;

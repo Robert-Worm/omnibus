@@ -14,8 +14,8 @@ Een paar begrippen:
 | --- | --- |
 | Norm | Waar de organisatie aan zou moeten voldoen. Bijvoorbeeld: *vertrouwelijke informatie wordt alleen via goedgekeurde kanalen gedeeld*. |
 | Toetspunt | Een concrete controle die bij een norm hoort: wat je bekijkt om te beoordelen of de norm wordt gehaald. |
-| Bouwsteen | Verzamelnaam voor alles wat je kunt kiezen: normen, toetspunten en modelvragen. |
-| Bron | Waar een bouwsteen vandaan komt: een rapport, een wet, een kader of een onderzoeksmodel. |
+| Bouwsteen | Wat je gekozen hebt voor je kader: een toetspunt, modelvraag of eigen bouwsteen. Een gekozen toetspunt is een bouwsteen. |
+| Bron | Een document waaruit je normen of vragen kiest, zoals een wet, kader, rapport of model. Wet en kader zijn soorten bronnen. |
 
 ## Stap voor stap
 
@@ -122,7 +122,7 @@ Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording
 
 Wil je één onderwerp tegen DORA toetsen, bijvoorbeeld incidentmanagement? De eisen staan dan in de verordening en in meerdere uitvoeringsregelingen. Het filter **Onderwerp** zet ze bij elkaar.
 
-1. Zoek of filter zo dat je vooral DORA-bronnen ziet, bijvoorbeeld **Voor wie**: Financiële sector, of zoeken op *incident*. Het filter **Onderwerp** verschijnt dan in de balk, in de **Lijst** en boven de **Tegels**. Kies je een onderwerp, dan is dat de selectie: de lijst toont de bronnen van dat onderwerp; **Uitgever** en **Voor wie** blijven staan, alleen de zoekterm gaat uit. Zet je het onderwerp terug op *Alle onderwerpen*, dan zie je weer alles binnen je andere filters, en boven de tegels springt Omnibus naar de lijst. Zit je in de viewer van één DORA-bron en kies je daar een onderwerp, dan brengt de link **Bekijk dit onderwerp in alle … DORA-bronnen** je naar dat onderwerp in alle bronnen. In het onderwerp zelf vertelt het tabblad **Over dit onderwerp** wat erin zit en wat niet, en uit welke bronnen.
+1. Zoek of filter zo dat je vooral DORA-bronnen ziet, bijvoorbeeld **Voor wie**: Financiële sector, of zoeken op *incident*. Het filter **Onderwerp** verschijnt dan in de balk, in de **Lijst** en boven de **Tegels**. Kies je een onderwerp, dan is dat de selectie: de lijst toont de bronnen van dat onderwerp; **Uitgever** en **Voor wie** blijven staan, alleen de zoekterm gaat uit. Wissel je tussen **Lijst** en **Tegels**, dan blijven je filters staan; met een onderwerp tonen de tegels de bronnen van dat onderwerp. Zet je het onderwerp terug op *Alle onderwerpen*, dan zie je weer alles binnen je andere filters, en boven de tegels springt Omnibus naar de lijst. Zit je in de viewer van één DORA-bron en kies je daar een onderwerp, dan brengt de link **Bekijk dit onderwerp in alle … DORA-bronnen** je naar dat onderwerp in alle bronnen. In het onderwerp zelf vertelt het tabblad **Over dit onderwerp** wat erin zit en wat niet, en uit welke bronnen.
 2. Kies een onderwerp. Het getal erachter is het aantal toetspunten. De lijst toont de wetten en kaders met normen voor dat onderwerp; de kolom **Gekozen toetspunten** telt alleen dat onderwerp. Klik nog een keer op het onderwerp om het filter uit te zetten.
 3. Klik op **Kies alle toetspunten** boven de lijst, of zet een vinkje bij de bronnen die je wilt.
 4. Klik op **Open in viewer** om alle normen van het onderwerp onder elkaar te lezen, per bron een sectie. Het onderwerp staat dan onder **Open wetten & kaders**, naast de bronnen die je los opent. Wat je daar kiest, is ook in de bron zelf gekozen.
@@ -141,6 +141,8 @@ Het volledige en het vereenvoudigde kader gaan niet samen. Kies je een onderwerp
 In de export staat het onderwerp voorop in de kolom *Element*. Bij een toetspunt uit NOREA noemt de kolom *Artikel / pagina* ook de verwante normen uit de wet, met het artikel als de koppeling dat noemt; bij een toetspunt uit de wet staat daar de verwante NOREA-norm.
 
 Koos je een onderwerp, dan krijg je in stap 3 als eerste het vraagvoorstel van dat onderwerp: één centrale vraag met brede en specifieke deelvragen. Elk toetspunt hoort bij één specifieke deelvraag. Een paar toetspunten blijven bewust los, omdat ze onder geen van de vragen passen; dat zijn vooral verwante normen, sectornormen en enkele NOREA-punten. Je ziet ze in stap 3 als niet gekoppeld en kunt ze zelf aan een vraag hangen. De voorstellen per bron en per thema staan nog onder *Ander voorstel*.
+
+Koos je twee of meer onderwerpen, bijvoorbeeld *Detectie, incidenten en melden* en *ICT-dienstverleners en uitbesteding*, dan krijg je één voorstel voor de combinatie. De centrale vraag is dan breder; de brede deelvragen zijn de centrale vragen van de gekozen onderwerpen, de specifieke deelvragen die van de onderwerpen zelf. Onder de vraag staat welke onderwerpen samen gekozen zijn. Een onderwerp telt mee als je minstens een kwart van zijn toetspunten koos.
 
 De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. De bronnen over het toezicht op kritieke ICT-dienstverleners hebben geen onderwerp; die kies je in de gewone lijst.
 
