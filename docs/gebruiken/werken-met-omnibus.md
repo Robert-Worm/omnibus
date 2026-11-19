@@ -140,7 +140,7 @@ Het volledige en het vereenvoudigde kader gaan niet samen. Kies je een onderwerp
 
 In de export staat het onderwerp voorop in de kolom *Element*. Bij een toetspunt uit NOREA noemt de kolom *Artikel / pagina* ook de verwante normen uit de wet, met het artikel als de koppeling dat noemt; bij een toetspunt uit de wet staat daar de verwante NOREA-norm.
 
-De vraagvoorstellen in stap 3 volgen het onderwerp nog niet: je krijgt het voorstel van de bron of het thema met de meeste gekozen toetspunten. Kijk dus onder *Ander voorstel* of er een beter past, en controleer welke toetspunten los blijven.
+Koos je een onderwerp, dan krijg je in stap 3 als eerste het vraagvoorstel van dat onderwerp: één centrale vraag met brede en specifieke deelvragen. Elk toetspunt hoort bij één specifieke deelvraag. Een paar toetspunten blijven bewust los, omdat ze onder geen van de vragen passen; dat zijn vooral verwante normen, sectornormen en enkele NOREA-punten. Je ziet ze in stap 3 als niet gekoppeld en kunt ze zelf aan een vraag hangen. De voorstellen per bron en per thema staan nog onder *Ander voorstel*.
 
 De indeling is een selectiehulp. Zij is nagekeken door AI, niet door een jurist. De bronnen over het toezicht op kritieke ICT-dienstverleners hebben geen onderwerp; die kies je in de gewone lijst.
 

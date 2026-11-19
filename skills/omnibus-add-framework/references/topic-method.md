@@ -61,6 +61,29 @@ vergelijkingsscript en de uitkomst. Zonder dat dossier is de indeling niet te he
   bestand welke familie bij een bron of een keuze hoort; daar hoeft niets voor te veranderen.
 - Een keuze draagt de naam van de familie (`dora:T5`), zodat onderwerpen van twee families niet botsen.
 
+## Een vraagplan per onderwerp
+
+Wie een onderwerp kiest, verwacht in stap 3 een centrale vraag en deelvragen die bij dat onderwerp passen. Zonder eigen
+plan wint het voorstel van één bron of thema en blijft een deel van de toetspunten los. Maak daarom per onderwerp en per
+deelonderwerp één vraagplan, met de skills `omnibus-build-questions` en `omnibus-review-questions`:
+
+1. **Inventaris.** Alle normen van het onderwerp (hoofd en verwant, wet en praktijkkader, elk regime, sector) met hun
+   selecteerbare toetspunten, uit de database.
+2. **Ontwerp.** Eén centrale vraag, drie tot acht specifieke deelvragen en twee of drie brede deelvragen die hele
+   specifieke vragen bundelen. Een toetspunt volgt zijn norm, tenzij het uitdrukkelijk naar een andere deelvraag gaat.
+   Forceer niets: een verwante norm, een sectornorm of een toetspunt dat onder geen vraag past, blijft bewust los. Geen
+   restvraag ("overige", "sector"), geen norm of uitkomst in de vraag, elke vraag door de vormcontrole.
+3. **Onafhankelijke review.** Een reviewer die het ontwerp niet maakte, leest elke normtekst onder elke vraag en geeft
+   per vraag een besluit. Het besluit is gebonden aan de hash van het hele plan: na elke wijziging beoordeelt de
+   reviewer het plan opnieuw. Alleen een plan waarvan elke vraag `behouden` kreeg, gaat door.
+4. **Publiceren.** Het plan komt in de database als proces met het veld `topic` (`{family, topic, sub}`) en de vaste
+   identiteit uit `family.questionPlans`, met de reviewbesluiten via `prepareQuestionPlanPublication`. De publicatie
+   weigert een plan zonder passend besluit. Zo'n proces staat niet in de navigatie.
+5. **Proef in de browser.** Kies elk onderwerp, ook een deelonderwerp en het praktijkkader, en kijk in stap 3 of het
+   plan van dat onderwerp als eerste wordt aangeboden en welke toetspunten los blijven.
+
+Het ontwerp, de dossiers en de reviewbesluiten horen bij het reviewdossier buiten Git.
+
 ## Verplichte controles
 
 - `node --test lib/<familie>-onderwerpen.test.mjs`: geldig hoofdonderwerp, hoogstens twee verwante, zonder verwante
