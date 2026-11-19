@@ -452,7 +452,7 @@ export function FoundationCatalogue({
    return null;};
   const [listPreset,setListPreset]=useState<{token:number;filters:Record<string,string>}|null>(()=>{
    // Kwam je terug uit een bron waarin je een onderwerp koos of wiste? Dan volgt de lijst.
-   const fromViewer=takeListTopic(),family=fromViewer&&topicFamilies.find(item=>item.id===fromViewer.family);return !fromViewer?null:{token:Date.now(),filters:(fromViewer.value&&family?{family:family.listFamily,topic:fromViewer.value}:{topic:''}) as Record<string,string>};});
+   const fromViewer=takeListTopic(),family=fromViewer&&topicFamilies.find(item=>item.id===fromViewer.family);return !fromViewer?null:{token:Date.now(),filters:(fromViewer.value&&family?{topic:fromViewer.value}:{topic:''}) as Record<string,string>};});
   const criteriaFilter = JSON.stringify([kind,domain,processId,selectedOnly]);
   const [criteriaPagination,setCriteriaPagination] = useState({filter:criteriaFilter,page:0});
   if(criteriaPagination.filter!==criteriaFilter)setCriteriaPagination({filter:criteriaFilter,page:0});

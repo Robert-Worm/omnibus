@@ -40,7 +40,8 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
   // Kiezen opent geen bronnen: de lijst met geopende bronnen blijft zoals ze was.
   onChange({...next,investigation:{...next.investigation,sourceIds:open}} as Draft);};
  const title=(id:string)=>frameworkTitle(foundations.find(source=>source.id===id)?.title||id);
- const what=basis==='wet'?`${own.length} ${family.labels.lawNoun[own.length===1?0:1]}`:family.labels.practice?.full||'';
+ const beside=basis==='wet'&&parts.some(part=>part.laag!=='wet')&&family.labels.practice?.name?`, ${family.labels.practice.name} ernaast`:'';
+ const what=basis==='wet'?`${own.length} ${family.labels.lawNoun[own.length===1?0:1]}${beside}`:family.labels.practice?.full||'';
  const notice=(()=>{const found=own.map(part=>sourceAudienceNotice(part.id)).find(Boolean);return found?{...found,text:found.text.replace(/^Dit kader/u,'Dit onderwerp')}:null;})();
  const topic=family.topics.find(item=>item.id===family.decode(value)?.topic);
  const allChosen=ready&&total>0&&selected>=total;
@@ -75,6 +76,7 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
   labels.related&&!choice?.sub&&changes({related:!choice?.related})?labels.related:null,labels.sector&&changes({sector:!choice?.sector})?labels.sector:null,
   labels.practice&&practice.length>0?labels.practice:null].filter(Boolean) as {label:string;title:string}[];
  const sub=topic?.subs?.find(item=>item.id===family.decode(value)?.sub);
+ const relatedOnWhole=Boolean(sub&&labels.related&&changes({sub:'',related:true}));
  // Een verwijzing [[T6]] wordt de naam van het onderwerp, klikbaar als de viewer kan wisselen; **knop** wordt vet.
  const rich=(text:string)=>text.split(/(\[\[[^\]]+\]\]|\*\*[^*]+\*\*)/u).map((piece,index)=>{const bold=/^\*\*([^*]+)\*\*$/u.exec(piece)?.[1];if(bold)return <strong key={index}>{bold}</strong>;
   const ref=/^\[\[([^\]]+)\]\]$/u.exec(piece)?.[1];if(!ref)return piece;
@@ -83,24 +85,28 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
  const fill=(text:string)=>text.replaceAll('{practice}',labels.practice?.full||labels.practice?.name||'').replaceAll('{option}',labels.practice?.label||'');
  return <section className="law-about topic-about" aria-label="Over dit onderwerp">
   <header className="law-about-intro"><div className="law-about-eyebrow"><Layers size={17} aria-hidden="true"/>Onderwerp binnen {family.listFamily}</div><h2>{family.label(value)}</h2>
-   {topic?.about?.length?topic.about.map((text,index)=><p key={index}>{rich(text)}</p>):topic&&<p>{topic.includes}</p>}
-   {sub?.description&&<p><strong>{sub.title}:</strong> {sub.description}</p>}
-   {!sub&&topic?.subs?.some(item=>item.description)&&<ul className="topic-about-subs">{topic.subs.map(item=><li key={item.id}>
-    {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic.id,sub:item.id}))}>{item.title}</button>:<strong>{item.title}</strong>}{item.description&&<span>{item.description}</span>}</li>)}</ul>}
+   {sub?<>
+    {/* Een deelonderwerp: eigen omschrijving, waar het bij hoort en de andere delen (B-080). */}
+    <p className="topic-about-parent">Onderdeel van {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic!.id}))}>{topic!.title}</button>:<strong>{topic!.title}</strong>}</p>
+    <p>{sub.description||topic?.includes}</p></>
+   :topic?.about?.length?topic.about.map((text,index)=><p key={index}>{rich(text)}</p>):topic&&<p>{topic.includes}</p>}
+   {topic?.subs?.some(item=>item.description)&&<>{sub&&<h3 className="topic-about-subhead">Andere delen</h3>}<ul className="topic-about-subs">{topic.subs.filter(item=>item.id!==sub?.id).map(item=><li key={item.id}>
+    {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic.id,sub:item.id}))}>{item.title}</button>:<strong>{item.title}</strong>}{item.description&&<span>{item.description}</span>}</li>)}</ul></>}
    {topic?.notIn?.length?<div className="topic-about-notin"><h3>Wat hier niet in zit</h3>{topic.notIn.map((item,index)=><p key={index}>{rich(item.text)}</p>)}</div>
     :topic?.excludes&&<p><strong>Niet in dit onderwerp:</strong> {topic.excludes}</p>}</header>
   <div className="law-about-columns">
    <section className="law-about-card"><h3><BookOpen size={18} aria-hidden="true"/>Uit welke bronnen?</h3>
-    {about.sourcesIntro&&<p>{about.sourcesIntro}</p>}
+    {about.sourcesIntro&&<p>{about.sourcesIntro.replaceAll('{dit}',sub?'dit deelonderwerp':'dit onderwerp')}</p>}
     <ul className="topic-about-sources">{law.map(part=><li key={part.id}><strong>{title(part.id)}</strong><span>{part.soort} · {part.normIds.length} {part.normIds.length===1?'norm':'normen'}</span></li>)}</ul>
     {practice.length>0&&<p>{basis==='wet'?(about.practiceLaw?fill(about.practiceLaw):<>Hetzelfde onderwerp staat ook in {practice.map(part=>title(part.id)).join(', ')}. Dat is een praktijkkader, geen wet; kies het met de optie <em>{labels.practice?.label}</em>.</>)
      :(about.practicePractice?fill(about.practicePractice):<>Je kijkt naar het praktijkkader. De wet stelt dezelfde eisen.</>)}</p>}</section>
-   {options.length>0&&<section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
-    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul></section>}
+   {(options.length>0||relatedOnWhole)&&<section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
+    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul>
+    {relatedOnWhole&&<p>Verwante normen uit andere onderwerpen voeg je toe bij het hele onderwerp {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic!.id,related:true}))}>{topic!.title}</button>:topic!.title}.</p>}</section>}
   </div>
   {(about.choose?.length||onBack)&&<section className="law-about-card"><h3><ArrowLeft size={18} aria-hidden="true"/>Een andere keuze maken</h3>
    {about.choose?.map((text,index)=><p key={index}>{rich(text)}</p>)}
-   {onSwitch&&<h4>Andere onderwerpen</h4>}{onSwitch&&<nav className="topic-about-others" aria-label="Andere onderwerpen">{family.topics.filter(item=>item.id!==topic?.id).map(item=>
+   {onSwitch&&<h4>Andere onderwerpen</h4>}{onSwitch&&<nav className="topic-about-others" aria-label="Andere onderwerpen">{family.topics.filter(item=>sub||item.id!==topic?.id).map(item=>
     <button key={item.id} type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:item.id}))}>{item.title}</button>)}</nav>}
    {onBack&&<p><Button variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button></p>}</section>}
   <section className="law-about-card"><h3><ShieldCheck size={18} aria-hidden="true"/>Hoe is deze indeling gemaakt?</h3>

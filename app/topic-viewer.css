@@ -28,3 +28,7 @@
 .topic-about-details{margin-top:.6rem}
 .topic-about-details summary{cursor:pointer;font-weight:600;font-size:.9375rem}
 .topic-about-details[open] summary{margin-bottom:.4rem}
+.topic-about .law-about-intro :is(.topic-about-subs,.topic-about-notin,.topic-about-parent){text-align:left}
+.topic-about-parent{font-size:.875rem;color:var(--muted-foreground)}
+.topic-about-subhead{font-size:.9375rem;margin:.75rem 0 0}
+.topic-about-subs li>.topic-about-link{justify-self:start;text-align:left}
