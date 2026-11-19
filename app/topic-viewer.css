@@ -1,7 +1,6 @@
 /* Een onderwerp als één geheel (B-072). De secties gebruiken de groepen van de gewone viewer; alleen de kop per bron is nieuw. */
 .topic-viewer{display:block}
 .topic-viewer>*+*{margin-top:1.25rem}
-.topic-viewer-heading{display:flex;align-items:center;justify-content:space-between;gap:.75rem 1rem;flex-wrap:wrap}
 .topic-viewer-source{display:grid;gap:.6rem;min-width:0}
 .topic-viewer-source>header{display:flex;align-items:center;justify-content:space-between;gap:.5rem 1rem;flex-wrap:wrap;padding:.55rem .9rem;border:1px solid var(--border);border-radius:.75rem;background:color-mix(in srgb,var(--muted) 35%,var(--card));box-shadow:inset 3px 0 0 var(--primary)}
 .topic-viewer-source>header h3{margin:0;font:600 .9375rem/1.35 var(--font-ui);color:var(--foreground)}
@@ -9,6 +8,11 @@
 .topic-viewer-source .law-browser{margin:0}
 .topic-viewer-loading{margin:0;padding:.75rem .9rem;color:var(--muted-foreground);font-size:.875rem}
 
-.topic-viewer-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-/* Terug en Kies alle even hoog; Kies alle (de hoofdactie, donkerblauw) staat rechts, zoals Naar stap 3. */
-.topic-viewer-actions>[data-slot=button]{height:2.25rem;min-height:2.25rem}
+/* Dezelfde opbouw als de viewer van één bron (B-078): tabs links, Terug rechts in dezelfde lichte vorm. */
+.topic-viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.topic-viewer-back{min-height:2.25rem;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6);background:transparent!important;color:var(--hb-ink,#1f3a5f)}
+.topic-viewer-back:hover{background:var(--hb-hover,#eef3f9)!important}
+.topic-about :is(.topic-about-sources,.topic-about-options,.topic-about-outside){list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+.topic-about :is(.topic-about-sources,.topic-about-options,.topic-about-outside) li{display:grid;gap:.1rem}
+.topic-about :is(.topic-about-sources,.topic-about-options,.topic-about-outside) span{font-size:.8125rem;color:var(--muted-foreground);line-height:1.45}
+.topic-about-outside{margin-top:.4rem!important}
