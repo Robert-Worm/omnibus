@@ -70,8 +70,9 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
  const labels=family.labels,about=family.about,law=parts.filter(part=>part.laag==='wet'),practice=parts.filter(part=>part.laag!=='wet');
  const options=[labels.regime,labels.related,labels.sector,labels.practice].filter(Boolean) as {label:string;title:string}[];
  const sub=topic?.subs?.find(item=>item.id===family.decode(value)?.sub);
- // Een verwijzing [[T6]] wordt de naam van het onderwerp, klikbaar als de viewer kan wisselen.
- const rich=(text:string)=>text.split(/(\[\[[^\]]+\]\])/u).map((piece,index)=>{const ref=/^\[\[([^\]]+)\]\]$/u.exec(piece)?.[1];if(!ref)return piece;
+ // Een verwijzing [[T6]] wordt de naam van het onderwerp, klikbaar als de viewer kan wisselen; **knop** wordt vet.
+ const rich=(text:string)=>text.split(/(\[\[[^\]]+\]\]|\*\*[^*]+\*\*)/u).map((piece,index)=>{const bold=/^\*\*([^*]+)\*\*$/u.exec(piece)?.[1];if(bold)return <strong key={index}>{bold}</strong>;
+  const ref=/^\[\[([^\]]+)\]\]$/u.exec(piece)?.[1];if(!ref)return piece;
   const name=family.topicTitle(ref);if(!name)return piece;
   return onSwitch&&ref!==topic?.id?<button key={index} type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:ref}))}>{name}</button>:<em key={index}>{name}</em>;});
  const fill=(text:string)=>text.replaceAll('{practice}',labels.practice?.full||labels.practice?.name||'').replaceAll('{option}',labels.practice?.label||'');

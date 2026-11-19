@@ -69,7 +69,7 @@ Omnibus de korte omschrijving uit de indeling.
   (zinnen over wat er niet in zit en waar het wel staat). Per deelonderwerp: `description`.
 - Voor de familie: `about.method` (hoe de indeling is gemaakt), `about.choose` (hoe je een andere keuze maakt),
   `about.sourcesIntro`, `about.practiceLaw` en `about.practicePractice`.
-- `[[T6]]` in een tekst wordt een link naar dat onderwerp. Het hulpmiddel weigert een verwijzing naar een onderwerp
+- `[[T6]]` in een tekst wordt een link naar dat onderwerp; `**Kies alle toetspunten**` wordt vet (voor knopnamen). Het hulpmiddel weigert een verwijzing naar een onderwerp
   dat niet bestaat.
 
 Een nieuwe tekst vraagt geen nieuwe beoordeling van de vraagplannen. Geef het pakket daarvoor een nieuwe `edition` en
