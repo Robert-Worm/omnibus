@@ -40,7 +40,7 @@ register("data:text/javascript," + encodeURIComponent(`
    'report-point-catalogue.mjs':'export default {points:[],reports:[],interview_questions:[]};',
    'interview-structure.mjs':'export const starrPrompts=()=>[],modelStarrPrompts=()=>[],interviewLevels=[];',
    'foundations/registry.mjs':'export const importedFoundationItems=[],importedFoundationMetadata={};',
-   'process-catalogue.mjs':'export const processes=[],activeProcesses=[];',
+   'process-catalogue.mjs':'export const processes=[],activeProcesses=[],topicProcesses=[],questionProcesses=[];',
    'cio-law-data.mjs':'export const cioMetadata={id:"SYNTHETIC_CIO"},cioProposals=[],cioPoints=[],cioReviewBasis="synthetic";',
    'cio-content.mjs':'export function validateCioEditorialTrace(){throw Error("Unexpected CIO source");}',
    'wwke-law-data.mjs':'export const wwkeMetadata={id:"SYNTHETIC_WWKE"},wwkeProposals=[],wwkeSourceId="SYNTHETIC_WWKE";export function validateWwkeMaterial(){throw Error("Unexpected law source");}',

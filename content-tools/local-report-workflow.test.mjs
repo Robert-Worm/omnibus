@@ -39,7 +39,7 @@ register("data:text/javascript," + encodeURIComponent(`
    'report-point-catalogue.mjs':'export default '+JSON.stringify({...additions.catalogue,interview_questions:additions.interview_questions,visual_sources:additions.visual_sources})+';',
    'interview-structure.mjs':'export const starrPrompts=()=>[],modelStarrPrompts=()=>[],interviewLevels=[];',
    'foundations/registry.mjs':'export const importedFoundationItems=[],importedFoundationMetadata={};',
-   'process-catalogue.mjs':'export const processes=[],activeProcesses=[];',
+   'process-catalogue.mjs':'export const processes=[],activeProcesses=[],topicProcesses=[],questionProcesses=[];',
    'cio-law-data.mjs':'export const cioMetadata={id:"SYNTHETIC_CIO"},cioProposals=[],cioPoints=[],cioReviewBasis="synthetic";',
    'cio-content.mjs':'export function validateCioEditorialTrace(){throw Error("Unexpected CIO source");}',
    'topical-content.mjs':'export const topicalMetadata=[],topicalProposals=[],topicalIds=[];export function validateTopicalMaterial(){throw Error("Unexpected topical source");}',
