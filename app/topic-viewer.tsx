@@ -3,7 +3,7 @@
 // gewone viewer van die bron, vast gefilterd op het onderwerp. Er is dus één selectie: wat je hier kiest, staat ook in de
 // viewer van de bron en in de lijst, en omgekeerd.
 import {useEffect,useRef,useSyncExternalStore} from 'react';
-import {ArrowRight} from 'lucide-react';
+import {ArrowLeft,ArrowRight} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {catalogueRevision,onCatalogueChange} from '@/lib/catalogue-runtime.mjs';
 import {foundations} from '@/lib/investigation.mjs';
@@ -17,12 +17,12 @@ import './topic-viewer.css';
 
 type Props={family:TopicFamily;value:string;draft:Draft;onChange:(draft:Draft)=>void;disabled?:boolean;navigate:(page:string)=>void;
  /** Haal de volledige bron op en voer daarna de handeling uit. */prepare:(id:string,action:()=>void)=>void;
- /** Is deze bron beschikbaar in de huidige verzameling? */allowed:(id:string)=>boolean;onOpenSource:(id:string)=>void};
+ /** Is deze bron beschikbaar in de huidige verzameling? */allowed:(id:string)=>boolean;onOpenSource:(id:string)=>void;/** Alleen bij één open onderwerp: terug naar het overzicht, links van Kies alle. */onBack?:()=>void};
 
 const pointsOf=(sourceId:string,normIds:string[])=>{const pack=topicalPackage(sourceId),norms=new Set(normIds);
  return pack?.catalogue?.points?.length?pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id) as string[]:null;};
 
-export default function TopicViewer({family,value,draft,onChange,disabled,navigate,prepare,allowed,onOpenSource}:Props){
+export default function TopicViewer({family,value,draft,onChange,disabled,navigate,prepare,allowed,onOpenSource,onBack}:Props){
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const sources=family.choiceSources(value).filter(source=>allowed(source.id)),basis=family.basis(value);
  // De bronnen laden zodra het onderwerp in beeld komt; een sectie verschijnt als haar bron er is.
@@ -42,7 +42,8 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
  return <section className="topic-viewer" aria-labelledby="topic-viewer-title">
   <header className="topic-viewer-heading"><div className="law-viewer-heading"><h2 id="topic-viewer-title">{family.label(value)}</h2>
     <output aria-live="polite">{what}{ready&&<> · {total} toetspunten · {selected} gekozen</>}</output></div>
-   <Button disabled={disabled||!ready||!total} aria-pressed={ready&&total>0&&selected>=total} onClick={()=>chooseAll(selected<total)}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:'Toetspunten tellen…'}</Button></header>
+   <div className="topic-viewer-actions">{onBack&&<Button variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button>}
+   <Button disabled={disabled||!ready||!total} aria-pressed={ready&&total>0&&selected>=total} onClick={()=>chooseAll(selected<total)}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:'Toetspunten tellen…'}</Button></div></header>
   {parts.map(part=><section className="topic-viewer-source" key={part.id} aria-label={title(part.id)}>
    <header><div><h3>{title(part.id)}</h3><p><span className="catalogue-pill" data-tone={part.laag==='wet'&&family.tone?family.tone:undefined}>{part.soort}</span>
      <span>{part.normIds.length} {part.normIds.length===1?'norm':'normen'}{part.state&&<> · {part.state.selected} van {part.state.total} toetspunten gekozen</>}</span></p></div>
