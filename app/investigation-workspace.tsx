@@ -501,13 +501,17 @@ export function FoundationCatalogue({
    setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');
    window.setTimeout(()=>document.querySelector<HTMLElement>('.foundation-catalogue .topic-filter-tool')?.focus(),80);};
   // Zoeken blijft binnen de filters, ook voor treffers in normen.
-  const search=searchCatalogue(query,browseSources.filter(tilePass).map(s=>s.id));
-  const filtered: typeof foundations = (query.trim() ? search.sources : browseSources).filter(tilePass);
+  const tileTopicIds=new Set<string>((()=>{const value=!listMode&&catalogueView.available?tileFilters.topic||'':'',family=topicFamilyOfChoice(value);
+   return family&&availableFamilies.includes(family)?family.choiceSources(value).map((source:{id:string})=>source.id):[];})());
+  const tileSources=(tileTopicIds.size?[...browseSources,...allowedSources.filter(source=>tileTopicIds.has(source.id)&&!browseSources.some(own=>own.id===source.id))]:browseSources) as typeof foundations;
+  const search=searchCatalogue(query,tileSources.filter(tilePass).map(s=>s.id));
+  const filtered: typeof foundations = (query.trim() ? search.sources : tileSources).filter(tilePass);
   const showList=Boolean(directoryGroup||query.trim()||processId||kind!=='all'||selectedOnly||tileActive.length);
   function changeSearch(value:string) {
     setQuery(value);onSearchQuery?.(value);setCriteriaPage(0);setPage(0);
     // Search needs display text, not every source's tests and evidence snapshots.
-    if(value.trim())prepareSearch(scopedSources.map((s:{id:string})=>s.id));
+    // Ook de bronnen die alleen via een onderwerp in de lijst komen (zoals richtsnoeren bij DORA): anders vindt een ID uit zo'n bron niets.
+    if(value.trim())prepareSearch([...new Set([...scopedSources.map((s:{id:string})=>s.id),...availableFamilies.flatMap(family=>family.sources.map((source:{id:string})=>source.id)).filter((id:string)=>allowedSources.some(own=>own.id===id))])]);
   }
   const available = (id: string) => foundationSelection(draft,id).total;
   const sourcePageSize=query.trim()?5:10;
@@ -524,12 +528,16 @@ export function FoundationCatalogue({
     } as Draft);
   }
   // Lijstweergave: alle wetten en kaders in één tabel, met familie, uitgever en datums uit het register.
-  const choiceFamily=listMode?topicFamilyOfChoice(listFilters.topic||''):null,listFamily=choiceFamily&&availableFamilies.includes(choiceFamily)?choiceFamily:null;
-  const listChoice=listFamily?listFilters.topic:'';
+  // Het onderwerp geldt in de lijst én in de tegels: beide tonen dezelfde bronnen en tellingen (testronde 19-11, B3).
+  const topicValue=(listMode?listFilters.topic:catalogueView.available?tileFilters.topic:'')||'';
+  const choiceFamily=topicFamilyOfChoice(topicValue),listFamily=choiceFamily&&availableFamilies.includes(choiceFamily)?choiceFamily:null;
+  const listChoice=listFamily?topicValue:'';
   // Met een onderwerp staan wetten en kaders samen in de lijst: de normen van één onderwerp staan in beide.
   const scopeSources=scopeFoundationSources(allowedSources,scope==='frameworks'?'frameworks':'laws') as typeof foundations;
   const choiceIds=new Set<string>(listChoice?listFamily!.choiceSources(listChoice).map((source:{id:string})=>source.id):[]);
   const listSources=(listChoice?[...scopeSources,...allowedSources.filter(source=>choiceIds.has(source.id)&&!scopeSources.some((own:{id:string})=>own.id===source.id))]:scopeSources) as typeof foundations;
+  // Vaste noemer: alle bronnen die de lijst kan tonen, ook die alleen via een onderwerp verschijnen (testronde 19-11, B6).
+  const listBase=new Set<string>([...scopeSources.map((source:{id:string})=>source.id),...availableFamilies.flatMap(family=>family.sources.map((source:{id:string})=>source.id)).filter((id:string)=>allowedSources.some(own=>own.id===id))]).size;
   const listSearch=listMode&&query.trim()?searchCatalogue(query,listSources.map((s:{id:string})=>s.id)):null;
   const now=new Date(),today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   // Met het filter Onderwerp gelden de telling en het vinkje van een bron alleen voor dat onderwerp: de lijst toont en kiest
@@ -619,7 +627,7 @@ export function FoundationCatalogue({
           </fieldset>}
         </div>}
       </>}
-      {listMode&&<CatalogueTable id="foundations-v6" defaultSort="title" noun={['bron','bronnen']} base={listSources.length} unit={['toetspunt','toetspunten']} preset={listPreset||undefined}
+      {listMode&&<CatalogueTable id="foundations-v6" defaultSort="title" noun={['bron','bronnen']} base={listBase} unit={['toetspunt','toetspunten']} preset={listPreset||undefined}
         search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
         filters={sourceFilters}
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
@@ -660,13 +668,16 @@ export function FoundationCatalogue({
         groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
         onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>}
       {!listMode&&showList&&<>
-      {query.trim() && <h2>Zoekresultaten <small>{filtered.length} van {countLabel(browseSources.length,'bronnen')}</small></h2>}
+      {topicBar(filtered)}
+      {query.trim() && <h2>Zoekresultaten <small>{filtered.length} van {countLabel(tileSources.length,'bronnen')}</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
         action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
       <div className="foundation-list">
         {filtered.slice(index * sourcePageSize, index * sourcePageSize + sourcePageSize).map((s) => {
-          const selection=foundationSelection(draft,s.id);
+          // Met een onderwerp tellen en kiezen de tegels alleen de toetspunten van dat onderwerp, net als de lijst.
+          const scoped=Boolean(listChoice)&&listFamily!.normIds(s.id,listChoice).length>0,points=scoped?choicePoints(s.id):null;
+          const selection=points?topicSelection(draft,s.id,points):foundationSelection(draft,s.id);
           const lawCounts=lawCatalogueCounts(s.id);
           return (
           <div key={s.id}>
@@ -681,12 +692,12 @@ export function FoundationCatalogue({
                 {scopeOfSource(s.id)&&<p className="catalogue-card-scope"><Users size={14} aria-hidden="true"/><span>Voor: <strong>{scopeOfSource(s.id)!.text}</strong>{scopeOfSource(s.id)!.role==='toezichthouder'&&<em className="catalogue-card-role"> · onderzoek bij een toezichthouder</em>}</span></p>}
                 <p>{s.usage}</p>
                 {search.contextSourceIds.includes(s.id) && <span className="source-meta">Gevonden via normen in deze bron</span>}
-                <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> {lawCounts.groups===1?'groep':'groepen'}</span><span><strong>{lawCounts.norms}</strong> {lawCounts.norms===1?'norm':'normen'}</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> van {selection.total} {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen</span></div>
+                <div className="catalogue-card-stats">{lawCounts?<><span><strong>{lawCounts.groups}</strong> {lawCounts.groups===1?'groep':'groepen'}</span><span><strong>{lawCounts.norms}</strong> {lawCounts.norms===1?'norm':'normen'}</span></>:<><span><strong>{selection.total}</strong> {s.kind==='audit'?'dekkingspunten':'toetspunten'}</span><span><strong>{sourceNarrowing(s.id).count}</strong> {sourceNarrowing(s.id).label}</span></>}<span className="catalogue-card-selected"><strong>{selection.selected}</strong> van {selection.total} {s.kind==='audit'&&!lawCounts?'dekkingspunten':'toetspunten'} gekozen{scoped?' in dit onderwerp':''}</span></div>
               </div>
               <CatalogueCardActions layout="buttons" title={frameworkTitle(s.title)} opened={wb.sourceIds.includes(s.id)} disabled={disabled} onPrepare={()=>onPrepareSource?.(s.id)}
                 onOpen={()=>{if(!wb.sourceIds.includes(s.id))toggle(s.id,true);onCriteria(s.id);}} onToggle={value=>toggle(s.id,value)}
-                selection={{label:s.kind==='audit'&&!lawCounts?'Alle dekkingspunten':'Alle normen',ariaLabel:'Alle normen selecteren: '+s.title,checked:selection.all,partial:selection.partial,disabled:!selection.total,
-                  onChange:checked=>prepareSources([s.id],()=>{try{const next=chooseFoundationSource(draft,s.id,checked);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');}catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}}/>
+                selection={{label:scoped?'Alle normen van het onderwerp':s.kind==='audit'&&!lawCounts?'Alle dekkingspunten':'Alle normen',ariaLabel:(scoped?'Alle normen van het onderwerp selecteren: ':'Alle normen selecteren: ')+s.title,checked:selection.all,partial:selection.partial,disabled:!selection.total||(scoped&&!points),
+                  onChange:checked=>prepareSources([s.id],()=>{try{const next=points?chooseInChoice(draft,s.id,points,checked):chooseFoundationSource(draft,s.id,checked);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');}catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}}/>
             </article>
           </div>
         );})}
@@ -698,7 +709,7 @@ export function FoundationCatalogue({
         </p>
       )}
       {filtered.length>sourcePageSize && <div className="foundation-pagination">
-        <span>{filtered.length===browseSources.length?countLabel(filtered.length,'bronnen'):`${filtered.length} van ${countLabel(browseSources.length,'bronnen')}`}</span>
+        <span>{filtered.length===tileSources.length?countLabel(filtered.length,'bronnen'):`${filtered.length} van ${countLabel(tileSources.length,'bronnen')}`}</span>
         <Button variant="outline" disabled={index === 0} onClick={() => setPage(index - 1)}>
           Vorige
         </Button>

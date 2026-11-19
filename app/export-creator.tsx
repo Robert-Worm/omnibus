@@ -105,6 +105,8 @@ export default function ExportCreator({
     return { total, perLevel };
   }, [draft.investigation?.materials, exportedNormIds]);
   const emptyFramework = !modelBasis && count === 0 && !hasResearchQuestions;
+  // Zonder toetspunten en zonder onderzoeksvragen valt er niets te exporteren; de knop zegt dan niet dat er een lege opzet komt (testronde 19-11, B7).
+  const emptyBlocked = count === 0 && !(draft.investigation && questions && draft.research?.questions.length && !modelBasis);
   const missingInput = [
     validation === 'Kies het niveau van de geïnterviewde.' || validation === 'Kies het niveau van de geïnterviewde' ? {id:'interview-level-operational',label:'Kies het gespreksniveau'} : null,
     profile === 'testing' && hasCriteria && !modelBasis && !testScope.length ? {id:'testing-aspect-opzet',label:'Kies wat je wilt toetsen'} : null,
@@ -593,19 +595,14 @@ export default function ExportCreator({
               busy || !ready ||
               !!validation ||
               !meta.version.trim() ||
-              (count === 0 &&
-                !(
-                  draft.investigation &&
-                  questions &&
-                  draft.research?.questions.length &&
-                  !modelBasis
-                ))
+              emptyBlocked
             }
             onClick={() => void save()}
           >
             <FileSpreadsheet size={18} />
-            {busy ? "Bestand maken…" : count === 0 && !modelBasis ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
+            {busy ? "Bestand maken…" : count === 0 && !modelBasis && !emptyBlocked ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
           </Button>
+          {emptyBlocked && <p className="creator-help">Kies eerst toetspunten, of formuleer onderzoeksvragen in stap 3.</p>}
           {!modelBasis && (
             <Button
               variant="outline"
