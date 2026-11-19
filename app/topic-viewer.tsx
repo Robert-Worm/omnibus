@@ -102,7 +102,7 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
    {about.method?.length?about.method.map((text,index)=><p key={index}>{rich(text)}</p>):<>
     <p>Een onderwerp bundelt normen uit verschillende bronnen. Het is een selectiehulp: er verandert geen norm of toetspunt, en de bron blijft bij elke norm staan.</p>
     <p className="law-about-quality-meta">{family.review.note}</p></>}
-   {family.outside.length>0&&<><h4>Bewust niet ingedeeld</h4><ul className="topic-about-outside">{family.outside.map(item=><li key={item.id}><strong>{title(item.id)}</strong><span>{item.reason}</span></li>)}</ul></>}
+   {family.outside.length>0&&<details className="topic-about-details"><summary>Bewust niet ingedeeld: {family.outside.length} {family.outside.length===1?'bron':'bronnen'}</summary><ul className="topic-about-outside">{family.outside.map(item=><li key={item.id}><strong>{title(item.id)}</strong><span>{item.reason}</span></li>)}</ul></details>}
   </section>
  </section>;
 }
