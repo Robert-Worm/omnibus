@@ -28,8 +28,9 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const [tab,setTab]=useState<'norms'|'about'>('norms');
  const sources=family.choiceSources(value).filter(source=>allowed(source.id)),basis=family.basis(value);
+ const regimeOnly=family.otherRegimeSourceIds(value).filter(id=>allowed(id)&&!sources.some(source=>source.id===id));
  // De bronnen laden zodra het onderwerp in beeld komt; een sectie verschijnt als haar bron er is.
- const load=useRef(prepare),ids=sources.map(source=>source.id).join('|');
+ const load=useRef(prepare),ids=[...sources.map(source=>source.id),...regimeOnly].join('|');
  useEffect(()=>{load.current=prepare;});
  useEffect(()=>{for(const id of ids.split('|').filter(Boolean))load.current(id,()=>{});},[ids]);
  const parts=sources.map(source=>{const points=pointsOf(source.id,source.normIds),state=points?topicalSelection(draft,source.id,points):null;return {...source,points,state};});
@@ -38,6 +39,8 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
  const chooseAll=(include:boolean)=>{let next=draft;const open=draft.investigation?.sourceIds||[];
   for(const part of own){if(!part.points)return;next=chooseTopicalPoints(next,part.id,part.points,include) as Draft;
    const drop=include?pointsOf(part.id,family.otherRegimeNormIds(part.id,value)):null;if(drop?.length)next=chooseTopicalPoints(next,part.id,drop,false) as Draft;}
+  // Ook bronnen die onder dit kader niets hebben, maar wel normen alleen voor het andere kader (testronde 19 november 2026).
+  if(include)for(const id of regimeOnly){const drop=pointsOf(id,family.otherRegimeNormIds(id,value));if(drop?.length)next=chooseTopicalPoints(next,id,drop,false) as Draft;}
   // Kiezen opent geen bronnen: de lijst met geopende bronnen blijft zoals ze was.
   onChange({...next,investigation:{...next.investigation,sourceIds:open}} as Draft);};
  const title=(id:string)=>frameworkTitle(foundations.find(source=>source.id===id)?.title||id);
@@ -77,22 +80,24 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
   labels.related&&!choice?.sub&&changes({related:!choice?.related})?labels.related:null,labels.sector&&changes({sector:!choice?.sector})?labels.sector:null,
   labels.practice&&practice.length>0?labels.practice:null].filter(Boolean) as {label:string;title:string}[];
  const sub=topic?.subs?.find(item=>item.id===family.decode(value)?.sub);
+ // Een link naar een ander onderwerp houdt de gekozen opties (kader, NOREA, sector, verwante normen) vast (testronde 19 november 2026).
+ const keep=(topicId:string,subId='')=>{const c=family.decode(value);return family.encode({...c,topic:topicId,sub:subId,related:subId?false:Boolean(c?.related)});};
  const relatedOnWhole=Boolean(sub&&labels.related&&changes({sub:'',related:true}));
  // Een verwijzing [[T6]] wordt de naam van het onderwerp, klikbaar als de viewer kan wisselen; **knop** wordt vet.
  const rich=(text:string)=>text.split(/(\[\[[^\]]+\]\]|\*\*[^*]+\*\*)/u).map((piece,index)=>{const bold=/^\*\*([^*]+)\*\*$/u.exec(piece)?.[1];if(bold)return <strong key={index}>{bold}</strong>;
   const ref=/^\[\[([^\]]+)\]\]$/u.exec(piece)?.[1];if(!ref)return piece;
   const name=family.topicTitle(ref);if(!name)return piece;
-  return onSwitch&&ref!==topic?.id?<button key={index} type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:ref}))}>{name}</button>:<em key={index}>{name}</em>;});
+  return onSwitch&&ref!==topic?.id?<button key={index} type="button" className="topic-about-link" onClick={()=>onSwitch(keep(ref))}>{name}</button>:<em key={index}>{name}</em>;});
  const fill=(text:string)=>text.replaceAll('{practice}',labels.practice?.full||labels.practice?.name||'').replaceAll('{option}',labels.practice?.label||'');
  return <section className="law-about topic-about" aria-label="Over dit onderwerp">
   <header className="law-about-intro"><div className="law-about-eyebrow"><Layers size={17} aria-hidden="true"/>Onderwerp binnen {family.listFamily}</div><h2>{family.label(value)}</h2>
    {sub?<>
     {/* Een deelonderwerp: eigen omschrijving, waar het bij hoort en de andere delen (B-080). */}
-    <p className="topic-about-parent">Onderdeel van {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic!.id}))}>{topic!.title}</button>:<strong>{topic!.title}</strong>}</p>
+    <p className="topic-about-parent">Onderdeel van {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(keep(topic!.id))}>{topic!.title}</button>:<strong>{topic!.title}</strong>}</p>
     <p>{sub.description||topic?.includes}</p></>
    :topic?.about?.length?topic.about.map((text,index)=><p key={index}>{rich(text)}</p>):topic&&<p>{topic.includes}</p>}
    {topic?.subs?.some(item=>item.description)&&<>{sub&&<h3 className="topic-about-subhead">Andere delen</h3>}<ul className="topic-about-subs">{topic.subs.filter(item=>item.id!==sub?.id).map(item=><li key={item.id}>
-    {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic.id,sub:item.id}))}>{item.title}</button>:<strong>{item.title}</strong>}{item.description&&<span>{item.description}</span>}</li>)}</ul></>}
+    {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(keep(topic.id,item.id))}>{item.title}</button>:<strong>{item.title}</strong>}{item.description&&<span>{item.description}</span>}</li>)}</ul></>}
    {topic?.notIn?.length?<div className="topic-about-notin"><h3>Wat hier niet in zit</h3>{topic.notIn.map((item,index)=><p key={index}>{rich(item.text)}</p>)}</div>
     :topic?.excludes&&<p><strong>Niet in dit onderwerp:</strong> {topic.excludes}</p>}</header>
   <div className="law-about-columns">
@@ -108,7 +113,7 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
   {(about.choose?.length||onBack)&&<section className="law-about-card"><h3><ArrowLeft size={18} aria-hidden="true"/>Een andere keuze maken</h3>
    {about.choose?.map((text,index)=><p key={index}>{rich(text)}</p>)}
    {onSwitch&&<h4>Andere onderwerpen</h4>}{onSwitch&&<nav className="topic-about-others" aria-label="Andere onderwerpen">{family.topics.filter(item=>sub||item.id!==topic?.id).map(item=>
-    <button key={item.id} type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:item.id}))}>{item.title}</button>)}</nav>}
+    <button key={item.id} type="button" className="topic-about-link" onClick={()=>onSwitch(keep(item.id))}>{item.title}</button>)}</nav>}
    {onBack&&<p><Button variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button></p>}</section>}
   <section className="law-about-card"><h3><ShieldCheck size={18} aria-hidden="true"/>Hoe is deze indeling gemaakt?</h3>
    {about.method?.length?about.method.map((text,index)=><p key={index}>{rich(text)}</p>):<>

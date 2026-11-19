@@ -553,8 +553,11 @@ export function FoundationCatalogue({
    const ready=own.length>0&&own.every(part=>part.points),states=own.map(part=>part.points?topicSelection(draft,part.id,part.points):null);
    const total=states.reduce((sum,state)=>sum+(state?.total||0),0),selected=states.reduce((sum,state)=>sum+(state?.selected||0),0);
    const otherSelected=other.reduce((sum,part)=>sum+(part.points?topicSelection(draft,part.id,part.points).selected:0),0);
-   const choose=(include:boolean,replace:boolean)=>prepareSources([...own,...(replace?other:[])].map(part=>part.id),()=>{try{
+   // Bronnen met alleen normen onder het andere kader (zoals de TLPT-RTS bij het vereenvoudigde kader) laten ook los.
+   const regimeOnly=listFamily!.otherRegimeSourceIds(listChoice).filter((id:string)=>!own.some(part=>part.id===id)&&allowedSources.some(source=>source.id===id));
+   const choose=(include:boolean,replace:boolean)=>prepareSources([...own.map(part=>part.id),...(replace?other.map(part=>part.id):[]),...(include?regimeOnly:[])],()=>{try{
      let next=own.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseInChoice(value,part.id,points,include);},draft);
+     if(include)next=regimeOnly.reduce((value:Draft,id:string)=>{const drop=pointsOf(id,listFamily!.otherRegimeNormIds(id,listChoice));return drop.length?chooseTopicPoints(value,id,drop,false) as Draft:value;},next);
      if(include&&replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
      onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');if(include)openTopic(listChoice);
     }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});

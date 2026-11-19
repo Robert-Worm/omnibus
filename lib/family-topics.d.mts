@@ -14,7 +14,7 @@ export type TopicFamily={about:TopicAboutTexts;combination:{template:string;phra
   questionPlans:{id:string;family:string;topic:string;sub:string;title:string}[];topicTitle:(topicId:string,sub?:string)=>string;encode:(choice:Partial<TopicChoice>&{topic:string})=>string;decode:(value:string)=>TopicChoice|null;
   normIds:(sourceId:string,value:string|TopicChoice)=>string[];matches:(normId:string,value:string|TopicChoice)=>boolean;label:(value:string|TopicChoice)=>string;
   choiceSources:(value:string|TopicChoice)=>(TopicSource&{normIds:string[]})[];counts:(value:string|TopicChoice)=>{normen:number;bronnen:number;praktijk:number};
-  otherRegimeNormIds:(sourceId:string,value:string|TopicChoice)=>string[];coverage:(databaseNorms:Record<string,string[]>)=>{ok:boolean;missing:string[];stale:string[];unknownSources:string[]};
+  otherRegimeSourceIds:(value:string)=>string[];otherRegimeNormIds:(sourceId:string,value:string|TopicChoice)=>string[];coverage:(databaseNorms:Record<string,string[]>)=>{ok:boolean;missing:string[];stale:string[];unknownSources:string[]};
   basis:(value:string|TopicChoice)=>'wet'|'praktijk';sourceHasRegimes:(sourceId:string)=>boolean;topicHasRelated:(topicId:string)=>boolean;topicHasSector:(topicId:string,sourceId?:string)=>boolean;
   sourceTopicIds:(sourceId:string)=>string[];unassigned:string[];groupNote:(title:string)=>string};
 export function createTopicFamily(definition:TopicDefinition):TopicFamily;
