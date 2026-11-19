@@ -68,7 +68,12 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
  * onderwerp. Zonder die teksten valt de kaart terug op de korte omschrijving uit de indeling. */
 function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{family:TopicFamily;value:string;topic?:TopicFamily['topics'][number];parts:{id:string;soort:string;laag:string;normIds:string[]}[];basis:string;title:(id:string)=>string;onSwitch?:(value:string)=>void;onBack?:()=>void}){
  const labels=family.labels,about=family.about,law=parts.filter(part=>part.laag==='wet'),practice=parts.filter(part=>part.laag!=='wet');
- const options=[labels.regime,labels.related,labels.sector,labels.practice].filter(Boolean) as {label:string;title:string}[];
+ // Alleen opties die bij dit onderwerp iets veranderen: een optie zonder normen noemen we niet.
+ const choice=family.decode(value),changes=(extra:Record<string,unknown>)=>{if(!choice)return false;const base=family.choiceSources(choice).flatMap(part=>part.normIds).join('|');
+  return family.choiceSources({...choice,...extra} as never).flatMap(part=>part.normIds).join('|')!==base;};
+ const options=[labels.regime&&changes({regime:choice?.regime==='vereenvoudigd'?'volledig':'vereenvoudigd'})?labels.regime:null,
+  labels.related&&!choice?.sub&&changes({related:!choice?.related})?labels.related:null,labels.sector&&changes({sector:!choice?.sector})?labels.sector:null,
+  labels.practice&&practice.length>0?labels.practice:null].filter(Boolean) as {label:string;title:string}[];
  const sub=topic?.subs?.find(item=>item.id===family.decode(value)?.sub);
  // Een verwijzing [[T6]] wordt de naam van het onderwerp, klikbaar als de viewer kan wisselen; **knop** wordt vet.
  const rich=(text:string)=>text.split(/(\[\[[^\]]+\]\]|\*\*[^*]+\*\*)/u).map((piece,index)=>{const bold=/^\*\*([^*]+)\*\*$/u.exec(piece)?.[1];if(bold)return <strong key={index}>{bold}</strong>;
@@ -90,8 +95,8 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
     <ul className="topic-about-sources">{law.map(part=><li key={part.id}><strong>{title(part.id)}</strong><span>{part.soort} · {part.normIds.length} {part.normIds.length===1?'norm':'normen'}</span></li>)}</ul>
     {practice.length>0&&<p>{basis==='wet'?(about.practiceLaw?fill(about.practiceLaw):<>Hetzelfde onderwerp staat ook in {practice.map(part=>title(part.id)).join(', ')}. Dat is een praktijkkader, geen wet; kies het met de optie <em>{labels.practice?.label}</em>.</>)
      :(about.practicePractice?fill(about.practicePractice):<>Je kijkt naar het praktijkkader. De wet stelt dezelfde eisen.</>)}</p>}</section>
-   <section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
-    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul></section>
+   {options.length>0&&<section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
+    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul></section>}
   </div>
   {(about.choose?.length||onBack)&&<section className="law-about-card"><h3><ArrowLeft size={18} aria-hidden="true"/>Een andere keuze maken</h3>
    {about.choose?.map((text,index)=><p key={index}>{rich(text)}</p>)}
