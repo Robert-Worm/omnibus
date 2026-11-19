@@ -70,7 +70,7 @@ export default function ExportCreator({
       };
   }
   const {
-    withoutQuestions, autoLinkOn, unlinkedCount, selection, profile, basis, testScope, testingTerminology, keyControl, accountability, storedMeta, meta, focus, interview,
+    withoutQuestions, autoLinkOn, unlinkedCount, selection, profile, basis, testScope, testingTerminology, keyControl, accountability, kaderUitleg, storedMeta, meta, focus, interview,
     excludedNorms, accent, colorMode, fontFamily, fontSize, selectedModels, selectedModel,
     modelBasis, modelTitle, exportedNormIds, exportDraft, filename, downloadName, pickedLines, hasCriteria,
     choices, selectionError, planningIssues,
@@ -84,6 +84,7 @@ export default function ExportCreator({
   const setTestingTerminology = setting('testingTerminology', testingTerminology);
   const setKeyControl = setting('keyControl', keyControl), setAutoLink = setting('autoLink', autoLinkOn);
   const setAccountability = setting('accountability', accountability);
+  const setKaderUitleg = setting('kaderUitleg', kaderUitleg);
   const setMeta = setting('meta', storedMeta), setFocus = setting('focus', focus);
   const setInterview = setting('interview', interview), setExcludedNorms = setting('excludedNorms', excludedNorms);
   const setAccent = setting('accent', accent), setColorMode = setting('colorMode', colorMode);
@@ -357,6 +358,11 @@ export default function ExportCreator({
             <Checkbox id="export-accountability" checked={accountability} onCheckedChange={(v) => { setAccountability(v === true); setSaved(false); setError(""); }}/>
             <span><strong>Blad Verantwoording referentiekader</strong>
               <small>Voor wie volgens de Global Internal Audit Standards werkt (13.4 en 13.6).</small></span>
+          </label>
+          <label htmlFor="export-kader-uitleg">
+            <Checkbox id="export-kader-uitleg" checked={kaderUitleg} onCheckedChange={(v) => { setKaderUitleg(v === true); setSaved(false); setError(""); }}/>
+            <span><strong>Uitleg per kader</strong>
+              <small>Voor wie elk kader geldt, wat niet is uitgewerkt en wat je zelf vaststelt, op het blad Versiebeheer.</small></span>
           </label>
           {profile === "testing" && <div className="creator-terminology" role="radiogroup" aria-label="Toetslabels in Excel" title={testingTerminologyHelp}>
             <span>Toetslabels</span>

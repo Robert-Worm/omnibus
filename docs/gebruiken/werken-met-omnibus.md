@@ -109,6 +109,8 @@ Een **risico-controlmatrix** kun je ook zonder onderzoeksvragen exporteren, bijv
 
 Bij een kader met normen kun je onder **Excel-opties** het blad **Verantwoording referentiekader** aanzetten. Het staat standaard uit. Daarop vul je vier vragen in: welke criteria de organisatie zelf had, waarom dit kader adequaat is, met wie het is afgestemd en wie het heeft goedgekeurd. Bij elke vraag staat de eis uit de Global Internal Audit Standards (standaard 13.4 en 13.6). Het blad is alleen nodig als je volgens die standaarden werkt. Welke bouwstenen meegaan, kies je in stap 3; de kleuren en het lettertype staan onder **Vormgeving**, dat je openklapt.
 
+Op **01 Versiebeheer** staat onder de versietabel altijd kort **Over de uitwerking**: dat doelen, risico's, maatregelen, toetsaanpak en vragen voorstellen van Omnibus zijn, door AI beoordeeld en niet door een mens goedgekeurd, en bij welke kaders niet alles is uitgewerkt. Zet je onder **Excel-opties** **Uitleg per kader** aan, dan volgt per kader in vier vaste rubrieken wat je moet weten: *Voor wie en wanneer*, *Wat je zelf vaststelt*, *Niet uitgewerkt of eigen uitleg* en *Bron, versie en rechten*. Standaard staat dat uit.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../images/stap-4-exporteer-donker.png">
   <img src="../images/stap-4-exporteer.png" alt="Stap 4: de exportstap met drie werkvormen; Normtoetsing is gekozen">
