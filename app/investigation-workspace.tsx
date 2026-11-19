@@ -472,7 +472,7 @@ export function FoundationCatalogue({
          {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,
           // Een onderwerp is zelf de selectie: lijst, tellingen en viewer tonen dan dezelfde bronnen. Daarom zet het de familie
           // en wist het de andere filters en de zoekterm (B-079); uitzetten laat de familie staan.
-          apply:(value,f):Record<string,string>=>{const family=topicFamilyOfChoice(value);if(!value||!family)return {...f,topic:''};if(query)setQuery('');return {topic:value};},when:(f,context)=>Boolean(chosenFamily(f)||contentFamily(context)),value:()=>[],
+          apply:(value,f):Record<string,string>=>{const family=topicFamilyOfChoice(value);if(!value||!family)return {...f,topic:''};if(query)setQuery('');return {...f,topic:value};},when:(f,context)=>Boolean(chosenFamily(f)||contentFamily(context)),value:()=>[],
           match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
           render:(value,set,context)=>{const family=chosenFamily({topic:value})||contentFamily(context);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
            onOpen={()=>prepareSources(family.sources.map(source=>source.id).filter(id=>allowedSources.some(own=>own.id===id)),()=>{})}/>:null;}}];
@@ -484,7 +484,7 @@ export function FoundationCatalogue({
   // Een filter dat de lijst vraagt: de lijst opent met die keuze en de focus gaat mee naar dezelfde knop.
   const jumpToList=(key:string,value:string)=>{const family=key==='topic'?topicFamilyOfChoice(value):null;if(family&&query)setQuery('');
    // Het lijstfilter neemt alleen wat het meekrijgt over; een lege waarde wist het. Bij een onderwerp: alleen familie en onderwerp.
-   setListPreset({token:Date.now(),filters:family?{issuer:'',audience:'',topic:value}:{...tileFilters,[key]:value}});catalogueView.setMode('list');
+   setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');
    window.setTimeout(()=>document.querySelector<HTMLElement>('.foundation-catalogue .topic-filter-tool')?.focus(),80);};
   // Zoeken blijft binnen de filters, ook voor treffers in normen.
   const search=searchCatalogue(query,browseSources.filter(tilePass).map(s=>s.id));
