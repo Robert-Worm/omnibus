@@ -286,7 +286,7 @@ html[data-appearance=dark] .framework-app .law-audience-notice *{color:inherit}
 .framework-app .law-browse-intro .law-audience-notice{background:transparent!important;border:0;padding:0;margin:-.15rem 0 .1rem;font-size:.8125rem;line-height:1.45;color:var(--muted-foreground);align-items:center}
 .framework-app .law-browse-intro .law-audience-notice strong{color:var(--foreground);font-weight:600}
 .framework-app .law-browse-intro .law-audience-notice svg{color:var(--muted-foreground);flex:none}
-.framework-app #main-workspace .open-item-workspace[data-single]~*:not(.law-browser,.model-library,.law-view-actions,[class*=main-tabs]),
+.framework-app #main-workspace .open-item-workspace[data-single]~*:not(.law-browser,.model-library,.law-view-actions,[class*=main-tabs],.topic-viewer),
 .framework-app #main-workspace .open-item-workspace[data-single]~* :is(.law-browse-intro,.law-group-stack,.law-browser>section,.report-choice-summary,[role=tabpanel]){clear:both}
 html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice{background:transparent!important;border:0!important;color:#aebdcd!important}
 html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice strong{color:var(--donker-tekst-7)!important}

@@ -7,3 +7,4 @@ export function requestViewerTopic(sourceId:string,value:string):void;
 export function takeViewerTopic(sourceId:string):string|undefined;
 export function rememberListTopic(value:string,family:TopicFamily|null):void;
 export function takeListTopic():{value:string;family:string}|undefined;
+export function forgetTopicRequests():void;

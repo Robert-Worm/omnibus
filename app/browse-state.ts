@@ -13,6 +13,9 @@ export function cleanSaved<T extends object>(defaults: T, saved: unknown): T {
   }
   return clean;
 }
+const BROWSE_RESET = 'omnibus:browse-reset';
+/** Laat elk open overzicht zijn bewaarde stand opnieuw lezen. */
+export function announceBrowseReset() { try { window.dispatchEvent(new Event(BROWSE_RESET)); } catch { /* geen venster */ } }
 // Optional device-local view preferences; never stores audit data.
 // De opgeslagen voorkeur wordt meteen bij de eerste weergave gelezen. Zo verschijnt een overzicht direct in de gekozen
 // vorm (bijvoorbeeld Lijst) en niet eerst kort in de standaardvorm.
@@ -43,6 +46,12 @@ export function useBrowseState<T extends object>(key: string, initial: T, storag
       cancelled = true;
     };
   }, [key, defaults, storage, slot, loaded]);
+  // Na "Nieuw project" lezen open overzichten hun bewaarde stand opnieuw, die dan al is opgeschoond.
+  useEffect(() => {
+    const reread = () => setValue(readSaved(key, defaults, storage));
+    window.addEventListener(BROWSE_RESET, reread);
+    return () => window.removeEventListener(BROWSE_RESET, reread);
+  }, [key, defaults, storage]);
   useEffect(() => {
     if (ready)
       try {

@@ -20,6 +20,8 @@ import {AiConnection} from './ai-connection';
 import {modelAdoptionPlan,applyModelAdoption,syncModelLibrarySelection} from '@/lib/model-adoption.mjs';
 import {download} from '@/lib/browser-download.mjs';
 import {newProject,clearProjectBrowsePreferences} from '@/lib/new-project.mjs';
+import {forgetTopicRequests} from '@/lib/topic-families.mjs';
+import {announceBrowseReset} from './browse-state';
 import ProductFooter from './product-footer';
 import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useMemo, useSyncExternalStore, startTransition } from "react";
 import {createProjectStatus} from '@/lib/project-status.mjs';
@@ -794,8 +796,11 @@ export default function FrameworkEditor() {
     if(!loaded || !modelsReady)return;
     const empty=newProject(baseFramework) as Project;
     rememberProject('Nieuw project starten');
-    try { clearProjectBrowsePreferences(sessionStorage); } catch { /* Optional browse preferences. */ }
+    // Een echte nieuwe start: ook filters, zoektermen en het gekozen onderwerp van het vorige project gaan weg.
+    for(const storage of [()=>sessionStorage,()=>localStorage])try { clearProjectBrowsePreferences(storage()); } catch { /* Optional browse preferences. */ }
+    forgetTopicRequests();
     closeAllTopics();
+    announceBrowseReset();
     setNewProjectOpen(false);setOwnMaterialOpen(false);setAdoptingModel('');setAdoptionError('');
     setAdoptionChoices({});setImportFeedback('');setScopeNotice('');setReportNotice('');setReveal(undefined);
     applyProject(empty);
