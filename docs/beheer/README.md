@@ -47,6 +47,7 @@ flowchart TD
 | [Pakket controleren](pakket-controleren.md) | Een ingeleverd pakket technisch controleren |
 | [Inhoud toevoegen](inhoud-toevoegen.md) | Van pakket naar inhoud in de applicatie, en welke reviews nodig zijn |
 | [Reviewwijzigingen](reviewwijzigingen.md) | Alleen geraakte bouwstenen opnieuw beoordelen, zonder broncontroles over te slaan |
+| [Onderwerpen publiceren](onderwerpen-publiceren.md) | De indeling van een familie in onderwerpen en de vraagplannen per onderwerp in de database zetten |
 | [Kwaliteitsbeoordeling](kwaliteitsbeoordeling.md) | Scores per bron, toegepaste verbeteringen en de werkwijze voor een volgende database |
 | [OWASP Top 10 voor LLM-toepassingen](owasp-llm-top10.md) | De tien risico's van taalmodellen, beoordeeld volgens de SAAF-methode |
 | [Omnibus-auditor](agent-auditor.md) | Een AI-auditor die de opzet van de skills beoordeelt tegen onze eigen uitgangspunten |

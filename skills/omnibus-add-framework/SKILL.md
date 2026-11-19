@@ -47,9 +47,10 @@ een actuele claim zonder bereikbare onderbouwing blijft onbevestigd.
 
 Hoort de bron bij een familie met meer onderdelen (een hoofdwet met uitvoeringsregelingen, richtsnoeren of een
 praktijkkader), bepaal dan na toelating of de familie het regime *kiezen per onderwerp* krijgt en werk de
-onderwerpindeling bij. Lees daarvoor [de onderwerpmethode](references/topic-method.md). Een kader uit één stuk slaat
-dit over. Draai na elke nieuwe database `npm run check:onderwerpen -- --database <catalogue.sqlite>`: een nieuwe norm
-van een ingedeelde bron moet een plek krijgen, in een onderwerp of bewust erbuiten.
+onderwerpindeling bij. Lees daarvoor [de onderwerpmethode](references/topic-method.md). Indeling en vraagplannen staan
+in een onderwerppakket buiten Git en komen met `npm run content:topics` in de database, niet in de code. Een kader uit
+één stuk slaat dit over. Draai na elke nieuwe database `npm run check:onderwerpen -- --settings <local-build.json>`:
+een nieuwe norm van een ingedeelde bron moet een plek krijgen, in een onderwerp of bewust erbuiten.
 
 ## Extractie en review
 

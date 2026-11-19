@@ -43,7 +43,7 @@ onderwerpen. De getallen zijn een eerste inschatting op basis van één familie;
    dat niemand koos, en wat is alleen via *verwante normen* bereikbaar. Bij DORA vond deze proef de sectorspecifieke
    normen die niet in de standaardkeuze hoorden.
 7. **Afwijkingen verwerken** en de gewijzigde normen opnieuw laten nakijken.
-8. **Vastleggen in code en tests** (zie hieronder) en de dekking controleren tegen de database.
+8. **Vastleggen in een onderwerppakket** (zie hieronder); het hulpmiddel controleert de dekking tegen de database.
 9. **Besluit** in `docs/beheer/besluiten.md`, uitleg in `docs/gebruiken/werken-met-omnibus.md`, en het budget en
    verbruik noteren.
 
@@ -51,15 +51,29 @@ Bewaar het dossier buiten Git, bij de private verwerkingsomgeving: de indelingsr
 indeling per auteur, de uitkomst van de review per norm, de opdrachten en keuzes van de blinde proef, het
 vergelijkingsscript en de uitkomst. Zonder dat dossier is de indeling niet te herhalen of te controleren.
 
-## Vastleggen
+## Vastleggen: het onderwerppakket
 
-- `lib/<familie>-onderwerpen.mjs`: de definitie (onderwerpen, bronnen, bronnen zonder onderwerp, teksten van de opties)
-  en één aanroep van `createTopicFamily` uit `lib/family-topics.mjs`. Een optie zonder tekst bestaat niet voor de familie.
-- `lib/<familie>-onderwerpen-indeling.mjs`: per norm `[bron, hoofdonderwerp, deelonderwerp, verwant, kader, sector]`,
-  met bovenaan wie het heeft nagekeken en wanneer.
-- `lib/topic-families.mjs`: voeg de familie toe aan `topicFamilies`. Lijst, viewer en tegels vragen alleen aan dit
-  bestand welke familie bij een bron of een keuze hoort; daar hoeft niets voor te veranderen.
+De indeling is inhoud, geen code (B-079). Zij staat met de vraagplannen in één pakket buiten Git, en komt met
+`npm run content:topics` in de database. De app leest de families uit de database; voor een nieuwe familie verandert er
+niets in de code. Een database zonder families geeft gewoon geen onderwerpen.
+
+Het pakket is één JSON-bestand:
+
+```json
+{"format":"omnibus-topic-package","schemaVersion":1,"edition":"<jjjjmmdd.nn>",
+ "family":{"id":"<kort>","listFamily":"<naam>","category":"","tone":"","topics":[…],"sources":[…],"outside":[…],
+           "labels":{"facet":"Onderwerp", …},"index":{"review":{…},"norms":{"<normId>":[bron,hoofd,deel,[verwant],kader,sector]}}},
+ "plans":[{"id":"TOPIC-<familie>-<onderwerp>[-<deel>]","design":{…},"review":{…}}]}
+```
+
+- `family`: onderwerpen (met *hoort erbij* en *hoort er niet bij*), bronnen met hun laag (wet of praktijk), bronnen
+  buiten de onderwerpen met reden, de teksten van de opties (een optie zonder tekst bestaat niet) en per norm de
+  indeling, met bovenaan wie haar heeft nagekeken. `labels.facet` is de naam van het filter (Onderwerp, of bijvoorbeeld
+  Functie bij het CIO-stelsel). Een groepsnotitie heeft een patroon als tekst: `{"pattern":"^Gewoon raamwerk\\b","text":…}`.
 - Een keuze draagt de naam van de familie (`dora:T5`), zodat onderwerpen van twee families niet botsen.
+- `plans`: één per onderwerp en per deelonderwerp, met het ontwerp en de reviewbesluiten (zie hieronder).
+
+De stappen staan in [onderwerpen publiceren](../../../docs/beheer/onderwerpen-publiceren.md).
 
 ## Een vraagplan per onderwerp
 
@@ -76,9 +90,10 @@ deelonderwerp één vraagplan, met de skills `omnibus-build-questions` en `omnib
 3. **Onafhankelijke review.** Een reviewer die het ontwerp niet maakte, leest elke normtekst onder elke vraag en geeft
    per vraag een besluit. Het besluit is gebonden aan de hash van het hele plan: na elke wijziging beoordeelt de
    reviewer het plan opnieuw. Alleen een plan waarvan elke vraag `behouden` kreeg, gaat door.
-4. **Publiceren.** Het plan komt in de database als proces met het veld `topic` (`{family, topic, sub}`) en de vaste
-   identiteit uit `family.questionPlans`, met de reviewbesluiten via `prepareQuestionPlanPublication`. De publicatie
-   weigert een plan zonder passend besluit. Zo'n proces staat niet in de navigatie.
+4. **Publiceren.** `npm run content:topics -- … --dossiers <map>` maakt de dossiers voor de reviewer, met de hash per
+   plan; `… --out <map>` zet familie en plannen in een kopie van de database. Het hulpmiddel weigert een plan zonder
+   passend besluit, met een norm zonder plek of met een vraag die niet door de vormcontrole komt. Zo'n plan staat als
+   proces met het veld `topic` in de procescatalogus, niet in de navigatie.
 5. **Proef in de browser.** Kies elk onderwerp, ook een deelonderwerp en het praktijkkader, en kijk in stap 3 of het
    plan van dat onderwerp als eerste wordt aangeboden en welke toetspunten los blijven.
 
@@ -86,10 +101,11 @@ Het ontwerp, de dossiers en de reviewbesluiten horen bij het reviewdossier buite
 
 ## Verplichte controles
 
-- `node --test lib/<familie>-onderwerpen.test.mjs`: geldig hoofdonderwerp, hoogstens twee verwante, zonder verwante
-  normen staat een norm in precies één onderwerp, kaders sluiten elkaar uit, lijst en viewer tellen hetzelfde, een keuze
-  is heen en terug te lezen.
-- `npm run check:onderwerpen -- --database <catalogue.sqlite>`: elke norm van een ingedeelde bron heeft een regel in de
-  indeling en elke regel een norm. Draai dit na elke nieuwe database; een nieuwe of hernoemde norm valt anders stil uit
-  elk onderwerp.
-- De gewone suites en een proef in de browser: lijst, viewer, onderwerp als geheel, licht en donker.
+- `npm run content:topics -- --settings <map>/local-build.json --package <pakket.json> --check`: de vorm van de
+  indeling (geldig hoofdonderwerp, hoogstens twee verwante, bekende bronnen), de dekking tegen de database, een plan per
+  onderwerp, de ontwerpregels en de reviews. Het geeft `HOLD` met de redenen of `CHECKED`.
+- `npm run check:onderwerpen -- --settings <map>/local-build.json`: draai dit na elke nieuwe database. Een nieuwe of
+  hernoemde norm van een ingedeelde bron valt anders stil uit elk onderwerp. Werk dan het pakket bij en publiceer het
+  opnieuw; verandert een plan, dan beoordeelt de reviewer het opnieuw.
+- De gewone suites (de werking zelf staat in `lib/family-topics.test.mjs` en `content-tools/topic-package.test.mjs`,
+  met een verzonnen familie) en een proef in de browser: lijst, viewer, onderwerp als geheel, stap 3, licht en donker.

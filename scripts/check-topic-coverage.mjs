@@ -3,13 +3,22 @@
 // Een norm hoeft niet in een onderwerp te passen ('buiten' is ook een plek), maar elke norm van een ingedeelde bron
 // moet een regel hebben en elke regel een norm. Zo valt een nieuwe of hernoemde norm niet stil uit elk onderwerp.
 //
-//   node scripts/check-topic-coverage.mjs --database <catalogue.sqlite>
+// De families staan in de database zelf (B-079), in de procescatalogus van de publicatie uit de instellingen.
+//
+//   node scripts/check-topic-coverage.mjs --settings <map>/local-build.json
 import {DatabaseSync} from 'node:sqlite';
-import {topicFamilies} from '../lib/topic-families.mjs';
+import {setTopicFamilies, topicFamilies} from '../lib/topic-families.mjs';
+import {readSettings} from './topic-package.mjs';
 
-const at = process.argv.indexOf('--database'), file = at > 0 ? process.argv[at + 1] : '';
-if (!file) { console.error('Gebruik: node scripts/check-topic-coverage.mjs --database <catalogue.sqlite>'); process.exit(2); }
-const database = new DatabaseSync(file, {readOnly: true});
+const at = process.argv.indexOf('--settings'), settingsFile = at > 0 ? process.argv[at + 1] : '';
+if (!settingsFile) { console.error('Gebruik: npm run check:onderwerpen -- --settings <map>/local-build.json'); process.exit(2); }
+const settings = readSettings(settingsFile);
+const database = new DatabaseSync(settings.database, {readOnly: true});
+const publication = JSON.parse(String(database.prepare('select payload from runtime_publications where release_id = ? and hash = ?').get(settings.release, settings.publication)?.payload ?? 'null'));
+if (!publication) { console.error('De publicatie uit de instellingen staat niet in deze database.'); process.exit(2); }
+const skipped = setTopicFamilies(publication.modules['lib/process-catalogue.mjs']?.topicFamilies ?? []);
+for (const problem of skipped) console.error(`Familie overgeslagen: ${problem}`);
+if (!topicFamilies.length) console.log('Deze database heeft geen families met onderwerpen.');
 const version = database.prepare("select version from packages where source_id = ? and kind = 'foundation'");
 const norms = database.prepare("select id from records where version = ? and kind = 'norm' order by position");
 let failed = false;
@@ -27,5 +36,6 @@ for (const family of topicFamilies) {
   if (!result.ok) failed = true;
 }
 database.close();
+if (skipped.length) failed = true;
 if (failed) { console.error('De indeling dekt de database niet. Werk de indeling bij of zet de norm bewust buiten de onderwerpen.'); process.exit(1); }
 console.log('Elke norm heeft een plek.');

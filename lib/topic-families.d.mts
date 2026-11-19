@@ -8,3 +8,4 @@ export function takeViewerTopic(sourceId:string):string|undefined;
 export function rememberListTopic(value:string,family:TopicFamily|null):void;
 export function takeListTopic():{value:string;family:string}|undefined;
 export function forgetTopicRequests():void;
+export function setTopicFamilies(definitions:unknown[]):string[];

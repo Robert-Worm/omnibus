@@ -50,7 +50,7 @@ import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,useCatalogueView,type CatalogueColumn,type CatalogueFilter} from './catalogue-table';
 import {TopicFilter} from './topic-filter';
-import {topicFamilies,topicFamilyOfChoice,topicFamilyOfFilters,takeListTopic,requestViewerTopic} from '@/lib/topic-families.mjs';
+import {topicFamilies,topicFamilyOfChoice,takeListTopic,requestViewerTopic} from '@/lib/topic-families.mjs';
 import {topicalPackage as topicPackage} from '@/lib/topical-content.mjs';
 import {openTopic} from '@/lib/open-topics.mjs';
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
@@ -438,8 +438,9 @@ export function FoundationCatalogue({
   // De tegels staan alleen binnen de categorie van DORA en openen de lijst met dat filter.
   // Alleen families waarvan bronnen in deze verzameling zitten.
   const availableFamilies=topicFamilies.filter(family=>allowedSources.some(source=>family.isSource(source.id)));
-  const categoryTitle=(category:string)=>(sourceDomains as Record<string,{title:string}>)[category]?.title||'';
-  const filterFamily=(filters:Record<string,string>)=>{const family=topicFamilyOfFilters(filters,categoryTitle);return family&&availableFamilies.includes(family)?family:null;};
+  // Het gekozen onderwerp, als het bij een familie in deze verzameling hoort. Familie en Categorie zijn geen filters meer
+  // maar groeperingen (B-079); het onderwerp is daarmee de enige keuze die bronnen samenbrengt.
+  const chosenFamily=(filters:Record<string,string>)=>{const family=topicFamilyOfChoice(filters.topic||'');return family&&availableFamilies.includes(family)?family:null;};
   // De familie met onderwerpen waar wat in beeld is grotendeels uit komt: minstens twee bronnen en minstens de helft.
   const contentFamily=({rows,narrowed}:{rows:{id:string}[];narrowed:boolean})=>{if(!narrowed||rows.length<2)return null;
    for(const family of availableFamilies){const own=rows.filter(row=>family.isSource(row.id)).length;if(own>=2&&own*2>=rows.length)return family;}
@@ -464,12 +465,16 @@ export function FoundationCatalogue({
   type FilterRow={id:string;record:{issuer:string;familyTitle:string};audiences:(keyof typeof audienceGroups)[];categories:string[]};
   const [listFilters,setListFilters]=useState<Record<string,string>>({});
   const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
-  const sourceFilters:CatalogueFilter<FilterRow>[]=[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},{key:'family',label:'Familie',all:'Alle families',value:r=>[r.record.familyTitle]},{key:'category',label:'Categorie',all:'Alle categorieën',value:r=>r.categories},
-         // Vervolgfilter: verschijnt als de lijst op een familie met onderwerpen staat, of zodra wat je na zoeken of filteren
-         // ziet grotendeels uit zo'n familie komt (B-077). Zonder zoeken of filter blijft het weg, zodat DORA niet overheerst.
-         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,when:(f,context)=>Boolean(filterFamily(f)||contentFamily(context)),value:()=>[],
+  const sourceFilters:CatalogueFilter<FilterRow>[]=[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},
+         // Vervolgfilter: verschijnt zodra wat je na zoeken of filteren (Uitgever, Voor wie) ziet grotendeels uit een familie met
+         // onderwerpen komt, en blijft staan als er een onderwerp gekozen is (B-077, B-079). Zonder zoeken of filter blijft het
+         // weg, zodat DORA niet overheerst.
+         {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,
+          // Een onderwerp is zelf de selectie: lijst, tellingen en viewer tonen dan dezelfde bronnen. Daarom zet het de familie
+          // en wist het de andere filters en de zoekterm (B-079); uitzetten laat de familie staan.
+          apply:(value,f):Record<string,string>=>{const family=topicFamilyOfChoice(value);if(!value||!family)return {...f,topic:''};if(query)setQuery('');return {topic:value};},when:(f,context)=>Boolean(chosenFamily(f)||contentFamily(context)),value:()=>[],
           match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
-          render:(value,set,context)=>{const family=filterFamily(listMode?listFilters:tileFilters)||contentFamily(context)||topicFamilyOfChoice(value);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
+          render:(value,set,context)=>{const family=chosenFamily({topic:value})||contentFamily(context);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
            onOpen={()=>prepareSources(family.sources.map(source=>source.id).filter(id=>allowedSources.some(own=>own.id===id)),()=>{})}/>:null;}}];
   const filterRow=(source:{id:string}):FilterRow=>({id:source.id,record:frameworkRecord(source.id),audiences:sourceAudiences(source.id) as (keyof typeof audienceGroups)[],
    categories:Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(source.id)).map(d=>(d as {title:string}).title)});
@@ -477,7 +482,9 @@ export function FoundationCatalogue({
   const tileActive=!listMode&&catalogueView.available?sourceFilters.filter(f=>!f.needsList&&tileFilters[f.key]):[];
   const tilePass=(source:{id:string})=>{if(!tileActive.length)return true;const row=filterRow(source);return tileActive.every(f=>f.match?f.match(row,tileFilters[f.key]):f.value(row).includes(tileFilters[f.key]));};
   // Een filter dat de lijst vraagt: de lijst opent met die keuze en de focus gaat mee naar dezelfde knop.
-  const jumpToList=(key:string,value:string)=>{setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');
+  const jumpToList=(key:string,value:string)=>{const family=key==='topic'?topicFamilyOfChoice(value):null;if(family&&query)setQuery('');
+   // Het lijstfilter neemt alleen wat het meekrijgt over; een lege waarde wist het. Bij een onderwerp: alleen familie en onderwerp.
+   setListPreset({token:Date.now(),filters:family?{issuer:'',audience:'',topic:value}:{...tileFilters,[key]:value}});catalogueView.setMode('list');
    window.setTimeout(()=>document.querySelector<HTMLElement>('.foundation-catalogue .topic-filter-tool')?.focus(),80);};
   // Zoeken blijft binnen de filters, ook voor treffers in normen.
   const search=searchCatalogue(query,browseSources.filter(tilePass).map(s=>s.id));
