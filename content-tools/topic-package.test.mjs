@@ -89,3 +89,13 @@ test('de familie en haar plannen komen in de procescatalogus; andere families en
   assert.deepEqual(module.topicFamilies.map(item => item.id), ['ander', 'proef']);
   assert.equal(module.topicFamilies[1].oud, undefined);
 });
+
+test('een nieuwe editie met dezelfde planEdition houdt de plannen gelijk; zonder planEdition verandert het plan', () => {
+  const pkg = edition => ({format: TOPIC_PACKAGE_FORMAT, schemaVersion: 1, edition, family: definition, plans: [{id: 'TOPIC-proef-C', design: designC()}]});
+  const hash = value => checkTopicPackage(value, runtime(), {reviews: false}).plans.find(built => built.entry.id === 'TOPIC-proef-C')?.itemHash;
+  const before = hash(pkg('20261119.01'));
+  assert.ok(before);
+  assert.equal(hash({...pkg('20261120.01'), planEdition: '20261119.01'}), before);
+  assert.notEqual(hash(pkg('20261120.01')), before);
+  assert.match(checkTopicPackage({...pkg('20261120.01'), planEdition: 'morgen'}, runtime(), {reviews: false}).problems.join('\n'), /planEdition/u);
+});

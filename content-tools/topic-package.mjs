@@ -168,6 +168,8 @@ export function checkTopicPackage(pkg, runtime, {reviews = true} = {}) {
   const problems = [], say = message => problems.push(message);
   if (pkg?.format !== TOPIC_PACKAGE_FORMAT || pkg.schemaVersion !== 1) return {problems: [`Geen onderwerppakket (format ${TOPIC_PACKAGE_FORMAT}, schemaVersion 1).`], plans: []};
   if (!/^\d{8}\.\d{2}$/u.test(pkg.edition || '')) say('edition ontbreekt (bijvoorbeeld 20261118.01).');
+  // De plannen hebben een eigen editie: een nieuwe tekst bij de familie maakt de beoordeelde plannen niet ongeldig.
+  if (pkg.planEdition !== undefined && !/^\d{8}\.\d{2}$/u.test(pkg.planEdition)) say('planEdition heeft niet de vorm 20261118.01.');
   const definition = pkg.family, invalid = validateTopicDefinition(definition);
   if (invalid.length) return {problems: [...problems, ...invalid.map(item => 'Indeling: ' + item)], plans: []};
   const family = createTopicFamily(definition);
@@ -183,7 +185,7 @@ export function checkTopicPackage(pkg, runtime, {reviews = true} = {}) {
     const inventory = topicInventory(definition, entry, runtime), design = checkTopicDesign(item.design, inventory);
     for (const message of design) say(`${entry.id}: ${message}`);
     if (design.length) continue;
-    const built = buildTopicPlan(definition, entry, item.design, inventory, runtime, pkg.edition);
+    const built = buildTopicPlan(definition, entry, item.design, inventory, runtime, pkg.planEdition ?? pkg.edition);
     for (const key of built.empty) say(`${entry.id}: vraag ${key} heeft geen toetspunten`);
     if (reviews) for (const message of checkTopicReview(item.review, built)) say(`${entry.id}: ${message}`);
     plans.push({...built, inventory, design: item.design, review: item.review});

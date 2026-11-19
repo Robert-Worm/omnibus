@@ -60,6 +60,22 @@ Vergelijk met `data:compare-runtime` (alleen `lib/process-catalogue.mjs` hoort t
 `npm run check:onderwerpen -- --settings <nieuwe map>/local-build.json`, test in een aparte build (lijst, viewer,
 onderwerp als geheel, stap 3) en breng de database uit zoals in [database publiceren](database-publiceren.md).
 
+## Teksten bij een onderwerp
+
+Het tabblad **Over dit onderwerp** haalt zijn teksten uit de familie in het pakket. Ze zijn optioneel; zonder tekst toont
+Omnibus de korte omschrijving uit de indeling.
+
+- Per onderwerp: `about` (alinea's: wat het onderwerp regelt en waarom de normen bij elkaar horen) en `notIn`
+  (zinnen over wat er niet in zit en waar het wel staat). Per deelonderwerp: `description`.
+- Voor de familie: `about.method` (hoe de indeling is gemaakt), `about.choose` (hoe je een andere keuze maakt),
+  `about.sourcesIntro`, `about.practiceLaw` en `about.practicePractice`.
+- `[[T6]]` in een tekst wordt een link naar dat onderwerp. Het hulpmiddel weigert een verwijzing naar een onderwerp
+  dat niet bestaat.
+
+Een nieuwe tekst vraagt geen nieuwe beoordeling van de vraagplannen. Geef het pakket daarvoor een nieuwe `edition` en
+laat `planEdition` staan op de editie waarvoor de plannen zijn beoordeeld. Zonder `planEdition` gelden de plannen voor
+`edition`, en vraagt een nieuwe editie ook nieuwe reviews.
+
 ## Na een nieuwe database
 
 Komt er een nieuwe database met nieuwe of gewijzigde normen, draai dan `check:onderwerpen`. Meldt het een norm zonder

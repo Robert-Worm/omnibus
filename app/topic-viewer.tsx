@@ -79,6 +79,8 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
   <header className="law-about-intro"><div className="law-about-eyebrow"><Layers size={17} aria-hidden="true"/>Onderwerp binnen {family.listFamily}</div><h2>{family.label(value)}</h2>
    {topic?.about?.length?topic.about.map((text,index)=><p key={index}>{rich(text)}</p>):topic&&<p>{topic.includes}</p>}
    {sub?.description&&<p><strong>{sub.title}:</strong> {sub.description}</p>}
+   {!sub&&topic?.subs?.some(item=>item.description)&&<ul className="topic-about-subs">{topic.subs.map(item=><li key={item.id}>
+    {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic.id,sub:item.id}))}>{item.title}</button>:<strong>{item.title}</strong>}{item.description&&<span>{item.description}</span>}</li>)}</ul>}
    {topic?.notIn?.length?<div className="topic-about-notin"><h3>Wat hier niet in zit</h3>{topic.notIn.map((item,index)=><p key={index}>{rich(item.text)}</p>)}</div>
     :topic?.excludes&&<p><strong>Niet in dit onderwerp:</strong> {topic.excludes}</p>}</header>
   <div className="law-about-columns">
@@ -92,7 +94,7 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
   </div>
   {(about.choose?.length||onBack)&&<section className="law-about-card"><h3><ArrowLeft size={18} aria-hidden="true"/>Een andere keuze maken</h3>
    {about.choose?.map((text,index)=><p key={index}>{rich(text)}</p>)}
-   {onSwitch&&<nav className="topic-about-others" aria-label="Andere onderwerpen">{family.topics.filter(item=>item.id!==topic?.id).map(item=>
+   {onSwitch&&<h4>Andere onderwerpen</h4>}{onSwitch&&<nav className="topic-about-others" aria-label="Andere onderwerpen">{family.topics.filter(item=>item.id!==topic?.id).map(item=>
     <button key={item.id} type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:item.id}))}>{item.title}</button>)}</nav>}
    {onBack&&<p><Button variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button></p>}</section>}
   <section className="law-about-card"><h3><ShieldCheck size={18} aria-hidden="true"/>Hoe is deze indeling gemaakt?</h3>

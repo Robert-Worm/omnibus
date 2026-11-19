@@ -63,7 +63,7 @@ export function runTopicPackage(options) {
   } finally { repository.close(); }
   const verified = checkRuntimeDatabase({database, release: settings.release, publication});
   writeFileSync(join(target, 'local-build.json'), JSON.stringify({database: 'catalogue.sqlite', release: settings.release, publication}, null, 2) + '\n');
-  const receipt = {status: 'TOPICS_PUBLISHED', family: pkg.family.id, edition: pkg.edition, packageSha256: topicHash(raw),
+  const receipt = {status: 'TOPICS_PUBLISHED', family: pkg.family.id, edition: pkg.edition, planEdition: pkg.planEdition ?? pkg.edition, packageSha256: topicHash(raw),
     from: {release: settings.release, publication: settings.publication}, to: {release: settings.release, publication, contract: verified.contract},
     plans: checked.plans.map(built => ({id: built.entry.id, itemHash: built.itemHash, reviewer: built.review.reviewer, reviewDate: built.review.reviewDate})),
     note: 'Lokaal gemaakt; niet in gebruik genomen. Vergelijk met data:compare-runtime en test in een aparte build.'};
