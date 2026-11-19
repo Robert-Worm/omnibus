@@ -441,9 +441,14 @@ export function FoundationCatalogue({
   // Het gekozen onderwerp, als het bij een familie in deze verzameling hoort. Familie en Categorie zijn geen filters meer
   // maar groeperingen (B-079); het onderwerp is daarmee de enige keuze die bronnen samenbrengt.
   const chosenFamily=(filters:Record<string,string>)=>{const family=topicFamilyOfChoice(filters.topic||'');return family&&availableFamilies.includes(family)?family:null;};
-  // De familie met onderwerpen waar wat in beeld is grotendeels uit komt: minstens twee bronnen en minstens de helft.
-  const contentFamily=({rows,narrowed}:{rows:{id:string}[];narrowed:boolean})=>{if(!narrowed||rows.length<2)return null;
-   for(const family of availableFamilies){const own=rows.filter(row=>family.isSource(row.id)).length;if(own>=2&&own*2>=rows.length)return family;}
+  // De familie met onderwerpen waar wat in beeld is grotendeels uit komt (minstens de helft van wat na zoeken of filteren
+  // overblijft), of waaruit je al een kader koos of opende: wie één DORA-kader kiest, krijgt de onderwerpen erbij.
+  const pickedFamily=()=>availableFamilies.find(family=>wb.sourceIds.some((id:string)=>family.isSource(id))||family.sources.some(source=>foundationSelection(draft,source.id).selected>0))??null;
+  const contentFamily=(context:{rows:{id:string}[];narrowed:boolean})=>{const picked=pickedFamily();if(picked)return picked;
+   // Een gekozen categorie-tegel (zoals Financiële sector & DORA) versmalt ook.
+   const inDomain=domain!=='all'?new Set(browseSources.map((source:{id:string})=>source.id)):null;
+   const rows=inDomain?context.rows.filter(row=>inDomain.has(row.id)):context.rows;if(!(context.narrowed||inDomain)||!rows.length)return null;
+   for(const family of availableFamilies){const own=rows.filter(row=>family.isSource(row.id)).length;if(own>=1&&own*2>=rows.length)return family;}
    return null;};
   const [listPreset,setListPreset]=useState<{token:number;filters:Record<string,string>}|null>(()=>{
    // Kwam je terug uit een bron waarin je een onderwerp koos of wiste? Dan volgt de lijst.
@@ -467,11 +472,10 @@ export function FoundationCatalogue({
   const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
   const sourceFilters:CatalogueFilter<FilterRow>[]=[{key:'issuer',label:'Uitgever',all:'Alle uitgevers',value:r=>[shortIssuer(r.record.issuer)]},{key:'audience',label:'Voor wie',all:'Iedereen',value:r=>r.audiences.map(a=>audienceGroups[a].label)},
          // Vervolgfilter: verschijnt zodra wat je na zoeken of filteren (Uitgever, Voor wie) ziet grotendeels uit een familie met
-         // onderwerpen komt, en blijft staan als er een onderwerp gekozen is (B-077, B-079). Zonder zoeken of filter blijft het
-         // weg, zodat DORA niet overheerst.
+         // onderwerpen komt, zodra je een kader uit zo'n familie koos of opende, en blijft staan als er een onderwerp gekozen is
+         // (B-077, B-079, B-080). Anders blijft het weg, zodat DORA niet overheerst.
          {key:'topic',label:'Onderwerp',all:'Alle onderwerpen',needsList:true,
-          // Een onderwerp is zelf de selectie: lijst, tellingen en viewer tonen dan dezelfde bronnen. Daarom zet het de familie
-          // en wist het de andere filters en de zoekterm (B-079); uitzetten laat de familie staan.
+          // Een onderwerp is zelf de selectie. Het wist de zoekterm; Uitgever en Voor wie blijven staan (B-079).
           apply:(value,f):Record<string,string>=>{const family=topicFamilyOfChoice(value);if(!value||!family)return {...f,topic:''};if(query)setQuery('');return {...f,topic:value};},when:(f,context)=>Boolean(chosenFamily(f)||contentFamily(context)),value:()=>[],
           match:(r,value)=>{const family=topicFamilyOfChoice(value);return !family||!availableFamilies.includes(family)||family.normIds(r.id,value).length>0;},
           render:(value,set,context)=>{const family=chosenFamily({topic:value})||contentFamily(context);return family?<TopicFilter family={family} value={family.owns(value)?value:''} onChange={set} showValue={false} jumps={!listMode}
@@ -483,7 +487,7 @@ export function FoundationCatalogue({
   const tilePass=(source:{id:string})=>{if(!tileActive.length)return true;const row=filterRow(source);return tileActive.every(f=>f.match?f.match(row,tileFilters[f.key]):f.value(row).includes(tileFilters[f.key]));};
   // Een filter dat de lijst vraagt: de lijst opent met die keuze en de focus gaat mee naar dezelfde knop.
   const jumpToList=(key:string,value:string)=>{const family=key==='topic'?topicFamilyOfChoice(value):null;if(family&&query)setQuery('');
-   // Het lijstfilter neemt alleen wat het meekrijgt over; een lege waarde wist het. Bij een onderwerp: alleen familie en onderwerp.
+   // Het lijstfilter neemt alleen wat het meekrijgt over; een lege waarde wist het.
    setListPreset({token:Date.now(),filters:{...tileFilters,[key]:value}});catalogueView.setMode('list');
    window.setTimeout(()=>document.querySelector<HTMLElement>('.foundation-catalogue .topic-filter-tool')?.focus(),80);};
   // Zoeken blijft binnen de filters, ook voor treffers in normen.

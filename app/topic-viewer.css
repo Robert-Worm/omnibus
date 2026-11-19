@@ -16,3 +16,9 @@
 .topic-about :is(.topic-about-sources,.topic-about-options,.topic-about-outside) li{display:grid;gap:.1rem}
 .topic-about :is(.topic-about-sources,.topic-about-options,.topic-about-outside) span{font-size:.8125rem;color:var(--muted-foreground);line-height:1.45}
 .topic-about-outside{margin-top:.4rem!important}
+.topic-about .topic-about-link{display:inline;padding:0;border:0;background:none;color:var(--primary);font:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.topic-about .topic-about-link:hover{text-decoration-thickness:2px}
+.topic-about-notin{margin-top:.75rem}
+.topic-about-notin h3{font-size:.9375rem;margin:0 0 .25rem}
+.topic-about-notin p{margin:.2rem 0}
+.topic-about-others{display:flex;flex-wrap:wrap;gap:.35rem 1rem;margin:.5rem 0}
