@@ -426,7 +426,8 @@ export function FoundationCatalogue({
     [page, setPage] = useState(0),
     [create, setCreate] = useState(false);
   const current = foundations.find((s) => s.id === active);
-  const [searchError,setSearchError] = useState('');
+  // Een mislukte keuze (zoals de limiet van 1.000) staat vast in beeld, ook als je onderaan de pagina klikt (B1/B2 testronde 19-11).
+  const [choiceError,setChoiceError] = useState('');
   const [localDomain, setLocalDomain] = useState("all"),
     [processId, setProcessId] = useState(initialProcess);
   const domain=onDirectoryGroup?(directoryGroup||'all'):localDomain;
@@ -559,8 +560,8 @@ export function FoundationCatalogue({
      let next=own.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseInChoice(value,part.id,points,include);},draft);
      if(include)next=regimeOnly.reduce((value:Draft,id:string)=>{const drop=pointsOf(id,listFamily!.otherRegimeNormIds(id,listChoice));return drop.length?chooseTopicPoints(value,id,drop,false) as Draft:value;},next);
      if(include&&replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
-     onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');if(include)openTopic(listChoice);
-    }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
+     onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');if(include)openTopic(listChoice);
+    }catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
    const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
    const what=basis==='wet'?countLabel(own.length,'bronnen'):labels.practice?.full||'';
    // Staat de andere laag ook in de lijst (bijvoorbeeld NOREA naast de wet), dan zegt de regel dat, zodat het aantal rijen klopt
@@ -639,12 +640,12 @@ export function FoundationCatalogue({
           if(inChoice&&!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');
           return (points?chooseInChoice(value,id,points,checked):chooseFoundationSource(value,id,checked)) as Draft;},draft);
            if(replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
-           onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
+           onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');}catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
           const labels=listFamily?.labels;
           if(checked&&otherSelected>0&&labels?.practice)setSwap({from:layer==='wet'?labels.practice.name:labels.law,to:layer==='wet'?labels.law:labels.practice.name,count:otherSelected,why:layer==='wet'?labels.practice.toLaw:labels.practice.toPractice,run:()=>run(true)});
           else run(false);}}
         banner={topicBar} empty={<p>Geen wet of kader gevonden. Wis je zoekopdracht of pas de filters aan.</p>}/>}
-      {listMode&&searchError&&<p role="alert">{searchError}</p>}
+      {choiceError&&<div className="choice-toast" role="alert"><p>{choiceError}</p><Button variant="ghost" size="sm" aria-label="Melding sluiten" onClick={()=>setChoiceError('')}>Sluiten ×</Button></div>}
       <AlertDialog open={Boolean(swap)} onOpenChange={open=>{if(!open)setSwap(null);}}>
         <AlertDialogContent className="project-utility-dialog">
           <AlertDialogHeader className="project-utility-header"><div><AlertDialogTitle>Vervangen door {swap?.to}?</AlertDialogTitle>
@@ -659,7 +660,6 @@ export function FoundationCatalogue({
         groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
         onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>}
       {!listMode&&showList&&<>
-      {searchError && <p role="alert">{searchError}</p>}
       {query.trim() && <h2>Zoekresultaten <small>{filtered.length} van {countLabel(browseSources.length,'bronnen')}</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
@@ -686,7 +686,7 @@ export function FoundationCatalogue({
               <CatalogueCardActions layout="buttons" title={frameworkTitle(s.title)} opened={wb.sourceIds.includes(s.id)} disabled={disabled} onPrepare={()=>onPrepareSource?.(s.id)}
                 onOpen={()=>{if(!wb.sourceIds.includes(s.id))toggle(s.id,true);onCriteria(s.id);}} onToggle={value=>toggle(s.id,value)}
                 selection={{label:s.kind==='audit'&&!lawCounts?'Alle dekkingspunten':'Alle normen',ariaLabel:'Alle normen selecteren: '+s.title,checked:selection.all,partial:selection.partial,disabled:!selection.total,
-                  onChange:checked=>prepareSources([s.id],()=>{try{const next=chooseFoundationSource(draft,s.id,checked);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setSearchError('');}catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}}/>
+                  onChange:checked=>prepareSources([s.id],()=>{try{const next=chooseFoundationSource(draft,s.id,checked);onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');}catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}})}}/>
             </article>
           </div>
         );})}
@@ -721,8 +721,8 @@ export function FoundationCatalogue({
           prepareSources([hit.item.sourceId],()=>{try {
           const item=preparedFoundationItems.find(p=>p.originKey===key);if(!item)return;
           const opened={...draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,item.sourceId])]}};
-          onChange(chooseFoundationItems(opened,[item],include) as Draft);setSearchError('');
-        }catch(error){setSearchError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});}}
+          onChange(chooseFoundationItems(opened,[item],include) as Draft);setChoiceError('');
+        }catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});}}
         sourceIds={browseSources.map(s=>s.id)}
         page={criteriaPage} onPage={setCriteriaPage} disabled={disabled}
         onOpen={(id,criterionId)=>{if(!wb.sourceIds.includes(id)) toggle(id,true);onCriteria(id,criterionId);}}/>}

@@ -1,9 +1,9 @@
-import {serializeProject} from '../lib/project-codec.mjs';
+import {serializeStoredProject} from '../lib/project-codec.mjs';
 import {packProjectSave} from '../lib/project-save-transfer.mjs';
 import type {Project} from '@/lib/project-session.mjs';
 
 /** The save queue sends one snapshot at a time; there is never a worker backlog. */
-export function createProjectEncoder({createWorker=()=>new Worker(new URL('./project-encoder.worker.ts',import.meta.url),{type:'module'}),fallback=serializeProject}:{
+export function createProjectEncoder({createWorker=()=>new Worker(new URL('./project-encoder.worker.ts',import.meta.url),{type:'module'}),fallback=serializeStoredProject}:{
  createWorker?:()=>Worker;fallback?:(project:Project)=>string;
 }={}){
  let worker:Worker|null=null,unavailable=false,disposed=false,serial=0;

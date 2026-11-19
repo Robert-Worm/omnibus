@@ -1,4 +1,4 @@
-import {serializeProject} from '@/lib/project-codec.mjs';
+import {serializeStoredProject} from '@/lib/project-codec.mjs';
 import {unpackProjectSave} from '@/lib/project-save-transfer.mjs';
 import type {Project} from '@/lib/project-session.mjs';
 
@@ -7,7 +7,7 @@ let materials:NonNullable<Project['draft']['investigation']>['materials']=[];
 self.onmessage=(event:MessageEvent)=>{
  const {id}=event.data;
  try{
-  const project=unpackProjectSave(event.data,materials),text=serializeProject(project);
+  const project=unpackProjectSave(event.data,materials),text=serializeStoredProject(project);
   materials=project?.draft?.investigation?.materials??[];
   self.postMessage({id,text});
  }

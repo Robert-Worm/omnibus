@@ -2733,6 +2733,11 @@ button.readable-reference[data-slot="button"] {
 .compact-app .theme-card .theme-search-matches { white-space: normal; overflow-wrap: anywhere; font-size: .875rem; line-height: 1.5; margin: 5px 0 0; color: #506882; }
 .compact-app .theme-card .theme-search-matches { color: #24558a; }
 .project-notice { display: block; }
+#main-workspace[data-opening] > :not(.project-opening) { visibility: hidden; }
+.project-opening { display: block; margin: 3rem auto; text-align: center; color: var(--rm-muted); font-size: var(--text-body); }
+/* Een opslagprobleem blijft in beeld (testronde 19-11, B1); sluiten kan altijd. */
+.save-error.project-notice[role="alert"]:not(.is-loading) { position: fixed; z-index: 61; left: 50%; bottom: 1.25rem; transform: translateX(-50%); margin: 0;
+  width: min(44rem, calc(100vw - 2rem)); max-height: 40vh; overflow-y: auto; border-radius: 6px; box-shadow: 0 6px 20px rgb(0 0 0 / .16); }
 .project-notice p { margin: 0 0 10px; overflow-wrap: anywhere; }
 /* De laadmelding staat los van de pagina (onderaan in beeld), zodat de inhoud niet omlaag en weer omhoog schuift
    bij het wisselen van tab. Ze verschijnt pas na een kwart seconde; een snelle wissel toont dus geen melding. */
@@ -2743,6 +2748,12 @@ button.readable-reference[data-slot="button"] {
 @keyframes project-notice-in { to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .project-notice.is-loading { animation-duration: .01s; } }
 .project-notice-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* Een mislukte keuze blijft in beeld waar je ook op de pagina bent. */
+.choice-toast { position: fixed; z-index: 60; left: 50%; bottom: 1.25rem; transform: translateX(-50%); max-width: min(40rem, calc(100vw - 2rem));
+  display: flex; gap: 12px; align-items: center; background: #fff2e8; border: 1px solid #b9713d; color: #713713; padding: 10px 12px 10px 16px;
+  border-radius: 6px; box-shadow: 0 6px 20px rgb(0 0 0 / .14); font-size: var(--text-body); }
+.choice-toast p { margin: 0; }
+
 @media (max-width: 1000px) {
   .compact-app .theme-card.selectable-theme { grid-template-columns: 56px minmax(0,1fr); gap: 8px 16px; padding: 0 16px 12px 0; }
   .selectable-theme .theme-selection-cell { grid-row: 1 / span 3; }

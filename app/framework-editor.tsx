@@ -1150,7 +1150,10 @@ export default function FrameworkEditor() {
         </header>
         {fileDownload.error && <p className="project-import-feedback" role="alert">{fileDownload.error}</p>}
         {importFeedback && <div className="project-import-feedback" role="alert"><span>{importFeedback}</span><Button variant="ghost" aria-label="Importmelding sluiten" onClick={()=>setImportFeedback('')}><X size={18}/></Button></div>}
-        <main id="main-workspace" tabIndex={-1} data-viewer={['foundation-workspace','model-workspace','topics'].includes(page)}>
+        {/* Na herladen toont de pagina pas iets als het opgeslagen project open is: geen lege route, geen knoppen die daarna worden teruggedraaid (testronde 19-11, B5). */}
+        <main id="main-workspace" tabIndex={-1} data-viewer={['foundation-workspace','model-workspace','topics'].includes(page)}
+          data-opening={!loaded&&page!=='entry'?'':undefined} aria-busy={!loaded&&page!=='entry'?true:undefined} inert={!loaded&&page!=='entry'}>
+          {!loaded&&page!=='entry'&&<output className="project-opening">Je project wordt geopend…</output>}
           {contentNotice&&<div className={contentFailure?'project-notice':'project-notice is-loading'} role={contentFailure?'alert':'status'}>
             <p>{contentNotice}</p>{contentFailure&&<Button variant="outline" onClick={()=>contentAction.current?.()}>Opnieuw proberen</Button>}
           </div>}
