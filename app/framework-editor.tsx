@@ -61,7 +61,7 @@ import {opslagfoutTekst,makeProject,readProject,acceptProjectFile,projectView,gu
 import {expandProject} from '@/lib/project-codec.mjs';
 import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
-import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
+import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue,prefetchWhenIdle} from '@/lib/catalogue-runtime.mjs';
 import {syncTopicQuestions} from '@/lib/topic-question-sync.mjs';
 import {forgetComposer} from './research-builder';
 import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
@@ -242,10 +242,7 @@ export default function FrameworkEditor() {
   const draftRef = useRef(draft);
   // Wat de volgende stap nodig heeft, alvast ophalen zodra er rust is (B-097): de interviewvragen van gekozen bronnen.
   const questionKeys=materialQuestionKeys(draft).join('|');
-  useEffect(()=>{if(!questionKeys)return;const keys=questionKeys.split('|');
-    const idle=(globalThis as {requestIdleCallback?:(f:()=>void,o?:{timeout:number})=>number}).requestIdleCallback;
-    const run=()=>{if(!catalogueReady(keys))warmUp(keys);};
-    if(idle)idle(run,{timeout:4000});else setTimeout(run,1500);},[questionKeys,warmUp]);
+  useEffect(()=>{if(questionKeys)prefetchWhenIdle(questionKeys.split('|'));},[questionKeys]);
   // Chronological recovery: later edits are undone before the reset, never overwritten.
   const recoveryRef = useRef<{draft: Project; label: string}[]>([]);
   const typingRecoveryRef = useRef<Element | null>(null);

@@ -22,5 +22,5 @@ export default function CatalogueContent({resource,children}:{resource:string;ch
     <p>Je onderzoek en selecties zijn behouden.</p>
     <Button variant="outline" onClick={()=>{setState(null);setAttempt(n=>n+1);}}>Opnieuw proberen</Button>
   </div>;
-  return <output className="report-source-status" data-status-block="" aria-live="polite">Brongegevens ophalen…</output>;
+  return <output className="report-source-status" data-status-block="" aria-live="polite"><span className="loading-spin" aria-hidden="true"/> Brongegevens ophalen…</output>;
 }

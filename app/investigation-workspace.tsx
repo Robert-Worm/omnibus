@@ -1,4 +1,5 @@
 "use client";
+import {prefetchWhenIdle} from '@/lib/catalogue-runtime.mjs';
 import {frameworkTitle} from '@/lib/framework-title.mjs';
 import FoundationSourceReader from './lazy-foundation-reader';
 import {useCollectionScope} from './collection-choice';
@@ -552,7 +553,8 @@ export function FoundationCatalogue({
   const loadTopicSources=useRef(prepareSources);
   useEffect(()=>{loadTopicSources.current=prepareSources;});
   const choiceSourceKey=listChoice?listFamily!.choiceSources(listChoice).map((source:{id:string})=>source.id).filter((id:string)=>allowedSources.some(source=>source.id===id)).join('|'):'';
-  useEffect(()=>{if(choiceSourceKey)loadTopicSources.current(choiceSourceKey.split('|'),()=>{});},[choiceSourceKey]);
+  // Daarna, als er rust is, alvast de interviewvragen van die bronnen: de viewer en stap 3 tonen ze (B-097).
+  useEffect(()=>{if(!choiceSourceKey)return;const ids=choiceSourceKey.split('|');loadTopicSources.current(ids,()=>prefetchWhenIdle(ids.map(id=>'questions:'+id)));},[choiceSourceKey]);
   // Eén handeling voor het hele onderwerp: de bronnen van de toetsgrondslag (de wet, of NOREA als de keuze dat zegt) die de
   // lijst nu toont. Zoeken en andere filters tellen dus mee. Staat er voor dit onderwerp al iets uit de andere grondslag,
   // dan vraagt de app eerst of dat vervangen moet worden: beide kiezen geeft deels dubbele toetspunten.

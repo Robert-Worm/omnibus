@@ -45,6 +45,7 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Wat de browser niet leest, gaat niet mee. Nieuwe of herziene Topical-kaders worden verpakt (`npm run content:revise -- --pack`): redactionele voorgeschiedenis en auteurscontext onder een archiefsleutel, overgangen en correcties per bron, aantallen per norm in `pointCounts`.
 - `npm run check:delivery` en `release:prepare` bewaken het leveringsbudget (bij openen, Topical-begin, per bron). Verhoog een grens niet om een release door te laten; verplaats of verpak de gegevens.
 - Inhoud op release en controlegetal is onveranderlijk en mag in de browser worden bewaard; laad nooit alle bronnen van een familie vooraf als een onderwerp er maar een paar nodig heeft.
+- Laadregel (B-097): laad wat het huidige scherm toont; haal wat de volgende stap nodig heeft in rusttijd op (`prefetchWhenIdle`); laat een handeling nooit wachten op gegevens die dat scherm niet toont. Wat de gebruiker niet kan zien of bereiken, wordt niet vooraf geladen. Een bron blijft één geheel; we sturen hoe we haar aanbieden, niet hoe ze is opgebouwd. Toets elke wijziging met een export van hetzelfde onderwerp: die moet cel voor cel gelijk blijven.
 - Laden ziet er overal gelijk uit (`loading-bar`, `loading-spin`, de melding onderin) en zegt wat er laadt. Geen losse tekst als "laden…" zonder vorm.
 - Catalogi delen hun gedrag: tegelfilters via `useTileFilters`, en `CatalogueGroups` krijgt altijd `filtered` mee. Een catalogus met een eigen kopie van deze regels faalt in `lib/catalogue-consistency.test.mjs`.
 
