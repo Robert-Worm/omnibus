@@ -5,7 +5,7 @@ import {normId} from '@/lib/norm-navigation.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
 
 import {useEffect,useId,useLayoutEffect,useState,useRef,useSyncExternalStore,startTransition,type ComponentType,type ReactNode} from 'react';
-import {topicFamilyOfChoice} from '@/lib/topic-families.mjs';
+import {topicFamilyOfChoice,takeViewerQuery} from '@/lib/topic-families.mjs';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,Users,X,Info} from 'lucide-react';
 import {Tooltip,TooltipTrigger,TooltipContent,TooltipProvider} from '@/components/ui/tooltip';
 import {Button} from '@/components/ui/button';
@@ -188,7 +188,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   const jump=takeNormJump(adapter.sourceId) as null|{norm?:string;groep?:string};
   jumpDone.current=true;
   // De onderwerppagina vraagt de viewer met dat onderwerp als filter; zoekterm en groep van een eerder bezoek gaan dan weg.
-  const asked=takeTopic?.();
+  const asked=takeTopic?.(),carried=takeViewerQuery(adapter.sourceId);
+  // Gezocht in de lijst: dezelfde zoekterm over de hele bron, zonder onderwerpfilter (de lijst zoekt ook niet per onderwerp).
+  if(carried&&!jump){if(overview!=='norms')setOverview('norms');setView(v=>({...v,query:carried,group:'',selectedOnly:false,topic:''}));return;}
   if(asked&&!jump){if(overview!=='norms')setOverview('norms');setView(v=>({...v,query:'',group:'',selectedOnly:false,topic:asked}));return;}
   if(!jump)return;
   if(overview!=='norms')setOverview('norms');
@@ -248,7 +250,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
      </DeferredViewerSection>
     </section>;
    })}</div>
-   {!groups.length&&<section className="law-empty"><h3>Geen normen gevonden</h3><p>Pas je zoekterm of filters aan om de onderdelen van dit kader weer te zien.</p><Button variant="outline" onClick={resetFilters}>Alle normen tonen</Button></section>}
+   {/* Zolang de bron nog laadt, zijn er nog geen normen: dan niet "Geen normen gevonden" tonen (testronde 20-11). */}
+   {!groups.length&&!rows.length&&<output className="law-empty law-loading">Normen worden geladen…</output>}
+   {!groups.length&&rows.length>0&&<section className="law-empty"><h3>Geen normen gevonden</h3><p>Pas je zoekterm of filters aan om de onderdelen van dit kader weer te zien.</p><Button variant="outline" onClick={resetFilters}>Alle normen tonen</Button></section>}
   </>}
   {!embedTopic&&<footer className="law-list-footer"><span>{selection.selected} van {countLabel(selection.total,'toetspunten')} uit dit kader gekozen</span></footer>}
   </>}

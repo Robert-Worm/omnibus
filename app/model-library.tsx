@@ -14,14 +14,13 @@ import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueDescription} from '@/lib/catalogue-directory.mjs';
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
-import CatalogueTable,{CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
 import {modelOrigin,modelKinds} from '@/lib/model-origins.mjs';
 import {SymbolRow} from './audience-icons';
 import {modelUses,modelUsesOf} from '@/lib/model-uses.mjs';
 import {Compass,HandHeart,LifeBuoy,MessagesSquare,ShieldAlert,TriangleAlert,Users as UsersIcon} from 'lucide-react';
 type UseId=keyof typeof modelUses;
 const useIcons:Record<UseId,typeof Compass>={gedrag:UsersIcon,cultuur:MessagesSquare,veiligheid:LifeBuoy,integriteit:ShieldAlert,risico:TriangleAlert,verandering:RefreshCw,dienstverlening:HandHeart,sturing:Compass};
-import DirectorySearch from './directory-search';
 import {TermText} from './term-help';
 import {CatalogueHeader,ModelChoice} from './catalogue-navigation';
 import { usesQuestionWorkbench } from "@/lib/content-adapters/research-models.mjs";
@@ -90,7 +89,10 @@ export default function ModelLibrary({
   const setSubject=(id:string)=>{setLocalSubject(id||'all');onDirectoryGroup?.(id);};
   const [processId, setProcessId] = useState("");
   const filtered = subject !== "all" || processId !== "" || selectedOnly;
-  const showList=Boolean(directoryGroup||query.trim()||filtered);
+  // Dezelfde filters (Helpt bij, Soort model) ook bij de tegels, niet alleen in de lijst (beheerder, 20-11).
+  const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
+  const tileActive=Object.entries(tileFilters).filter(([,value])=>value);
+  const showList=Boolean(directoryGroup||query.trim()||filtered||tileActive.length);
   const setQuery=(modelQuery:string)=>onViewChange({modelQuery});
   const setActive=(id:string|null)=>onViewChange({activeModel:id??'',modelDimension:''});
   const models: ModelDirectoryEntry[] = filterModels(
@@ -100,9 +102,11 @@ export default function ModelLibrary({
   const openIds = normalizeOpenModelIds(openModelIds, value.models);
   // Lijstweergave: alle modellen in één tabel, als alternatief voor de tegels per categorie.
   const catalogueView=useCatalogueView(),listMode=mode==='catalogue'&&catalogueView.list;
-  const listRows=listMode?directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
-    summary:m.summary,origin:modelOrigin(m.id) as null|{authors:string;year:number;kind:string;kindLabel:string;kindDescription:string},uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)})):[];
+  const listRows=directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))).map(m=>({id:m.id,title:m.title,opened:openIds.includes(m.id),selected:m.selectedCount,total:m.questionCount,all:m.questionCount>0&&m.selectedCount===m.questionCount,partial:m.selectedCount>0&&m.selectedCount<m.questionCount,
+    summary:m.summary,origin:modelOrigin(m.id) as null|{authors:string;year:number;kind:string;kindLabel:string;kindDescription:string},uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)}));
   type ListRow=typeof listRows[number];
+  const modelFilters=[{key:'subject',label:'Categorie',all:'Alle categorieën',value:(r:ListRow)=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:(r:ListRow)=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:(r:ListRow)=>r.origin?[r.origin.kindLabel]:[]}];
+  const tilePass=(id:string)=>{const row=listRows.find(r=>r.id===id);return !tileActive.length||Boolean(row)&&tileActive.every(([key,value])=>modelFilters.find(f=>f.key===key)?.value(row!).includes(value));};
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
     {key:'kind',label:'Soort model',width:'9.5rem',groupKey:'kind',sort:r=>r.origin?.kindLabel||'zzz',render:r=>r.origin?<CellTip plain label={r.origin.kindLabel+': '+r.origin.kindDescription} tip={<><strong>{r.origin.kindLabel}</strong><span>{r.origin.kindDescription}</span></>}><span className="catalogue-pill" data-tone={r.origin.kind}>{r.origin.kindLabel}</span></CellTip>:<small>–</small>},
@@ -142,11 +146,11 @@ export default function ModelLibrary({
       {mode==='workspace'&&<div className="law-view-actions model-view-actions"><nav className="law-overview-tabs" aria-label="Modelweergave"><button aria-pressed={overview==='questions'} onClick={()=>setOverview('questions')}>Vragen</button><button disabled={!current} aria-pressed={overview==='about'&&Boolean(current)} onClick={()=>setOverview('about')}>Over dit model</button></nav></div>}
       {mode==='workspace'&&current&&overview==='about'&&<ModelAbout model={current}/>}
       {mode==='catalogue' && <>
-      {guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}
-      {!guided&&!listMode&&<DirectorySearch id="model-search" label="Zoek model" value={query} onChange={setQuery} placeholder="Zoek model of auteur…"/>}
+      {!listMode&&<CatalogueFilterBar id="models" rows={listRows} filters={modelFilters.filter(f=>f.key!=='subject')} groups={[{key:'subject'}]} onFiltersChange={setTileFilters}
+        search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}}/>}
       {listMode&&<CatalogueTable id="models" noun={['model','modellen']} unit={['vraag','vragen']}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
-        filters={[{key:'subject',label:'Categorie',all:'Alle categorieën',value:r=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:r=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:r=>r.origin?[r.origin.kindLabel]:[]}]}
+        filters={modelFilters}
         groups={[{key:'subject',label:'Categorie',plural:'categorieën',value:r=>r.subjects[0]||'',describe:name=>catalogueDescription('modellen',modelSubjects.find(g=>g.title===name)?.id||'')||''},{key:'kind',label:'Soort model',plural:'soorten',value:r=>r.origin?.kindLabel||'',describe:name=>Object.values(modelKinds as Record<string,{label:string;description:string}>).find(k=>k.label===name)?.description||''}]}
         gutter nameLabel="Model" nameMeta={r=><><span className="catalogue-id" title="Vaste ID van dit model">MOD-{r.id}</span>{r.origin&&<span title="Auteur(s) van het model">{r.origin.authors}</span>}</>} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
@@ -162,7 +166,7 @@ export default function ModelLibrary({
       </p>}</>}
       <div className="model-library-layout cev-active-layout" hidden={mode==='workspace'&&Boolean(current)&&overview==='about'}>
         {mode==='catalogue'&&showList&&!listMode&&<CatalogueFamily noun="modellen" groupId={subject} title={modelSubjects.find(g=>g.id===subject)?.title||'Wetenschappelijke modellen'}><div className="model-catalogue">
-          {models.map((m) => (
+          {models.filter(m=>tilePass(m.id)).map((m) => (
             <article key={m.id} className="model-catalogue-row" data-open={openIds.includes(m.id)}>
               <div className="directory-child-body">
                 <span className="catalogue-card-id">Wetenschappelijk model</span>

@@ -233,6 +233,7 @@ export default function FrameworkEditor() {
   const [recovery, setRecovery] = useState<{draft: Project; label: string}[]>([]);
   const [builderGeneration, setBuilderGeneration] = useState(0);
   const [resetNotice, setResetNotice] = useState("");
+  const [openProjectAsk, setOpenProjectAsk] = useState(false);
   const [newProjectOpen,setNewProjectOpen] = useState(false);
   const [pendingGuideQuestion, setPendingGuideQuestion] = useState(false);
   const [exportGuideStatus, setExportGuideStatus] = useState<ExportGuideStatus | null>(null);
@@ -992,14 +993,15 @@ export default function FrameworkEditor() {
       </div>
     );
   }
-  function chooseRiskArea(area:typeof riskArea) {
+  /** @param keepGroup de categorie (zoals Financiële sector & DORA) blijft staan bij wisselen tussen wetten en kaders */
+  function chooseRiskArea(area:typeof riskArea, keepGroup=false) {
     if(area==='models'){
       if(!catalogueReady([modelDirectoryKey()])){withContent([modelDirectoryKey()],()=>chooseRiskArea(area));return;}
     }
     if(area===riskArea||area==='laws'||area==='frameworks'){
       if(area==='themes'||area==='processes')setDirectoryViews(v=>({...v,[area]:emptyDirectoryView()}));
       else {
-        setCatalogueGroups(v=>({...v,[area==='models'?'models':'foundations']:''}));
+        if(!keepGroup)setCatalogueGroups(v=>({...v,[area==='models'?'models':'foundations']:''}));
         if(area!=='models')setCatalogueSearch('');
         else setModelView(v=>({...v,modelQuery:''}));
         setRiskBrowseGeneration(v=>v+1);
@@ -1013,7 +1015,7 @@ export default function FrameworkEditor() {
               prepareSources={(ids,action)=>withContent(ids.map(id=>'foundation:'+id),action)}
               prepareSearch={ids=>withContent(foundationSearchKeys(ids),()=>{})}
               sourceScope={page==='risk-start'?(riskArea==='laws'?'laws':'frameworks'):foundationCatalogueScope}
-              onSourceScopeChange={page==='risk-start'?undefined:setFoundationCatalogueScope}
+              onSourceScopeChange={page==='risk-start'?(value:'laws'|'frameworks')=>chooseRiskArea(value,true):setFoundationCatalogueScope}
               guided={page==='risk-start'}
               directoryGroup={catalogueGroups.foundations} onDirectoryGroup={id=>setCatalogueGroups(v=>({...v,foundations:id}))}
               key={page==='risk-start'?`risk-${builderGeneration}-${riskBrowseGeneration}`:builderGeneration}
@@ -1109,7 +1111,24 @@ export default function FrameworkEditor() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <Button variant="outline" disabled={!loaded} onClick={()=>inputRef.current?.click()}><FolderOpen size={16}/>Open project</Button>
+            {/* Open project vervangt je huidige werk: net als bij Nieuw project eerst vragen, als er iets te verliezen is (testronde 20-11). */}
+            <AlertDialog open={openProjectAsk} onOpenChange={setOpenProjectAsk}>
+              <Button variant="outline" disabled={!loaded} onClick={()=>{if(draft.included.length||(draft.research?.questions.length??0))setOpenProjectAsk(true);else inputRef.current?.click();}}><FolderOpen size={16}/>Open project</Button>
+              <AlertDialogContent className="new-project-dialog project-utility-dialog">
+                <AlertDialogHeader className="project-utility-header">
+                  <span className="project-utility-icon" aria-hidden="true"><FolderOpen size={20}/></span>
+                  <div><AlertDialogTitle>Ander project openen</AlertDialogTitle>
+                  <AlertDialogDescription>Het project dat je opent, vervangt je huidige selecties, vragen en exportinstellingen. Tot je de pagina herlaadt kun je dit ongedaan maken.</AlertDialogDescription></div>
+                </AlertDialogHeader>
+                <AlertDialogCancel variant="ghost" size="icon-sm" className="project-utility-close" aria-label="Project openen sluiten"><X size={18} aria-hidden="true"/></AlertDialogCancel>
+                {fileDownload.error && <div className="project-utility-body"><p role="alert">{fileDownload.error}</p></div>}
+                <AlertDialogFooter className="project-utility-footer">
+                  <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                  <Button variant="outline" disabled={fileDownload.busy} onClick={()=>downloadProject('rijksmap-project.json')}><Download size={16}/>Eerst bewaren</Button>
+                  <AlertDialogAction disabled={fileDownload.busy} onClick={()=>{setOpenProjectAsk(false);inputRef.current?.click();}}>Kies een bestand</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             </fieldset>
             <fieldset className="project-action-group" aria-label="Project bewaren en delen">
             <Button variant="outline" disabled={!loaded || !modelsReady || fileDownload.busy} title="Bewaar onderzoek, modelkeuzes en werkplek in één bestand"

@@ -29,5 +29,7 @@ export default function OpenItemStrip({id,items,activeId,onActivate,onIntent,onC
     <Button variant="ghost" aria-label={'Sluit '+item.title} title="Sluiten bewaart je selectie en bewerkingen" disabled={disabled} onClick={()=>close(item.id)}><X size={14} aria-hidden="true"/></Button>
    </div>)}
   </div></>}<Button className="open-item-explore" id={id+'-open'} variant="outline" onClick={onExplore}><ArrowLeft aria-hidden="true"/>{exploreLabel}</Button>
+  {/* Ook één geopend onderdeel moet je kunnen sluiten; zonder de rij met tabs was er geen sluitknop (beheerder, 20-11). */}
+  {single&&items[0]&&<Button className="open-item-close-single" variant="outline" aria-label={'Sluit '+items[0].title} title="Sluiten bewaart je selectie en bewerkingen" disabled={disabled} onClick={()=>{onClose(items[0].id);onExplore();}}><X aria-hidden="true"/>Sluiten</Button>}
  </section>;
 }

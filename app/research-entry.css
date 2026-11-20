@@ -167,10 +167,12 @@
 .framework-app .directory-axis>button>span{min-width:0;display:grid;gap:.15rem}
 html[data-appearance=dark] .framework-app .directory-family-card:hover{background:var(--donker-vlak-5)!important;border-color:var(--donker-lijn-4)!important}
 /* Eén geopend onderdeel: de terugknop staat rechts op de regel met Normen en Over dit kader, zonder eigen balk. */
-.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:block;width:auto;margin:0 0 0 1rem;padding:0;background:transparent!important;border:0;position:relative;z-index:1}
+.framework-app #main-workspace .open-item-workspace[data-single]{float:right;display:flex;gap:.4rem;width:auto;margin:0 0 0 1rem;padding:0;background:transparent!important;border:0;position:relative;z-index:1}
 .framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore{min-height:2.25rem;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6);background:transparent!important;color:var(--hb-ink,#1f3a5f)}
 .framework-app #main-workspace .open-item-workspace[data-single] .open-item-explore:hover{background:var(--hb-hover,#eef3f9)!important}
 /* Thema's: de strook staat in een eigen blok vóór de tabs; daar absoluut rechtsboven, zodat de tabs de volle breedte houden. */
 .framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){position:relative;height:0;margin:0;padding:0}
 .framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:absolute;top:0;right:0;float:none;margin:0!important}
 @media (max-width:760px){.framework-app #main-workspace .open-item-workspace[data-single]{float:none;margin:0 0 .5rem!important}.framework-app #main-workspace .open-themes:has(>.open-item-workspace[data-single]){height:auto}.framework-app #main-workspace .open-themes>.open-item-workspace[data-single]{position:static}}
+
+.framework-app #main-workspace .open-item-workspace[data-single] .open-item-close-single{min-height:2.25rem;height:2.25rem;font-size:.8125rem;border-color:var(--hb-line,#d5dce6);background:transparent!important;color:var(--hb-ink,#1f3a5f)}

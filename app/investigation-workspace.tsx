@@ -51,7 +51,7 @@ import {wwkeSourceId} from '@/lib/wwke-law-data.mjs';
 import {lawCatalogueCounts} from '@/lib/law-catalogue-counts.mjs';
 import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,useCatalogueView,type CatalogueColumn,type CatalogueFilter} from './catalogue-table';
 import {TopicFilter} from './topic-filter';
-import {topicFamilies,topicFamilyOfChoice,takeListTopic,requestViewerTopic} from '@/lib/topic-families.mjs';
+import {topicFamilies,topicFamilyOfChoice,takeListTopic,requestViewerTopic,requestViewerQuery} from '@/lib/topic-families.mjs';
 import {topicalPackage as topicPackage} from '@/lib/topical-content.mjs';
 import {openTopic} from '@/lib/open-topics.mjs';
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
@@ -640,7 +640,7 @@ export function FoundationCatalogue({
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
         nameLabel="Bron" nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
         describe={r=>r.usage||r.audience||null} countLabel="Gekozen toetspunten" hint={listChoice?'':'Een vinkje kiest alle toetspunten van die bron. Open de bron om er een paar te kiezen.'} selectLabel={r=>`Kies alle ${r.total} toetspunten van ${r.title}`}
-        onOpen={(id,filters)=>{if(topicFamilyOfChoice(filters.topic||'')?.isSource(id))requestViewerTopic(id,filters.topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
+        onOpen={(id,filters)=>{const carried=query.trim();requestViewerQuery(id,carried);if(!carried&&topicFamilyOfChoice(filters.topic||'')?.isSource(id))requestViewerTopic(id,filters.topic);if(!wb.sourceIds.includes(id))toggle(id,true);onCriteria(id);}}
         onFiltersChange={filters=>{setListFilters(filters);if(listPreset&&(filters.topic||'')===(listPreset.filters.topic||''))setListPreset(null);}}
         onSelect={(ids,checked)=>{
           // Met een onderwerp: staat er al iets uit de andere toetsgrondslag (wet of praktijkkader), dan eerst de vraag of
@@ -679,7 +679,7 @@ export function FoundationCatalogue({
       {query.trim() && <h2>Zoekresultaten <small>{filtered.length} van {countLabel(tileSources.length,'bronnen')}</small></h2>}
       {search.sourceCorrections.length>0 && <p className="creator-help">Vergelijkbare bronnen voor: {search.sourceCorrections.join(' / ')}. Je zoekopdracht is niet gewijzigd.</p>}
       <CatalogueFamily noun="bronnen" groupId={domain} title={sourceDomains[domain as keyof typeof sourceDomains]?.title||'Wetten & kaders'}
-        action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Wil je de uitvoeringskaders zien? Klik hier':'Wil je de wetgeving zien? Klik hier'}<ArrowRight size={14} aria-hidden="true"/></button>}>
+        action={crossScope&&<button type="button" onClick={()=>{setSourceArea(crossScope);setPage(0);}}>{crossScope==='frameworks'?'Bekijk ook de kaders in deze categorie':'Bekijk ook de wetten in deze categorie'}<ArrowRight size={14} aria-hidden="true"/></button>}>
       <div className="foundation-list">
         {filtered.slice(index * sourcePageSize, index * sourcePageSize + sourcePageSize).map((s) => {
           // Met een onderwerp tellen en kiezen de tegels alleen de toetspunten van dat onderwerp, net als de lijst.
