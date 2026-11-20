@@ -6,6 +6,8 @@ import {countLabel} from '@/lib/display-count.mjs';
 
 import {useEffect,useId,useLayoutEffect,useState,useRef,useSyncExternalStore,startTransition,type ComponentType,type ReactNode} from 'react';
 import {topicFamilyOfChoice,takeViewerQuery} from '@/lib/topic-families.mjs';
+import {matchesTerm} from '@/lib/search-synonyms.mjs';
+import {searchText} from '@/lib/criterion-search.mjs';
 import {ArrowRight,BookOpen,ClipboardCheck,ListChecks,Search,Settings2,ShieldCheck,Target,TriangleAlert,Users,X,Info} from 'lucide-react';
 import {Tooltip,TooltipTrigger,TooltipContent,TooltipProvider} from '@/components/ui/tooltip';
 import {Button} from '@/components/ui/button';
@@ -150,7 +152,9 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   const content=[r.id,normId(r.id),r.title,r.entity,...(r.articleReferences||[]),r.objective.text,r.risk.text,r.controlObjective?.text,r.control.text,r.criterion.text,...r.pointIds.flatMap(id=>{
    const p=pointMap.get(id);return p?[p.id,normId(p.id),p.title,p.text,p.chapter,...p.addressees.map(a=>a.label),...p.conditions,...p.exceptions,sourceLocations(p.source_links.map(l=>l.record_id),recordMap)]:[];
   })].join(' ').toLocaleLowerCase('nl');
-  return content.includes(query);
+  // Ook gangbare termen en synoniemen (MFA, versleuteling, wachtwoord), elk woord apart (testronde 20-11).
+  if(content.includes(query))return true;
+  const plain=searchText(content);return searchText(query).split(' ').filter(Boolean).every(term=>matchesTerm(plain,term));
  });
  const groups=groupsForSource.map(group=>({...group,allRows:rows.filter(r=>r.groupId===group.id),visibleRows:matches.filter(r=>r.groupId===group.id)})).filter(group=>group.visibleRows.length>0);
  const counts=Object.fromEntries(rows.map(r=>{const s=select(draft,r.pointIds);return [r.id,{selected:s.selected,total:s.total}];}));
