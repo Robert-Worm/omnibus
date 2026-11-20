@@ -61,6 +61,7 @@ import AdmittedLawBrowser from './admitted-law-browser';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
 import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
+import CatalogueContent from './catalogue-content';
 
 /** Geraamte van de viewer terwijl het gekozen kader wordt opgebouwd: zelfde indeling, nog zonder inhoud. */
 function ViewerSkeleton({title}:{title:string}){
@@ -679,8 +680,10 @@ function LegacyFoundationWorkspace({
               {current.risk && <><h3>Risico · auditvoorstel</h3><p>{current.risk}</p></>}
               <SourceControlReference material={current} showContext={false} showStatus={false} onRead={()=>showComparison('source',true)} />
               <h3>Vraag aan de gesprekspartner</h3>
+              {/* De vragen van een kader komen apart (B-097); meestal zijn ze in rusttijd al opgehaald. */}
+              <CatalogueContent resource={'questions:'+current.sourceId}>{()=><>
               <p>{currentQuestion?.text || NO_APPROVED_QUESTION}</p>
-              {currentQuestion?.text && !currentQuestion.review.approved && <small>Inhoudelijke beoordeling van deze vraag niet vastgesteld.</small>}
+              {currentQuestion?.text && !currentQuestion.review.approved && <small>Inhoudelijke beoordeling van deze vraag niet vastgesteld.</small>}</>}</CatalogueContent>
               {!current.testDesign && !current.testExistence && !current.testOperation &&
                 <><h3>Toetsing</h3><p>{current.procedure}</p></>}
               {current.testDesign && <><h3>Opzet</h3><p>{current.testDesign}</p></>}

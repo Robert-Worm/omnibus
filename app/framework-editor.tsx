@@ -701,7 +701,6 @@ export default function FrameworkEditor() {
     if(next==='foundation-workspace'){
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
       if(source)keys.push(foundationOverviewKey(source,Boolean(aboutViews.laws||foundationCriterion)));
-      if(source&&(aboutViews.laws||foundationCriterion))keys.push('questions:'+source);
     }
     // Vraagopzet en export tonen de interviewvragen: die komen nu mee (meestal al vooraf opgehaald, B-097).
     if(next==='framework'||next==='export')keys.push(...materialQuestionKeys(draftRef.current));
@@ -1387,7 +1386,7 @@ export default function FrameworkEditor() {
           ) : page === "foundation-workspace" ? (
             <FoundationWorkspace
               prepareSource={(id,action,about)=>withContent([foundationOverviewKey(id,about??aboutViews.laws)],action)}
-              prepareDetails={(id,action)=>withContent(['foundation:'+id,'questions:'+id],action)}
+              prepareDetails={(id,action)=>withContent(['foundation:'+id],action)}
               onSourceShown={prefetchFoundation}
               onSourcesOpened={prefetchOverviews}
               overview={aboutViews.laws?'source':'norms'}
