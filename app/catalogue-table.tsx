@@ -83,6 +83,15 @@ type CatalogueSearch={id:string;label:string;placeholder:string;value:string;onC
  * lijst met dit id, dus wisselen tussen tegels en lijst behoudt de filters. Tegels tonen hele bronnen: een filter met
  * `needsList` (zoals Onderwerp) meldt zich via `onNeedsList`, waarna de catalogus naar de lijst springt.
  */
+/** Eén regel voor filters boven de tegels, in elke catalogus gelijk (B-096): een rij past als ze aan elk gekozen filter
+ * voldoet; staat er een filter aan, dan verdwijnen de tegels en staat de passende inhoud er direct. */
+export function useTileFilters<Row extends {id:string}>(rows:Row[],filters:CatalogueFilter<Row>[]){
+ const [values,setValues]=useState<Record<string,string>>({});
+ const active=filters.filter(filter=>values[filter.key]);
+ const byId=new Map(rows.map(row=>[row.id,row]));
+ const pass=(id:string)=>{if(!active.length)return true;const row=byId.get(id);return Boolean(row)&&active.every(filter=>filter.match?filter.match(row!,values[filter.key]):filter.value(row!).includes(values[filter.key]));};
+ return {values,onFiltersChange:setValues,filtering:active.length>0,pass};
+}
 export function CatalogueFilterBar<Row extends {id:string}>({id,rows,filters,groups,defaultSort='title',search,onFiltersChange,onNeedsList,preset}:{id:string;rows:Row[];filters:CatalogueFilter<Row>[];groups:{key:string}[];defaultSort?:string;search?:CatalogueSearch;onFiltersChange?:(filters:Record<string,string>)=>void;/** Zet filters van buitenaf (bijvoorbeeld bij het wisselen van lijst naar tegels), zoals bij de lijst. */preset?:{token:number;filters:Record<string,string>};/** Een filter dat de lijst vraagt, kreeg een waarde. De catalogus zet die waarde in de lijst en wisselt van weergave. */onNeedsList?:(key:string,value:string)=>void}){
  const [view,setView]=useBrowseState('catalogue-table-'+id,{sort:defaultSort,dir:'asc' as 'asc'|'desc',group:groups[0]?.key||'',filters:{} as Record<string,string>,closed:[] as string[]},'local');
  const presetToken=preset?.token??0,presetDone=useRef(0),presetFilters=useRef(preset?.filters);
@@ -180,7 +189,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
      {!onSelect&&gutter&&<td className="catalogue-table-check" aria-hidden="true"/>}
      <th scope="row" className="catalogue-table-name">{(()=>{const text=describeRow?.(row);return <><button type="button" aria-describedby={text?`${id}-about-${row.id}`:undefined} onClick={()=>onOpen(row.id,activeFilters)}>{row.title}</button>{text&&<span id={`${id}-about-${row.id}`} role="tooltip" className="audience-tip catalogue-name-tip">{text}</span>}</>;})()}<span>{nameMeta(row)}{row.opened&&<em><FolderOpen size={12} aria-hidden="true"/>Geopend</em>}</span></th>
      {columns.map(c=><td key={c.key} data-numeric={c.numeric||undefined} data-column={c.key} title={c.title?.(row)}>{c.render(row)}</td>)}
-     <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.counting?<small>tellen…</small>:row.total?<><span title={row.narrowed}>{row.narrowed&&<Filter size={12} aria-label={row.narrowed} className="catalogue-table-narrowed"/>}<strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
+     <td data-numeric="true" className="catalogue-table-selected" data-some={row.selected>0||undefined}>{row.counting?<small className="catalogue-counting"><span className="loading-spin" aria-hidden="true"/><span className="sr-only">Toetspunten laden</span></small>:row.total?<><span title={row.narrowed}>{row.narrowed&&<Filter size={12} aria-label={row.narrowed} className="catalogue-table-narrowed"/>}<strong>{row.selected}</strong> van {row.total}</span><i aria-hidden="true"><b style={{width:`${Math.round(100*row.selected/row.total)}%`}}/></i></>:<small>–</small>}</td>
      <td className="catalogue-table-open"><Button variant="ghost" tabIndex={-1} aria-hidden="true" onClick={()=>onOpen(row.id,activeFilters)}><ArrowRight size={16}/></Button></td>
     </tr>)}
    </tbody>;})}

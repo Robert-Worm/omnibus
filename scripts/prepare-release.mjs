@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
 import { backupRuntime } from "../local-data/runtime-backup.mjs";
 import { checkRuntimeDatabase } from "./check-runtime-database.mjs";
+import { checkDeliveryBudgetDatabase } from "./check-delivery-budget.mjs";
 
 const MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
 export const datumTekst = (iso) => { const [j, m, d] = iso.split("-").map(Number); return `${d} ${MAANDEN[m - 1]} ${j}`; };
@@ -153,6 +154,9 @@ export async function bereidReleaseVoor({ settings, out, datum, huidig, koppelin
   // Fail before creating output for invalid input. Never zip a live main file:
   // committed data can still reside in its WAL, and a writer can change it later.
   checkRuntimeDatabase(settings);
+  // Leveringsbudget (B-096): geen release die de browser meer laat laden dan de vaste grenzen.
+  const budget = checkDeliveryBudgetDatabase(settings);
+  if (budget.problems.length) throw new Error("Leveringsbudget overschreden:\n- " + budget.problems.join("\n- "));
   mkdirSync(path.dirname(out), { recursive: true });
   const temporary = mkdtempSync(path.join(path.dirname(out), ".omnibus-release-"));
   let database, resultaat;

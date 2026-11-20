@@ -1,6 +1,6 @@
 "use client";
 import {countLabel} from '@/lib/display-count.mjs';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef} from 'react';
 import type {ReactNode} from 'react';
 import {Layers,ListFilter,ArrowRight,ArrowLeft,FolderOpen,Landmark,Users,Monitor,ShieldCheck,Database,Network,HandHeart,Package,BookOpen,Brain,Scale} from 'lucide-react';
 import {Button} from '@/components/ui/button';
@@ -9,7 +9,7 @@ import type {Theme} from './workspace-catalogues';
 import {TermText} from './term-help';
 import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueSelection} from '@/lib/catalogue-selection.mjs';
-import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,CellTip,useCatalogueView,useTileFilters,type CatalogueColumn} from './catalogue-table';
 import {processClasses,processKinds,processClassesOf,processMainClass,processCode} from '@/lib/process-taxonomy.mjs';
 import {organisationsOf,reportOrganisations} from '@/lib/report-organisations.mjs';
 import {SymbolRow} from './audience-icons';
@@ -46,10 +46,8 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
  type ListRow=typeof listRows[number];
  // Dezelfde filters in lijst en tegels (beheerder, 20-11): de tegels hadden alleen een zoekveld.
  const rowFilters=[{key:'group',label:groupLabel,all:'Alle groepen',value:(r:ListRow)=>[r.group]},{key:'kind',label:'Soort proces',all:'Alle',value:(r:ListRow)=>r.classes.map((c:{label:string})=>c.label)}];
- const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
- const activeTile=Object.entries(tileFilters).filter(([,value])=>value);
- const tilePass=(item:View)=>{const row=listRows.find(r=>r.id===item.id);return !activeTile.length||Boolean(row)&&activeTile.every(([key,value])=>rowFilters.find(f=>f.key===key)?.value(row!).includes(value));};
- const tileFiltering=!listMode&&activeTile.length>0;
+ const tiles=useTileFilters(listRows,rowFilters),tilePass=(item:View)=>tiles.pass(item.id);
+ const tileFiltering=!listMode&&tiles.filtering;
  const shownGroups=tileFiltering?groups.map(group=>({...group,children:group.children.filter(tilePass)})).filter(group=>group.children.length):groups;
  const classOrder=Object.values(processClasses as Record<string,{kind:'primair'|'ondersteunend';label:string}>).map(c=>processKinds[c.kind].label.replace(' proces','')+' · '+c.label);
  const strength=(n:number)=>n>=10?4:n>=5?3:n>=2?2:n?1:0;
@@ -85,7 +83,7 @@ export default function DiscoveryCatalogue({views,axis,onAxis,openIds,onOpen,onP
    <button type="button" aria-pressed={area==='processes'} onClick={()=>onAxis('processes')}><ListFilter size={22} aria-hidden="true"/><span><strong>Processen</strong><small>Gericht zoeken</small></span></button>
   </fieldset>
   {guided&&(area==='laws'||area==='frameworks'||area==='models')?<div className="directory-inline-catalogue">{children}</div>:<>
-  {!listMode&&<CatalogueFilterBar id={'discovery2-'+axis} rows={listRows} filters={rowFilters} groups={[{key:'main'}]} onFiltersChange={setTileFilters}
+  {!listMode&&<CatalogueFilterBar id={'discovery2-'+axis} rows={listRows} filters={rowFilters} groups={[{key:'main'}]} onFiltersChange={tiles.onFiltersChange}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}/>}
   {listMode?<CatalogueTable id={'discovery2-'+axis} describe={r=>r.description||null} noun={axis==='themes'?['thema','thema’s']:['proces','processen']} unit={['bouwsteen','bouwstenen']} rows={listRows} columns={listColumns} searching={Boolean(query)} disabled={disabled}
    search={{id:'directory-search',label:axis==='themes'?'Zoek thema of themagroep':'Zoek proces of procesfamilie',placeholder:axis==='themes'?'Zoek thema…':'Zoek proces…',value:query,onChange:value=>onViewChange({query:value,closedSearchGroups:[],limits:{}})}}

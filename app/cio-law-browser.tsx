@@ -255,7 +255,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
     </section>;
    })}</div>
    {/* Zolang de bron nog laadt, zijn er nog geen normen: dan niet "Geen normen gevonden" tonen (testronde 20-11). */}
-   {!groups.length&&!rows.length&&<output className="law-empty law-loading">Normen worden geladen…</output>}
+   {!groups.length&&!rows.length&&<output className="law-empty law-loading"><span className="loading-spin" aria-hidden="true"/> Normen worden geladen…</output>}
    {!groups.length&&rows.length>0&&<section className="law-empty"><h3>Geen normen gevonden</h3><p>Pas je zoekterm of filters aan om de onderdelen van dit kader weer te zien.</p><Button variant="outline" onClick={resetFilters}>Alle normen tonen</Button></section>}
   </>}
   {!embedTopic&&<footer className="law-list-footer"><span>{selection.selected} van {countLabel(selection.total,'toetspunten')} uit dit kader gekozen</span></footer>}

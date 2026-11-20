@@ -40,6 +40,14 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Gebruik `modelContentKeys` voor modelviewers, projectherstel en de exportworker: alleen gevraagde modellen plus gedeelde herstel-/formuleringsgegevens. De build deelt de bestaande publicatie verliesloos op; nieuwe modellen krijgen dezelfde laadroute zonder een handmatige ID-lijst. Houd de volledige laadroute voor agent/offline-lezers intact. Lees canonieke vraagtemplates pas na het laden van het model, niet eenmalig bij module-initialisatie.
 - Controleer nieuwe viewers met een omvangrijke collectie, zoeken naar late items, selectie buiten beeld, herladen en smalle schermen. De gedeelde contracttests staan in `lib/viewer-rendering.test.mjs`.
 
+## Snelheid en levering (B-095, B-096)
+
+- Wat de browser niet leest, gaat niet mee. Nieuwe of herziene Topical-kaders worden verpakt (`npm run content:revise -- --pack`): redactionele voorgeschiedenis en auteurscontext onder een archiefsleutel, overgangen en correcties per bron, aantallen per norm in `pointCounts`.
+- `npm run check:delivery` en `release:prepare` bewaken het leveringsbudget (bij openen, Topical-begin, per bron). Verhoog een grens niet om een release door te laten; verplaats of verpak de gegevens.
+- Inhoud op release en controlegetal is onveranderlijk en mag in de browser worden bewaard; laad nooit alle bronnen van een familie vooraf als een onderwerp er maar een paar nodig heeft.
+- Laden ziet er overal gelijk uit (`loading-bar`, `loading-spin`, de melding onderin) en zegt wat er laadt. Geen losse tekst als "laden…" zonder vorm.
+- Catalogi delen hun gedrag: tegelfilters via `useTileFilters`, en `CatalogueGroups` krijgt altijd `filtered` mee. Een catalogus met een eigen kopie van deze regels faalt in `lib/catalogue-consistency.test.mjs`.
+
 ## Samenwerken met de andere AI-assistent
 
 Claude Opus 5.5 en ChatGPT Astra werken allebei aan Omnibus. Lees bij het begin van een sessie [samenwerking tussen de AI-assistenten](docs/beheer/samenwerking-ai.md) en het vastgezette issue *Overdracht*.

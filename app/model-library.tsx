@@ -14,7 +14,7 @@ import CatalogueCardActions from './catalogue-card-actions';
 import {catalogueDescription} from '@/lib/catalogue-directory.mjs';
 import OpenItemStrip,{OpenWorkspaceEmpty} from './open-item-strip';
 import CatalogueGroups,{CatalogueFamily} from './catalogue-groups';
-import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,CellTip,useCatalogueView,type CatalogueColumn} from './catalogue-table';
+import CatalogueTable,{CatalogueFilterBar,CatalogueViewToggle,CellTip,useCatalogueView,useTileFilters,type CatalogueColumn} from './catalogue-table';
 import {modelOrigin,modelKinds} from '@/lib/model-origins.mjs';
 import {SymbolRow} from './audience-icons';
 import {modelUses,modelUsesOf} from '@/lib/model-uses.mjs';
@@ -90,9 +90,7 @@ export default function ModelLibrary({
   const [processId, setProcessId] = useState("");
   const filtered = subject !== "all" || processId !== "" || selectedOnly;
   // Dezelfde filters (Helpt bij, Soort model) ook bij de tegels, niet alleen in de lijst (beheerder, 20-11).
-  const [tileFilters,setTileFilters]=useState<Record<string,string>>({});
-  const tileActive=Object.entries(tileFilters).filter(([,value])=>value);
-  const showList=Boolean(directoryGroup||query.trim()||filtered||tileActive.length);
+  const showList=()=>Boolean(directoryGroup||query.trim()||filtered||tiles.filtering);
   const setQuery=(modelQuery:string)=>onViewChange({modelQuery});
   const setActive=(id:string|null)=>onViewChange({activeModel:id??'',modelDimension:''});
   const models: ModelDirectoryEntry[] = filterModels(
@@ -106,7 +104,7 @@ export default function ModelLibrary({
     summary:m.summary,origin:modelOrigin(m.id) as null|{authors:string;year:number;kind:string;kindLabel:string;kindDescription:string},uses:modelUsesOf(m.id) as UseId[],items:m.itemCount,questions:m.questionCount,subjects:modelSubjects.filter(g=>g.modelIds.includes(m.id)).map(g=>g.title)}));
   type ListRow=typeof listRows[number];
   const modelFilters=[{key:'subject',label:'Categorie',all:'Alle categorieën',value:(r:ListRow)=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:(r:ListRow)=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:(r:ListRow)=>r.origin?[r.origin.kindLabel]:[]}];
-  const tilePass=(id:string)=>{const row=listRows.find(r=>r.id===id);return !tileActive.length||Boolean(row)&&tileActive.every(([key,value])=>modelFilters.find(f=>f.key===key)?.value(row!).includes(value));};
+  const tiles=useTileFilters(listRows,modelFilters),tilePass=tiles.pass;
   // De aantallen op de tegels volgen dezelfde zoekterm en filters als de lijst (beheerder, 20-11: een tegel telde
   // modellen die na openen niet bleken te passen).
   const tileModels=directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))&&tilePass(m.id));
@@ -149,7 +147,7 @@ export default function ModelLibrary({
       {mode==='workspace'&&<div className="law-view-actions model-view-actions"><nav className="law-overview-tabs" aria-label="Modelweergave"><button aria-pressed={overview==='questions'} onClick={()=>setOverview('questions')}>Vragen</button><button disabled={!current} aria-pressed={overview==='about'&&Boolean(current)} onClick={()=>setOverview('about')}>Over dit model</button></nav></div>}
       {mode==='workspace'&&current&&overview==='about'&&<ModelAbout model={current}/>}
       {mode==='catalogue' && <>
-      {!listMode&&<CatalogueFilterBar id="models" rows={listRows} filters={modelFilters.filter(f=>f.key!=='subject')} groups={[{key:'subject'}]} onFiltersChange={setTileFilters}
+      {!listMode&&<CatalogueFilterBar id="models" rows={listRows} filters={modelFilters.filter(f=>f.key!=='subject')} groups={[{key:'subject'}]} onFiltersChange={tiles.onFiltersChange}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}}/>}
       {listMode&&<CatalogueTable id="models" noun={['model','modellen']} unit={['vraag','vragen']}
         search={{id:'model-search',label:'Zoek model',placeholder:'Zoek model of auteur…',value:query,onChange:setQuery}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={!ready}
@@ -158,17 +156,17 @@ export default function ModelLibrary({
         gutter nameLabel="Model" nameMeta={r=><><span className="catalogue-id" title="Vaste ID van dit model">MOD-{r.id}</span>{r.origin&&<span title="Auteur(s) van het model">{r.origin.authors}</span>}</>} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
-      {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())} filtered={tileActive.length>0}
+      {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())} filtered={tiles.filtering}
         groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:tileModels.filter(m=>g.modelIds.includes(m.id)).length}))}
         onChange={id=>{setSubject(id);setQuery('');setProcessId('');setSelectedOnly(false);}}/>}
-      {showList&&!guided&&!listMode&&filtered&&<p className="creator-help">
+      {showList()&&!guided&&!listMode&&filtered&&<p className="creator-help">
         Zoekfilters beperken de getoonde modellen; onderwerp en proces zijn zoekhulp, geen oordeel over geschiktheid.{' '}
         <Button variant="link" onClick={() => { setSubject("all"); setProcessId(""); setSelectedOnly(false); }}>
           Alle modellen tonen
         </Button>
       </p>}</>}
       <div className="model-library-layout cev-active-layout" hidden={mode==='workspace'&&Boolean(current)&&overview==='about'}>
-        {mode==='catalogue'&&showList&&!listMode&&<CatalogueFamily noun="modellen" groupId={subject} title={modelSubjects.find(g=>g.id===subject)?.title||'Wetenschappelijke modellen'}><div className="model-catalogue">
+        {mode==='catalogue'&&showList()&&!listMode&&<CatalogueFamily noun="modellen" groupId={subject} title={modelSubjects.find(g=>g.id===subject)?.title||'Wetenschappelijke modellen'}><div className="model-catalogue">
           {models.filter(m=>tilePass(m.id)).map((m) => (
             <article key={m.id} className="model-catalogue-row" data-open={openIds.includes(m.id)}>
               <div className="directory-child-body">

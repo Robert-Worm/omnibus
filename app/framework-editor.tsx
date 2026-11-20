@@ -161,10 +161,20 @@ export default function FrameworkEditor() {
   const contentAction=useRef<null|(()=>void)>(null);
   const contentRequest=useRef(0);
   useEffect(()=>onCatalogueChange(()=>setCatalogueSnapshot({revision:catalogueRevision(),framework:baseFramework,workspaces,pointCatalogue:reportPointCatalogue,discoveryViews,legacyThemes})),[]);
+  // Zeg wat er laadt (bron, rapport, model) in plaats van een algemeen "onderdeel" (B-096).
+  function loadingMessage(keys:string[]){
+    const kinds=new Set(keys.map(key=>key.split(':')[0]));
+    const sources=keys.filter(key=>/^(foundation|foundation-overview|source):/.test(key)).length;
+    const what=kinds.size>1?'De gegevens worden geladen':
+      sources?(sources>1?`${sources} bronnen worden geladen`:'De bron wordt geladen'):
+      [...kinds].some(kind=>kind.startsWith('report')||kind==='overview')?(keys.length>1?`${keys.length} rapporten worden geladen`:'Het rapport wordt geladen'):
+      [...kinds].some(kind=>kind.startsWith('model'))?'De modellen worden geladen':'De gegevens worden geladen';
+    return what+'… Je onderzoek en selecties blijven behouden.';
+  }
   function withContent(keys:string[], action:()=>void) {
     const request=++contentRequest.current;
     if(catalogueReady(keys)){setContentNotice('');setContentFailure(false);action();return;}
-    setContentNotice('Onderdeel laden… Je onderzoek en selecties blijven behouden.');setContentFailure(false);
+    setContentNotice(loadingMessage(keys));setContentFailure(false);
     contentAction.current=()=>withContent(keys,action);
     void ensureCatalogue(keys).then(()=>{
       if(request!==contentRequest.current)return;
@@ -1188,7 +1198,7 @@ export default function FrameworkEditor() {
         {/* Na herladen toont de pagina pas iets als het opgeslagen project open is: geen lege route, geen knoppen die daarna worden teruggedraaid (testronde 19-11, B5). */}
         <main id="main-workspace" tabIndex={-1} data-viewer={['foundation-workspace','model-workspace','topics'].includes(page)}
           data-opening={!loaded&&page!=='entry'?'':undefined} aria-busy={!loaded&&page!=='entry'?true:undefined} inert={!loaded&&page!=='entry'}>
-          {!loaded&&page!=='entry'&&<output className="project-opening">Je project wordt geopend…</output>}
+          {!loaded&&page!=='entry'&&<output className="project-opening"><span className="loading-bar" aria-hidden="true"/>Je project wordt geopend…</output>}
           {contentNotice&&<div className={contentFailure?'project-notice':'project-notice is-loading'} role={contentFailure?'alert':'status'}>
             <p>{contentNotice}</p>{contentFailure&&<Button variant="outline" onClick={()=>contentAction.current?.()}>Opnieuw proberen</Button>}
           </div>}

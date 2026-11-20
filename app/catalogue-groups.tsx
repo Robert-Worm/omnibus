@@ -13,7 +13,7 @@ export function CatalogueFamily({title,groupId,noun,children,action}:{title:stri
  return <section className="directory-family catalogue-family"><header className="directory-family-heading" data-action={action?true:undefined}><h3><span className="directory-family-title"><Icon size={20} aria-hidden="true"/>{title}</span></h3>{action&&<div className="catalogue-family-action">{action}</div>}{description&&<p>{description}</p>}</header><div className="directory-children">{children}</div></section>;
 }
 // Navigation only: selecting a category must never select criteria or model questions.
-export default function CatalogueGroups({groups,value,onChange,noun,searching=false,compact=false,query='',hideTitle=false,filtered=false}:{/** Er staat een filter aan: de bronnen staan er direct, zonder de tussenstap van categorieën. */filtered?:boolean;groups:Group[];value:string;onChange:(id:string)=>void;noun:string;searching?:boolean;compact?:boolean;query?:string;hideTitle?:boolean}){
+export default function CatalogueGroups({groups,value,onChange,noun,searching=false,compact=false,query='',hideTitle=false,filtered}:{/** Verplicht (B-096): staat er een filter aan, dan verdwijnen de tegels en staat de inhoud er direct, in elke catalogus gelijk. */filtered:boolean;groups:Group[];value:string;onChange:(id:string)=>void;noun:string;searching?:boolean;compact?:boolean;query?:string;hideTitle?:boolean}){
  const root=useRef<HTMLDivElement>(null),focus=useRef('');
  const cards:Group[]=filtered?[]:compact&&searching?searchCatalogueGroups(groups,noun,query):!value&&!searching?groups:[];
  const change=(next:string)=>{focus.current=next?'heading':value||'first';onChange(next);};
