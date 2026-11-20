@@ -80,7 +80,7 @@ function prepare(options) {
       type: 'text/javascript', cache: 'private, max-age=86400', encoding: 'gzip',
       digest: receipt.files[bundle].sha256},
     {id: 'approved-resource', path: content(options['approved-resource']), status: 200,
-      digest: options['approved-resource']},
+      cache: 'private, max-age=31536000, immutable', digest: options['approved-resource']},
     {id: 'other-release-denied', path: `/api/v1/content/${options['approved-resource']}?release=${otherRelease}`, status: 404},
     {id: 'excluded-resource-denied', path: content(options['excluded-resource']), status: 404},
     ...[

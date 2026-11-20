@@ -225,7 +225,7 @@ function sampleResponses(f) {
       headers: {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Content-Security-Policy': staticCsp}},
     {body: gzipSync(bundleBody), headers: {'Content-Type': 'text/javascript; charset=utf-8', 'Content-Encoding': 'gzip',
       'Cache-Control': 'private, max-age=86400', 'Content-Security-Policy': staticCsp}},
-    {body: JSON.stringify({label: 'Synthetic test only'})},
+    {body: JSON.stringify({label: 'Synthetic test only'}), headers: {'Cache-Control': 'private, max-age=31536000, immutable'}},
     {body: JSON.stringify({error: 'Not found'}), status: 404},
     {body: JSON.stringify({error: 'Not found'}), status: 404},
   ];
