@@ -56,7 +56,8 @@ export function prepareTopicalRevision(hydrated, requestRaw, reviewRaw) {
   const before = structuredClone({packages: relevant, textRevisions: existing});
   applyTopicalTextRevisions(before, sha256);
   const working = structuredClone(before), reviewSha256 = sha256(reviewRaw);
-  const edits = existing.edits.map(edit => ({...edit}));
+  const reasonText = reason => typeof reason === 'number' ? existing.reasons[reason] : reason;
+  const edits = existing.edits.map(edit => ({...edit, reason: reasonText(edit.reason)}));
   for (const item of request.items) {
     const edit = {batch: request.edition, sourceId: item.sourceId, collection: item.collection, ...(item.id === undefined ? {} : {id: item.id}), field: item.field,
       before: '', after: '', ...(Object.hasOwn(item, 'value') ? {value: item.value} : {replace: item.replace}), reason: item.reason};
@@ -92,7 +93,10 @@ export function prepareTopicalRevision(hydrated, requestRaw, reviewRaw) {
       review: {decision: 'ACCEPT', basisSha256: reviewSha256, reviewer: extra.reviewer ?? reviewer}});
     transitions.push(accept({previousTraceHash: was.full, currentTraceHash: row.full, previousCompactTraceHash: was.compact, currentCompactTraceHash: row.compact}));
   }
-  const textRevisions = {format: TOPICAL_TEXT_REVISION_FORMAT,
+  // Elke reden één keer bewaren: bij duizenden gelijke correcties scheelt dat veel in de geladen gegevens.
+  const reasons = [...new Set(edits.map(edit => edit.reason))];
+  for (const edit of edits) edit.reason = reasons.indexOf(edit.reason);
+  const textRevisions = {format: TOPICAL_TEXT_REVISION_FORMAT, reasons,
     batches: [...existing.batches, {id: request.edition, date: review.date, reviewer, reviewSha256, requestSha256: review.requestSha256, humanValidation: false,
       summary: String(request.summary || '').trim() || `${request.items.length} correcties`}],
     edits, transitions};
