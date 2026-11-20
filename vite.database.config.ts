@@ -27,6 +27,8 @@ export default defineConfig({
     publication:process.env.OMNIBUS_RUNTIME_PUBLICATION,databasePath:process.env.OMNIBUS_DATABASE_PATH,
     emitManifest:false,deferMetadata:true,runtimeTarget:portable?'portable-local':'local-preview'})]},
   css: { postcss: { plugins: [tailwindcss()] } },
-  build: { outDir: candidateOutput || (portable ? 'runtime-build' : 'database-build'), emptyOutDir: !candidateOutput, sourcemap: false,
+  build: { outDir: candidateOutput || (portable ? 'runtime-build' : 'database-build'), emptyOutDir: !candidateOutput,
+    // Alleen voor meten (OMNIBUS_PROFILE=1): leesbare namen in een prestatieprofiel. Nooit in een release.
+    sourcemap: process.env.OMNIBUS_PROFILE === '1', minify: process.env.OMNIBUS_PROFILE !== '1',
     rolldownOptions: { input: fileURLToPath(new URL('./database.html', import.meta.url)) } },
 });
