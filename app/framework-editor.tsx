@@ -169,7 +169,7 @@ export default function FrameworkEditor() {
       sources?(sources>1?`${sources} bronnen worden geladen`:'De bron wordt geladen'):
       [...kinds].some(kind=>kind.startsWith('report')||kind==='overview')?(keys.length>1?`${keys.length} rapporten worden geladen`:'Het rapport wordt geladen'):
       [...kinds].some(kind=>kind.startsWith('model'))?'De modellen worden geladen':'De gegevens worden geladen';
-    return what+'… Je onderzoek en selecties blijven behouden.';
+    return what+'…';
   }
   function withContent(keys:string[], action:()=>void) {
     const request=++contentRequest.current;
