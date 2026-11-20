@@ -272,10 +272,10 @@ export default function FrameworkEditor() {
   const combinedView = browseMode.combined && workspace.openIds.length > 1;
   // Een thema of proces telt alleen bouwstenen die je echt kunt kiezen. Een paar oudere verwijzingen staan niet (meer) in het
   // kader; telden die mee, dan werd een thema nooit 'helemaal gekozen' en bleef het vinkje hangen (beheerder, 20-11).
-  const frameworkLineIds = useMemo(()=>new Set<string>(catalogueSnapshot.framework.lines.map((line:{id:string})=>line.id)),[catalogueSnapshot]);
-  const selectableViews = useMemo(()=>collectionViews(catalogueSnapshot.discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)
-    .map(view=>({...view,lineIds:view.lineIds.filter((id:string)=>frameworkLineIds.has(id))})).filter(view=>view.lineIds.length>0),
-    [catalogueSnapshot.discoveryViews,frameworkLineIds,collections.mode]);
+  const [missingLines,setMissingLines]=useState<Set<string>>(()=>new Set());
+  // Geen useMemo: de lijst met thema's wordt op zijn plaats gevuld zodra de catalogus er is (zelfde array), net als voorheen.
+  const selectableViews = collectionViews(discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)
+    .map(view=>({...view,lineIds:missingLines.size?view.lineIds.filter((id:string)=>!missingLines.has(id)):view.lineIds})).filter(view=>view.lineIds.length>0);
   const browseThemes = useMemo(()=>collectionViews(catalogueSnapshot.workspaces,availableCollections,collections.mode,catalogueRouting.reports).filter((t) =>
     combinedView ? workspace.openIds.includes(t.id) : t.id === workspace.activeId,
   ),[combinedView,workspace,catalogueSnapshot,collections.mode]);
@@ -1315,7 +1315,12 @@ export default function FrameworkEditor() {
             <>
             <DiscoveryCatalogue reports={catalogueSnapshot.framework.reports??[]} views={selectableViews}
               onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map(reportOverviewKey));}}
-              included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
+              included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>{
+                commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft);
+                // Een paar oudere verwijzingen vallen bij het bewaren af (ze horen niet meer bij het kader). Wat na kiezen niet
+                // gekozen staat, telt voortaan niet mee; anders wordt het thema nooit 'helemaal gekozen' en blijft het vinkje hangen.
+                if(include)setTimeout(()=>{const chosen=new Set(draftRef.current.included),missing=ids.filter(id=>!chosen.has(id));
+                  if(missing.length)setMissingLines(previous=>new Set([...previous,...missing]));},0);})}
               guided={page==='risk-start'}
               area={page==='risk-start'?riskArea:undefined}
               onSources={()=>chooseRiskArea('laws')} onFrameworks={()=>chooseRiskArea('frameworks')} onModels={()=>chooseRiskArea('models')}
