@@ -86,6 +86,15 @@ type SubSuggestion = {key:string;text:string;ids:string[];label?:string;scopeNot
 function QuestionBranch({questions,renderQuestion}:{questions:ResearchQuestion[];renderQuestion:(question:ResearchQuestion)=>React.ReactNode}) {
   return <>{questions.map(renderQuestion)}</>;
 }
+type ComposerSnapshot={direction:string;chosenTopic:string;chosenModelId:string;chosenProposalKey:string;ownCentral:boolean;startRoute:'choice'|'own'|'suggested';
+ subject:string;ownSubs:string[];centralTarget:string|null;modelMode:string;chosenSubKeys:string[];subquestionDetail:'broad'|'specific';
+ subFormulations:Record<string,{base:string;text:string}>;choosing:boolean;firstChoice:string|null;firstOrigin:'user'|'suggested'};
+const COMPOSER_KEY='rijksmap-vraagopzet-v1';
+function readComposer():ComposerSnapshot|null{try{const raw=typeof window==='undefined'?null:window.sessionStorage.getItem(COMPOSER_KEY);
+ const value=raw?JSON.parse(raw):null;return value&&typeof value==='object'&&typeof value.startRoute==='string'?value as ComposerSnapshot:null;}catch{return null;}}
+/** Een nieuw of ander project begint zonder vraagopzet in wording. */
+export function forgetComposer(){writeComposer(null);}
+function writeComposer(value:ComposerSnapshot|null){try{if(value)window.sessionStorage.setItem(COMPOSER_KEY,JSON.stringify(value));else window.sessionStorage.removeItem(COMPOSER_KEY);}catch{/* opslag niet beschikbaar: alleen F5-herstel valt weg */}}
 export default function ResearchBuilder({
   framework,
   draft,
@@ -116,24 +125,27 @@ export default function ResearchBuilder({
   const numbers = questionNumbers(draft);
   const questionLinks = questionLinkSummary(draft);
   const roots = r.questions.filter((q) => q.parent_id === null);
-  const [direction, setDirection] = useState(draft.investigation?.goal?.direction || "");
-  const [chosenTopic, setChosenTopic] = useState("");
-  const [chosenModelId, setChosenModelId] = useState("");
-  const [chosenProposalKey, setChosenProposalKey] = useState("");
-  const [ownCentral,setOwnCentral]=useState(false);
-  const [startRoute,setStartRoute]=useState<'choice'|'own'|'suggested'>('choice');
+  // Een vraagopzet in wording overleeft F5 en herladen in hetzelfde tabblad (testronde 20-11, B3). Pas na "Gebruik deze
+  // opzet" of "Terug naar mijn vragen" staat ze in het project; tot die tijd bewaart het tabblad haar.
+  const [saved]=useState(readComposer);
+  const [direction, setDirection] = useState(saved?.direction ?? (draft.investigation?.goal?.direction || ""));
+  const [chosenTopic, setChosenTopic] = useState(saved?.chosenTopic ?? "");
+  const [chosenModelId, setChosenModelId] = useState(saved?.chosenModelId ?? "");
+  const [chosenProposalKey, setChosenProposalKey] = useState(saved?.chosenProposalKey ?? "");
+  const [ownCentral,setOwnCentral]=useState(saved?.ownCentral ?? false);
+  const [startRoute,setStartRoute]=useState<'choice'|'own'|'suggested'>(saved?.startRoute ?? 'choice');
   const [alternatives,setAlternatives]=useState(false);
-  const [subject,setSubject]=useState(draft.investigation?.goal?.subject || '');
-  const [ownSubs,setOwnSubs]=useState<string[]>([]);
+  const [subject,setSubject]=useState(saved?.subject ?? (draft.investigation?.goal?.subject || ''));
+  const [ownSubs,setOwnSubs]=useState<string[]>(saved?.ownSubs ?? []);
   const [directPlanIds,setDirectPlanIds]=useState<string[]>([]);
   const ownText=useRef('');
   const ownSubject=useRef(draft.investigation?.goal?.subject || '');
-  const [centralTarget, setCentralTarget] = useState<string | null>(null);
-  const [modelMode, setModelMode] = useState("dimensions");
-  const [chosenSubKeys, setChosenSubKeys] = useState<string[]>([]);
-  const [subquestionDetail,setSubquestionDetail]=useState<'broad'|'specific'>('specific');
-  const [subFormulations,setSubFormulations]=useState<Record<string,{base:string;text:string}>>({});
-  const [choosing, setChoosing] = useState(false);
+  const [centralTarget, setCentralTarget] = useState<string | null>(saved?.centralTarget && r.questions.some(q=>q.id===saved.centralTarget)?saved.centralTarget:null);
+  const [modelMode, setModelMode] = useState(saved?.modelMode ?? "dimensions");
+  const [chosenSubKeys, setChosenSubKeys] = useState<string[]>(saved?.chosenSubKeys ?? []);
+  const [subquestionDetail,setSubquestionDetail]=useState<'broad'|'specific'>(saved?.subquestionDetail ?? 'specific');
+  const [subFormulations,setSubFormulations]=useState<Record<string,{base:string;text:string}>>(saved?.subFormulations ?? {});
+  const [choosing, setChoosing] = useState(saved?.choosing ?? false);
   const composerVisible = !roots.length || choosing;
   const proposalContext = useMemo(()=>({themeIds,framework,models,direction}),[themeIds,framework,models,direction]);
   // Closed question setup has no proposal UI. Do not re-validate and rank every
@@ -165,7 +177,7 @@ export default function ResearchBuilder({
   const freeSuggestionCount = (ids: string[]) => ids.filter(id=>!(draft.research?.links||[]).some(link=>link.line_id===id)).length;
   const applySubQuestionWording = (d: Draft, id: string, key: string) => applyProposalWording(d, id, key, proposalContext);
   const [proposalQuery, setProposalQuery] = useState("");
-  const [firstChoice, setFirstText] = useState<string | null>("");
+  const [firstChoice, setFirstText] = useState<string | null>(saved?.firstChoice ?? "");
   // Empty is a deliberate choice, including after clearing and reloading.
   // Suggestions become input only after the auditor explicitly picks one.
   const firstText = firstChoice ?? "";
@@ -195,7 +207,11 @@ export default function ResearchBuilder({
       (!selectedModelId || q.modelId === selectedModelId) &&
       q.text.trim().toLocaleLowerCase("nl") === firstText.trim().toLocaleLowerCase("nl"),
   );
-  const [firstOrigin, setFirstOrigin] = useState<"user" | "suggested">("suggested");
+  const [firstOrigin, setFirstOrigin] = useState<"user" | "suggested">(saved?.firstOrigin ?? "suggested");
+  // Bewaar de opzet in wording zolang er iets te verliezen is; daarna weg.
+  useEffect(()=>{writeComposer(composerVisible&&(startRoute!=='choice'||chosenProposalKey||firstText.trim()||ownSubs.some(t=>t.trim()))?
+    {direction,chosenTopic,chosenModelId,chosenProposalKey,ownCentral,startRoute,subject,ownSubs,centralTarget,modelMode,chosenSubKeys,subquestionDetail,subFormulations,choosing,firstChoice,firstOrigin}:null);},
+    [composerVisible,direction,chosenTopic,chosenModelId,chosenProposalKey,ownCentral,startRoute,subject,ownSubs,centralTarget,modelMode,chosenSubKeys,subquestionDetail,subFormulations,choosing,firstChoice,firstOrigin,firstText]);
   const [showInterviewText, setShowInterviewText] = useState(false);
   const goalDirection=draft.investigation?.goal?.direction || '';
   const goalSubject=draft.investigation?.goal?.subject || '';

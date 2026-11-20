@@ -62,6 +62,8 @@ import {expandProject} from '@/lib/project-codec.mjs';
 import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue} from '@/lib/catalogue-runtime.mjs';
+import {syncTopicQuestions} from '@/lib/topic-question-sync.mjs';
+import {forgetComposer} from './research-builder';
 import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
 import {reportContentKeys} from '@/lib/report-loading.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
@@ -738,6 +740,9 @@ export default function FrameworkEditor() {
     const cleaned = cleanScopeDraft(prepared.framework, next);
     next = cleaned.draft;
     if(track && autoLink)next=linkNewSelections(draftRef.current,next) as Draft;
+    // Haal je een onderwerp helemaal weg, dan gaan de vragen over dat onderwerp ook weg (beheerder, 20-11).
+    if(track){const synced=syncTopicQuestions(draftRef.current,next);next=synced.draft as Draft;
+      if(synced.removed.length)setResetNotice(`${synced.removed.join(' en ')} ${synced.removed.length===1?'staat':'staan'} niet meer in je selectie; de vragen daarover zijn uit je vraagopzet gehaald.`);}
     if (cleaned.removed.length)
       setScopeNotice(
         cleaned.removed.map(normId).join(", ") +
@@ -801,6 +806,7 @@ export default function FrameworkEditor() {
   function startNewProject() {
     if(!loaded || !modelsReady)return;
     const empty=newProject(baseFramework) as Project;
+    forgetComposer();
     rememberProject('Nieuw project starten');
     // Een echte nieuwe start: ook filters, zoektermen en het gekozen onderwerp van het vorige project gaan weg.
     for(const storage of [()=>sessionStorage,()=>localStorage])try { clearProjectBrowsePreferences(storage()); } catch { /* Optional browse preferences. */ }
@@ -834,6 +840,7 @@ export default function FrameworkEditor() {
       const accepted=acceptProjectFile(opened,()=>{
         const store=storeRef.current ?? guardedProjectStore(localStorage);
         const stored=store.acceptProject(opened,originalText,{replace:true,preservePrevious:Boolean(recoveryOriginal)});
+        forgetComposer();
         storeRef.current=store;
         return stored;
       });
