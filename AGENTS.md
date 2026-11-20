@@ -50,6 +50,13 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Laden ziet er overal gelijk uit (`loading-bar`, `loading-spin`, de melding onderin) en zegt wat er laadt. Geen losse tekst als "laden…" zonder vorm.
 - Catalogi delen hun gedrag: tegelfilters via `useTileFilters`, en `CatalogueGroups` krijgt altijd `filtered` mee. Een catalogus met een eigen kopie van deze regels faalt in `lib/catalogue-consistency.test.mjs`.
 
+## Stevigheid bij gebruik
+
+- Een knop die alles kiest of deselecteert begint met `isRepeatClick(event)` (`app/single-activation.ts`): een dubbelklik schakelt één keer. De contracttest in `lib/catalogue-consistency.test.mjs` vindt elke nieuwe knop met Kies alle / Selecteer alle / Deselecteer zonder die controle.
+- Laden houdt rekening met een drukke server: 503 en 429 krijgen een paar nieuwe pogingen met de wachttijd uit `Retry-After` (`lib/database-source-client.mjs`). Andere fouten worden niet herhaald.
+- De gebruiker ziet nooit een browsertekst als "Failed to fetch": netwerkfouten worden een Nederlandse melding met "Opnieuw proberen", en een mislukte lading laat geen wiel draaien.
+- Na een wijziging aan laden, selecteren of navigatie: `npm run hunt:bugs -- --url <lokale server> --seeds 1,2,3 --deep --memory` (willekeurige, herhaalbare klik- en typrondes plus een geheugenronde; vraagt Playwright op de machine, zie de kop van `scripts/bug-hunt.mjs`). Nul bevindingen en een vlak geheugen na de eerste ronde zijn de norm.
+
 ## Samenwerken met de andere AI-assistent
 
 Claude Opus 5.5 en ChatGPT Astra werken allebei aan Omnibus. Lees bij het begin van een sessie [samenwerking tussen de AI-assistenten](docs/beheer/samenwerking-ai.md) en het vastgezette issue *Overdracht*.

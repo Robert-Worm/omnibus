@@ -74,7 +74,8 @@
     "check:kaderuitleg": "node scripts/check-kader-rubrieken.mjs",
     "content:correct": "node scripts/content-correction.mjs",
     "content:revise": "node scripts/topical-revision.mjs",
-    "check:delivery": "node scripts/check-delivery-budget.mjs"
+    "check:delivery": "node scripts/check-delivery-budget.mjs",
+    "hunt:bugs": "node scripts/bug-hunt.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
