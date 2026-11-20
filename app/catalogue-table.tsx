@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/select';
 import {useBrowseState} from './browse-state';
+import SearchInput from './search-input';
 
 export type CatalogueColumn<Row>={key:string;label:string;numeric?:boolean;width?:string;/** Kolom vervalt als de lijst op deze sleutel is gegroepeerd: de groepskop zegt het dan al. */groupKey?:string;/** Kolom vervalt als de tabel smaller is dan dit aantal pixels. */hideBelow?:number;sort?:(row:Row)=>string|number;render:(row:Row)=>ReactNode;title?:(row:Row)=>string};
 /** Wat een vervolgfilter van de lijst weet: de rijen die na de andere filters en het zoeken in beeld zijn, en of er
@@ -102,7 +103,7 @@ export function CatalogueFilterBar<Row extends {id:string}>({id,rows,filters,gro
  useEffect(()=>{report.current=onFiltersChange;});
  useEffect(()=>{report.current?.(JSON.parse(filterKey));},[filterKey]);
  return <div className="catalogue-table catalogue-filter-bar"><div className="catalogue-table-frame"><div className="catalogue-table-tools">
-  {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
+  {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><SearchInput id={search.id} label={search.label} placeholder={search.placeholder} value={search.value} onChange={search.onChange}/></div>}
   {/* Een filter dat de lijst vraagt (Onderwerp): kiezen opent de lijst. Kom je met zo'n filter uit de lijst, dan blijft het
       hier staan en tonen de tegels de bronnen ervan; uitzetten kan hier ook (B-081). */}
   <FilterControls filters={filters} rows={rows} values={view.filters} group={view.group} search={search}
@@ -158,7 +159,7 @@ export default function CatalogueTable<Row extends CatalogueRowBase>({id,noun,un
  return <section className="catalogue-table" aria-label={`Lijst van ${noun[1]}`} ref={box}>
   <div className="catalogue-table-frame">
   <div className="catalogue-table-tools">
-   {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><input id={search.id} type="search" aria-label={search.label} placeholder={search.placeholder} value={search.value} maxLength={500} onChange={e=>search.onChange(e.target.value)}/></div>}
+   {search&&<div className="catalogue-table-search"><Search size={15} aria-hidden="true"/><SearchInput id={search.id} label={search.label} placeholder={search.placeholder} value={search.value} onChange={search.onChange}/></div>}
    <FilterControls filters={filters} rows={rows} values={view.filters} group={view.group} search={search} onFilter={setFilter} onClear={()=>{setView(v=>({...v,filters:{}}));if(search?.value)search.onChange('');}}/>
    {groups.length>0&&<div className="catalogue-table-grouping">
     <ToolSelect label="Groeperen op:" value={view.group} onChange={value=>setView(v=>({...v,group:value,sort:allColumns.some(c=>c.key===v.sort&&c.groupKey===value)?defaultSort:v.sort}))} options={[...groups.map(g=>({value:g.key,label:g.label})),{value:'',label:'Niet groeperen'}]}/>
