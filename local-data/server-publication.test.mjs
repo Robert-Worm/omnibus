@@ -160,7 +160,8 @@ test('batched reads retain exact pinned sources, transport controls and unchange
   assert.equal(response.headers.get('content-encoding'),'br');
   assert.equal(response.headers.get('vary'),'Accept-Encoding');
   await response.arrayBuffer();
-  assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('x-content-type-options'),'nosniff');
+  // Inhoud op release en controlegetal verandert nooit: de browser mag haar bewaren.
+  assert.equal(response.headers.get('cache-control'),'private, max-age=31536000, immutable');assert.equal(response.headers.get('x-content-type-options'),'nosniff');
   assert.equal((await fetch(app.url+calls[0],{method:'POST'})).status,405);
   assert.equal((await fetch(app.url+calls[0],{headers:{Origin:'https://example.invalid'}})).status,403);
   assert.equal((await fetch(app.url+calls[0],{headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);

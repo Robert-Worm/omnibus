@@ -6,6 +6,9 @@ import {CatalogueRepository} from './repository.mjs';
 import {createStaticWeb} from './static-web.mjs';
 import {webResource,webResourceBatchPayload,WebResourceIntegrityError} from './web-resources.mjs';
 import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
+// Inhoud op release en controlegetal verandert nooit; de browser mag haar bewaren (alleen voor deze gebruiker).
+// Een tweede bezoek of het opnieuw openen van een onderwerp haalt zo niets opnieuw op.
+const IMMUTABLE='private, max-age=31536000, immutable';
 import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
@@ -209,11 +212,12 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     if(readScope&&hashes.some(hash=>!readScope.allows('/api/v1/content/'+hash)))
       return reply(404,{error:'Not found'});
     const payload=webResourceBatchPayload(repository,release,hashes);
+    if(payload!==null)res.setHeader('Cache-Control',IMMUTABLE);
     return payload===null?reply(404,{error:'Not found'}):replyJson(200,payload);
    }
    if((match=u.pathname.match(/^\/api\/v1\/content\/([a-f0-9]{64})$/))){
     if(!/^[a-f0-9]{64}$/.test(release||''))return reply(400,{error:'Explicit release required'});
-    const value=webResource(repository,release,match[1]);return reply(value?200:404,value||{error:'Not found'});
+    const value=webResource(repository,release,match[1]);if(value)res.setHeader('Cache-Control',IMMUTABLE);return reply(value?200:404,value||{error:'Not found'});
    }
    if(u.pathname==='/api/v1/releases')return reply(200,repository.releases({limit,offset}).map(r=>({id:r.id,baselineVersion:r.manifest.baselineVersion,counts:r.manifest.counts})));
    if(u.pathname==='/api/v1/catalogue'){

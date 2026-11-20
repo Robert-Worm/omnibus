@@ -59,6 +59,8 @@ Voor de eigen teksten van Omnibus in een beoordeeld bronpakket (normtekst, toets
    npm run content:revise -- --settings <map>/local-build.json --request <verzoek.json> --review <review.json> --out <nieuwe map>
    ```
 
+Bij `--out` verpakt het hulpmiddel de kaders ook opnieuw voor de browser ([B-095](besluiten.md#b-095)). Alleen herverpakken, zonder correcties, kan met `npm run content:revise -- --settings <map>/local-build.json --pack --out <nieuwe map>`.
+
 Het hulpmiddel weigert als een correctie niet op de huidige tekst past, als de review bij een andere versie van het verzoek hoort of als een correctie niet is aanvaard. Het rekent per gewijzigd toetspunt de beoordeelde overgang uit. De nieuwe map krijgt `catalogue.sqlite`, `local-build.json` en `revision-receipt.json`.
 
 ## Samengevat
