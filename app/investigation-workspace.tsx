@@ -672,7 +672,7 @@ export function FoundationCatalogue({
       {/* Tegels: zoekbalk en tegels vormen één paneel, zoals de lijst (B-081). */}
       {!listMode&&<div className="catalogue-tiles-body">
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="bronnen" value={directoryGroup} searching={Boolean(query.trim())} filtered={tileActive.length>0}
-        groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).length}))}
+        groups={Object.entries(sourceDomains).map(([id,d])=>({id,title:d.title,count:filterSources(scopedSources,{domain:id}).filter(tilePass).length}))}
         onChange={id=>{setDomain(id);setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');}}/>}
       {!listMode&&showList&&<>
       {topicBar(filtered)}

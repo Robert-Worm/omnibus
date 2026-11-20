@@ -107,6 +107,9 @@ export default function ModelLibrary({
   type ListRow=typeof listRows[number];
   const modelFilters=[{key:'subject',label:'Categorie',all:'Alle categorieën',value:(r:ListRow)=>r.subjects},{key:'uses',label:'Helpt bij',all:'Alle',value:(r:ListRow)=>r.uses.map(u=>modelUses[u].label)},{key:'kind',label:'Soort model',all:'Alle',value:(r:ListRow)=>r.origin?[r.origin.kindLabel]:[]}];
   const tilePass=(id:string)=>{const row=listRows.find(r=>r.id===id);return !tileActive.length||Boolean(row)&&tileActive.every(([key,value])=>modelFilters.find(f=>f.key===key)?.value(row!).includes(value));};
+  // De aantallen op de tegels volgen dezelfde zoekterm en filters als de lijst (beheerder, 20-11: een tegel telde
+  // modellen die na openen niet bleken te passen).
+  const tileModels=directory.filter(m=>(m.searchText.includes(query.trim().toLowerCase())||codeMatches('MOD-'+m.id,query))&&tilePass(m.id));
   const listColumns:CatalogueColumn<ListRow>[]=[
     {key:'subject',label:'Categorie',width:'14%',groupKey:'subject',sort:r=>r.subjects[0]||'',render:r=>r.subjects.length?r.subjects.join(', '):<small>–</small>},
     {key:'kind',label:'Soort model',width:'9.5rem',groupKey:'kind',sort:r=>r.origin?.kindLabel||'zzz',render:r=>r.origin?<CellTip plain label={r.origin.kindLabel+': '+r.origin.kindDescription} tip={<><strong>{r.origin.kindLabel}</strong><span>{r.origin.kindDescription}</span></>}><span className="catalogue-pill" data-tone={r.origin.kind}>{r.origin.kindLabel}</span></CellTip>:<small>–</small>},
@@ -156,7 +159,7 @@ export default function ModelLibrary({
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
       {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}
-        groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:directory.filter(m=>g.modelIds.includes(m.id)).length}))}
+        groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:tileModels.filter(m=>g.modelIds.includes(m.id)).length}))}
         onChange={id=>{setSubject(id);setQuery('');setProcessId('');setSelectedOnly(false);}}/>}
       {showList&&!guided&&!listMode&&filtered&&<p className="creator-help">
         Zoekfilters beperken de getoonde modellen; onderwerp en proces zijn zoekhulp, geen oordeel over geschiktheid.{' '}
@@ -182,6 +185,7 @@ export default function ModelLibrary({
               <CatalogueCardActions layout="buttons" openId={'model-open-'+m.id} title={m.title} opened={openIds.includes(m.id)} disabled={!ready} onOpen={()=>openModel(m.id)} onToggle={value=>value?onOpenModel(m.id):onCloseModel(m.id)}/>
             </article>
           ))}
+          {models.length>0&&!models.some(m=>tilePass(m.id))&&<p>Geen model past bij de gekozen filters. Wis een filter om meer modellen te zien.</p>}
           {!models.length && <p>{selectedOnly && !directory.some((m) => m.selected)
             ? 'Nog geen model gekozen. Zet het filter uit om alle modellen te zien.'
             : filtered
