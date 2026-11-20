@@ -150,6 +150,9 @@ const restoreOptions = {
   themes:workspaces,
 };
 
+/** De interviewvragen van de bronnen in het project (alleen kaders leveren ze apart; elders is de sleutel leeg). */
+const materialQuestionKeys=(value:{investigation?:{materials?:{foundationId?:string}[]}}):string[]=>
+  [...new Set((value.investigation?.materials??[]).map(m=>m.foundationId).filter((id):id is string=>Boolean(id)))].map(id=>'questions:'+id);
 export default function FrameworkEditor() {
   const [collections,setCollections]=useState<CollectionPreference>(()=>bindCollectionPreference({mode:'both',origins:[]},availableCollections));
   const allows=(kind:'report'|'foundation'|'model',id:string)=>collectionAllows(availableCollections,collections.mode,kind,id);
@@ -237,6 +240,12 @@ export default function FrameworkEditor() {
   const [ownMaterialOpen, setOwnMaterialOpen] = useState(false);
   const [sourceProcess, setSourceProcess] = useState("");
   const draftRef = useRef(draft);
+  // Wat de volgende stap nodig heeft, alvast ophalen zodra er rust is (B-097): de interviewvragen van gekozen bronnen.
+  const questionKeys=materialQuestionKeys(draft).join('|');
+  useEffect(()=>{if(!questionKeys)return;const keys=questionKeys.split('|');
+    const idle=(globalThis as {requestIdleCallback?:(f:()=>void,o?:{timeout:number})=>number}).requestIdleCallback;
+    const run=()=>{if(!catalogueReady(keys))warmUp(keys);};
+    if(idle)idle(run,{timeout:4000});else setTimeout(run,1500);},[questionKeys,warmUp]);
   // Chronological recovery: later edits are undone before the reset, never overwritten.
   const recoveryRef = useRef<{draft: Project; label: string}[]>([]);
   const typingRecoveryRef = useRef<Element | null>(null);
@@ -695,7 +704,10 @@ export default function FrameworkEditor() {
     if(next==='foundation-workspace'){
       const source=foundationFocus||draftRef.current.investigation?.sourceIds[0];
       if(source)keys.push(foundationOverviewKey(source,Boolean(aboutViews.laws||foundationCriterion)));
+      if(source&&(aboutViews.laws||foundationCriterion))keys.push('questions:'+source);
     }
+    // Vraagopzet en export tonen de interviewvragen: die komen nu mee (meestal al vooraf opgehaald, B-097).
+    if(next==='framework'||next==='export')keys.push(...materialQuestionKeys(draftRef.current));
     if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map(reportOverviewKey));
     if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
     if(next==='model-workspace')prepareModelLibrary(projectModelIds(projectRef.current));
@@ -1378,7 +1390,7 @@ export default function FrameworkEditor() {
           ) : page === "foundation-workspace" ? (
             <FoundationWorkspace
               prepareSource={(id,action,about)=>withContent([foundationOverviewKey(id,about??aboutViews.laws)],action)}
-              prepareDetails={(id,action)=>withContent(['foundation:'+id],action)}
+              prepareDetails={(id,action)=>withContent(['foundation:'+id,'questions:'+id],action)}
               onSourceShown={prefetchFoundation}
               onSourcesOpened={prefetchOverviews}
               overview={aboutViews.laws?'source':'norms'}

@@ -14,7 +14,9 @@ import {topicalTrace, topicalTraceHash} from '../lib/topical-source-trace.mjs';
 
 export const TOPICAL_MODULE = 'lib/topical-reviewed.json';
 const sha256 = text => createHash('sha256').update(text).digest('hex');
-const LOCAL = /^(?:foundation|archive|source):([^:]+):local:lib\/topical-reviewed\.json:\d+$/u;
+const LOCAL = /^(?:foundation|archive|source|questions):([^:]+):local:lib\/topical-reviewed\.json:\d+$/u;
+// Interviewvragen en hun reviews: nodig in de viewer, bij de vraagopzet en de export, niet om een onderwerp te kiezen (B-097).
+const QUESTION_FIELDS = new Set(['interviewReviews', 'interviewPlans']);
 // Velden van een kader die de browser niet leest (alleen de publicatiecontrole en de auteursstraat).
 const ARCHIVE_FIELDS = new Set(['questionAuthoringContext', 'authoringContexts', 'layeredParentRelations', 'reportingFieldMatrix',
   'context_records', 'source_dispositions', 'sourceRelationIndex', 'requirementIndex']);
@@ -87,13 +89,15 @@ export function packTopicalDelivery(value, {read, write, textRevisions}) {
       const [root, index, part, field] = edit.path;
       const archived = key.startsWith('archive:') || (root === 'packages' && part === 'catalogue' && ARCHIVE_FIELDS.has(field)) || edit.path.includes('editorial_context');
       if (archived) { push('archive', source, edit); applyCatalogueEdits(simulation, [structuredClone(edit)]); continue; }
+      const question = key.startsWith('questions:') || (root === 'interviewReviews') || (root === 'packages' && part === 'catalogue' && QUESTION_FIELDS.has(field));
+      if (question) { push('questions', source, edit); applyCatalogueEdits(simulation, [structuredClone(edit)]); continue; }
       // Brontekst per pagina: alleen nodig in de bronviewer, die de bron (source:…) apart laadt.
       if (key.startsWith('source:') || (root === 'packages' && part === 'documents' && edit.path[4] === 'pages')) { push('source', source, edit); applyCatalogueEdits(simulation, [structuredClone(edit)]); continue; }
       if (root === 'packages' && part === 'catalogue' && edit.path.length === 3 && isObject(edit.value)) {
         // Eén toewijzing met velden van beide soorten: in de oorspronkelijke volgorde in stukken.
         let run = null;
         for (const [name, item] of Object.entries(edit.value)) {
-          const kind = ARCHIVE_FIELDS.has(name) ? 'archive' : 'browser';
+          const kind = ARCHIVE_FIELDS.has(name) ? 'archive' : QUESTION_FIELDS.has(name) ? 'questions' : 'browser';
           if (!run || run.kind !== kind) { if (run) { push(run.kind, source, run.edit); applyCatalogueEdits(simulation, [structuredClone(run.edit)]); } run = {kind, edit: {path: edit.path, value: {}}}; }
           run.edit.value[name] = item;
         }
@@ -136,7 +140,7 @@ export function packTopicalDelivery(value, {read, write, textRevisions}) {
   const result = structuredClone(value), counters = new Map(), newKeys = [];
   for (const key of local) delete result.refs[key];
   for (const segment of segments) {
-    const prefix = (segment.kind === 'archive' ? 'archive:' : segment.kind === 'source' ? 'source:' : 'foundation:') + segment.source + ':local:' + TOPICAL_MODULE;
+    const prefix = (segment.kind === 'browser' ? 'foundation' : segment.kind) + ':' + segment.source + ':local:' + TOPICAL_MODULE;
     const n = counters.get(prefix) ?? 0; counters.set(prefix, n + 1);
     const payload = JSON.stringify(segment.edits), hash = write(payload), key = prefix + ':' + n;
     result.refs[key] = {release: value.release, hash, bytes: Buffer.byteLength(payload)};
@@ -159,6 +163,7 @@ export function packTopicalDelivery(value, {read, write, textRevisions}) {
     if (left) throw Error('Redactionele voorgeschiedenis in de browserlevering: ' + left.id);
   }
   const size = keysOf => keysOf.reduce((sum, key) => sum + result.refs[key].bytes, 0);
-  return {value: result, report: {browserBytes: size(browserKeys.filter(key => LOCAL.test(key))), sourceTextBytes: size(result.registrations[TOPICAL_MODULE].filter(key => key.startsWith('source:') && LOCAL.test(key))), archiveBytes: size(result.registrations[TOPICAL_MODULE].filter(key => key.startsWith('archive:'))),
+  return {value: result, report: {browserBytes: size(browserKeys.filter(key => LOCAL.test(key))), sourceTextBytes: size(result.registrations[TOPICAL_MODULE].filter(key => key.startsWith('source:') && LOCAL.test(key))),
+    questionBytes: size(result.registrations[TOPICAL_MODULE].filter(key => key.startsWith('questions:'))), archiveBytes: size(result.registrations[TOPICAL_MODULE].filter(key => key.startsWith('archive:'))),
     beforeBytes: local.reduce((sum, key) => sum + value.refs[key].bytes, 0), inlineBytes: Buffer.byteLength(JSON.stringify(next)), keys: newKeys.length}};
 }
