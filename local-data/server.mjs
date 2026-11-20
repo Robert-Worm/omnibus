@@ -11,6 +11,7 @@ import {parseContentBatchQuery} from '../lib/content-batch-contract.mjs';
 const IMMUTABLE='private, max-age=31536000, immutable';
 import {Readable,pipeline} from 'node:stream';
 import {responseEncoding,createResponseCompressor} from './response-compression.mjs';
+import {createContentTransportCache} from './content-transport-cache.mjs';
 import {createRuntimeReadiness} from './runtime-readiness.mjs';
 import {createHostingPolicy} from './hosting-policy.mjs';
 import {createRequestRateLimit,createVisitorRequestRateLimit,requestVisitorAddress} from './request-rate-limit.mjs';
@@ -49,6 +50,10 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
  const refusalLogLimit=hosting.publicMode?createRequestRateLimit({capacity:1,refillPerSecond:1/60}):null;
  let suppressedRefusals=0;
  let activeResponses=0;
+ const transportCache=createContentTransportCache();
+ const dataVersion=repository.db.prepare('PRAGMA data_version'),totalChanges=repository.db.prepare('SELECT total_changes() AS n');
+ const databaseStamp=()=>dataVersion.get().data_version+':'+totalChanges.get().n;
+ let transportStamp=databaseStamp();
  const indexes=new Map();let indexBytes=0;
  const documentIndex=(release,version)=>{
   const key=release+':'+version,hit=indexes.get(key);
@@ -115,6 +120,35 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    }else{res.writeHead(status);res.end(raw);}
   };
   const reply=(status,value)=>replyJson(status,JSON.stringify(value));
+  // Onveranderlijke inhoud: het gecomprimeerde antwoord wordt bewaard (content-transport-cache.mjs). `produce` leest
+  // en controleert de inhoud alleen als die nog niet bewaard is; null betekent: niet gevonden.
+  const replyContent=(key,produce)=>{
+   const header=req.headers['accept-encoding'];
+   // Elke wijziging van de database (door deze of een andere verbinding) maakt de cache leeg: dan wordt alles
+   // opnieuw gelezen en gecontroleerd, net als zonder cache.
+   const stamp=databaseStamp();
+   if(stamp!==transportStamp){transportCache.clear();transportStamp=stamp;}
+   const known=transportCache.rawBytes(key);
+   if(known!==undefined){
+    const encoding=responseEncoding(header,known),buffer=encoding&&encoding!=='identity'?transportCache.get(key,encoding):undefined;
+    if(buffer){
+     res.setHeader('Vary','Accept-Encoding');res.setHeader('Cache-Control',IMMUTABLE);
+     res.setHeader('Content-Encoding',encoding);res.setHeader('Content-Length',String(buffer.length));
+     res.writeHead(200);res.end(buffer);return;
+    }
+   }
+   const raw=produce();
+   if(raw===null)return reply(404,{error:'Not found'});
+   const body=Buffer.isBuffer(raw)?raw:Buffer.from(raw);
+   const encoding=responseEncoding(header,body.length);
+   if(encoding!==null)res.setHeader('Cache-Control',IMMUTABLE);
+   if(encoding===null||encoding==='identity')return replyJson(200,body);
+   transportCache.compress(key,encoding,body).then(buffer=>{
+    if(res.destroyed||res.headersSent)return;
+    res.setHeader('Vary','Accept-Encoding');res.setHeader('Content-Encoding',encoding);
+    res.setHeader('Content-Length',String(buffer.length));res.writeHead(200);res.end(buffer);
+   },()=>{requestFailed();if(!res.headersSent){res.removeHeader('Cache-Control');res.setHeader('Cache-Control','no-store');reply(500,{error:'Request failed'});}else res.destroy();});
+  };
   if(req.rawHeaders.length/2>32)return reply(431,{error:'Too many headers'});
   let hosts=0,origins=0;
   for(let i=0;i<req.rawHeaders.length;i+=2){
@@ -211,13 +245,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
     const {release,hashes}=parseContentBatchQuery(q);
     if(readScope&&hashes.some(hash=>!readScope.allows('/api/v1/content/'+hash)))
       return reply(404,{error:'Not found'});
-    const payload=webResourceBatchPayload(repository,release,hashes);
-    if(payload!==null)res.setHeader('Cache-Control',IMMUTABLE);
-    return payload===null?reply(404,{error:'Not found'}):replyJson(200,payload);
+    return replyContent('batch|'+release+'|'+hashes.join(','),()=>webResourceBatchPayload(repository,release,hashes));
    }
    if((match=u.pathname.match(/^\/api\/v1\/content\/([a-f0-9]{64})$/))){
     if(!/^[a-f0-9]{64}$/.test(release||''))return reply(400,{error:'Explicit release required'});
-    const value=webResource(repository,release,match[1]);if(value)res.setHeader('Cache-Control',IMMUTABLE);return reply(value?200:404,value||{error:'Not found'});
+    return replyContent('one|'+release+'|'+match[1],()=>{const value=webResource(repository,release,match[1]);return value?JSON.stringify(value):null;});
    }
    if(u.pathname==='/api/v1/releases')return reply(200,repository.releases({limit,offset}).map(r=>({id:r.id,baselineVersion:r.manifest.baselineVersion,counts:r.manifest.counts})));
    if(u.pathname==='/api/v1/catalogue'){

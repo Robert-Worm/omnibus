@@ -168,6 +168,34 @@ test('batched reads retain exact pinned sources, transport controls and unchange
   assert.equal(digest(readFileSync(f.databasePath)),before);
 });
 
+test('een eerder gecontroleerd antwoord komt uit de transportcache; een gewijzigde database maakt de cache leeg',async t=>{
+  const f=fixture(t),big={points:Array.from({length:200},(_,i)=>({id:'p'+i,text:'Synthetische inhoud 😀é'}))};
+  const extra=prepareWebResources(f.repository,f.release,{big});
+  f.value.refs={...f.value.refs,...extra};f.writeManifest({...f.manifest,publication:f.publish()});
+  const {url}=await f.start();
+  const batch=url+`/api/v1/content-batch?release=${f.release}&hash=${extra.big.hash}`;
+  const single=url+`/api/v1/content/${extra.big.hash}?release=${f.release}`;
+  for(const address of [batch,single]){
+    const texts=[];
+    for(let i=0;i<3;i++){
+      const response=await fetch(address,{headers:{'Accept-Encoding':i===2?'gzip':'br'}});
+      assert.equal(response.status,200);assert.equal(response.headers.get('content-encoding'),i===2?'gzip':'br');
+      assert.equal(response.headers.get('cache-control'),'private, max-age=31536000, immutable');
+      assert.equal(response.headers.get('vary'),'Accept-Encoding');assert.ok(Number(response.headers.get('content-length'))>0);
+      texts.push(await response.text());
+    }
+    assert.equal(texts[1],texts[0]);assert.equal(texts[2],texts[0]);assert.ok(texts[0].includes('Synthetische inhoud 😀é'));
+    // Toegangscontroles gaan vóór de cache.
+    assert.equal((await fetch(address,{headers:{Origin:'https://example.invalid'}})).status,403);
+    assert.equal((await fetch(address,{method:'POST'})).status,405);
+    assert.equal((await fetch(address.replace('release='+f.release,'release='+'0'.repeat(64)),{headers:{'Accept-Encoding':'br'}})).status,404);
+  }
+  // Na een wijziging in de database geldt de cache niet meer: de gebundelde route controleert opnieuw en weigert.
+  t.mock.method(console,'error',()=>{});
+  f.repository.db.prepare('UPDATE web_resources SET payload=? WHERE release_id=? AND hash=?').run(JSON.stringify({text:'gewijzigd'.repeat(300)}),f.release,extra.big.hash);
+  assert.equal((await fetch(batch,{headers:{'Accept-Encoding':'br'}})).status,500);
+});
+
 test('a changed batch payload is refused before delivery, including after server startup',async t=>{
   const logs=[];t.mock.method(console,'error',line=>logs.push(line));
   const f=fixture(t),{url}=await f.start();
