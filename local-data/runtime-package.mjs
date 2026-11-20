@@ -12,6 +12,7 @@ export const runtimeFiles = Object.freeze([
   "local-data/server.mjs",
   "local-data/startup-diagnostics.mjs",
   "local-data/response-compression.mjs",
+  "local-data/content-transport-cache.mjs",
   "local-data/hosting-policy.mjs",
   "local-data/request-rate-limit.mjs",
   "local-data/static-web.mjs",

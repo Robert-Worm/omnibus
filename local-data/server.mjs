@@ -51,9 +51,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
  let suppressedRefusals=0;
  let activeResponses=0;
  const transportCache=createContentTransportCache();
- const dataVersion=repository.db.prepare('PRAGMA data_version'),totalChanges=repository.db.prepare('SELECT total_changes() AS n');
+ // Zonder echte database (een nagebootste bron) is een wijziging niet te zien: dan wordt er niets bewaard.
+ const stampable=typeof repository?.db?.prepare==='function';
+ const dataVersion=stampable?repository.db.prepare('PRAGMA data_version'):null,totalChanges=stampable?repository.db.prepare('SELECT total_changes() AS n'):null;
  const databaseStamp=()=>dataVersion.get().data_version+':'+totalChanges.get().n;
- let transportStamp=databaseStamp();
+ let transportStamp=stampable?databaseStamp():'';
  const indexes=new Map();let indexBytes=0;
  const documentIndex=(release,version)=>{
   const key=release+':'+version,hit=indexes.get(key);
@@ -124,6 +126,11 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   // en controleert de inhoud alleen als die nog niet bewaard is; null betekent: niet gevonden.
   const replyContent=(key,produce)=>{
    const header=req.headers['accept-encoding'];
+   if(!stampable){
+    const raw=produce();
+    if(raw===null)return reply(404,{error:'Not found'});
+    res.setHeader('Cache-Control',IMMUTABLE);return replyJson(200,raw);
+   }
    // Elke wijziging van de database (door deze of een andere verbinding) maakt de cache leeg: dan wordt alles
    // opnieuw gelezen en gecontroleerd, net als zonder cache.
    const stamp=databaseStamp();

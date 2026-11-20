@@ -5,8 +5,9 @@ import {brotliCompress, gzip, constants} from 'node:zlib';
 // het gecomprimeerde antwoord, zodat een volgend verzoek geen databaselezing, JSON of compressie meer kost.
 // Alleen transport: wat erin komt is het antwoord dat de server toch al zou sturen, na alle toegangscontroles.
 export const contentTransportLimits = Object.freeze({
-  // Alle inhoud van een publicatie is gecomprimeerd enkele tientallen megabytes; dit is een harde bovengrens.
-  bytes: 64 * 1024 * 1024,
+  // Harde bovengrens. De container draait met een kleine heap (200 MB); deze buffers staan daarbuiten, dus bewust
+  // bescheiden: ruim genoeg voor de onderwerpen die het meest gekozen worden.
+  bytes: 48 * 1024 * 1024,
   // Een enkel antwoord groter dan dit (gecomprimeerd) wordt niet bewaard.
   entryBytes: 8 * 1024 * 1024,
 });
