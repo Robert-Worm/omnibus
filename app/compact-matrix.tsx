@@ -401,7 +401,7 @@ export default function CompactMatrix({
         <Button
           variant="outline"
           disabled={disabled || selectableRows(filtered).length === 0}
-          onClick={() => pointSelection ? pointSelection.onBulk(filtered.map(l=>l.id)) : selectRows(filtered.map(l=>l.id),!all)}
+          onClick={event => { if (event.detail > 1) return; /* een dubbelklik kiest één keer */ if (pointSelection) pointSelection.onBulk(filtered.map(l=>l.id)); else selectRows(filtered.map(l=>l.id),!all); }}
         >
           {pointSelection ? `Kies alle toetspunten (${filtered.reduce((n,l)=>n+(pointSelection.counts[l.id]?.total??0),0)})` : `${all ? "Deselecteer" : "Selecteer"} alle ${filtered.length} resultaten`}
         </Button>
