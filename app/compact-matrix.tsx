@@ -533,7 +533,7 @@ export default function CompactMatrix({
                     {pointChoices?.counts[l.id]&&<Button variant="ghost" className="point-choice-button bd-row-choice matrix-point-chip" disabled={disabled}
                       title={`${pointChoices.counts[l.id].selected} van ${countLabel(pointChoices.counts[l.id].total,'toetspunten')} gekozen`}
                       aria-label={`Kies toetspunten voor ${normId(l.id)}`} onClick={()=>pointChoices.onChoose(l.id)}>
-                      <span>Bekijk toetspunten</span><span className="matrix-count-label">{pointChoices.counts[l.id].selected}/{pointChoices.counts[l.id].total} gekozen</span>
+                      <span>Bekijk toetspunten</span><span className="matrix-count-label">{(included.has(l.id)||pointChoices.counts[l.id].legacySelected)&&!pointChoices.counts[l.id].selected?'hele norm gekozen':`${pointChoices.counts[l.id].selected}/${pointChoices.counts[l.id].total} gekozen`}</span>
                     </Button>}
                   </div>
                   <NormCollection line={l} draft={draft} sourceId={collectionSource}/>
@@ -543,9 +543,8 @@ export default function CompactMatrix({
                     onClick={()=>pointSelection.onChoose(l.id)}>
                     Bekijk toetspunten · {pointSelection.counts[l.id]?.selected??0}/{pointSelection.counts[l.id]?.total??0} gekozen
                   </Button>}
-                  {pointChoices?.counts[l.id] && <>
-                    {(included.has(l.id) || pointChoices.counts[l.id].legacySelected) && <small className="bd-legacy-label">Eerdere itemkeuze</small>}
-                  </>}
+                  {/* Een thema- of bronvinkje kiest de hele norm; dat staat nu in de knop ("hele norm gekozen") in plaats van het
+                      cryptische "Eerdere itemkeuze" (beheerder, 20-11). */}
                 </TableCell>
                 {!combineIdentity && <TableCell>{renderTitle(l)}</TableCell>}
                 {keys.map((k) => {

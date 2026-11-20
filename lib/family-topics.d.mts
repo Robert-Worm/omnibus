@@ -10,7 +10,9 @@ export type TopicDefinition={id:string;listFamily:string;category?:string;tone?:
 export type TopicAboutTexts={method?:string[];choose?:string[];sourcesIntro?:string;practiceLaw?:string;practicePractice?:string};
 export type TopicFamily={about:TopicAboutTexts;combination:{template:string;phrases:Record<string,string>;join:'en'|'en aan'}|null;id:string;listFamily:string;category:string;tone:string;topics:TopicDefinition['topics'];sources:TopicSource[];outside:TopicDefinition['outside'];
   review:TopicDefinition['index']['review'];labels:TopicLabels;isSource:(id:string)=>boolean;owns:(value:string)=>boolean;
-  normTopic:(normId:string)=>null|{id:string;sourceId:string;main:string;sub:string;also:string[];regime:string;sector:boolean|number};
+  pointFits:(pointId:string,value:string|TopicChoice)=>boolean;
+  sectorOnly:(sourceId:string,value:string|TopicChoice)=>{normIds:string[];pointIds:string[]};
+  normTopic:(normId:string)=>null|{id:string;sourceId:string;main:string;sub:string;also:string[];regime:string;sector:boolean;sectorPoints:string[]};
   questionPlans:{id:string;family:string;topic:string;sub:string;title:string}[];topicTitle:(topicId:string,sub?:string)=>string;encode:(choice:Partial<TopicChoice>&{topic:string})=>string;decode:(value:string)=>TopicChoice|null;
   normIds:(sourceId:string,value:string|TopicChoice)=>string[];matches:(normId:string,value:string|TopicChoice)=>boolean;label:(value:string|TopicChoice)=>string;
   choiceSources:(value:string|TopicChoice)=>(TopicSource&{normIds:string[]})[];counts:(value:string|TopicChoice)=>{normen:number;bronnen:number;praktijk:number};

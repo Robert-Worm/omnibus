@@ -33,12 +33,20 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
  const load=useRef(prepare),ids=[...sources.map(source=>source.id),...regimeOnly].join('|');
  useEffect(()=>{load.current=prepare;});
  useEffect(()=>{for(const id of ids.split('|').filter(Boolean))load.current(id,()=>{});},[ids]);
- const parts=sources.map(source=>{const points=pointsOf(source.id,source.normIds),state=points?topicalSelection(draft,source.id,points):null;return {...source,points,state};});
+ const parts=sources.map(source=>{const points=pointsOf(source.id,source.normIds)?.filter(id=>family.pointFits(id,value))??null,state=points?topicalSelection(draft,source.id,points):null;return {...source,points,state};});
  const own=parts.filter(part=>part.laag===basis),ready=own.length>0&&own.every(part=>part.points);
  const total=own.reduce((sum,part)=>sum+(part.state?.total||0),0),selected=own.reduce((sum,part)=>sum+(part.state?.selected||0),0);
+ // Bij NOREA in plaats van de wet (of andersom) telt de andere laag apart; staat daar nog iets gekozen, dan zegt de kop dat.
+ const otherSelected=parts.filter(part=>part.laag!==basis).reduce((sum,part)=>sum+(part.state?.selected||0),0);
+ // Sectorspecifieke toetspunten tellen zonder de sectoroptie niet mee. Kies alle laat ze dan los; staan ze nog gekozen
+ // (bijvoorbeeld na het uitzetten van de optie), dan zegt de kop dat en kun je ze weghalen (testronde 20-11).
+ const sectorDrop=(sourceId:string)=>{const choice=family.decode(value);if(!choice||choice.sector)return [] as string[];const only=family.sectorOnly(sourceId,value);
+  return [...(pointsOf(sourceId,only.normIds)??[]),...only.pointIds];};
+ const hiddenCount=own.reduce((sum,part)=>{const ids=sectorDrop(part.id);return sum+(ids.length?topicalSelection(draft,part.id,ids).selected:0);},0);
+ const dropHidden=()=>{let next=draft;for(const part of own){const ids=sectorDrop(part.id);if(ids.length)next=chooseTopicalPoints(next,part.id,ids,false) as Draft;}onChange(next);};
  const chooseAll=(include:boolean)=>{let next=draft;const open=draft.investigation?.sourceIds||[];
   for(const part of own){if(!part.points)return;next=chooseTopicalPoints(next,part.id,part.points,include) as Draft;
-   const drop=include?pointsOf(part.id,family.otherRegimeNormIds(part.id,value)):null;if(drop?.length)next=chooseTopicalPoints(next,part.id,drop,false) as Draft;}
+   const drop=include?[...(pointsOf(part.id,family.otherRegimeNormIds(part.id,value))??[]),...sectorDrop(part.id)]:null;if(drop?.length)next=chooseTopicalPoints(next,part.id,drop,false) as Draft;}
   // Ook bronnen die onder dit kader niets hebben, maar wel normen alleen voor het andere kader (testronde 19 november 2026).
   if(include)for(const id of regimeOnly){const drop=pointsOf(id,family.otherRegimeNormIds(id,value));if(drop?.length)next=chooseTopicalPoints(next,id,drop,false) as Draft;}
   // Kiezen opent geen bronnen: de lijst met geopende bronnen blijft zoals ze was.
@@ -55,7 +63,8 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
     <button aria-pressed={tab==='norms'} onClick={()=>setTab('norms')}>Normen</button><button aria-pressed={tab==='about'} onClick={()=>setTab('about')}>Over dit onderwerp</button></nav>
    {onBack&&<Button variant="outline" className="topic-viewer-back" onClick={onBack}><ArrowLeft aria-hidden="true"/>Terug naar alle wetten &amp; kaders</Button>}</div>
   <div className="law-browse-intro"><div className="law-viewer-heading"><h2 id="topic-viewer-title">{family.label(value)}</h2>
-    <output aria-live="polite">{what}{ready&&<> · {selected} van {total} toetspunten gekozen</>}</output></div>
+    <output aria-live="polite">{what}{ready&&<> · {selected} van {total} toetspunten gekozen</>}{otherSelected>0&&<> · daarnaast {otherSelected} uit {basis==='wet'?family.labels.practice?.name:family.labels.law}</>}</output>
+    {hiddenCount>0&&<p className="topic-hidden-note">Ook gekozen: {hiddenCount} sectorspecifieke {hiddenCount===1?'toetspunt':'toetspunten'} die zonder de sectoroptie niet meetellen. <Button variant="link" disabled={disabled} onClick={dropHidden}>Haal weg</Button></p>}</div>
    {notice&&<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>}
    <div className="law-selection-actions"><Button variant="outline" className="law-topic-choose" disabled={disabled||!ready||!total} aria-pressed={allChosen} onClick={()=>chooseAll(!allChosen)}>{allChosen?'Deselecteer onderwerp':ready?`Kies alle ${total} toetspunten`:'Toetspunten tellen…'}</Button></div></div>
   {tab==='about'?<TopicAbout family={family} value={value} topic={topic} parts={parts} basis={basis} title={title} onSwitch={onSwitch} onBack={onBack}/>:parts.map(part=><section className="topic-viewer-source" key={part.id} aria-label={title(part.id)}>

@@ -270,6 +270,12 @@ export default function FrameworkEditor() {
   const [reportViewReset,setReportViewReset]=useState(0);
   const [browseMode, setBrowseMode] = useState({ combined: false });
   const combinedView = browseMode.combined && workspace.openIds.length > 1;
+  // Een thema of proces telt alleen bouwstenen die je echt kunt kiezen. Een paar oudere verwijzingen staan niet (meer) in het
+  // kader; telden die mee, dan werd een thema nooit 'helemaal gekozen' en bleef het vinkje hangen (beheerder, 20-11).
+  const frameworkLineIds = useMemo(()=>new Set<string>(catalogueSnapshot.framework.lines.map((line:{id:string})=>line.id)),[catalogueSnapshot]);
+  const selectableViews = useMemo(()=>collectionViews(catalogueSnapshot.discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)
+    .map(view=>({...view,lineIds:view.lineIds.filter((id:string)=>frameworkLineIds.has(id))})).filter(view=>view.lineIds.length>0),
+    [catalogueSnapshot.discoveryViews,frameworkLineIds,collections.mode]);
   const browseThemes = useMemo(()=>collectionViews(catalogueSnapshot.workspaces,availableCollections,collections.mode,catalogueRouting.reports).filter((t) =>
     combinedView ? workspace.openIds.includes(t.id) : t.id === workspace.activeId,
   ),[combinedView,workspace,catalogueSnapshot,collections.mode]);
@@ -1307,7 +1313,7 @@ export default function FrameworkEditor() {
             />
           ) : ['risk-start','catalogue','processes'].includes(page) ? (
             <>
-            <DiscoveryCatalogue reports={catalogueSnapshot.framework.reports??[]} views={collectionViews(discoveryViews,availableCollections,collections.mode,catalogueRouting.reports)}
+            <DiscoveryCatalogue reports={catalogueSnapshot.framework.reports??[]} views={selectableViews}
               onPrepare={id=>{void prefetchCatalogue((catalogueRouting.workspaces[id]??[]).map(reportOverviewKey));}}
               included={draft.included} disabled={!loaded} onSelect={(ids,include)=>withContent(reportContentKeys(ids,catalogueRouting.reports),()=>commit(chooseCatalogueItems(draftRef.current,ids,include,baseFramework) as Draft))}
               guided={page==='risk-start'}

@@ -543,7 +543,9 @@ export function FoundationCatalogue({
   // Met het filter Onderwerp gelden de telling en het vinkje van een bron alleen voor dat onderwerp: de lijst toont en kiest
   // dan hetzelfde als de viewer van die bron. De toetspunten per norm staan in de bron zelf, dus die laden we.
   const choicePoints=(sourceId:string):string[]|null=>{const pack=topicPackage(sourceId);if(!pack?.catalogue?.points?.length)return null;
-   const norms=new Set((listFamily?listFamily.normIds(sourceId,listChoice):[]));return pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id);};
+   const norms=new Set((listFamily?listFamily.normIds(sourceId,listChoice):[]));return pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)&&listFamily!.pointFits(point.id,listChoice)).map((point:{id:string})=>point.id);};
+  const sectorDrop=(sourceId:string):string[]=>{const choice=listFamily?.decode(listChoice);if(!listFamily||!choice||choice.sector)return [];const only=listFamily.sectorOnly(sourceId,listChoice);
+   return [...pointsOf(sourceId,only.normIds),...only.pointIds];};
   const pointsOf=(sourceId:string,normIds:string[]):string[]=>{const pack=topicPackage(sourceId),norms=new Set(normIds);return norms.size&&pack?.catalogue?.points?pack.catalogue.points.filter((point:{id:string;criterion_id:string})=>norms.has(point.criterion_id)).map((point:{id:string})=>point.id):[];};
   // Volledig en vereenvoudigd kader gaan niet samen: kiezen onder het ene laat de normen van dat onderwerp onder het andere los.
   const chooseInChoice=(value:Draft,sourceId:string,points:string[],include:boolean)=>{const next=chooseTopicPoints(value,sourceId,points,include) as Draft,other=include?pointsOf(sourceId,(listFamily?listFamily.otherRegimeNormIds(sourceId,listChoice):[])):[];return other.length?chooseTopicPoints(next,sourceId,other,false) as Draft:next;};
@@ -566,16 +568,21 @@ export function FoundationCatalogue({
    const regimeOnly=listFamily!.otherRegimeSourceIds(listChoice).filter((id:string)=>!own.some(part=>part.id===id)&&allowedSources.some(source=>source.id===id));
    const choose=(include:boolean,replace:boolean)=>prepareSources([...own.map(part=>part.id),...(replace?other.map(part=>part.id):[]),...(include?regimeOnly:[])],()=>{try{
      let next=own.reduce((value,part)=>{const points=choicePoints(part.id);if(!points)throw new Error('De toetspunten van dit onderwerp zijn nog niet geladen. Probeer het opnieuw.');return chooseInChoice(value,part.id,points,include);},draft);
+     if(include)next=own.reduce((value,part)=>{const drop=sectorDrop(part.id);return drop.length?chooseTopicPoints(value,part.id,drop,false) as Draft:value;},next);
      if(include)next=regimeOnly.reduce((value:Draft,id:string)=>{const drop=pointsOf(id,listFamily!.otherRegimeNormIds(id,listChoice));return drop.length?chooseTopicPoints(value,id,drop,false) as Draft:value;},next);
      if(include&&replace)next=other.reduce((value,part)=>{const points=choicePoints(part.id);return points?chooseTopicPoints(value,part.id,points,false) as Draft:value;},next);
      onChange({...next,investigation:{...next.investigation,sourceIds:wb.sourceIds}} as Draft);setChoiceError('');if(include)openTopic(listChoice);
     }catch(error){setChoiceError(error instanceof Error?error.message:'Selecteren is niet gelukt.');}});
+   // Sectorspecifieke toetspunten tellen zonder de sectoroptie niet mee; staan ze nog gekozen, dan zegt de balk dat (testronde 20-11).
+   const hiddenCount=own.reduce((sum,part)=>{const ids=sectorDrop(part.id);return sum+(ids.length?topicSelection(draft,part.id,ids).selected:0);},0);
+   const dropHidden=()=>onChange(own.reduce((value,part)=>{const ids=sectorDrop(part.id);return ids.length?chooseTopicPoints(value,part.id,ids,false) as Draft:value;},draft));
    const labels=listFamily!.labels,names=(layer:string)=>layer==='wet'?labels.law:labels.practice?.name||'';
    const what=basis==='wet'?countLabel(own.length,'bronnen'):labels.practice?.full||'';
    // Staat de andere laag ook in de lijst (bijvoorbeeld NOREA naast de wet), dan zegt de regel dat, zodat het aantal rijen klopt
    // met wat er staat; Kies alle kiest alleen uit de eigen laag.
    const beside=other.some(part=>shown.some(row=>row.id===part.id))?`, ${names(basis==='wet'?'praktijk':'wet')} ernaast`:'';
-   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{beside}{ready&&<> · {selected} van {total} toetspunten gekozen</>}</span></p>
+   return <div className="catalogue-topic-bar"><p><strong title={listFamily!.label(listChoice)}>{listFamily!.label(listChoice)}</strong><span>{what}{beside}{ready&&<> · {selected} van {total} toetspunten gekozen</>}{otherSelected>0&&<> · daarnaast {otherSelected} uit {names(basis==='wet'?'praktijk':'wet')}</>}</span>
+    {hiddenCount>0&&<small className="topic-hidden-note">Ook gekozen: {hiddenCount} sectorspecifieke {hiddenCount===1?'toetspunt':'toetspunten'} die zonder de sectoroptie niet meetellen. <Button variant="link" disabled={disabled} onClick={dropHidden}>Haal weg</Button></small>}</p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
      <Button disabled={disabled||!ready||!total} onClick={()=>{const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?'Toetspunten tellen…':'Niets in deze lijst'}</Button>

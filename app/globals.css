@@ -2848,3 +2848,6 @@ html[data-appearance=dark] .framework-app .cev-selection{background:transparent!
 .framework-app .product-footer.product-footer-compact a.product-footer-repository svg{margin:0}
 .framework-app .product-footer.product-footer-compact .product-footer-line{flex:1 1 22rem;max-width:36rem}
 .framework-app :is([role=tabpanel],.creator-preset):focus-visible{outline:2px solid var(--ring)!important;outline-offset:2px}
+/* Gekozen sectorspecifieke toetspunten die bij de huidige keuze niet meetellen (testronde 20-11). */
+.topic-hidden-note { display: block; margin-top: 4px; color: var(--rm-muted); font-size: var(--text-small, .875rem); }
+.topic-hidden-note button { height: auto; padding: 0; font-size: inherit; }
