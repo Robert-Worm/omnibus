@@ -16,7 +16,7 @@ import {createCatalogueSearch} from '@/lib/catalogue-search.mjs';
 import {foundationSearchItems,foundationSearchScope} from '@/lib/foundation-search.mjs';
 import { chooseFoundationSource, chooseFoundationItems, preparedFoundationItems, foundationSelection, sourceNarrowing } from '@/lib/foundation-workspace.mjs';
 import {countLabel} from '@/lib/display-count.mjs';
-import {useState, useRef, useEffect} from 'react';
+import {useState, useRef, useEffect, startTransition} from 'react';
 import {
   ArrowRight,
   FolderOpen,
@@ -424,12 +424,15 @@ export function FoundationCatalogue({
   const allows=useCollectionScope();
   const allowedSources=foundations.filter(source=>allows('foundation',source.id));
   const scopedSources=scopeFoundationSources(allowedSources,scope);
-  const [query, setQuery] = useState(searchQuery),
+  const [typed, setTyped] = useState(searchQuery);
+  const [query, setQueryOnly] = useState(searchQuery),
     [kind, setKind] = useState("all"),
     [selectedOnly, setSelectedOnly] = useState(false),
     [active, setActive] = useState<string | null>(null),
     [page, setPage] = useState(0),
     [create, setCreate] = useState(false);
+  // Elders (een onderwerp kiezen) wordt de zoekvraag gewist: veld en zoekvraag samen.
+  const setQuery=(value:string)=>{setTyped(value);setQueryOnly(value);};
   const current = foundations.find((s) => s.id === active);
   // Een mislukte keuze (zoals de limiet van 1.000) staat vast in beeld, ook als je onderaan de pagina klikt (B1/B2 testronde 19-11).
   const [choiceError,setChoiceError] = useState('');
@@ -513,7 +516,10 @@ export function FoundationCatalogue({
   const filtered: typeof foundations = (query.trim() ? search.sources : tileSources).filter(tilePass);
   const showList=Boolean(directoryGroup||query.trim()||processId||kind!=='all'||selectedOnly||tileActive.length);
   function changeSearch(value:string) {
-    setQuery(value);onSearchQuery?.(value);setCriteriaPage(0);setPage(0);
+    // Het veld volgt het typen meteen; zoeken en de lijst opnieuw tekenen mag een tel later (overgang), zodat typen
+    // nooit hapert op een grote catalogus.
+    setTyped(value);
+    startTransition(()=>{setQueryOnly(value);onSearchQuery?.(value);setCriteriaPage(0);setPage(0);});
     // Search needs display text, not every source's tests and evidence snapshots.
     // Ook de bronnen die alleen via een onderwerp in de lijst komen (zoals richtsnoeren bij DORA): anders vindt een ID uit zo'n bron niets.
     if(value.trim())prepareSearch([...new Set([...scopedSources.map((s:{id:string})=>s.id),...availableFamilies.flatMap(family=>family.sources.map((source:{id:string})=>source.id)).filter((id:string)=>allowedSources.some(own=>own.id===id))])]);
@@ -623,14 +629,14 @@ export function FoundationCatalogue({
       {!guided&&<CatalogueHeader title="Verken bronnen" description="" action={catalogueView.available&&<CatalogueViewToggle mode={catalogueView.mode} onChange={mode=>{catalogueView.setMode(mode);setPage(0);}}/>}/>}
       {!guided&&<><SourceChoices value={scope} onChange={value=>{setSourceArea(value);setDomain('');setKind('all');setProcessId('');onProcessChange?.('');setSelectedOnly(false);changeSearch('');setPage(0);}}/></>}
       {guided&&!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
-        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:typed,onChange:changeSearch}}
         onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList} preset={tilePreset||undefined}/>
-       :<DirectorySearch id="foundation-search" label="Zoek bron" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
+       :<DirectorySearch id="foundation-search" label="Zoek bron" value={typed} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
       {!guided&&<>
         {!listMode&&(catalogueView.available?<CatalogueFilterBar id="foundations-v6" rows={scopedSources.map(filterRow)} filters={sourceFilters} groups={[{key:'category'}]}
-        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:typed,onChange:changeSearch}}
         onFiltersChange={filters=>{setTileFilters(filters);setPage(0);}} onNeedsList={jumpToList} preset={tilePreset||undefined}/>
-       :<DirectorySearch id="foundation-search" label="Zoek bron" value={query} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
+       :<DirectorySearch id="foundation-search" label="Zoek bron" value={typed} onChange={changeSearch} placeholder="Zoek in bronnen en normen…"/>)}
         {query.trim() && <div className="catalogue-search-tools">
           {search.suggestions.length>0 && <fieldset className="catalogue-search-suggestions"  aria-label="Zoeksuggesties">
             <span>Zoeksuggesties:</span>
@@ -641,7 +647,7 @@ export function FoundationCatalogue({
         </div>}
       </>}
       {listMode&&<CatalogueTable id="foundations-v6" defaultSort="title" noun={['bron','bronnen']} base={listBase} unit={['toetspunt','toetspunten']} preset={listPreset||undefined}
-        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:query,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
+        search={{id:'foundation-search',label:'Zoek bron',placeholder:'Zoek in bronnen en normen…',value:typed,onChange:changeSearch}} rows={listRows} columns={listColumns} searching={Boolean(query.trim())} disabled={disabled}
         filters={sourceFilters}
         groups={[{key:'category',label:'Categorie',plural:'categorieën',value:r=>r.categories[0]||''},{key:'family',label:'Familie',plural:'families',value:r=>r.record.familyTitle,describe:name=>Object.values(frameworkFamilies).find(f=>f.title===name)?.description||''}]}
         nameLabel="Bron" nameMeta={r=><>{r.record.work&&<span className="catalogue-id" title={'Vaste ID van deze bron'+(r.record.reference?'. Vindplaats: '+r.record.reference:'')}>{r.record.work}{r.record.version&&' · versie '+r.record.version}</span>}{r.record.issuer&&<span title={'Uitgever: '+r.record.issuer}>{shortIssuer(r.record.issuer)}</span>}{r.viaContent&&<span className="catalogue-hit">gevonden in de normtekst</span>}</>}
