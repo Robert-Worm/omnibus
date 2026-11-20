@@ -227,7 +227,7 @@ html[data-appearance=dark] .catalogue-tool-option[data-selected]{color:var(--don
 .framework-app #main-workspace .creator-terminology>legend{float:left;padding:0;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted);margin-right:.25rem}
 .framework-app #main-workspace .creator-terminology button{font:400 .8125rem/1.3 var(--font-ui);min-height:1.9rem;padding:.2rem .65rem;border:1px solid var(--border);border-radius:999px;background:var(--workflow-card,var(--card));color:var(--foreground);cursor:pointer}
 .framework-app #main-workspace .creator-terminology button[aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--workflow-card,#fff));color:var(--primary);font-weight:600}
-.framework-app #main-workspace .creator-card #testing-aspects-help{margin:.4rem 0 0;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted)}
+.framework-app #main-workspace .creator-card #testing-aspects-help{margin:-.25rem 0 .5rem;font:400 .8125rem/1.4 var(--font-ui);color:var(--rm-muted)}
 
 /* Stap 3: stand van het koppelen als klein symbool rechts op de knoppenregel. */
 .framework-app .research-toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
@@ -293,6 +293,9 @@ html[data-appearance=dark] .framework-app .research-link-status[data-open]{color
 .framework-app #main-workspace .creator-card .creator-testing-aspects>div>label small{font:400 .8125rem/1.45 var(--font-ui);color:var(--rm-muted)}
 /* Witruimte in plaats van scheidingslijnen binnen een blok. */
 .framework-app #main-workspace .creator-card .creator-selection-summary{border-top:0;padding-top:0;margin-top:1.25rem}
+/* Uitzondering (beheerder, 20 november 2026): bij Normtoetsing scheidt één dunne lijn de keuze wat je toetst van wat er
+   meegaat, anders lopen de twee groepen in elkaar over. */
+.framework-app #main-workspace .creator-card .creator-testing-aspects~.creator-selection-summary{border-top:1px solid var(--border);padding-top:1rem}
 .framework-app #main-workspace .creator-extras{border-top:0 !important;padding-top:0;margin:0}
 /* Automatisch koppelen: een vinkregel in dezelfde stijl als de Excel-opties. */
 .framework-app #main-workspace .creator-autolink{display:flex;align-items:flex-start;gap:.6rem;margin-top:.75rem;cursor:pointer}

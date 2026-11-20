@@ -218,6 +218,7 @@ export default function ExportCreator({
       {profile === "testing" && !modelBasis && hasCriteria && (
         <fieldset className="creator-testing-aspects" aria-describedby="testing-aspects-help">
           <legend>Wat wil je toetsen?</legend>
+          <p id="testing-aspects-help">Kies één of meer.</p>
           <div>
             {testingAspects.map((a) => (
               <label key={a.id} data-selected={testScope.includes(a.id)} htmlFor={"testing-aspect-" + a.id}>
@@ -239,7 +240,6 @@ export default function ExportCreator({
               </label>
             ))}
           </div>
-          <p id="testing-aspects-help">Kies één of meer.</p>
         </fieldset>
       )}
             {(selectedModels.length > 0 || modelBasis) && (
