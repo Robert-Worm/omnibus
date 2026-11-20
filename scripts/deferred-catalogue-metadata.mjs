@@ -72,5 +72,14 @@ export function deferredCatalogueMetadata(content) {
     }
     defer(id,groups);
   }
+  // Vraagplannen per proces en onderwerp (B-098): alleen nodig vanaf stap 3 (vraagopzet), bij het herstellen van een
+  // opzet en in de export. Ze gaan als één asset mee en komen met de sleutel 'questionplans' (projectCatalogueKeys).
+  const processes=content.modules['lib/process-catalogue.mjs'];
+  if(processes?.questionPlans!==undefined){
+    if(!processes.questionPlans||typeof processes.questionPlans!=='object'||Array.isArray(processes.questionPlans))
+      throw Error('Unexpected question plan shape.');
+    if(Object.keys(processes.questionPlans).length)
+      defer('lib/process-catalogue.mjs',new Map([['questionplans',[{path:['questionPlans'],value:processes.questionPlans}]]]));
+  }
   return {modules, resources, registrations};
 }

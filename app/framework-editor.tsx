@@ -63,8 +63,9 @@ import {readProjectInBackground} from './project-reader';
 import {downloadFile,useFileDownload} from './file-download';
 import {catalogueRevision,onCatalogueChange,catalogueReady,ensureCatalogue,prefetchCatalogue,prefetchWhenIdle} from '@/lib/catalogue-runtime.mjs';
 import {syncTopicQuestions} from '@/lib/topic-question-sync.mjs';
+import CatalogueContent from './catalogue-content';
 import {forgetComposer} from './research-builder';
-import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys} from '@/lib/application-catalogue.mjs';
+import {baseFramework,getPreviousFrameworks,corpus,legacyThemes,discoveryViews,themes,reportViews,workspaces,catalogueRouting,projectCatalogueKeys,QUESTION_PLANS_KEY} from '@/lib/application-catalogue.mjs';
 import {reportContentKeys} from '@/lib/report-loading.mjs';
 import {reportOverviewKey,reportOverviewCatalogue} from '@/lib/report-overviews.mjs';
 import {foundationSearchKeys} from '@/lib/foundation-search.mjs';
@@ -242,7 +243,8 @@ export default function FrameworkEditor() {
   const draftRef = useRef(draft);
   // Wat de volgende stap nodig heeft, alvast ophalen zodra er rust is (B-097): de interviewvragen van gekozen bronnen.
   const questionKeys=materialQuestionKeys(draft).join('|');
-  useEffect(()=>{if(questionKeys)prefetchWhenIdle(questionKeys.split('|'));},[questionKeys]);
+  // Ook de vraagplannen (B-098): wie bronnen kiest, gaat naar de vraagopzet.
+  useEffect(()=>{if(questionKeys)prefetchWhenIdle([...questionKeys.split('|'),QUESTION_PLANS_KEY]);},[questionKeys]);
   // Chronological recovery: later edits are undone before the reset, never overwritten.
   const recoveryRef = useRef<{draft: Project; label: string}[]>([]);
   const typingRecoveryRef = useRef<Element | null>(null);
@@ -703,7 +705,7 @@ export default function FrameworkEditor() {
       if(source)keys.push(foundationOverviewKey(source,Boolean(aboutViews.laws||foundationCriterion)));
     }
     // Vraagopzet en export tonen de interviewvragen: die komen nu mee (meestal al vooraf opgehaald, B-097).
-    if(next==='framework'||next==='export')keys.push(...materialQuestionKeys(draftRef.current));
+    if(next==='framework'||next==='export')keys.push(...materialQuestionKeys(draftRef.current),QUESTION_PLANS_KEY);
     if(next==='topics')for(const id of topicWorkspaceId?[topicWorkspaceId]:combinedView?workspace.openIds:[workspace.activeId])keys.push(...(catalogueRouting.workspaces[id??'']??[]).map(reportOverviewKey));
     if(!catalogueReady(keys)){withContent(keys,()=>navigate(next,reportId,topicWorkspaceId));return;}
     if(next==='model-workspace')prepareModelLibrary(projectModelIds(projectRef.current));
@@ -1520,7 +1522,8 @@ export default function FrameworkEditor() {
                     </output>
                   )}
                   {editable && (
-                    <ResearchBuilder
+                    // De vraagplannen komen apart mee (B-098); meestal zijn ze al in rusttijd opgehaald.
+                    <CatalogueContent resource={QUESTION_PLANS_KEY}>{()=><ResearchBuilder
                       onAddMaterial={()=>setOwnMaterialOpen(true)}
                       onPendingQuestionChange={setPendingGuideQuestion}
                       models={modelLibrary.models}
@@ -1533,7 +1536,7 @@ export default function FrameworkEditor() {
                       onOpen={openBuildingBlock}
                       onExplore={() => {setCatalogueGroups(v=>({...v,foundations:''}));setCatalogueSearch('');setSourceProcess('');navigate("foundations");}}
                       themeIds={questionThemes}
-                    />
+                    />}</CatalogueContent>
                   )}
                   {!editable && visibleLines.length === 0 && (
                     <section className="empty-framework">

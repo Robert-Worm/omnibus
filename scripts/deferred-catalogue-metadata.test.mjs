@@ -101,3 +101,22 @@ await test('report review and admission metadata follow only their report withou
   const bad=structuredClone(content);bad.modules[id].scopeDecisions.B1='not reviewed';
   assert.throws(()=>deferredCatalogueMetadata(bad),/admission decision/);
 });
+
+await test('vraagplannen gaan apart mee onder questionplans en komen ongewijzigd terug (B-098)',async()=>{
+  const processes='lib/process-catalogue.mjs';
+  const content={modules:{[processes]:{processes:[{id:'P1'}],questionPlans:{P1:{central:'Vraag 🦉',subquestions:[{text:'a'}]},'TOPIC-x-y':{central:'Onderwerp'}},topicFamilies:[]}},registrations:{},refs:{}};
+  const before=JSON.stringify(content);
+  const result=deferredCatalogueMetadata(content);
+  assert.equal(JSON.stringify(content),before,'publicatie zelf blijft gelijk');
+  assert.deepEqual(result.modules[processes].questionPlans,{},'bij openen geen plannen');
+  assert.deepEqual(result.modules[processes].processes,[{id:'P1'}],'processen blijven direct beschikbaar');
+  assert.deepEqual(result.registrations[processes],['questionplans:metadata:'+processes]);
+  const projected=structuredClone(result.modules[processes]);
+  applyCatalogueEdits(projected,result.resources.get('questionplans:metadata:'+processes));
+  assert.equal(JSON.stringify(projected),JSON.stringify(content.modules[processes]),'na laden precies het origineel, ook de volgorde');
+  const {readFileSync}=await import('node:fs');
+  const key=/QUESTION_PLANS_KEY = '([a-z]+)'/u.exec(readFileSync(new URL('../lib/application-catalogue.mjs',import.meta.url),'utf8'))?.[1];
+  assert.ok(key&&result.registrations[processes][0].startsWith(key+':'),'de sleutel die de app vraagt, vindt deze resource');
+  // Geen plannen: geen resource.
+  assert.equal(deferredCatalogueMetadata({modules:{[processes]:{processes:[],questionPlans:{}}},registrations:{},refs:{}}).resources.size,0);
+});
