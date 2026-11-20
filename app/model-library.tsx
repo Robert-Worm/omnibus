@@ -158,7 +158,7 @@ export default function ModelLibrary({
         gutter nameLabel="Model" nameMeta={r=><><span className="catalogue-id" title="Vaste ID van dit model">MOD-{r.id}</span>{r.origin&&<span title="Auteur(s) van het model">{r.origin.authors}</span>}</>} describe={r=>r.summary||null} countLabel="Gekozen vragen" hint="Open een model om er vragen uit te kiezen." selectLabel={r=>r.title}
         onOpen={id=>{if(ready)openModel(id);}}
         empty={<p>Geen model gevonden. Wis je zoekopdracht of pas het filter aan.</p>}/>}
-      {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())}
+      {!listMode&&<CatalogueGroups hideTitle compact={guided} query={query} noun="modellen" value={directoryGroup} searching={Boolean(query.trim())} filtered={tileActive.length>0}
         groups={modelSubjects.map(g=>({id:g.id,title:g.title,count:tileModels.filter(m=>g.modelIds.includes(m.id)).length}))}
         onChange={id=>{setSubject(id);setQuery('');setProcessId('');setSelectedOnly(false);}}/>}
       {showList&&!guided&&!listMode&&filtered&&<p className="creator-help">

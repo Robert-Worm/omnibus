@@ -18,7 +18,10 @@ type Choice=TopicChoice;
 function choicePointCount(family:TopicFamily,choice:Choice,sourceId?:string):number|null{
  const sources=family.choiceSources(choice).filter(source=>sourceId?source.id===sourceId:source.laag===(choice.practice?'praktijk':'wet'));
  let total=0;
- for(const source of sources){const pack=topicalPackage(source.id);if(!pack?.catalogue?.points?.length)return null;
+ for(const source of sources){const pack=topicalPackage(source.id);
+  // Nog niet geladen: tel met de meegeleverde aantallen per norm, zodat het filter niet de hele bron hoeft te laden.
+  if(!pack?.catalogue?.points?.length){const counts=pack?.pointCounts;if(!counts)return null;
+   for(const id of source.normIds)total+=counts[id]??0;continue;}
   const norms=new Set(source.normIds);total+=pack.catalogue.points.filter((point:{criterion_id:string;selection_status?:string})=>norms.has(point.criterion_id)&&point.selection_status==='SELECTABLE').length;}
  return total;
 }
@@ -27,10 +30,11 @@ function choicePointCount(family:TopicFamily,choice:Choice,sourceId?:string):num
  * `showValue`: toon het gekozen onderwerp in de knop. `onOpen`: de lijst opent; laad dan wat nodig is om te tellen. */
 export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpen,jumps=false}:{family:TopicFamily;value:string;onChange:(value:string)=>void;sourceId?:string;showValue?:boolean;onOpen?:()=>void;/** Boven de tegels: een keuze opent de lijst. */jumps?:boolean}){
  const [open,setOpen]=useState(false);
- // Zodra het filter in beeld is, laadt de app wat nodig is om toetspunten te tellen; de lijst opent dan met getallen.
+ // Tellen gaat met de meegeleverde aantallen per norm; alleen zonder die aantallen laadt het filter de bronnen vooraf.
  const preload=useRef(onOpen);
  useEffect(()=>{preload.current=onOpen;});
- useEffect(()=>{preload.current?.();},[]);
+ const needsSources=family.sources.some(source=>!topicalPackage(source.id)?.pointCounts);
+ useEffect(()=>{if(needsSources)preload.current?.();},[needsSources]);
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
  const choice=family.decode(value),current=choice?family.label(value):'Alle',labels=family.labels,facet=family.labels.facet||'Onderwerp';
  const regime=choice?.regime||'volledig',related=Boolean(choice?.related),sector=Boolean(choice?.sector),practice=Boolean(choice?.practice);
@@ -44,7 +48,7 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
  const row=(key:string,label:string,chosen:boolean,indent:boolean,onClick:()=>void,amount?:number|null)=><button type="button" key={key} className="catalogue-tool-option topic-filter-option" data-sub={indent||undefined} data-selected={chosen||undefined} aria-pressed={chosen} onClick={onClick}>
   <span>{label}</span>{amount!==undefined&&<small>{amount??'…'}</small>}{chosen&&<Check size={14} aria-hidden="true"/>}</button>;
  const option=(id:string,label:string,title:string,checked:boolean,onCheck:(checked:boolean)=>void,disabled=false)=><label className="catalogue-tool-option" htmlFor={id} title={title} data-disabled={disabled||undefined}><Checkbox id={id} checked={checked} disabled={disabled} onCheckedChange={next=>onCheck(next===true)}/><span>{label}</span></label>;
- return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next)onOpen?.();}}>
+ return <Popover.Root open={open} onOpenChange={next=>{setOpen(next);if(next&&needsSources)onOpen?.();}}>
   <Popover.Trigger render={<button type="button" className="catalogue-tool topic-filter-tool" data-active={choice?true:undefined} title={choice?current:undefined} aria-haspopup="dialog" aria-label={`Onderwerp: ${current}`}/>}>
    <span className="catalogue-tool-label">{showValue||!choice?facet+':':facet}</span>{(showValue||!choice)&&<span className="catalogue-tool-value">{current}</span>}<ChevronDown size={15} aria-hidden="true"/>
   </Popover.Trigger>

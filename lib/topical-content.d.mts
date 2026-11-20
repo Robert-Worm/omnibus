@@ -21,6 +21,8 @@ export type TopicalPackage = {
   catalogue: {criteria: Criterion[]; points: TopicalPoint[]};
   bank: {records: RecordEntry[]};
   documents: (LawReaderDocument & {packageDocumentId: string; url?: string})[];
+  /** Aantal kiesbare toetspunten per norm, meegeleverd zonder de bron te laden (content-tools/topical-delivery.mjs). */
+  pointCounts?: Record<string, number>;
 };
 export const topicalPackages: TopicalPackage[];
 export const topicalIds: string[];

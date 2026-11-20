@@ -31,7 +31,7 @@ function hydrate(initial, value, read, keys) {
 /** Vergelijk zonder de hulpvelden en zonder de volgorde van de per bron geleverde correcties. */
 function comparable(module) {
   const copy = structuredClone(module);
-  for (const packet of copy.packages ?? []) delete packet.fullTraceHashes;
+  for (const packet of copy.packages ?? []) { delete packet.fullTraceHashes; delete packet.pointCounts; }
   if (copy.textRevisions) for (const list of ['edits', 'transitions'])
     copy.textRevisions[list] = (copy.textRevisions[list] ?? []).map(entry => JSON.stringify(entry)).sort();
   return JSON.stringify(copy);
@@ -65,6 +65,10 @@ export function packTopicalDelivery(value, {read, write, textRevisions}) {
   for (const {index} of packets) {
     if (Object.hasOwn(next.packages[index], 'reviewedTraceTransitions')) next.packages[index].reviewedTraceTransitions = [];
     next.packages[index].fullTraceHashes = {};
+    // Aantal kiesbare toetspunten per norm: zo telt het onderwerpfilter zonder de hele bron te laden (snelheid).
+    const counts = {};
+    for (const point of logical.packages[index].catalogue.points ?? []) if (point.selection_status === 'SELECTABLE') counts[point.criterion_id] = (counts[point.criterion_id] ?? 0) + 1;
+    next.packages[index].pointCounts = counts;
   }
   // Loop de bestaande wijzigingen in volgorde door en splits ze in een deel voor de browser en een archiefdeel.
   // De volgorde van de sleutels blijft gelijk aan de volgorde van de wijzigingen, zodat het samengestelde geheel gelijk blijft.
