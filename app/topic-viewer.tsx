@@ -85,9 +85,11 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
  // Alleen opties die bij dit onderwerp iets veranderen: een optie zonder normen noemen we niet.
  const choice=family.decode(value),changes=(extra:Record<string,unknown>)=>{if(!choice)return false;const base=family.choiceSources(choice).flatMap(part=>part.normIds).join('|');
   return family.choiceSources({...choice,...extra} as never).flatMap(part=>part.normIds).join('|')!==base;};
- const options=[labels.regime&&changes({regime:choice?.regime==='vereenvoudigd'?'volledig':'vereenvoudigd'})?labels.regime:null,
-  labels.related&&!choice?.sub&&changes({related:!choice?.related})?labels.related:null,labels.sector&&changes({sector:!choice?.sector})?labels.sector:null,
-  labels.practice&&practice.length>0?labels.practice:null].filter(Boolean) as {label:string;title:string}[];
+ // Elke optie is hier ook aan of uit te zetten; eerder stond er alleen uitleg (testronde 20-11).
+ const options=[labels.regime&&changes({regime:choice?.regime==='vereenvoudigd'?'volledig':'vereenvoudigd'})?{...labels.regime,on:choice?.regime==='vereenvoudigd',flip:{regime:choice?.regime==='vereenvoudigd'?'volledig':'vereenvoudigd'}}:null,
+  labels.related&&!choice?.sub&&changes({related:!choice?.related})?{...labels.related,on:Boolean(choice?.related),flip:{related:!choice?.related}}:null,
+  labels.sector&&changes({sector:!choice?.sector})?{...labels.sector,on:Boolean(choice?.sector),flip:{sector:!choice?.sector}}:null,
+  labels.practice&&practice.length>0?{...labels.practice,on:Boolean(choice?.practice),flip:{practice:!choice?.practice}}:null].filter(Boolean) as {label:string;title:string;on:boolean;flip:Record<string,unknown>}[];
  const sub=topic?.subs?.find(item=>item.id===family.decode(value)?.sub);
  // Een link naar een ander onderwerp houdt de gekozen opties (kader, NOREA, sector, verwante normen) vast (testronde 19 november 2026).
  const keep=(topicId:string,subId='')=>{const c=family.decode(value);return family.encode({...c,topic:topicId,sub:subId,related:subId?false:Boolean(c?.related)});};
@@ -116,7 +118,9 @@ function TopicAbout({family,value,topic,parts,basis,title,onSwitch,onBack}:{fami
     {practice.length>0&&<p>{basis==='wet'?(about.practiceLaw?fill(about.practiceLaw):<>Hetzelfde onderwerp staat ook in {practice.map(part=>title(part.id)).join(', ')}. Dat is een praktijkkader, geen wet; kies het met de optie <em>{labels.practice?.label}</em>.</>)
      :(about.practicePractice?fill(about.practicePractice):<>Je toetst nu aan het praktijkkader, niet aan de wet.</>)}</p>}</section>
    {(options.length>0||relatedOnWhole)&&<section className="law-about-card"><h3><SlidersHorizontal size={18} aria-hidden="true"/>Wat kun je erbij kiezen?</h3>
-    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span></li>)}</ul>
+    <ul className="topic-about-options">{options.map(option=><li key={option.label}><strong>{option.label}</strong><span>{option.title}</span>
+     {onSwitch&&choice&&<span><Button variant="outline" size="sm" aria-pressed={option.on} onClick={()=>onSwitch(family.encode({...choice,...option.flip} as never))}>{option.on?'Zet uit':'Zet aan'}</Button>{option.on&&<small> Staat aan.</small>}</span>}</li>)}</ul>
+    {!onSwitch&&<p>Je zet deze opties aan in het filter Onderwerp, boven de lijst met wetten en kaders.</p>}
     {relatedOnWhole&&<p>Verwante normen uit andere onderwerpen voeg je toe bij het hele onderwerp {onSwitch?<button type="button" className="topic-about-link" onClick={()=>onSwitch(family.encode({topic:topic!.id,related:true}))}>{topic!.title}</button>:topic!.title}.</p>}</section>}
   </div>
   {(about.choose?.length||onBack)&&<section className="law-about-card"><h3><ArrowLeft size={18} aria-hidden="true"/>Een andere keuze maken</h3>

@@ -747,7 +747,7 @@ export default function FrameworkEditor() {
     if (cleaned.removed.length)
       setScopeNotice(
         cleaned.removed.map(normId).join(", ") +
-          " valt buiten de productscope en is niet opgenomen.",
+          " hoort niet (meer) bij de bronnen van Omnibus en is niet opgenomen.",
       );
     if (track && !projectContentEqual(next,draftRef.current)) rememberProject(action);
     draftRef.current = next;
@@ -829,7 +829,10 @@ export default function FrameworkEditor() {
     try {
       if (file.size > MAX_PROJECT_BYTES) throw new Error("Projectbestand is te groot.");
       const originalText=await file.text();
-      const original=expandProject(JSON.parse(originalText));
+      const parsed=JSON.parse(originalText);
+      // Een JSON-bestand dat geen Omnibus-project is, krijgt dezelfde duidelijke melding als een onleesbaar bestand (testronde 20-11).
+      if(!parsed||typeof parsed!=='object'||!['format','draft','version','included','investigation','research'].some(key=>key in parsed))throw new SyntaxError('geen project');
+      const original=expandProject(parsed);
       assertProjectCollections(original,availableCollections);
       await ensureCatalogue(projectCatalogueKeys(original));
       if(request!==importRequest.current)return;
@@ -856,7 +859,7 @@ export default function FrameworkEditor() {
       setResetNotice(opened.legacy ? 'Oud concept geopend. Dit bestand bevat geen modelwerkruimte; je huidige modellen blijven behouden.' : '');
     } catch (e) {
       if(request!==importRequest.current)return;
-      setImportFeedback(e instanceof SyntaxError ? "Dit bestand is geen leesbaar projectbestand. Kies een JSON-bestand dat met Bewaar project is gemaakt. Je huidige onderzoek is behouden."
+      setImportFeedback(e instanceof SyntaxError ? "Dit bestand is geen projectbestand van Omnibus. Kies een bestand dat met Bewaar project is gemaakt. Je huidige onderzoek is behouden."
         : (e instanceof Error ? e.message : "Project kon niet worden geopend.") + " Je huidige onderzoek is behouden.");
     }
     if (inputRef.current) inputRef.current.value = "";
@@ -1081,7 +1084,7 @@ export default function FrameworkEditor() {
     <EvidenceDisplayContext.Provider value={showSources}>
       <div className="framework-app compact-app" onBlurCapture={() => {typingRecoveryRef.current = null;}}>
         <a className="skip-link" href="#main-workspace" onClick={event=>{event.preventDefault();document.getElementById('main-workspace')?.focus();}}>
-          Naar referentiekader
+          Naar hoofdinhoud
         </a>
         <header className="brand-bar">
           <div>

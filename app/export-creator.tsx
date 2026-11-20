@@ -371,7 +371,7 @@ export default function ExportCreator({
             {testingTerminologies.map(option => <label key={option.id} className="creator-radio">
               <input type="radio" name="export-terminology" value={option.id} checked={testingTerminology === option.id}
                 onChange={() => { setTestingTerminology(option.id); setSaved(false); setError(""); }}/>
-              <span>{option.id === 'obw' ? 'Nederlands' : 'Engels'} <small>{option.id === 'obw' ? 'Opzet · Bestaan · Werking' : 'Design · Implementation · Operating'}</small></span>
+              <span>{option.id === 'obw' ? 'Nederlands' : 'Engels'} <small>{option.id === 'obw' ? 'Opzet · Bestaan · Werking' : 'Design · Implementation · Operating effectiveness'}</small></span>
             </label>)}
           </div>}
           {profile === "risk" && (
@@ -602,7 +602,7 @@ export default function ExportCreator({
             <FileSpreadsheet size={18} />
             {busy ? "Bestand maken…" : count === 0 && !modelBasis && !emptyBlocked ? "Download lege Excelopzet (.xlsx)" : "Download Excel (.xlsx)"}
           </Button>
-          {emptyBlocked && <p className="creator-help">Kies eerst toetspunten, of formuleer onderzoeksvragen in stap 3.</p>}
+          {emptyBlocked && <p className="creator-help">{draft.included.length?'Deze werkvorm hangt je toetspunten onder onderzoeksvragen. Maak die in stap 3, of kies een andere werkvorm.':'Kies eerst toetspunten, of formuleer onderzoeksvragen in stap 3.'}</p>}
           {!modelBasis && (
             <Button
               variant="outline"
@@ -613,7 +613,7 @@ export default function ExportCreator({
               <FileText size={16} aria-hidden="true"/>Download als tekst (.md)
             </Button>
           )}
-          {saved && <output className="creator-saved">Vorige download aangemaakt. Download opnieuw na wijzigingen.</output>}
+          {saved && <output className="creator-saved">Je Excel is gedownload. Bewaar ook je project (Bewaar project, bovenaan) om later verder te werken; download opnieuw als je iets wijzigt.</output>}
           <details className="creator-method">
             <summary>Over de werkvormen en bronnen</summary>
             <p>Zonder macro’s. Keuzelijsten, opzoeken en filters werken met gewone Excel-functies. Wijzigingen in Excel blijven in het werkboek en worden niet teruggelezen.</p>

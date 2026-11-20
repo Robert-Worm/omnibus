@@ -53,7 +53,7 @@ export function TopicFilter({family,value,onChange,sourceId,showValue=true,onOpe
      // Pijltjes, Home en End lopen door de regels, net als in de andere filters.
      const items=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])')],index=items.indexOf(document.activeElement as HTMLElement);
      event.preventDefault();items[event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}}>
-    <div className="topic-filter-list"><p className="topic-filter-unit">{jumps&&<span>Een keuze opent de lijst</span>}<span aria-hidden="true">toetspunten</span></p>
+    <div className="topic-filter-list"><p className="topic-filter-unit">{jumps&&<span>Kiezen toont de lijst</span>}<span aria-hidden="true">toetspunten</span></p>
      {row('alle','Alle onderwerpen',!choice,false,()=>onChange(''))}
      {topics.filter(topic=>norms(topic.id,'')>0||choice?.topic===topic.id).flatMap(topic=>[row(topic.id,topic.title,choice?.topic===topic.id&&!choice.sub,false,()=>pick(topic.id),choicePointCount(family,at(topic.id,''),sourceId)),
       ...(topic.subs||[]).filter(sub=>norms(topic.id,sub.id)>0).map(sub=>row(topic.id+sub.id,sub.title,choice?.topic===topic.id&&choice.sub===sub.id,true,()=>pick(topic.id,sub.id),choicePointCount(family,at(topic.id,sub.id),sourceId)))])}

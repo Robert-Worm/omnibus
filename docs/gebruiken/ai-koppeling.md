@@ -63,7 +63,7 @@ Doe dit bij de MCP-instellingen van je assistent:
 | Programma | het pad naar Node op je computer |
 | Argument | het pad naar `agent-tools/server.mjs` in je Omnibus-map |
 
-De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste paden voor jouw computer zien.
+De knop met het robotje rechtsboven in Omnibus (**AI koppelen**) laat de juiste paden voor jouw computer zien. De knop staat alleen in Omnibus op je eigen computer; de online versie kan geen AI-app op jouw computer bereiken en toont hem niet.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../images/ai-koppelen-donker.png">

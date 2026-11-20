@@ -35,8 +35,9 @@ export default function InterviewSettings({
       {fixedLevels ? <p className="creator-help">De gekozen vragen behouden hun gespreksniveau en formulering uit Modellen.</p> : <fieldset>
         <legend>Met wie spreek je?</legend>
         <p className="creator-help">
-          Kies niveaus voor vragen zonder vast gespreksniveau. Modelvragen die per niveau zijn gekozen behouden die keuze. Eigen vragen
-          behouden je formulering; pas ze zo nodig aan voor je gesprekspartner.
+          {levelCounts && levelCounts.total > 0
+            ? 'Kies met wie je spreekt. Per niveau zie je bij hoeveel van je toetspunten een vraag voor dat gesprek klaarstaat; alleen de gekozen niveaus komen in de leidraad.'
+            : 'Kies niveaus voor vragen zonder vast gespreksniveau. Modelvragen die per niveau zijn gekozen behouden die keuze. Eigen vragen behouden je formulering; pas ze zo nodig aan voor je gesprekspartner.'}
         </p>
         {interviewLevels.map((l) => (
           <label className="creator-check" key={l.id} htmlFor={"interview-level-" + l.id}>

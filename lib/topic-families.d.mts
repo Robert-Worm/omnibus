@@ -11,3 +11,5 @@ export function rememberListTopic(value:string,family:TopicFamily|null):void;
 export function takeListTopic():{value:string;family:string}|undefined;
 export function forgetTopicRequests():void;
 export function setTopicFamilies(definitions:unknown[]):string[];
+export function chosenTopics(draft:unknown,family:unknown):Set<string>;
+export function chosenTopicsText(draft:unknown):string;

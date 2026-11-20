@@ -26,7 +26,7 @@ export default function CriterionSearchResults({query,sourceIds,page,onPage,onOp
     <h2>Gevonden in normen <small>({matches.length})</small></h2>
     {corrections.length>0 && <p className="creator-help">Geen exacte treffers. Vergelijkbare normen voor: {corrections.join(' / ')}. Controleer of dit is wat je bedoelt.</p>}
     <p className="creator-help">Zoekt ook in normen, groepsnamen en toepassingsvoorwaarden. Een treffer zegt niet of een verplichting op jouw organisatie van toepassing is.</p>
-    {!matches.length && <p>Geen normen gevonden binnen deze zoekterm en filters. Probeer een ander woord of wis de filters.</p>}
+    {!matches.length && <p>Geen normen gevonden met deze zoekterm en filters. Probeer een ander woord of wis de filters.</p>}
     {groups.map(group=><section key={group.id} className="criterion-search-source">
       <h3>{group.rows[0].source.title}</h3>
       {scopeProvisions(group.id).count > 0 && <p className="source-scope-note">

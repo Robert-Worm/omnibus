@@ -712,7 +712,7 @@ export function FoundationCatalogue({
       </CatalogueFamily>
       {!filtered.length && (
         <p className="empty-framework">
-          Geen bronnen gevonden binnen deze zoekterm en filters. Wis je zoekopdracht of pas de filters aan.
+          Geen bronnen gevonden met deze zoekterm en filters. Wis je zoekopdracht of pas de filters aan.
         </p>
       )}
       {filtered.length>sourcePageSize && <div className="foundation-pagination">
