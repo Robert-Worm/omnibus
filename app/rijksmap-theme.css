@@ -101,7 +101,8 @@ body {
   border-top-left-radius:0;
   border-top-right-radius:0;
 }
-.framework-app .step-count { color: var(--primary); background: #d7e4f0; font-size: var(--text-meta); }
+/* Wit met een lijntje: leesbaar op elke stapachtergrond (ook de lichtblauwe actieve stap). */
+.framework-app .step-count { color: var(--primary); background: #fff; border: 1px solid #c5d5e3; font-size: var(--text-meta); font-weight: 600; }
 .framework-app .collection-navigation nav {
   padding: .25rem;
   border: 1px solid var(--border);
