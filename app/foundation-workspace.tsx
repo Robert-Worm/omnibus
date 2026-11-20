@@ -58,6 +58,7 @@ import TopicViewer from './topic-viewer';
 import {openTopic,openTopics,subscribeOpenTopics,closeTopic,takeWantedTopic,openTopicId,openTopicValue} from '@/lib/open-topics.mjs';
 import {topicFamilyOfChoice,requestViewerTopic,rememberListTopic} from '@/lib/topic-families.mjs';
 import AdmittedLawBrowser from './admitted-law-browser';
+import {isRepeatClick} from './single-activation';
 import {isAdmittedFoundation} from '@/lib/admitted-foundation.mjs';
 import {foundationQuestionPresentation} from '@/lib/source-question-presentation.mjs';
 import {NO_APPROVED_QUESTION} from '@/lib/investigation.mjs';
@@ -427,18 +428,16 @@ function LegacyFoundationWorkspace({
             {!showGroups&&<Button
               variant="outline"
               disabled={disabled || !view.filtered.some((p) => !p.selected)}
-              onClick={() =>
-                choose(
+              onClick={event=>isRepeatClick(event)||choose(
                   view.filtered.filter((p) => !p.selected),
                   true,
-                )
-              }
+                )}
             >
               {`Selecteer alle ${view.filtered.length} resultaten`}
             </Button>}
             {!showGroups&&<Button variant="outline"
               disabled={disabled || !view.filtered.some(p => p.selected)}
-              onClick={() => choose(view.filtered.filter(p => p.selected), false)}>
+              onClick={event=>isRepeatClick(event)||choose(view.filtered.filter(p => p.selected), false)}>
               Deselecteer resultaten
             </Button>}
           </div>
@@ -536,7 +535,7 @@ function LegacyFoundationWorkspace({
                             <Button variant="outline" disabled={disabled || g.selected === g.total}
                               onClick={() => choose(g.items.filter(p => !p.selected), true)}>Selecteer groepsresultaten</Button>
                             <Button variant="outline" disabled={disabled || !g.selected}
-                              onClick={() => choose(g.items.filter(p => p.selected), false)}>Deselecteer groepsresultaten</Button>
+                              onClick={event=>isRepeatClick(event)||choose(g.items.filter(p => p.selected), false)}>Deselecteer groepsresultaten</Button>
                           </Fragment>)}
                         </div>
                         {p.groupDescription && <p className="criterion-group-description">{p.groupDescription}</p>}

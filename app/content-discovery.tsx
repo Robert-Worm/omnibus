@@ -7,6 +7,7 @@ import {Checkbox} from '@/components/ui/checkbox';
 import {discoveryThemes,discoveryProcesses,discoveryItems,filterDiscovery,discoverySelected,chooseDiscovery,discoveryFacets,discoveryPage} from '@/lib/content-discovery.mjs';
 import type {Draft,Framework,Line} from '@/lib/framework-types';
 import {reportQuestionText} from '@/lib/source-question-presentation.mjs';
+import {isRepeatClick} from './single-activation';
 type Item={key:string;id:string;kind:string;item:Line;title:string;risk:string;criterion:string;sourceId:string;sourceTitle:string;processIds:string[];themeIds:string[]};
 const preview=(text:string)=>text.length>240?text.slice(0,240).replace(/\s+\S*$/,'')+'…':text;
 const basisLabel:Record<string,string>={EXPLICIT:'Norm uit het rapport',INFERRED:'Afgeleide norm',PROPOSED:'Voorgestelde norm',NOT_ESTABLISHED:'Norm niet vastgesteld'};
@@ -57,7 +58,7 @@ export default function ContentDiscovery({framework,draft,onChange,axis,category
    <Button variant="link" onClick={clear}>Wis zoekfilters</Button>
   </div>}
   <div className="discovery-result-heading"><div><h3>{process?.title||theme?.title||(selectedOnly?'Je gekozen inhoud':riskMode?'Risico’s om te verkennen':'Risico’s en normen')}</h3><output data-status-block="">{filtered.length} resultaten{filtered.length?` · ${result.current*8+1}–${Math.min((result.current+1)*8,filtered.length)} zichtbaar`:''}</output></div>
-   <details className="discovery-bulk"><summary>Meerdere kiezen</summary><Button variant="outline" disabled={disabled||!result.rows.length} onClick={()=>select(result.rows,true)}>Kies deze pagina ({result.rows.length})</Button><Button variant="outline" disabled={disabled||!filtered.length} onClick={()=>select(filtered,true)}>Kies alle {filtered.length} resultaten</Button><Button variant="ghost" disabled={disabled||!filtered.some(r=>discoverySelected(r,draft))} onClick={()=>select(filtered,false)}>Deselecteer deze resultaten</Button></details>
+   <details className="discovery-bulk"><summary>Meerdere kiezen</summary><Button variant="outline" disabled={disabled||!result.rows.length} onClick={()=>select(result.rows,true)}>Kies deze pagina ({result.rows.length})</Button><Button variant="outline" disabled={disabled||!filtered.length} onClick={event=>isRepeatClick(event)||select(filtered,true)}>Kies alle {filtered.length} resultaten</Button><Button variant="ghost" disabled={disabled||!filtered.some(r=>discoverySelected(r,draft))} onClick={event=>isRepeatClick(event)||select(filtered,false)}>Deselecteer deze resultaten</Button></details>
   </div>
   <p className="discovery-boundary">Historische risico’s zijn aanknopingspunten, geen vastgestelde problemen in jouw organisatie.</p>
   <div className="discovery-results">{result.rows.map((row:Item)=>{

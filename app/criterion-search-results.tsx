@@ -4,6 +4,7 @@ import {CollectionBadge} from './collection-choice';
 import {criterionIndex, searchCriteria} from '@/lib/criterion-search.mjs';
 import {preparedFoundationItems, sourceScopeProvisions} from '@/lib/foundation-workspace.mjs';
 import {foundations} from '@/lib/investigation.mjs';
+import {isRepeatClick} from './single-activation';
 // Building the search projection at module load delayed the first paint of the
 // whole application. It is only needed once someone actually searches; the
 // projection itself, and the criteria it points at, are unchanged.
@@ -44,7 +45,7 @@ export default function CriterionSearchResults({query,sourceIds,page,onPage,onOp
         <div className="criterion-result-actions">
           {item.auditRole!=='scope' && <Button variant={selectedKeys.includes(item.originKey)?'outline':'default'} disabled={disabled}
             aria-label={(selectedKeys.includes(item.originKey)?'Deselecteer norm ':'Voeg norm toe ')+item.id}
-            onClick={()=>onChoose(item.originKey,!selectedKeys.includes(item.originKey))}>
+            onClick={event=>isRepeatClick(event)||onChoose(item.originKey,!selectedKeys.includes(item.originKey))}>
             {selectedKeys.includes(item.originKey)?'Geselecteerd · deselecteren':'Toevoegen aan onderzoek'}
           </Button>}
           <Button variant="outline" disabled={disabled} aria-label={'Bekijk norm '+item.id} onClick={()=>onOpen(item.sourceId,item.id)}>Bekijk norm</Button>

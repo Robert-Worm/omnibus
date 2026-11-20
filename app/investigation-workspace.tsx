@@ -58,6 +58,7 @@ import {openTopic} from '@/lib/open-topics.mjs';
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {topicalSelection as topicSelection,chooseTopicalPoints as chooseTopicPoints} from '@/lib/topical-selection.mjs';
 import {frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
+import {isRepeatClick} from './single-activation';
 import type { Draft } from "@/lib/framework-types";
 
 // Creating this closure is cheap; the corpus search index is built on first search.
@@ -392,6 +393,7 @@ export function FoundationCatalogue({
   onSourceScopeChange,
   prepareSources = (_ids,action)=>action(),
   prepareSearch = (ids)=>prepareSources(ids,()=>{}),
+  loadFailed = false,
 }: {
   draft: Draft;
   onChange: (d: Draft) => void;
@@ -412,6 +414,8 @@ export function FoundationCatalogue({
   onSourceScopeChange?:(value:'laws'|'frameworks')=>void;
   prepareSources?:(ids:string[],action:()=>void)=>void;
   prepareSearch?:(ids:string[])=>void;
+  /** Laden is mislukt (de melding met Opnieuw proberen staat bovenaan): dan geen draaiend 'laden' meer. */
+  loadFailed?:boolean;
 }) {
   const wb = validateInvestigation(draft.investigation);
   const [sourceArea,setLocalSourceArea]=useState<'laws'|'frameworks'>('laws');
@@ -587,7 +591,7 @@ export function FoundationCatalogue({
     {hiddenCount>0&&<small className="topic-hidden-note">Ook gekozen: {hiddenCount} sectorspecifieke {hiddenCount===1?'toetspunt':'toetspunten'} die zonder de sectoroptie niet meetellen. <Button variant="link" disabled={disabled} onClick={dropHidden}>Haal weg</Button></small>}</p>
     <div className="catalogue-topic-actions">
      {onOpenTopic&&<Button variant="outline" onClick={()=>onOpenTopic(listChoice)}>Open in viewer<ArrowRight size={14} aria-hidden="true"/></Button>}
-     <Button disabled={disabled||!ready||!total} onClick={event=>{if(event.detail>1)return;/* tweede klik van een dubbelklik zet de keuze niet terug */const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?<><span className="loading-spin" aria-hidden="true"/>Toetspunten laden…</>:'Niets in deze lijst'}</Button>
+     <Button disabled={disabled||!ready||!total} onClick={event=>{if(isRepeatClick(event))return;const include=selected<total;if(include&&otherSelected>0)setSwap({from:names(basis==='wet'?'praktijk':'wet'),to:names(basis),count:otherSelected,why:(basis==='wet'?labels.practice?.toLaw:labels.practice?.toPractice)||'',run:()=>choose(true,true)});else choose(include,false);}}>{ready&&total>0&&selected>=total?'Deselecteer':ready?`Kies alle ${total} toetspunten`:own.length?loadFailed?'Toetspunten niet geladen':<><span className="loading-spin" aria-hidden="true"/>Toetspunten laden…</>:'Niets in deze lijst'}</Button>
     </div></div>;};
   const listRows=listMode?listSources.map((s:typeof foundations[number])=>{const selection=foundationSelection(draft,s.id),counts=lawCatalogueCounts(s.id),record=frameworkRecord(s.id),voor=scopeOfSource(s.id);
    const categories=Object.values(sourceDomains).filter(d=>(d as {ids:string[]}).ids.includes(s.id)).map(d=>(d as {title:string}).title);

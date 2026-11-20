@@ -16,6 +16,7 @@ import type {TopicFamily} from '@/lib/family-topics.mjs';
 import type {Draft} from '@/lib/framework-types';
 import TopicalLawBrowser from './topical-law-browser';
 import './topic-viewer.css';
+import {isRepeatClick} from './single-activation';
 
 type Props={family:TopicFamily;value:string;draft:Draft;onChange:(draft:Draft)=>void;disabled?:boolean;navigate:(page:string)=>void;
  /** Haal de volledige bron op en voer daarna de handeling uit. */prepare:(id:string,action:()=>void)=>void;
@@ -66,7 +67,7 @@ export default function TopicViewer({family,value,draft,onChange,disabled,naviga
     <output aria-live="polite">{what}{ready&&<> · {selected} van {total} toetspunten gekozen</>}{otherSelected>0&&<> · daarnaast {otherSelected} uit {basis==='wet'?family.labels.practice?.name:family.labels.law}</>}</output>
     {hiddenCount>0&&<p className="topic-hidden-note">Ook gekozen: {hiddenCount} sectorspecifieke {hiddenCount===1?'toetspunt':'toetspunten'} die zonder de sectoroptie niet meetellen. <Button variant="link" disabled={disabled} onClick={dropHidden}>Haal weg</Button></p>}</div>
    {notice&&<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>}
-   <div className="law-selection-actions"><Button variant="outline" className="law-topic-choose" disabled={disabled||!ready||!total} aria-pressed={allChosen} onClick={()=>chooseAll(!allChosen)}>{allChosen?'Deselecteer onderwerp':ready?`Kies alle ${total} toetspunten`:<><span className="loading-spin" aria-hidden="true"/>Toetspunten laden…</>}</Button></div></div>
+   <div className="law-selection-actions"><Button variant="outline" className="law-topic-choose" disabled={disabled||!ready||!total} aria-pressed={allChosen} onClick={event=>isRepeatClick(event)||chooseAll(!allChosen)}>{allChosen?'Deselecteer onderwerp':ready?`Kies alle ${total} toetspunten`:<><span className="loading-spin" aria-hidden="true"/>Toetspunten laden…</>}</Button></div></div>
   {tab==='about'?<TopicAbout family={family} value={value} topic={topic} parts={parts} basis={basis} title={title} onSwitch={onSwitch} onBack={onBack}/>:parts.map(part=><section className="topic-viewer-source" key={part.id} aria-label={title(part.id)}>
    <header><div><h3>{title(part.id)}</h3><p><span className="catalogue-pill" data-tone={part.laag==='wet'&&family.tone?family.tone:undefined}>{part.soort}</span>
      <span>{part.normIds.length} {part.normIds.length===1?'norm':'normen'}{part.state&&<> · {part.state.selected} van {part.state.total} toetspunten gekozen</>}</span></p></div>

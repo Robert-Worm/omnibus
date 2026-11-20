@@ -7,6 +7,7 @@ import {groupBuildingBlocks} from '@/lib/workflow-readability.mjs';
 import type {Framework} from '@/lib/framework-types';
 import {ResearchMaterialList} from './research-material-list';
 import DeferredViewerSection from './deferred-viewer-section';
+import {isRepeatClick} from './single-activation';
 
 export default function QuestionBuildingBlocks({lines,attached,linkedElsewhere,disabled,onLink,questions,targetId,onTargetChange}:{
   lines:Framework['lines']; attached:string[]; linkedElsewhere:string[]; disabled:boolean;
@@ -30,7 +31,7 @@ export default function QuestionBuildingBlocks({lines,attached,linkedElsewhere,d
         </select>
       </label>
       {available.length>0 ? <>
-        <Button variant="link" disabled={disabled||!visible.length} onClick={()=>setChosen(previous=>allVisible ? previous.filter(id=>!visible.some(l=>l.id===id)) : [...new Set([...previous,...visible.map(l=>l.id)])])}>
+        <Button variant="link" disabled={disabled||!visible.length} onClick={event=>isRepeatClick(event)||setChosen(previous=>allVisible ? previous.filter(id=>!visible.some(l=>l.id===id)) : [...new Set([...previous,...visible.map(l=>l.id)])])}>
           {allVisible ? 'Getoonde selectie wissen' : `Selecteer alle ${visible.length} getoonde bouwstenen`}
         </Button>
         <div className="bulk-link-items">{groups.map((group,index)=><DeferredViewerSection key={group.id}

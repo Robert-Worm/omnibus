@@ -30,6 +30,7 @@ import { sourceFields } from "@/lib/framework-source-items.mjs";
 import { branchCount } from "@/lib/framework-branches.mjs";
 import { defaultColumns, filterLines, pageSlice, selectLines } from "@/lib/workspace-view.mjs";
 import type { Draft, Line, ElementKey } from "@/lib/framework-types";
+import {isRepeatClick} from './single-activation';
 export type MatrixTextDensity = 'compact' | 'comfortable' | 'full';
 function SubjectExplanation({id,text}:{id:string;text:string}){
   const [open,setOpen]=useState(false);
@@ -401,7 +402,7 @@ export default function CompactMatrix({
         <Button
           variant="outline"
           disabled={disabled || selectableRows(filtered).length === 0}
-          onClick={event => { if (event.detail > 1) return; /* een dubbelklik kiest één keer */ if (pointSelection) pointSelection.onBulk(filtered.map(l=>l.id)); else selectRows(filtered.map(l=>l.id),!all); }}
+          onClick={event => { if (isRepeatClick(event)) return; if (pointSelection) pointSelection.onBulk(filtered.map(l=>l.id)); else selectRows(filtered.map(l=>l.id),!all); }}
         >
           {pointSelection ? `Kies alle toetspunten (${filtered.reduce((n,l)=>n+(pointSelection.counts[l.id]?.total??0),0)})` : `${all ? "Deselecteer" : "Selecteer"} alle ${filtered.length} resultaten`}
         </Button>

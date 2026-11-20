@@ -1035,6 +1035,7 @@ export default function FrameworkEditor() {
               onPrepareSource={id=>{void prefetchCatalogue([foundationOverviewKey(id,aboutViews.laws)]);}}
               prepareSources={(ids,action)=>withContent(ids.map(id=>'foundation:'+id),action)}
               prepareSearch={ids=>withContent(foundationSearchKeys(ids),()=>{})}
+              loadFailed={contentFailure}
               sourceScope={page==='risk-start'?(riskArea==='laws'?'laws':'frameworks'):foundationCatalogueScope}
               onSourceScopeChange={page==='risk-start'?(value:'laws'|'frameworks')=>chooseRiskArea(value,true):setFoundationCatalogueScope}
               guided={page==='risk-start'}

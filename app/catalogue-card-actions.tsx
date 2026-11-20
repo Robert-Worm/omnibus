@@ -3,6 +3,7 @@ import {useId,useEffect,useRef} from 'react';
 import {ArrowRight} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
+import {isRepeatClick} from './single-activation';
 
 export default function CatalogueCardActions({title,opened,onOpen,onPrepare,onToggle,disabled=false,selection,openId,layout='toggles'}:{
  title:string;opened:boolean;onOpen:()=>void;onToggle:(value:boolean)=>void;disabled?:boolean;
@@ -21,7 +22,7 @@ export default function CatalogueCardActions({title,opened,onOpen,onPrepare,onTo
    {layout==='buttons' ? selection&&<Button variant="outline" disabled={disabled||selection.disabled}
      aria-pressed={selection.partial?'mixed':selection.checked}
      aria-label={(selection.checked?'Deselecteer ':'Selecteer ')+selection.label.toLowerCase()+': '+title}
-     onClick={()=>selection.onChange(!selection.checked)}>
+     onClick={event=>isRepeatClick(event)||selection.onChange(!selection.checked)}>
      {selection.checked?'Deselecteer ':'Selecteer '}{selection.label.toLowerCase()}
    </Button> : <div className="catalogue-card-toggles">
      <label className="directory-check" htmlFor={id+'-open'}><Checkbox id={id+'-open'} aria-label={'Open houden: '+title} checked={opened} disabled={disabled} onCheckedChange={value=>onToggle(Boolean(value))}/>Open houden</label>
