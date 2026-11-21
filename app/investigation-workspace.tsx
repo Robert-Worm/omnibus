@@ -57,7 +57,7 @@ import {topicalPackage as topicPackage} from '@/lib/topical-content.mjs';
 import {openTopic} from '@/lib/open-topics.mjs';
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogHeader,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {topicalSelection as topicSelection,chooseTopicalPoints as chooseTopicPoints} from '@/lib/topical-selection.mjs';
-import {frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
+import {sourceKindLabel,frameworkRecord,frameworkFamilies,shortDate,shortIssuer} from '@/lib/framework-register.mjs';
 import {isRepeatClick} from './single-activation';
 import type { Draft } from "@/lib/framework-types";
 
@@ -601,7 +601,7 @@ export function FoundationCatalogue({
    const shownSelection=part||selection;
    return {id:s.id,title:frameworkTitle(s.title),opened:wb.sourceIds.includes(s.id),selected:shownSelection.selected,total:shownSelection.total,all:shownSelection.all,partial:shownSelection.partial,
     narrowed:scoped?`Alleen het onderwerp ${listFamily!.label(listChoice)}`:undefined,counting:Boolean(scoped&&!part),
-    kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:foundationKinds[s.kind as keyof typeof foundationKinds]||'',categories,record,viaContent:false,audience:voor?.text||'',audiences:sourceAudiences(s.id) as (keyof typeof audienceGroups)[],usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
+    kind:scopeFoundationSources([s],'laws').length?'Wet':'Kader',kindLabel:sourceKindLabel(s.id,foundationKinds[s.kind as keyof typeof foundationKinds]||''),categories,record,viaContent:false,audience:voor?.text||'',audiences:sourceAudiences(s.id) as (keyof typeof audienceGroups)[],usage:String(s.usage||''),groups:counts?.groups??0,norms:counts?.norms??0};})
    .flatMap(row=>{if(!query.trim())return [row];const q=query.trim().toLocaleLowerCase('nl');
     const own=[...row.audiences.map(a=>audienceGroups[a].label),row.title,row.kind,row.kindLabel,...row.categories,row.record.familyTitle,row.record.work,row.record.version,row.record.instrument,row.record.issuer,row.record.reference,row.audience,row.usage,shortDate(row.record.published),shortDate(row.record.effective),shortDate(row.record.applies)].join(' ').toLocaleLowerCase('nl').includes(q);
     return own?[row]:listSearch!.sources.some((s:{id:string})=>s.id===row.id)?[{...row,viaContent:true}]:[];}):[];
@@ -698,7 +698,7 @@ export function FoundationCatalogue({
           <div key={s.id}>
             <article key={s.id} data-open={wb.sourceIds.includes(s.id)} className={selection.selected ? "chosen" : ""}>
               <div className="directory-child-body">
-                <span className="catalogue-card-id">{foundationKinds[s.kind as keyof typeof foundationKinds]}</span>
+                <span className="catalogue-card-id">{sourceKindLabel(s.id,foundationKinds[s.kind as keyof typeof foundationKinds])}</span>
                 <h4>
                 <button className="source-title" onClick={() => prepareSources([s.id],()=>setActive(s.id))}>
                   {frameworkTitle(s.title)}
