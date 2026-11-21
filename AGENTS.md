@@ -58,6 +58,7 @@ De bestaande viewer voor het CIO-stelsel is het standaardontwerp voor elke nieuw
 - Laden houdt rekening met een drukke server: 503 en 429 krijgen een paar nieuwe pogingen met de wachttijd uit `Retry-After` (`lib/database-source-client.mjs`). Andere fouten worden niet herhaald.
 - De gebruiker ziet nooit een browsertekst als "Failed to fetch": netwerkfouten worden een Nederlandse melding met "Opnieuw proberen", en een mislukte lading laat geen wiel draaien.
 - Na een wijziging aan laden, selecteren of navigatie: `npm run hunt:bugs -- --url <lokale server> --seeds 1,2,3 --deep --memory` (willekeurige, herhaalbare klik- en typrondes plus een geheugenronde; vraagt Playwright op de machine, zie de kop van `scripts/bug-hunt.mjs`). Nul bevindingen en een vlak geheugen na de eerste ronde zijn de norm.
+- Een status in zichtbare tekst noemt vaste data, nooit een stand op een peildatum (B-101). Schrijf *Uitgegeven in december 2025 en verplicht vanaf 15 december 2026*, niet *op peildatum … nog niet van kracht*: die zin wordt onjuist zodra de datum voorbij is. Een correctie voor een bron in de oudere aflevervorm gaat in een eigen deel mee met die bron (`content:revise`).
 
 ## Samenwerken met de andere AI-assistent
 
