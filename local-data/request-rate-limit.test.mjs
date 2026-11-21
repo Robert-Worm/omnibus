@@ -67,14 +67,14 @@ function fixture(options = {}, initialTime = 0) {
   };
 }
 
-test('defaults admit exactly 120 immediate requests and refill 60 per second', () => {
-  assert.deepEqual(publicRequestRateLimits, { capacity: 120, refillPerSecond: 60 });
+test('defaults admit one room behind one address: 3000 immediate requests, 300 per second after', () => {
+  assert.deepEqual(publicRequestRateLimits, { capacity: 3000, refillPerSecond: 300 });
   assert(Object.isFrozen(publicRequestRateLimits));
   const { limiter, at } = fixture();
-  for (let i = 0; i < 120; i++) assert.deepEqual(limiter.take(), allowed);
+  for (let i = 0; i < 3000; i++) assert.deepEqual(limiter.take(), allowed);
   assert.deepEqual(limiter.take(), denied(1));
   at(1000);
-  for (let i = 0; i < 60; i++) assert.deepEqual(limiter.take(), allowed);
+  for (let i = 0; i < 300; i++) assert.deepEqual(limiter.take(), allowed);
   assert.deepEqual(limiter.take(), denied(1));
 });
 

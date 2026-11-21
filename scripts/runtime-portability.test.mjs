@@ -95,12 +95,15 @@ test('portable package preserves readiness and capacity from a path with spaces 
       assert.equal((await request(url, '/api/v1/ready?release=' + f.release)).status, 400);
 
       const held = await Promise.all(Array.from({ length: 32 }, () => new Promise((resolve, reject) => {
-        const req = http.get(url + asset, { agent: false, headers: { 'Accept-Encoding': 'gzip' } }, res => {
+        const req = http.get(url + asset, { agent: false }, res => {
           res.pause(); res.on('error', () => {}); resolve(res);
         });
         clients.push(req); req.on('error', reject);
       })));
-      assert(held.every(res => res.statusCode === 200 && res.headers['content-encoding'] === 'gzip'));
+      assert(held.every(res => res.statusCode === 200 && res.headers['content-encoding'] === undefined));
+      // Shared compressed bytes stay available while every scarce slot is taken.
+      const packed = await request(url, asset, { headers: { 'Accept-Encoding': 'gzip' } });
+      assert.equal(packed.status, 200); assert.equal(packed.headers['content-encoding'], 'gzip');
       for (const path of ['/api/v1/ready', '/api/v1/health', '/', asset]) {
         const busy = await request(url, path);
         assert.equal(busy.status, 503);

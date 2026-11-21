@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import http from 'node:http';
 import {mkdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {join} from 'node:path';
-import {brotliCompressSync, brotliDecompressSync} from 'node:zlib';
+import {brotliCompressSync, brotliDecompressSync, gunzipSync} from 'node:zlib';
 import {setImmediate as nextTurn} from 'node:timers/promises';
 import {runtimeFixture} from './test-support/runtime-fixture.mjs';
 import {CatalogueRepository, digest} from './repository.mjs';
@@ -81,4 +81,37 @@ await test('ordinary asset stream errors are logged, but client disconnects are 
   await failed;assert.equal(logs.length,1);
   assert.deepEqual(Object.keys(JSON.parse(logs[0])),['event','requestId','status','time']);
   assert.ok(!logs[0].includes(f.dir));assert.ok(!logs[0].includes('synthetic.js'));
+});
+
+await test('ordinary web files are compressed once, shared, and only from bytes verified at start',async t=>{
+  const f=fixture(t), source='/* '+'synthetic application code 🧭 '.repeat(200)+' */';
+  const file=join(f.webRoot,'assets','application-synthetic.js');
+  writeFileSync(file,source);
+  const app=await f.start(), logs=[];
+  t.mock.method(console,'error',line=>logs.push(line));
+  const get=encoding=>request(app,'/assets/application-synthetic.js',{Host:authority,'Accept-Encoding':encoding});
+  // A file that changed after the start is refused, never compressed or kept (gzip is not prepared in advance).
+  writeFileSync(file,source.replace('code','c0de'));
+  const changed=await get('gzip');
+  assert.equal(changed.status,500);assert.equal(changed.body.length,0);
+  assert.equal(changed.headers.etag,undefined);assert.equal(changed.headers['cache-control'],'no-store');
+  await nextTurn();assert.equal(logs.length,1);
+  writeFileSync(file,source);
+  const packed=await Promise.all(Array.from({length:12},(_,i)=>get(i%2?'br':'gzip')));
+  for(const [i,response] of packed.entries()) {
+    assert.equal(response.status,200);
+    assert.equal(response.headers['content-encoding'],i%2?'br':'gzip');
+    assert.equal(response.headers['content-length'],String(response.body.length));
+    assert.equal(response.headers['cache-control'],'private, max-age=86400');assert.match(response.headers.etag,/^W\/"[a-f0-9]{64}"$/);
+    assert.equal((i%2?brotliDecompressSync(response.body):gunzipSync(response.body)).toString(),source);
+  }
+  // Once kept, the verified bytes are served from memory: a later change on disk cannot alter them.
+  rmSync(file);
+  for(const encoding of ['br','gzip']) {
+    const kept=await get(encoding);
+    assert.equal(kept.status,200);
+    assert.equal((encoding==='br'?brotliDecompressSync(kept.body):gunzipSync(kept.body)).toString(),source);
+  }
+  assert.equal((await request(app,'/assets/application-synthetic.js',{Host:authority,'If-None-Match':packed[0].headers.etag})).status,304);
+  assert.equal(logs.length,1,JSON.stringify(logs));
 });

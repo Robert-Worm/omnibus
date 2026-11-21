@@ -25,3 +25,15 @@ test('blijft binnen de grens: het minst recent gebruikte gaat eruit, te grote an
   const big=await cache.compress('groot','br',noise(40000));
   assert.ok(big.length>sample+10);assert.equal(cache.get('groot','br'),undefined,'wel geleverd, niet bewaard');
 });
+
+test('a running compression can be joined and is gone once kept', async () => {
+  const cache = createContentTransportCache(), raw = Buffer.from('gedeelde inhoud '.repeat(500));
+  assert.equal(cache.pending('k', 'br'), undefined);
+  const first = cache.compress('k', 'br', raw), joined = cache.pending('k', 'br');
+  assert.equal(joined, first);
+  assert.equal(cache.pending('k', 'gzip'), undefined, 'another encoding is another answer');
+  assert.equal(await joined, await first);
+  assert.equal(cache.pending('k', 'br'), undefined);
+  assert.equal(cache.get('k', 'br'), await first);
+  assert.deepEqual({hits: cache.stats().hits, misses: cache.stats().misses}, {hits: 1, misses: 1});
+});

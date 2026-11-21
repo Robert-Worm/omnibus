@@ -61,6 +61,8 @@ export function createContentTransportCache(limits = contentTransportLimits) {
       }
       return job;
     },
+    /** Een lopende compressie voor deze sleutel en codering (om bij aan te sluiten), of undefined. */
+    pending(key, encoding) { return pending.get(encoding + '|' + key); },
     /** Alles weg (de database is veranderd: eerst opnieuw lezen en controleren). */
     clear() { entries.clear(); bytes = 0; },
     stats: () => ({entries: entries.size, bytes, hits, misses}),

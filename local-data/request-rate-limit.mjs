@@ -65,9 +65,13 @@ export function requestVisitorAddress({publicMode = false, sliplaneGateway, onFa
   };
 }
 
-// Per-peer admission budget for explicit public mode. These initial values
-// leave room for viewer bursts; they are not hosted sizing or a rate/fairness SLA.
-export const publicRequestRateLimits = Object.freeze({ capacity: 120, refillPerSecond: 60 });
+// Per-peer admission budget for explicit public mode; not a rate/fairness SLA.
+// Sized for one room behind one address: about forty people who open the site and
+// choose a topic at the same moment (measured: roughly 70 requests each, 2,800 in
+// one burst). The old budget (120, 60 per second) refused most of that room
+// (21 November 2026). The cost per request is bounded elsewhere: answers that need
+// work share 32 slots, and repeated content is served from kept bytes.
+export const publicRequestRateLimits = Object.freeze({ capacity: 3000, refillPerSecond: 300 });
 export const publicVisitorLimits = Object.freeze({ maxVisitors: 4096, idleMs: 60_000 });
 
 /** One shared token bucket: constant memory, no client identity, timers or queue. */

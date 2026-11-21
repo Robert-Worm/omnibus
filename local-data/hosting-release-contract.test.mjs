@@ -10,6 +10,7 @@ import {prepareWebResources} from './web-resources.mjs';
 import {publishRuntime, readRuntimePublication} from './runtime-publication.mjs';
 import {runtimeContractHash} from '../lib/runtime-contract-identity.mjs';
 import {serveCatalogue} from './server.mjs';
+import {publicRequestRateLimits} from './request-rate-limit.mjs';
 
 // Future integration contract, deliberately separate from baseline regression
 // suites. No skips or baseline-status substitutions: public mode must work.
@@ -284,7 +285,7 @@ test('hosting failures keep fixed CORS, independent liveness and minimal private
 
 test('one transport peer cannot spend another budget; exact probes stay reachable and refusal logs are bounded', async t => {
   // Freeze the limiter's standard monotonic clock only in this test. No sleeps, parallel
-  // pressure or throughput claims: 120 sequential admissions exercise one burst.
+  // pressure or throughput claims: one burst of sequential admissions, as large as the budget.
   let clock = 1000;
   t.mock.method(performance, 'now', () => clock);
   const f = fixture(t), app = await f.start(), logs = captureLogs(t);
@@ -308,7 +309,8 @@ test('one transport peer cannot spend another budget; exact probes stay reachabl
   });
   for (const path of ['/api/v1/health', '/api/v1/ready'])
     assert.equal((await attempt(0, app, path)).status, 200);
-  for (let index = 0; index < 120; index++)
+  const burst = publicRequestRateLimits.capacity;
+  for (let index = 0; index < burst; index++)
     assert.equal((await attempt(index)).status, 200, `public burst admission ${index + 1}`);
   const admittedReads = databaseReads.mock.callCount();
   assert(admittedReads > 0, 'the admitted content and readiness requests used the real database');
@@ -316,7 +318,7 @@ test('one transport peer cannot spend another budget; exact probes stay reachabl
     '/api/v1/x/../health', '/api/v1/health/', '/'+canary+'?q='+canary];
   let refusals = 0, firstRefusal;
   for (const [index, path] of blockedPaths.entries()) {
-    const denied = await attempt(120 + index, app, path);
+    const denied = await attempt(burst + index, app, path);
     refusals++; firstRefusal ??= denied;
     assert.equal(denied.status, 429, path);
     assert.equal(denied.headers['retry-after'], '1');
@@ -352,7 +354,7 @@ test('one transport peer cannot spend another budget; exact probes stay reachabl
   clock += 1000;
   assert.equal((await attempt(124)).status, 200, 'admission recovers after refill');
   clock = 61_000;
-  for (let i = 0; i < 120; i++) assert.equal((await attempt(i)).status, 200);
+  for (let i = 0; i < burst; i++) assert.equal((await attempt(i)).status, 200);
   const later = await attempt(0);
   assert.equal(later.status, 429); assert.equal(logs.length, 2);
   const summary = JSON.parse(logs[1][0]);

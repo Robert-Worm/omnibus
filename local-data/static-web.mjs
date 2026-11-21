@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync, lstatSync, realpathSync, createReadStream } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { join, relative, extname } from 'node:path';
 import { responseEncoding, createResponseCompressor } from './response-compression.mjs';
 import { pipeline, Readable } from 'node:stream';
@@ -7,6 +8,12 @@ import { brotliDecompressSync } from 'node:zlib';
 import { readRuntimePublication } from './runtime-publication.mjs';
 import { publicationReadScope } from './web-resources.mjs';
 import { runtimeContractHash } from '../lib/runtime-contract-identity.mjs';
+import { createContentTransportCache } from './content-transport-cache.mjs';
+
+// De webbestanden veranderen niet zolang de server draait. Ze werden bij elk verzoek opnieuw gecomprimeerd; met een
+// zaal vol bezoekers tegelijk liep de server daarop vast (gemeten op 21 november 2026: vijf bezoekers tegelijk gaven
+// al weigeringen). Het gecomprimeerde bestand wordt nu één keer gemaakt en daarna gedeeld.
+export const staticTransportLimits = Object.freeze({ bytes: 24 * 1024 * 1024, entryBytes: 8 * 1024 * 1024 });
 
 const types = { '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.woff2': 'font/woff2', '.json': 'application/json; charset=utf-8', '.html': 'text/html; charset=utf-8' };
@@ -80,6 +87,35 @@ export function createStaticWeb(root, repository) {
   }
   walk(join(root, 'assets'));
   const version = publicBuildIdentity(manifest, files);
+  const packedCache = createContentTransportCache(staticTransportLimits), reading = new Map();
+  // Lees het bestand opnieuw en vergelijk het met het controlegetal van de start: alleen gecontroleerde bytes worden
+  // gecomprimeerd en bewaard. Gelijktijdige verzoeken om hetzelfde bestand delen één lezing en één compressie.
+  const packed = (file, encoding) => {
+    const id = encoding + '|' + file.sha256;
+    let job = reading.get(id);
+    if (!job) {
+      job = readFile(file.path).then(bytes => {
+        if (bytes.length !== file.bytes || createHash('sha256').update(bytes).digest('hex') !== file.sha256)
+          throw Error('Public build file changed');
+        return packedCache.compress(file.sha256, encoding, bytes);
+      }).finally(() => reading.delete(id));
+      reading.set(id, job);
+    }
+    return job;
+  };
+  // Een antwoord uit gedeelde bytes kost per bezoeker geen eigen geheugen of rekentijd.
+  const sharedBytes = (file, encoding) => Boolean(file) && !file.verifiedContent && (encoding === 'br' || encoding === 'gzip');
+  const shared = (pathname, header) => {
+    const file = files.get(pathname);
+    return sharedBytes(file, file ? responseEncoding(header, file.bytes) : null);
+  };
+  /** Maak de gecomprimeerde bestanden vooraf klaar, één tegelijk; een fout hier raakt geen verzoek. */
+  const warm = async () => {
+    for (const file of files.values()) {
+      if (!sharedBytes(file, responseEncoding('br', file.bytes))) continue;
+      try { await packed(file, 'br'); } catch { /* het verzoek zelf meldt de fout */ }
+    }
+  };
   const serve = (pathname, req, res, requestFailed = () => {}) => {
     const file = files.get(pathname);
     if (!file) return false;
@@ -104,6 +140,22 @@ export function createStaticWeb(root, repository) {
         pipeline(stream, createResponseCompressor(encoding, file.bytes), res, completed);
       } else pipeline(stream, res, completed);
     };
+    if (sharedBytes(file, encoding)) {
+      const sendPacked = buffer => {
+        if (res.destroyed || res.headersSent) return;
+        res.setHeader('Content-Encoding', encoding); res.setHeader('Content-Length', String(buffer.length));
+        res.writeHead(200); res.end(buffer);
+      };
+      const ready = packedCache.get(file.sha256, encoding);
+      if (ready) { sendPacked(ready); return true; }
+      packed(file, encoding).then(sendPacked, () => {
+        if (res.destroyed) return;
+        requestFailed();
+        if (res.headersSent) { res.destroy(); return; }
+        res.setHeader('Cache-Control', 'no-store'); res.removeHeader('ETag'); res.writeHead(500); res.end();
+      });
+      return true;
+    }
     if (file.verifiedContent) {
       // Derived report parts retain the original content route's fail-closed
       // byte check, including changes after startup. Send the checked buffer,
@@ -142,6 +194,6 @@ export function createStaticWeb(root, repository) {
     } else send(createReadStream(file.path));
     return true;
   };
-  return { serve, readScope, version, pins: Object.freeze({ release: manifest.release,
+  return { serve, shared, warm, readScope, version, pins: Object.freeze({ release: manifest.release,
     publication: manifest.publication, contract: manifest.contract }) };
 }

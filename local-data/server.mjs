@@ -19,7 +19,10 @@ import {startupCheck,startupFailureReason} from './startup-diagnostics.mjs';
 
 // Single-process resource ceilings, not per-user fairness or a request-rate SLA.
 // Leave room for a viewer burst while bounding retained JSON/compression/file streams.
-export const catalogueRequestLimits=Object.freeze({activeResponses:32,connections:128,responseMs:30000});
+// activeResponses: antwoorden die eigen werk of geheugen kosten (databaselezing, compressie, een eigen buffer).
+// sharedResponses: antwoorden uit gedeelde, al gecomprimeerde bytes (webbestanden, bewaarde inhoud); die kosten per
+// bezoeker alleen een verbinding. Een zaal die tegelijk de site opent past daarmee ruim (#druk, 21 november 2026).
+export const catalogueRequestLimits=Object.freeze({activeResponses:32,sharedResponses:512,connections:512,responseMs:30000});
 
 // Loopback by default; public request policy requires explicit configuration.
 // This is NOT hosted acceptance, DDoS protection or an authentication solution.
@@ -49,7 +52,7 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
  // Retain only a saturating count of repeats, never addresses or request input.
  const refusalLogLimit=hosting.publicMode?createRequestRateLimit({capacity:1,refillPerSecond:1/60}):null;
  let suppressedRefusals=0;
- let activeResponses=0;
+ let activeResponses=0,sharedResponses=0;
  const transportCache=createContentTransportCache();
  // Zonder echte database (een nagebootste bron) is een wijziging niet te zien: dan wordt er niets bewaard.
  const stampable=typeof repository?.db?.prepare==='function';
@@ -122,6 +125,12 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    }else{res.writeHead(status);res.end(raw);}
   };
   const reply=(status,value)=>replyJson(status,JSON.stringify(value));
+  // Dit antwoord blijkt uit gedeelde bytes te komen: geef de krappe plek terug en tel het in de ruime grens.
+  let shared=false,admitted=false,released=false;
+  const shareSlot=()=>{
+   if(!admitted||shared||released||sharedResponses>=catalogueRequestLimits.sharedResponses)return;
+   shared=true;activeResponses--;sharedResponses++;
+  };
   // Onveranderlijke inhoud: het gecomprimeerde antwoord wordt bewaard (content-transport-cache.mjs). `produce` leest
   // en controleert de inhoud alleen als die nog niet bewaard is; null betekent: niet gevonden.
   const replyContent=(key,produce)=>{
@@ -139,10 +148,24 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
    if(known!==undefined){
     const encoding=responseEncoding(header,known),buffer=encoding&&encoding!=='identity'?transportCache.get(key,encoding):undefined;
     if(buffer){
+     shareSlot();
      res.setHeader('Vary','Accept-Encoding');res.setHeader('Cache-Control',IMMUTABLE);
      res.setHeader('Content-Encoding',encoding);res.setHeader('Content-Length',String(buffer.length));
      res.writeHead(200);res.end(buffer);return;
     }
+   }
+   // Wordt dit antwoord op dit moment al voor een andere bezoeker gemaakt? Sluit dan daarbij aan in plaats van de
+   // inhoud nog eens te lezen en te controleren. (Alleen antwoorden boven 1 kB worden gecomprimeerd en bewaard.)
+   const wanted=responseEncoding(header,2048),running=wanted==='br'||wanted==='gzip'?transportCache.pending(key,wanted):undefined;
+   if(running){
+    shareSlot();
+    running.then(buffer=>{
+     if(res.destroyed||res.headersSent)return;
+     res.setHeader('Vary','Accept-Encoding');res.setHeader('Cache-Control',IMMUTABLE);
+     res.setHeader('Content-Encoding',wanted);res.setHeader('Content-Length',String(buffer.length));
+     res.writeHead(200);res.end(buffer);
+    },()=>{requestFailed();if(!res.headersSent)reply(500,{error:'Request failed'});else res.destroy();});
+    return;
    }
    const raw=produce();
    if(raw===null)return reply(404,{error:'Not found'});
@@ -209,18 +232,20 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   }
   // Admit before any database read, JSON serialization or static stream starts.
   // No waiting queue or trust in forwarded identity headers.
-  if(activeResponses>=catalogueRequestLimits.activeResponses){
+  // Een webbestand uit gedeelde bytes telt mee in de ruime grens, niet in de krappe.
+  shared=staticWeb?.shared(req.url,req.headers['accept-encoding'])===true;
+  if(shared?sharedResponses>=catalogueRequestLimits.sharedResponses:activeResponses>=catalogueRequestLimits.activeResponses){
    res.setHeader('Retry-After','1');res.setHeader('Connection','close');
    return reply(503,{error:'Server busy; retry shortly'});
   }
-  activeResponses++;
+  if(shared)sharedResponses++;else activeResponses++;
+  admitted=true;
   // requestTimeout bounds incoming requests; socket inactivity alone can be
   // extended by a trickling reader. Bound total response lifetime as well.
   const responseDeadline=setTimeout(()=>res.destroy(),catalogueRequestLimits.responseMs);
   responseDeadline.unref();
-  let released=false;
   const releaseResponse=()=>{
-   if(released)return;released=true;activeResponses--;clearTimeout(responseDeadline);
+   if(released)return;released=true;if(shared)sharedResponses--;else activeResponses--;clearTimeout(responseDeadline);
    res.off('finish',releaseResponse);res.off('close',releaseResponse);
   };
   // finish releases completed writes; close covers aborts and pipeline errors.
@@ -312,6 +337,8 @@ export async function serveCatalogue(repository,{port=0,webRoot,publicOrigin,lis
   });
  }else server.on('checkContinue',(_req,res)=>{res.writeHead(417,{'Connection':'close'});res.end();});
  await startupCheck('listener',()=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,hosting.listenHost,resolve);}));
+ // Na de start, zonder verzoeken te laten wachten: de gecomprimeerde webbestanden alvast klaarzetten.
+ staticWeb?.warm().catch(()=>{});
  return {server,url:`http://127.0.0.1:${server.address().port}`,close:()=>new Promise((resolve,reject)=>{
   // Drain active reads, but do not let a slow client prevent shutdown indefinitely.
   const deadline=setTimeout(()=>server.closeAllConnections(),5000);deadline.unref();

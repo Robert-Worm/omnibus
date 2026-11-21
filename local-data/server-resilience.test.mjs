@@ -102,7 +102,7 @@ test('ordinary viewer bursts preserve publication data, gzip, static cache and k
     const before = digest(readFileSync(f.databasePath));
     const app = await start(t, f.repository, { webRoot: f.webRoot });
     assert.equal(app.server.address().address, '127.0.0.1');
-    assert.deepEqual(limits, { activeResponses: 32, connections: 128, responseMs: 30000 });
+    assert.deepEqual(limits, { activeResponses: 32, sharedResponses: 512, connections: 512, responseMs: 30000 });
     // Three bursts of 24 requests: content, source index and page from eight viewers.
     for (let round = 0; round < 3; round++) {
       await Promise.all(Array.from({ length: 8 }, async () => {
@@ -226,9 +226,16 @@ test('static streams share the bound and release capacity after file errors', { 
   t.diagnostic(`Durable fixture: ${(performance.now() - fixtureStarted).toFixed(1)} ms`);
   await t.test('static runtime after durable fixture', { timeout: 20000 }, async t => {
     const app = await start(t, f.repository, { webRoot: f.webRoot });
-    const held = await Promise.all(Array.from({ length: 32 }, (_, i) => app.paused(f.assetPath, i % 2 === 0 ? 'gzip' : null)));
+    // Uncompressed streams cost a reader of their own and fill the scarce bound.
+    const held = await Promise.all(Array.from({ length: 32 }, () => app.paused(f.assetPath, null)));
     assert(held.every(client => client.res.statusCode === 200));
     assert.equal((await request(app.url, '/')).status, 503);
+    // Shared compressed bytes do not need a scarce slot: a full room can still load the page.
+    for (let i = 0; i < 40; i++) {
+      const packed = await request(app.url, f.assetPath, { 'Accept-Encoding': 'gzip' });
+      assert.equal(packed.status, 200); assert.equal(packed.headers['content-encoding'], 'gzip');
+      assert.equal(packed.headers['content-length'], String(packed.body.length));
+    }
     assert.equal((await request(app.url, '/api/v1/ready')).status, 503, 'readiness cannot bypass capacity');
     assert.equal((await request(app.url, `/api/v1/content/${f.refs.content.hash}?release=${f.release}`)).status, 503);
     for (const client of held) client.req.destroy();
@@ -281,13 +288,13 @@ test('partial headers are connection-bounded and capacity returns after disconne
   t.after(() => { for (const socket of sockets) socket.destroy(); });
   const count = () => new Promise((resolve, reject) => app.server.getConnections((error, n) => error ? reject(error) : resolve(n)));
   let dropped = 0; app.server.on('drop', () => dropped++);
-  for (let i = 0; i < 128; i++) await new Promise((resolve, reject) => {
+  for (let i = 0; i < limits.connections; i++) await new Promise((resolve, reject) => {
     const socket = net.connect(port, '127.0.0.1', () => { socket.write('GET / HTTP/1.1\r\n'); resolve(); });
     sockets.push(socket); socket.on('error', reject);
   });
-  assert.equal(await count(), 128);
+  assert.equal(await count(), limits.connections);
   await assert.rejects(request(app.url));
-  assert.equal(dropped, 1); assert.equal(await count(), 128);
+  assert.equal(dropped, 1); assert.equal(await count(), limits.connections);
   for (const socket of sockets) socket.destroy();
   const deadline = performance.now() + 2000;
   while (await count()) { assert(performance.now() < deadline); await delay(20); }
