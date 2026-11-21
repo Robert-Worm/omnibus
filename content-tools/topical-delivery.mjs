@@ -50,7 +50,11 @@ export function packTopicalDelivery(value, {read, write, textRevisions}) {
   // De logische inhoud: alles samengesteld; de correctielaag zoals opgegeven (of zoals gepubliceerd).
   const logical = hydrate(initial, value, read, keys);
   if (textRevisions) logical.textRevisions = structuredClone(textRevisions);
-  const packets = logical.packages.map((packet, index) => ({packet, index})).filter(({packet}) => local.some(key => key.split(':')[1] === packet.id));
+  // Een bron doet per bron mee als zij al verpakt is, of als er correcties voor haar zijn: die gaan dan in een eigen deel
+  // mee met haar gegevens. Haar bestaande delen blijven zoals ze zijn (alleen delen in de nieuwe vorm worden opgesplitst).
+  const corrected = new Set(textRevisions ? [...textRevisions.edits, ...textRevisions.transitions].map(entry => entry.sourceId) : []);
+  const packets = logical.packages.map((packet, index) => ({packet, index}))
+    .filter(({packet}) => corrected.has(packet.id) || local.some(key => key.split(':')[1] === packet.id));
   // Controlegetal van de volledige herleiding per toetspunt, met de correctielaag toegepast (zoals de browser hem ziet).
   const view = structuredClone(logical);
   applyTopicalTextRevisions(view, sha256);
