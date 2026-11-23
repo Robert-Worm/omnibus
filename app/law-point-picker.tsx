@@ -3,7 +3,7 @@
 // (Select met nummer, titel en status, plus vorige/volgende) en daaronder "neem je het op" (checkbox).
 // Bekijken en kiezen blijven gescheiden: de lijst wisselt alleen het bekeken punt, de checkbox kiest.
 import {normId} from '@/lib/norm-navigation.mjs';
-import {useState} from 'react';
+import {useState,type ReactNode} from 'react';
 import {Check,ChevronLeft,ChevronRight,Lock} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -11,11 +11,11 @@ import {Select,SelectContent,SelectItem,SelectTrigger} from '@/components/ui/sel
 import {AfkortingText} from './term-help';
 
 type PickerPoint={id:string;title:string;selection_status:string};
-type Props={points:PickerPoint[];currentId:string;selected:ReadonlySet<unknown>;disabled?:boolean;onView:(id:string)=>void;onChoose?:(id:string,value:boolean)=>void};
+type Props={points:PickerPoint[];currentId:string;selected:ReadonlySet<unknown>;disabled?:boolean;onView:(id:string)=>void;onChoose?:(id:string,value:boolean)=>void;/** Extra knoppen bij het bekeken toetspunt, zoals "Kopieer link". */actions?:ReactNode};
 
 const statusText=(p:PickerPoint,selected:ReadonlySet<unknown>)=>p.selection_status!=='SELECTABLE'?'nog niet vrijgegeven':selected.has(p.id)?'gekozen':'niet gekozen';
 
-export default function LawPointPicker({points,currentId,selected,disabled,onView,onChoose}:Props){
+export default function LawPointPicker({points,currentId,selected,disabled,onView,onChoose,actions}:Props){
  const [melding,setMelding]=useState('');
  const index=Math.max(0,points.findIndex(p=>p.id===currentId)),point=points[index];
  if(!point)return null;
@@ -43,7 +43,7 @@ export default function LawPointPicker({points,currentId,selected,disabled,onVie
     <Button variant="outline" size="icon" aria-label="Volgend toetspunt" disabled={index===total-1} onClick={()=>view(points[index+1].id)}><ChevronRight size={16}/></Button>
    </div>
   </div>}
-  {onChoose&&<div className="law-active-choice"><label htmlFor={`law-active-${point.id}`}><Checkbox id={`law-active-${point.id}`} disabled={disabled||!selectable} checked={selected.has(point.id)} onCheckedChange={value=>onChoose(point.id,value===true)}/><span><strong>{total>1?(selected.has(point.id)?'Opgenomen in je kader':'Neem dit toetspunt op in je kader'):<AfkortingText text={point.title}/>}</strong><small>{normId(point.id)} · {selectable?(selected.has(point.id)?'gekozen':'nog niet gekozen'):'nog niet vrijgegeven'}</small></span></label></div>}
+  {(onChoose||actions)&&<div className={'law-active-choice'+(actions?' has-actions':'')}>{onChoose&&<label htmlFor={`law-active-${point.id}`}><Checkbox id={`law-active-${point.id}`} disabled={disabled||!selectable} checked={selected.has(point.id)} onCheckedChange={value=>onChoose(point.id,value===true)}/><span><strong>{total>1?(selected.has(point.id)?'Opgenomen in je kader':'Neem dit toetspunt op in je kader'):<AfkortingText text={point.title}/>}</strong><small>{normId(point.id)} · {selectable?(selected.has(point.id)?'gekozen':'nog niet gekozen'):'nog niet vrijgegeven'}</small></span></label>}{actions}</div>}
   <p className="sr-only" aria-live="polite">{melding}</p>
  </section>;
 }

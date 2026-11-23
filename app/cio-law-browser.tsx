@@ -41,6 +41,8 @@ import RelevanceHelp from './relevance-help';
 import RelatedNormsHelp,{type Verwant} from './related-norms-help';
 import {requestNormJump,takeNormJump} from '@/lib/norm-jump.mjs';
 import LawPointPicker from './law-point-picker';
+import CopyPointLink from './copy-point-link';
+import {peekPointLink,clearPointLink,passageFingerprint} from '@/lib/point-link.mjs';
 import {TermText,AfkortingText} from './term-help';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import type {Point,Criterion,Objective,RecordEntry} from './cio-law-workspace';
@@ -114,7 +116,11 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const [openId,setOpenId]=useState(rows.find(row=>initial&&row.pointIds.includes(initial.id))?.id||'');
  const [pointId,setPointId]=useState(initial?.id||'');
  const [chosenOverview,setOverview]=useLawOverview(overviewProps),overview=embedTopic?'norms':chosenOverview;
- const [tab,setTab]=useState<Tab>('points');
+ // Geopend via een vaste link naar een toetspunt (B-102): direct op Bronpassage, met een melding als het punt of de passage is gewijzigd.
+ const [linked]=useState(()=>{const link=peekPointLink(sourceId) as {pointId:string;fingerprint:string}|null;return link&&link.pointId===initialPointId?link:null;});
+ useEffect(()=>{clearPointLink(linked);},[linked]);
+ const [linkNotice,setLinkNotice]=useState(Boolean(linked&&!initial));
+ const [tab,setTab]=useState<Tab>(linked&&initial?'source':'points');
  const [error,setError]=useState('');
  const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('compact');
  const [storedView,setView,viewReady]=useBrowseState(adapter?.viewKey||'cio-source-groups-v3',{query:'',group:'',topic:'',selectedOnly:false,density:'compact',columns:columns.map(c=>c.id),columnsVersion:0});
@@ -229,6 +235,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
   {!viewerOnly&&<>
   {!hideOpenStrip&&!embedTopic&&<OpenItemStrip id="cio-open" items={[{id:sourceId,title}]} activeId={sourceId} onActivate={()=>{}} onClose={()=>{onChange(closeFoundation(draft,sourceId) as Draft);navigate('foundations');}} onExplore={()=>navigate('foundations')} exploreLabel="Terug naar alle wetten &amp; kaders" disabled={disabled}/>}
   {!embedTopic&&<div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={shownOverview==='norms'} onClick={()=>{actionGeneration.current++;setWantedOverview({from:overview,to:'norms'});startTransition(()=>setOverview('norms'));}}>Normen</button><button aria-pressed={shownOverview==='source'} onClick={()=>{setWantedOverview({from:overview,to:'source'});withDetails(()=>startTransition(()=>setOverview('source')));}}>Over dit kader</button></nav></div>}
+  {linkNotice&&<output className="point-link-notice"><span>Het toetspunt uit de link ({normId(initialPointId)}) staat niet meer in dit kader. Het is vervallen of vervangen. Zoek hieronder in de normen naar de huidige uitwerking.</span><button type="button" onClick={()=>setLinkNotice(false)}>Sluiten</button></output>}
   {overview==='source'&&<About onPoint={id=>{const match=rows.find(row=>row.pointIds.includes(id));if(match)open(match.id);}}/>}
   {error&&<p className="cio-error" role="alert">{error}</p>}
   {overview==='norms'&&<>
@@ -278,10 +285,11 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
        <label htmlFor={`law-${p.id}`}><Checkbox id={`law-${p.id}`} aria-label={`${p.title} selecteren`} disabled={disabled||p.selection_status!=='SELECTABLE'} checked={selected.has(p.id)} onCheckedChange={value=>choose([p.id],value===true)}/><strong><AfkortingText text={p.title}/></strong></label><RelevanceHelp text={p.relevance} title={p.title}/>
        <CollectionBadge kind="foundation" id={sourceId}/>{p.text.trim()!==parent.text.trim()&&<p><AfkortingText text={p.text} voluit/></p>}{p.selection_status!=='SELECTABLE'&&<p className="cio-notice">Nog niet vrijgegeven · {p.selection_reason}</p>}
        {(()=>{const material=draft.investigation?.materials.find(m=>m.sourcePointId===p.id),text=material&&draft.overrides[material.id]?.criterion;return text!==undefined&&text!==p.text?<section className="viewer-own-wording"><strong>Eigen formulering in je kader</strong><p>{text}</p></section>:null;})()}
-       <div className="law-choice-actions"><small>{normId(p.id)} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
+       <div className="law-choice-actions"><small>{normId(p.id)} · {(cioKindLabels as Record<string,string>)[p.normative_kind]||p.normative_kind}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage{p.conditions.length+p.exceptions.length>0?' · voorwaarden':''}</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button><CopyPointLink inline sourceId={sourceId} pointId={p.id} fingerprint={passageFingerprint(p,recordMap)} title={p.title}/></div>
       </article>)}</div>
      </>:<>
-      <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={(id,value)=>choose([id],value)}/>
+      <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={(id,value)=>choose([id],value)} actions={<CopyPointLink sourceId={sourceId} pointId={point.id} fingerprint={passageFingerprint(point,recordMap)} title={point.title}/>}/>
+      {tab==='source'&&linked?.fingerprint&&linked.pointId===point.id&&passageFingerprint(point,recordMap)!==linked.fingerprint&&<output className="point-link-notice">De bronpassage bij dit toetspunt is gewijzigd sinds de link is gemaakt. Je ziet de huidige versie; controleer of je eigen uitwerking nog klopt.</output>}
       {point.selection_status!=='SELECTABLE'&&<p className="cio-source-caution">Nog niet selecteerbaar · {point.selection_reason}</p>}
       {tab==='source'?<Source key={point.id} point={point} parent={parent}/>:<>
        <PointApproach point={point}/>

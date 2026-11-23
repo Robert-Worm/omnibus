@@ -351,6 +351,9 @@ html[data-appearance=dark] button.related-norms-trigger{background:#1d2b3a;borde
 html[data-appearance=dark] .related-norms-link{color:var(--donker-tekst-3)}
 html[data-appearance=dark] .related-norms-popup small{color:#9fb3c8}
 html[data-appearance=dark] .law-active-choice{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2)}
+html[data-appearance=dark] .point-link-button,html[data-appearance=dark] .point-link-fallback{background:var(--donker-vlak-2);border-color:var(--donker-lijn-2);color:inherit}
+html[data-appearance=dark] .law-choice-actions .point-link-copy.is-inline .point-link-button{background:none}
+html[data-appearance=dark] .point-link-notice{background:#3a3111;border-color:#8a7426;color:#f4e7b5}
 html[data-appearance=dark] :is(.law-point-picker .law-point-select,.law-point-menu){background:#172330;border-color:#35506b;color:var(--foreground)}
 html[data-appearance=dark] :is(.law-point-select-title strong,.law-point-menu .law-point-option .law-point-option-text>span){color:#f0f7ff}
 html[data-appearance=dark] :is(.law-point-select-body>small,.law-point-option-text small){color:#a9bccf}

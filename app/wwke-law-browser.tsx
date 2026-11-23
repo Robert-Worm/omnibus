@@ -32,6 +32,8 @@ import {wwkeAudiences} from '@/lib/wwke-audiences.mjs';
 import {TermText,AfkortingText} from './term-help';
 import RelevanceHelp from './relevance-help';
 import LawPointPicker from './law-point-picker';
+import CopyPointLink from './copy-point-link';
+import {peekPointLink,clearPointLink,passageFingerprint} from '@/lib/point-link.mjs';
 import {Approach,type Point as CioPoint} from './cio-law-workspace';
 import {sourceAudienceNotice} from '@/lib/source-scope.mjs';
 import {wwkeBrowserRows,wwkeBrowserGroups,lawBrowserColumns as columns} from '@/lib/wwke-browser-view.mjs';
@@ -59,6 +61,7 @@ function PointConditions({point,draft}:{point:Point;draft:Draft}){
  <details open={point.selection_status!=='SELECTABLE'}><summary>Selectiegrens en open bronvragen</summary><p>{lawReaderText(point.selection_reason)}</p>{detail.issueUses.map(u=><p key={u.issue_id}>{u.issue_id} · {lawReaderText(u.reason)}</p>)}</details>
  {assessment&&<details><summary>{assessment.mode==='SELECTION'?'Toepasselijkheid nog te beoordelen':'Jouw beoordeling van toepasselijkheid'}</summary>{assessment.mode==='SELECTION'&&<p>Deze bouwsteen is direct aan je onderzoeksselectie toegevoegd. De toepasselijkheid is nog niet bevestigd.</p>}<p>{assessment.basis}</p><p>{assessment.boundary}</p></details>}</section>;
 }
+const linkMark=(p:Parameters<typeof wwkePointContext>[0])=>passageFingerprint(p,wwkePointContext(p).records) as string;
 export default function WwkeLawBrowser(props:Props){return <Browser key={props.initialPointId||'catalogue'} {...props}/>;}
 function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOnly=false,onClose,prepareDetails,...overviewProps}:Props){
  useSyncExternalStore(onCatalogueChange,catalogueRevision,catalogueRevision);
@@ -76,7 +79,11 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  const checkboxId=useId();
  const [openId,setOpenId]=useState(allRows.find(r=>r.pointIds.includes(initialPointId||''))?.id||'');
  const [readingDensity,setReadingDensity]=useState<'compact'|'comfortable'|'full'>('compact');
- const [pointId,setPointId]=useState(initialPointId||''),[tab,setTab]=useState<Tab>('points'),[error,setError]=useState('');
+ // Geopend via een vaste link naar een toetspunt (B-102): direct op Bronpassage.
+ const [linked]=useState(()=>{const link=peekPointLink(wwkeSourceId) as {pointId:string;fingerprint:string}|null;return link&&link.pointId===initialPointId?link:null;});
+ useEffect(()=>{clearPointLink(linked);},[linked]);
+ const [linkNotice,setLinkNotice]=useState(Boolean(linked&&!wwkePointMap.has(initialPointId||'')));
+ const [pointId,setPointId]=useState(initialPointId||''),[tab,setTab]=useState<Tab>(linked&&wwkePointMap.has(initialPointId||'')?'source':'points'),[error,setError]=useState('');
  const [overview,setOverview]=useLawOverview(overviewProps),about=overview==='source';
  const setAbout=(value:boolean)=>setOverview(value?'source':'norms');
  // Old government/role preferences must not override the new entity-first default.
@@ -105,6 +112,7 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  function openPoint(id:string){const row=allRows.find(r=>r.pointIds.includes(id));if(row)open(row.id,id,true);}
  function close(){setOpenId('');setPointId('');onClose?.();}
  return <section className="law-browser wwke-browser" aria-label="WWKE">
+ {linkNotice&&<output className="point-link-notice"><span>Het toetspunt uit de link ({initialPointId}) staat niet meer in dit kader. Het is vervallen of vervangen. Zoek hieronder in de normen naar de huidige uitwerking.</span><button type="button" onClick={()=>setLinkNotice(false)}>Sluiten</button></output>}
  {!viewerOnly&&<><div className="law-view-actions"><nav className="law-overview-tabs" aria-label="Kaderweergave"><button aria-pressed={!about} onClick={()=>{actionGeneration.current++;startTransition(()=>setAbout(false));}}>Normen</button><button aria-pressed={about} onClick={()=>withDetails(()=>startTransition(()=>setAbout(true)))}>Over dit kader</button></nav></div>
  {about?<WwkeSourceAbout initialSector={view.sector} onPoint={id=>{openPoint(id);setTab('source');}}/>:<>
  <div className="law-browse-intro"><div className="law-viewer-heading"><h2>Wet weerbaarheid kritieke entiteiten</h2><output aria-live="polite" title="Unieke normen binnen de huidige filters. Gekoppelde toetspunten tellen in je selectie maar één keer.">{lawCountText(rows)}</output></div>{(()=>{const notice=sourceAudienceNotice(wwkeSourceId);return notice?<p className={`law-audience-notice law-audience-${notice.role}`}><Users size={15} aria-hidden="true"/><span><strong>{notice.title}.</strong> {notice.text}</span></p>:null;})()}<div className="law-selection-actions"><SelectionMenu selectedOnly={view.selectedOnly} onSelectedOnly={value=>setView(v=>({...v,selectedOnly:value}))} allChosen={visibleSelection.all} disabled={disabled||!visibleSelection.total} allTitle={visibleSelection.all?'Verwijder de normen binnen de huidige filters uit je selectie. Andere bronnen en bewerkingen blijven behouden.':'Voeg alle normen binnen de huidige filters direct toe aan je selectie. Toepasselijkheid blijft afzonderlijk te beoordelen; punten met open bronvragen blijven uitgesloten.'} onToggleAll={selectAll}/></div></div>
@@ -138,10 +146,11 @@ function Browser({draft,onChange,disabled=false,navigate,initialPointId,viewerOn
  {p.selection_status!=='SELECTABLE'&&<span className={'wwke-status '+p.selection_status.toLowerCase()}>{labels[p.selection_status]}</span>}
  {excluded&&<p className="wwke-warning">Artikel 23: uitgezonderd voor de sector in je overzichtsfilter.</p>}
  {ownText&&ownText!==p.text&&<details><summary>Jouw formulering</summary><p>{ownText}</p></details>}
- <div className="law-choice-actions"><small>{p.id}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage · voorwaarden</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button></div>
+ <div className="law-choice-actions"><small>{p.id}</small><button onClick={()=>{setPointId(p.id);setTab('source');}}>Bronpassage · voorwaarden</button><button onClick={()=>{setPointId(p.id);setTab('approach');}}>Toetsaanpak</button><CopyPointLink inline sourceId={wwkeSourceId} pointId={p.id} fingerprint={linkMark(p)} title={p.title}/></div>
  </article>;})}</div>
  </>:point&&<>
- <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={point.selection_status==='SELECTABLE'&&!(wwkeExcludedForSector(point.id,view.sector)&&!selected.has(point.id))?(id,value)=>choose([id],value):undefined}/>
+ <LawPointPicker points={children} currentId={point.id} selected={selected} disabled={disabled} onView={setPointId} onChoose={point.selection_status==='SELECTABLE'&&!(wwkeExcludedForSector(point.id,view.sector)&&!selected.has(point.id))?(id,value)=>choose([id],value):undefined} actions={<CopyPointLink sourceId={wwkeSourceId} pointId={point.id} fingerprint={linkMark(point)} title={point.title}/>}/>
+ {tab==='source'&&linked?.fingerprint&&linked.pointId===point.id&&linkMark(point)!==linked.fingerprint&&<output className="point-link-notice">De bronpassage bij dit toetspunt is gewijzigd sinds de link is gemaakt. Je ziet de huidige versie; controleer of je eigen uitwerking nog klopt.</output>}
  {tab==='approach'&&<section className="law-active-point"><div className="law-point-kind">{point.id} · {labels[point.selection_status]}</div><h2><AfkortingText text={point.title}/></h2><p><AfkortingText text={point.text} voluit/></p></section>}
  {tab==='source'?<WwkeSource key={point.id} point={point} application={<PointConditions point={point} draft={draft}/>}/>:<Approach point={point as unknown as CioPoint}/>}
  </>}

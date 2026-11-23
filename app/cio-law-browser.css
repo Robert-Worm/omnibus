@@ -306,3 +306,14 @@ html[data-appearance=dark] .framework-app .law-browse-intro .law-audience-notice
 .law-topic-elsewhere{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:.25rem;font:500 .8125rem/1.3 var(--font-ui);color:var(--primary);text-decoration:underline;text-underline-offset:3px}
 .law-topic-elsewhere:hover{text-decoration-thickness:2px}
 .law-topic-elsewhere:focus-visible{outline:3px solid var(--ring);outline-offset:2px;border-radius:2px}
+
+/* Vaste link naar een toetspunt (B-102). */
+.law-active-choice.has-actions{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.point-link-copy{display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-left:auto}
+.point-link-button{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .6rem;border:1px solid #c6d2de;border-radius:.4rem;background:#fff;color:#1d4468;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.point-link-button:hover{background:#f1f5f9}.point-link-button:focus-visible{outline:2px solid #1d4468;outline-offset:2px}
+.point-link-copy.is-inline{margin-left:0}
+.law-choice-actions .point-link-copy.is-inline .point-link-button{padding:0;border:0;background:none;color:inherit;font-weight:inherit;gap:.25rem;text-decoration:underline}
+.point-link-fallback{min-width:16rem;flex:1;padding:.25rem .45rem;border:1px solid #c6d2de;border-radius:.35rem;font-size:.75rem;background:#fff;color:#22313f}
+.point-link-notice{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;margin:0 0 .9rem;padding:.6rem .8rem;border:1px solid #e3c873;border-left-width:4px;border-radius:.4rem;background:#fff8e1;color:#4a3a05;font-size:.82rem;line-height:1.5}
+.point-link-notice button{border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer;font-size:.78rem;white-space:nowrap}

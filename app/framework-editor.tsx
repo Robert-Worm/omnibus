@@ -88,6 +88,8 @@ import ExcelExport from "./lazy-export";
 import ModelLibrary, { type ModelLibraryState } from "./model-library";
 import { initialModelLibrary, restoreModelLibrary } from "@/lib/model-library.mjs";
 import { workspaceRoute as knownRoute, isWorkspaceHash } from "@/lib/workspace-view.mjs";
+import { parsePointLink, requestPointLink } from "@/lib/point-link.mjs";
+type PointLink={sourceId:string;pointId:string;fingerprint:string};
 const workspaceRoute = (hash: string) => (isWorkspaceHash(hash) ? knownRoute(hash) : "entry");
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {assertNoRemovedReportContent} from '@/lib/removed-report-content.mjs';
@@ -312,6 +314,7 @@ export default function FrameworkEditor() {
   // Geopende onderwerpen tellen mee bij de geopende wetten en kaders (B-072).
   const openTopicCount=(useSyncExternalStore(subscribeOpenTopics,openTopics,openTopics) as string[]).length;
   const [foundationCriterion,setFoundationCriterion] = useState("");
+  const [pointLinkNonce,setPointLinkNonce] = useState(0);
   const [catalogueSearch,setCatalogueSearch] = useState("");
   const [foundationBrowse,setFoundationBrowse] = useState(()=>projectView().foundationBrowse);
   const changeFoundationBrowse = useCallback((value: typeof foundationBrowse) => {
@@ -476,11 +479,38 @@ export default function FrameworkEditor() {
     if(resume)navigate(project.view.page,report);
   }
   const onProjectRestored = useEffectEvent((project:Project) => applyProject(project));
+  // Vaste link naar een toetspunt (B-102): de bron openen zoals vanuit de catalogus, met het toetspunt op Bronpassage.
+  const pendingPointLink=useRef<PointLink|null>(null),pointLinkReturn=useRef('');
+  function openPointLink(link:PointLink) {
+    withContent(['catalogue'],()=>{
+      if(!foundations.some(s=>s.id===link.sourceId)){
+        setScopeNotice('De link verwijst naar een bron die niet in deze Omnibus staat. Mogelijk is de bron vervallen of vervangen. Zoek het toetspunt via Wetten & kaders.');
+        navigate('foundations');return;
+      }
+      withContent(['catalogue','foundation:'+link.sourceId],()=>{
+        const current=draftRef.current,wb=current.investigation;
+        if(wb&&!wb.sourceIds.includes(link.sourceId))commit({...current,investigation:{...wb,sourceIds:[...wb.sourceIds,link.sourceId]}} as Draft);
+        requestPointLink(link);
+        setFoundationFocus(link.sourceId);setFoundationCriterion(link.pointId);setPointLinkNonce(n=>n+1);
+        setFoundationBrowse(v=>({...v,sourceId:link.sourceId}));
+        navigate('foundation-workspace');
+      });
+    });
+  }
+  const onPointLink=useEffectEvent((link:PointLink)=>openPointLink(link));
+  useEffect(()=>{
+    if(!loaded||!pendingPointLink.current)return;
+    const link=pendingPointLink.current;pendingPointLink.current=null;
+    onPointLink(link);
+  },[loaded]);
   useEffect(() => {
     let cancelled = false;
     const reading=new AbortController();
     void Promise.resolve().then(async () => {
       if (cancelled) return;
+      // Een vaste link naar een toetspunt: eerst het eigen project laden, daarna het toetspunt openen (B-102).
+      const linked=parsePointLink(window.location.hash);
+      if(linked){pendingPointLink.current=linked;window.history.replaceState(null,"","#begin");}
       if(!isWorkspaceHash(window.location.hash))window.history.replaceState(null,"","#begin");
       setPage(workspaceRoute(window.location.hash || "#begin"));
       const reportRoute = window.location.hash.replace("#rapport-", "");
@@ -568,6 +598,8 @@ export default function FrameworkEditor() {
   }, [setMessage,setProblem]);
   useEffect(() => {
     const sync = () => {
+      const linked=parsePointLink(window.location.hash);
+      if(linked){window.history.replaceState(null,"",pointLinkReturn.current||"#begin");onPointLink(linked);return;}
       if(!isWorkspaceHash(window.location.hash)){
         // Een anker binnen de pagina wisselt niet van scherm; een onbekend adres gaat naar het begin.
         if(document.getElementById(window.location.hash.slice(1)))return;
@@ -746,6 +778,7 @@ export default function FrameworkEditor() {
                           ? "#open-themas"
                           : "#themas";
     if (window.location.hash !== hash) window.history.pushState(null, "", hash);
+    pointLinkReturn.current=hash;
     requestAnimationFrame(() => focusWorkflowHeading(document));
   }
   const commit = useCallback((next: Draft, action = "Laatste wijziging", track = true, autoLink = true) => {
@@ -1397,6 +1430,7 @@ export default function FrameworkEditor() {
               key={builderGeneration}
               initialSource={foundationFocus}
               initialCriterionId={foundationCriterion}
+              pointLinkNonce={pointLinkNonce}
               processId={sourceProcess}
               initialBrowse={foundationBrowse}
               onBrowseChange={changeFoundationBrowse}

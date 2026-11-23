@@ -76,7 +76,7 @@ function ViewerSkeleton({title}:{title:string}){
 
 const overviewMemory:Record<string,'norms'|'source'>={};
 function rememberOverview(id:string,value:'norms'|'source'){overviewMemory[id]=value;}
-export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void,about?:boolean)=>void;prepareDetails?:(id:string,action:()=>void)=>void;onSourceShown?:(id:string)=>void;onSourcesOpened?:(ids:string[])=>void}) {
+export default function FoundationWorkspace(props: Parameters<typeof LegacyFoundationWorkspace>[0] & LawOverviewProps & {prepareSource?:(id:string,action:()=>void,about?:boolean)=>void;prepareDetails?:(id:string,action:()=>void)=>void;onSourceShown?:(id:string)=>void;onSourcesOpened?:(ids:string[])=>void;/** Telt op bij elke geopende toetspuntlink, zodat dezelfde link opnieuw opent (B-102). */pointLinkNonce?:number}) {
   const [,setSharedOverview]=useLawOverview(props);
   // Een kader dat je voor het eerst opent, begint bij de normen. Daarna onthoudt elk kader zijn eigen weergave
   // (besluit beheerder 12 november 2026: wisselen naar een nieuw kader bleef op "Over dit kader" staan).
@@ -97,6 +97,11 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
   const [previousSource,setPreviousSource]=useState(props.initialSource);
   if(previousSource!==props.initialSource){
     setPreviousSource(props.initialSource);
+    if(props.initialSource)setActive(props.initialSource);
+  }
+  const [previousLink,setPreviousLink]=useState(props.pointLinkNonce);
+  if(previousLink!==props.pointLinkNonce){
+    setPreviousLink(props.pointLinkNonce);
     if(props.initialSource)setActive(props.initialSource);
   }
   const activeTopic=topics.includes(openTopicValue(active))?openTopicValue(active):'';
@@ -134,7 +139,7 @@ export default function FoundationWorkspace(props: Parameters<typeof LegacyFound
      prepare={(id,action)=>props.prepareDetails?props.prepareDetails(id,action):action()}
      onSwitch={value=>{closeTopic(currentTopic);rememberListTopic(value,topicFamilyOfChoice(value));(overviewProps as LawOverviewProps).onShowTopic?.(value);}}
      onOpenSource={id=>{requestViewerTopic(id,currentTopic);const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}}/>
-   :pending?<ViewerSkeleton title={frameworkTitle(foundations.find(s=>s.id===pending)?.title||'')}/>:admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId} onOpenSource={known.includes('DORA-2022-2554')?(id:string)=>{if(!known.includes(id))return;const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}:undefined} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
+   :pending?<ViewerSkeleton title={frameworkTitle(foundations.find(s=>s.id===pending)?.title||'')}/>:admitted.includes(current)?<AdmittedLawBrowser {...overviewProps} key={current+props.initialCriterionId+(props.pointLinkNonce||'')} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:topicalIds.includes(current)?<TopicalLawBrowser {...overviewProps} key={current+props.initialCriterionId+(props.pointLinkNonce||'')} onOpenSource={known.includes('DORA-2022-2554')?(id:string)=>{if(!known.includes(id))return;const wb=props.draft.investigation;if(wb&&!wb.sourceIds.includes(id))props.onChange({...props.draft,investigation:{...wb,sourceIds:[...new Set([...wb.sourceIds,id])]}} as Draft);onActivate(id);window.scrollTo({top:0});}:undefined} sourceId={current} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:current===wwkeMetadata.id?<WwkeLawBrowser {...overviewProps} key={current+props.initialCriterionId+(props.pointLinkNonce||'')} draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>:<CioLawWorkspace {...overviewProps} key={'cio'+(props.pointLinkNonce||'')} hideOpenStrip draft={props.draft} onChange={props.onChange} navigate={props.navigate} disabled={props.disabled} initialPointId={props.initialSource===current?props.initialCriterionId:undefined}/>}
   </>;}
   return <LegacyFoundationWorkspace {...props} />;
 }
