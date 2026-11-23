@@ -77,6 +77,8 @@ Bij elke norm zie je de samenhang tussen doel, risico, beheersdoelstelling en be
 
 Twijfel je over een norm? Open de bron. Je leest dan de oorspronkelijke tekst, met de passage gemarkeerd.
 
+Wil je één toetspunt delen of bespreken? Klik bij het toetspunt op **Kopieer link**. De link opent dat toetspunt in Omnibus op **Bronpassage**: de gemarkeerde passage met de onderbouwing. Wie de link opent, houdt zijn eigen project; de bron komt erbij als geopende bron. Is de passage gewijzigd nadat de link is gemaakt, dan staat dat erbij. Bestaat het toetspunt niet meer, dan meldt Omnibus dat en zie je het kader.
+
 ### 3. Bouw je kader
 
 Schrijf je centrale onderzoeksvraag en deelvragen. Koppel de gekozen bouwstenen aan de vraag waarbij ze horen. Dat kan op twee manieren:
@@ -102,6 +104,8 @@ Kies een werkvorm voor je Excel-bestand:
 | Interviewleidraad | Je verkent een onderwerp met vragen, voorbeelden en doorvragen. |
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
+
+Bij een toetspunt uit een wet of kader staan in het register twee verwijzingen, elk in een eigen kolom. De kolommen *Onderliggende bron* en *Artikel / pagina* openen de bron zelf. De kolom **Bronpassage in Omnibus** opent hetzelfde toetspunt in Omnibus, met de gemarkeerde passage en de onderbouwing. Zo kan een lezer van je Excel-bestand altijd nagaan waarop een toetspunt steunt. De link opent de online versie en heeft internet nodig.
 
 Bouwstenen die je niet aan een vraag hebt gekoppeld, gaan standaard mee: Omnibus zet ze bij een verwante deelvraag of onder je centrale vraag. Wil je dat niet, zet dan in stap 4 onder **Inhoud** het vinkje **Koppel bouwstenen zonder onderzoeksvraag automatisch** uit. Onder **Excel-opties** kies je de toetslabels (Nederlands of Engels) en of het blad *Verantwoording referentiekader* meekomt.
 
