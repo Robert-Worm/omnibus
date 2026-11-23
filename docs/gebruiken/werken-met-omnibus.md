@@ -107,6 +107,8 @@ Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen bli
 
 Bij een toetspunt uit een wet of kader staan in het register twee verwijzingen, elk in een eigen kolom. De kolommen *Onderliggende bron* en *Artikel / pagina* openen de bron zelf. De kolom **Bronpassage in Omnibus** opent hetzelfde toetspunt in Omnibus, met de gemarkeerde passage en de onderbouwing. Op het blad *Onderzoeksvragen* staat dezelfde link in de lijst *Toetspunten per vraag*, naast *Artikel / pagina*. Zo kan een lezer van je Excel-bestand altijd nagaan waarop een toetspunt steunt. De link opent de online versie en heeft internet nodig.
 
+Op het blad *Versiebeheer* staat onder **Herkomst van deze export** met welke versie van Omnibus het bestand is gemaakt en wat de peildatum van elke bron is.
+
 Bouwstenen die je niet aan een vraag hebt gekoppeld, gaan standaard mee: Omnibus zet ze bij een verwante deelvraag of onder je centrale vraag. Wil je dat niet, zet dan in stap 4 onder **Inhoud** het vinkje **Koppel bouwstenen zonder onderzoeksvraag automatisch** uit. Onder **Excel-opties** kies je de toetslabels (Nederlands of Engels) en of het blad *Verantwoording referentiekader* meekomt.
 
 Een **risico-controlmatrix** kun je ook zonder onderzoeksvragen exporteren, bijvoorbeeld direct na stap 2. Alle gekozen bouwstenen gaan dan mee en het blad *Onderzoeksvragen* vervalt. Voor een normtoetsing of interviewleidraad maak je eerst vragen in stap 3.
