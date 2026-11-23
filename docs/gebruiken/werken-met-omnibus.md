@@ -105,7 +105,7 @@ Kies een werkvorm voor je Excel-bestand:
 
 Alleen de indeling van het Excel-bestand verschilt. Je vragen en koppelingen blijven hetzelfde. Bekijk de drie werkvormen in het [voorbeeld](https://github.com/Robert-Worm/omnibus/releases/download/database-2026-10-19/omnibus-voorbeeld.zip); het projectbestand daarin open je met **Open project**.
 
-Bij een toetspunt uit een wet of kader staan in het register twee verwijzingen, elk in een eigen kolom. De kolommen *Onderliggende bron* en *Artikel / pagina* openen de bron zelf. De kolom **Bronpassage in Omnibus** opent hetzelfde toetspunt in Omnibus, met de gemarkeerde passage en de onderbouwing. Zo kan een lezer van je Excel-bestand altijd nagaan waarop een toetspunt steunt. De link opent de online versie en heeft internet nodig.
+Bij een toetspunt uit een wet of kader staan in het register twee verwijzingen, elk in een eigen kolom. De kolommen *Onderliggende bron* en *Artikel / pagina* openen de bron zelf. De kolom **Bronpassage in Omnibus** opent hetzelfde toetspunt in Omnibus, met de gemarkeerde passage en de onderbouwing. Op het blad *Onderzoeksvragen* staat dezelfde link in de lijst *Toetspunten per vraag*, naast *Artikel / pagina*. Zo kan een lezer van je Excel-bestand altijd nagaan waarop een toetspunt steunt. De link opent de online versie en heeft internet nodig.
 
 Bouwstenen die je niet aan een vraag hebt gekoppeld, gaan standaard mee: Omnibus zet ze bij een verwante deelvraag of onder je centrale vraag. Wil je dat niet, zet dan in stap 4 onder **Inhoud** het vinkje **Koppel bouwstenen zonder onderzoeksvraag automatisch** uit. Onder **Excel-opties** kies je de toetslabels (Nederlands of Engels) en of het blad *Verantwoording referentiekader* meekomt.
 
